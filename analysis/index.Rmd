@@ -1,5 +1,5 @@
 ---
-title: "Home"
+title: "Heat flux and MHWs in the NW Atlantic"
 site: workflowr::wflow_site
 output:
   workflowr::wflow_html:
@@ -8,4 +8,6 @@ editor_options:
   chunk_output_type: console
 ---
 
-Welcome to my research website.
+This website contains the version controlled analyses used to determine the relationship between heat flux terms and marine heatwaves (MHWs) in the Northwest Atlantic Ocean.
+  
+Please use the tabs above to navigate the site. The "Analyses" tabs contains discrete steps in the workflow. To see the raw code used for the workflow/pipeline of this project please follow the link in the top right of this page to the `source code` for this project. Once there the raw workflow code may be found in the `code/workflow.R` script. The functions etc. that this script relies on may be found in the `code/functions.R` script.

@@ -1,14 +1,28 @@
 name: "MHWflux"
 output_dir: ../docs
 navbar:
-  title: "MHWflux"
+  title: "MHW heat flux"
   left:
-  - text: Home
+  - text: "Overview"
     href: index.html
-  - text: About
-    href: about.html
+  - text: "Analyses"
+    menu:
+    - text: "Study area and regions"
+      href: polygon-prep.html
+    - text: "Data preparation"
+      href: data-prep.html
+    - text: "MHW detection"
+      href: mhw-detect.html
+    - text: "MHWs vs. heat flux"
+      href: mhw-flux.html
+    - text: "Heat flux SOM"
+      href: som-flux.html
   - text: License
     href: license.html
+  right:
+  - icon: fa-github
+    text: Source code
+    href: https://github.com/robwschlegel/MHWNWA
 output:
   workflowr::wflow_html:
     toc: yes
