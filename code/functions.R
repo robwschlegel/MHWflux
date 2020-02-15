@@ -2,6 +2,18 @@
 # This script holds all of the functions called from other scripts in the code/ folder
 
 
+## Ideas
+# MHW intensity globally is heterogenous
+# We also know that there are different primary drivers in different parts of the world
+# So can this knowledge be used to identify the drivers of the most extreme events?
+# Can the risk of certain drivers be quantified/ordered?
+# Can the increase in these with climate change be measured?
+# FOllowing on, can we then say with any confidence what aspects of anthropogenic
+# climate change pose the greatest risk(s) to the oceans w.r.t. MHWs?
+
+# The K-means for heat budget fingerprints is also a solid plan
+
+
 # Required bits -----------------------------------------------------------
 
 .libPaths(c("~/R-packages", .libPaths()))

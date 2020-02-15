@@ -15,8 +15,8 @@ navbar:
       href: mhw-detect.html
     - text: "MHWs vs. heat flux"
       href: mhw-flux.html
-    - text: "Heat flux SOM"
-      href: som-flux.html
+    - text: "Heat flux K-means"
+      href: k-means-flux.html
   - text: License
     href: license.html
   right:
