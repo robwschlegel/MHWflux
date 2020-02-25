@@ -19,8 +19,6 @@
 .libPaths(c("~/R-packages", .libPaths()))
 
 # Packages used in this script
-# library(rlang)
-# library(jsonlite, lib.loc = "../R-packages/")
 library(tidyverse) # Base suite of functions
 library(lubridate) # For convenient date manipulation
 library(data.table) # For faster mean values
@@ -30,26 +28,26 @@ library(ncdf4)
 library(tidync, lib.loc = "../R-packages/")
 
 # Set number of cores
-doMC::registerDoMC(cores = 50)
+doParallel::registerDoParallel(cores = 50)
 
 # Disable scientific notation for numeric values
 # I just find it annoying
 options(scipen = 999)
 
 # Corners of the study area
-  # Created in 'analysis/polygon-prep.Rmd'
+  # Created in 'MHWNWA/analysis/polygon-prep.Rmd'
 NWA_corners <- readRDS("data/NWA_corners.Rda")
 
 # Individual regions
-  # Created in 'analysis/polygon-prep.Rmd'
+  # Created in 'MHWNWA/analysis/polygon-prep.Rmd'
 NWA_coords <- readRDS("data/NWA_coords.Rda")
 
 # The pixels in each region
-  # Created in 'analysis/polygon-prep.Rmd'
+  # Created in 'analysis/data-prep.Rmd'
 NWA_info <- readRDS("data/NWA_info.Rda")
 
 # MHW results
-  # Created in 'analysis/sst-prep.Rmd'
+  # Created in 'analysis/data-prep.Rmd'
 OISST_region_MHW <- readRDS("data/OISST_region_MHW.Rda")
 
 # MHW Events
@@ -67,7 +65,7 @@ suppressWarnings( # Don't need warning about different names for events
 )
 
 # The base land polygon
-  # Created in 'analysis/polygon-prep.Rmd'
+  # Created in 'MHWNWA/analysis/polygon-prep.Rmd'
 map_base <- readRDS("data/map_base.Rda")
 
 # The base map frame used for all figures
@@ -102,7 +100,7 @@ lon_sub <- seq(NWA_corners[1], NWA_corners[2], by = 1)
 lat_sub <- seq(NWA_corners[3], NWA_corners[4], by = 1)
 
 # Bathymetry data
-# NB: This was created in a previous version of the polygon-prep vignette
+  # Created in MHWNWA/analysis/polygon-prep.Rmd
 bathy <- readRDS("data/NWA_bathy_lowres.Rda")
 
 # Load anomaly data as necessary
@@ -154,7 +152,7 @@ bathy <- readRDS("data/NWA_bathy_lowres.Rda")
 #          lat >= NWA_corners[3], lat <= NWA_corners[4],)
 # nc_close(nc); rm(nc)
 # saveRDS(eddies, "data/eddy_tracks.Rds")
-eddy_tracks <- readRDS("data/eddy_tracks.Rds")
+# eddy_tracks <- readRDS("data/eddy_tracks.Rds")
 
 
 # Function to create the OISST landmask -----------------------------------

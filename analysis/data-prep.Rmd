@@ -1,0 +1,52 @@
+---
+title: "Preparing the data"
+author: "Robert Schlegel"
+date: "2020-02-25"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+csl: FMars.csl
+bibliography: MHWNWA.bib
+---
+
+```{r global_options, include = FALSE}
+knitr::opts_chunk$set(fig.width = 8, fig.align = 'center',
+                      echo = TRUE, warning = FALSE, message = FALSE, 
+                      eval = TRUE, tidy = FALSE)
+```
+
+## Introduction
+
+Much of the code in this vignette is taken entirely or partially from the [study area prep](https://robwschlegel.github.io/MHWNWA/polygon-prep.html), the [MHW prep](https://robwschlegel.github.io/MHWNWA/sst-prep.html), and the [gridded data prep](https://robwschlegel.github.io/MHWNWA/var-prep.html) vignettes from the drivers of MHWs in the NW Atlantic [project](https://robwschlegel.github.io/MHWNWA/index.html). Because this process has already been established we are going to put it all together in this one vignette in a more streamlined manner.
+
+All of the libraries and functions used in this vignette, and the project more broadly may be found [here](https://github.com/robwschlegel/MHWflux/blob/master/code/functions.R).
+
+```{r satrtup}
+# get everything up and running in one go
+source("code/functions.R")
+```
+
+
+## Study area
+
+A reminder of what the study area looks like. It has been cut into 6 regions based on work by @Richaud2016.
+
+```{r}
+frame_base +
+  geom_polygon(data = NWA_coords, alpha = 0.7, size = 2,
+               aes(fill = region, colour = region)) +
+  geom_polygon(data = map_base, aes(group = group))
+```
+
+## Pixels per region
+
+In this study it was decided to use the higher resolution 1/12th degree GLORYS data. This means we will need to re-calculate which pixels fall within which region so we can later determine how to create our average SST time series per region as well as the other averaged heat flux term time series.
+
+## Average time series per region
+
+
+## MHWs per region
+
+
+## References
+
