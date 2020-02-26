@@ -16,3 +16,5 @@ knitr::opts_chunk$set(fig.width = 8, fig.align = 'center',
 ```
 
 ## Introduction
+
+https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2018EA000519

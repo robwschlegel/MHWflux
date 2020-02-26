@@ -17,7 +17,9 @@ knitr::opts_chunk$set(fig.width = 8, fig.align = 'center',
 
 ## Introduction
 
+This vignette will walk through the thinking and the process for how to link physical variables to their potential effect on driving or dissipating MHWs. The primary source that inspired this work was @Chen2016. In this paper the authors were able to illustrate which parts of the heat budget were mostly likely driving the anomalous heat content in the surface of the ocean. What this analysis seeks to do is to build on this methodology by applying the fundamental concept to ALL of the MHWs detected in the NW Atlantic. Fundamentally we are running thousands of correlations between SST anomalies and the co-occurrent anomalies for a range of physical variables. The stronger the correlation (both positive and negative) the more of an idication this is to us that these phenomena are related.
 
+## Notes
 
 ### NWA 2012
 
