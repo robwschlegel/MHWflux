@@ -17,6 +17,8 @@ knitr::opts_chunk$set(fig.width = 8, fig.align = 'center',
 
 ## Introduction
 
+
+
 ### NWA 2012
 
 From Chen et al. 2016 (JGR)

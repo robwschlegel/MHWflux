@@ -8,7 +8,7 @@
 # So can this knowledge be used to identify the drivers of the most extreme events?
 # Can the risk of certain drivers be quantified/ordered?
 # Can the increase in these with climate change be measured?
-# FOllowing on, can we then say with any confidence what aspects of anthropogenic
+# Following on, can we then say with any confidence what aspects of anthropogenic
 # climate change pose the greatest risk(s) to the oceans w.r.t. MHWs?
 
 # The K-means for heat budget fingerprints is also a solid plan
@@ -44,25 +44,31 @@ NWA_coords <- readRDS("data/NWA_coords.Rda")
 
 # The pixels in each region
   # Created in 'analysis/data-prep.Rmd'
-NWA_info <- readRDS("data/NWA_info.Rda")
+GLORYS_regions <- readRDS("data/GLORYS_regions.Rda")
+ERA5_regions <- readRDS("data/ERA5_regions.Rda")
 
 # MHW results
   # Created in 'analysis/data-prep.Rmd'
-OISST_region_MHW <- readRDS("data/OISST_region_MHW.Rda")
+GLORYS_region_MHW <- readRDS("data/GLORYS_region_MHW.Rda")
+
+# MHW Clims
+GLORYS_MHW_clim <- GLORYS_region_MHW %>%
+  select(-cats) %>%
+  unnest(events) %>%
+  filter(row_number() %% 2 == 1) %>%
+  unnest(events)
 
 # MHW Events
-OISST_MHW_event <- OISST_region_MHW %>%
+GLORYS_MHW_event <- GLORYS_region_MHW %>%
   select(-cats) %>%
   unnest(events) %>%
   filter(row_number() %% 2 == 0) %>%
   unnest(events)
 
 # MHW Categories
-suppressWarnings( # Don't need warning about different names for events
-  OISST_MHW_cats <- OISST_region_MHW %>%
-    select(-events) %>%
-    unnest(cats)
-)
+GLORYS_MHW_cats <- GLORYS_region_MHW %>%
+  select(-events) %>%
+  unnest(cats)
 
 # The base land polygon
   # Created in 'MHWNWA/analysis/polygon-prep.Rmd'
@@ -155,123 +161,53 @@ bathy <- readRDS("data/NWA_bathy_lowres.Rda")
 # eddy_tracks <- readRDS("data/eddy_tracks.Rds")
 
 
-# Function to create the OISST landmask -----------------------------------
-
-# The land mask NetCDF file is downloaded here:
-# https://www.esrl.noaa.gov/psd/data/gridded/data.noaa.oisst.v2.highres.html
-# OISST_land_mask_func <- function(){
-#   lmask <- want_vec <- tidync("data/lsmask.oisst.v2.nc") %>%
-#     hyper_tibble() %>%
-#     dplyr::select(-time) %>%
-#     mutate(lon = ifelse(lon > 180, lon-360, lon))
-#   saveRDS(lmask, "data/land_mask_OISST.Rda")
-# }
-
-# Test visuals
-# ggplot(lmask, aes(x = lon, y = lat)) +
-# geom_raster(aes(fill = lsmask))
-
-
-# Extract data from NOAA OISST NetCDF -------------------------------------
-
-# tester...
-# file_name <- "../data/OISST/avhrr-only-v2.ts.0001.nc"
-load_OISST <- function(file_name){
-  res <- tidync(file_name) %>%
-    hyper_filter(lat = dplyr::between(lat, NWA_corners[3]-0.125, NWA_corners[4]-0.125),
-                 time = dplyr::between(time, as.integer(as.Date("1993-01-01")),
-                                       as.integer(as.Date("2018-12-31")))) %>%
-    hyper_tibble() %>%
-    mutate(time = as.Date(time, origin = "1970-01-01")) %>%
-    dplyr::rename(temp = sst, t = time) %>%
-    select(lon, lat, t, temp)
-  return(res)
-}
-
-load_all_OISST <- function(file_names){
-  # system.time(
-  res_all <- plyr::ldply(file_names, load_OISST, .parallel = T)
-  # ) # 0.5 seconds for one slice, 34 seconds for all
-}
-
-
 # Extract data from GLORYS NetCDF -----------------------------------------
 
-# 1/4 degree data from 1993 to 2015
 # testers...
-# file_name <- "../data/GLORYS/MHWNWA_GLORYS_quarter_degree_daily_1993-01.nc"
-load_GLORYS <- function(file_name){
-  res_uv <- tidync(file_name) %>%
+# file_name <- "../data/GLORYS/MHWflux_GLORYS_1993-1.nc"
+# tidync(file_name)
+# ncdump::NetCDF(file_name)$variable[,1:6]
+load_GLORYS_region <- function(file_name){
+  # SST, U, V, SSS
+  res_1 <- tidync(file_name) %>% 
     hyper_tibble() %>%
     mutate(time = as.Date(as.POSIXct(time * 3600, origin = '1950-01-01', tz = "GMT"))) %>%
-    select(-depth)
-  res_mld <- tidync(file_name) %>%
-    activate(mlp) %>% # Need to explicitly grab MLD as it doesn't use the depth dimension
+    dplyr::select(-depth) %>% 
+    dplyr::rename(temp = thetao, sss = so, u = uo, v = vo,
+                  lon = longitude, lat = latitude, t = time)
+  # MLD, bottomT, SSH
+  res_2 <- tidync(file_name) %>%
+    activate("D2,D1,D0") %>% # Need to explicitly grab the other data ad they don't use the depth dimension
     hyper_tibble() %>%
-    mutate(time = as.Date(as.POSIXct(time * 3600, origin = '1950-01-01', tz = "GMT")))
-  res_all <- left_join(res_uv, res_mld, by = c("longitude", "latitude", "time")) %>%
-    dplyr::rename(lon = longitude, lat = latitude, t = time) %>%
-    select(lon, lat, t, everything()) %>%
-    dplyr::rename(mld = mlp)
-  res_round <- res_all %>%
-    mutate(mld = round(mld),
+    mutate(time = as.Date(as.POSIXct(time * 3600, origin = '1950-01-01', tz = "GMT"))) %>% 
+    dplyr::select(-siconc, -usi, -sithick, -vsi) %>% 
+    dplyr::rename(mld = mlotst, ssh = zos,
+                  lon = longitude, lat = latitude, t = time)
+  # Combine, filter by region, and create means
+  res_mean <- left_join(res_1, res_2, by = c("lon", "lat", "t")) %>% 
+    right_join(GLORYS_regions, by = c("lon", "lat")) %>% 
+    dplyr::select(-lon, -lat) %>% 
+    group_by(region, t) %>% 
+    summarise_all("mean") %>% 
+    ungroup() %>% 
+    mutate(temp = round(temp, 4),  bottomT = round(bottomT, 4),
+           mld = round(mld, 4), ssh = round(ssh, 4),
            u = round(u, 6), v = round(v, 6))
-  return(res_round)
+  return(res_mean)
 }
 
-load_all_GLORYS <- function(file_names){
+load_all_GLORYS_region <- function(file_names){
   # system.time(
-  res_all <- plyr::ldply(file_names, load_GLORYS, .parallel = T)
-  # ) # 0.8 seconds for one slice, 45 seconds for all
-}
-
-# 1/12 degree data from 2016 to 2018
-# testers...
-# file_name <- "../data/GLORYS/MHWNWA_GLORYS_twelfth_degree_daily_2016-01.nc"
-load_GLORYS_hires <- function(file_name){
-  # Process U and V
-  res_uv <- tidync(file_name) %>%
-    hyper_tibble() %>%
-    mutate(time = as.Date(as.POSIXct(time * 3600, origin = '1950-01-01', tz = "GMT"))) %>%
-    select(-depth) %>%
-    mutate(longitude = plyr::round_any(longitude, 0.25),
-           latitude = plyr::round_any(latitude, 0.25))
-  # Switch to data.table for faster means
-  res_uv <- data.table(res_uv)
-  setkey(res_uv, longitude, latitude, time)
-  res_uv <- res_uv[, lapply(.SD, mean), by = list(longitude, latitude, time)]
-  # Process MLD
-  res_mld <- tidync(file_name) %>%
-    activate(mlotst) %>% # Need to explicitly grab MLD as it doesn't use the depth dimension
-    hyper_tibble() %>%
-    mutate(time = as.Date(as.POSIXct(time * 3600, origin = '1950-01-01', tz = "GMT"))) %>%
-    mutate(longitude = plyr::round_any(longitude, 0.25),
-           latitude = plyr::round_any(latitude, 0.25))
-  res_mld <- data.table(res_mld)
-  setkey(res_mld, longitude, latitude, time)
-  res_mld <- res_mld[, lapply(.SD, mean), by = list(longitude, latitude, time)]
-  # Combine
-  res_all <- left_join(res_uv, res_mld, by = c("longitude", "latitude", "time")) %>%
-    dplyr::rename(lon = longitude, lat = latitude, t = time, u = uo, v = vo) %>%
-    select(lon, lat, t, everything()) %>%
-    dplyr::rename(mld = mlotst)
-  res_round <- res_all %>%
-    mutate(mld = round(mld),
-           u = round(u, 6), v = round(v, 6))
-  return(res_round)
-}
-
-load_all_GLORYS_hires <- function(file_names){
-  # system.time(
-  res_all <- plyr::ldply(file_names, load_GLORYS_hires, .parallel = T)
-  # ) # 3.5 seconds for one slice, 19 seconds for all
+  res_all <- plyr::ldply(file_names, load_GLORYS_region, .parallel = T)
+  # ) # 11 seconds for one slice, 11 for two
 }
 
 # Test visuals
-# res_all %>%
+# res_mean %>%
 #   filter(t == "1993-01-31") %>%
-#   ggplot(aes(x = lon, y = lat, fill = mld)) +
-#   geom_raster()
+#   ggplot(aes(x = lon, y = lat, colour = mld)) +
+#   # geom_raster()
+#   geom_point()
 
 
 # Extract data from ERA 5 NetCDF ------------------------------------------
@@ -279,27 +215,42 @@ load_all_GLORYS_hires <- function(file_names){
 # Function for loading a single ERA 5 NetCDF file
 # testers...
 # file_name <- "../../oliver/data/ERA/ERA5/T2M/ERA5_T2M_1993.nc"
-# lon_slice <- -80.5
-load_ERA5 <- function(file_name){
+# ncdump::NetCDF(file_name)
+load_ERA5_region <- function(file_name){
+  # The ERA5 data are saved as annual single variables
   res <- tidync(file_name) %>%
-    hyper_filter(latitude = dplyr::between(latitude, 31.5, 63.5),
-                 longitude = dplyr::between(longitude, -80.5+360, -40.5+360)) %>%
+    hyper_filter(latitude = dplyr::between(latitude, min(NWA_coords$lat), max(NWA_coords$lat)),
+                 longitude = dplyr::between(longitude, min(NWA_coords$lon)+360, max(NWA_coords$lon)+360),
+                 time = index == 1) %>%
     hyper_tibble() %>%
     mutate(time = as.Date(as.POSIXct(time * 3600, origin = '1900-01-01', tz = "GMT"))) %>%
-    dplyr::rename(lon = longitude, lat = latitude, t = time)
+    dplyr::rename(lon = longitude, lat = latitude, t = time) %>% 
+    mutate(lon = if_else(lon > 180, lon -360, lon)) %>% 
+    right_join(ERA5_regions, by = c("lon", "lat")) %>% 
+    dplyr::select(-lon, -lat) %>% 
+    group_by(region, t) %>% 
+    summarise_all("mean") %>% 
+    ungroup()
   # Switch to data.table for faster means
-  res_dt <- data.table(res)
-  setkey(res_dt, lon, lat, t)
-  res_mean <- res_dt[, lapply(.SD, mean), by = list(lon, lat, t)]
+  # res_dt <- data.table(res)
+  # setkey(res_dt, region, t)
+  # res_mean <- res_dt[, lapply(.SD, mean), by = list(region, t)]
   return(res_mean)
 }
 
 # Function to load all of the NetCDF files for one ERA 5 variable
-load_all_ERA5 <- function(file_names){
+# NB: for some reason this doesn't want to run in parallel
+load_all_ERA5_region <- function(file_names){
   # system.time(
-  res_all <- plyr::ldply(file_names, load_ERA5, .parallel = T)
-  # ) # 73 seconds for one year, 119 seconds for two
+  res_all <- plyr::ldply(file_names, load_ERA5_region, .parallel = T)
+  # ) # 35 seconds for one year, 52 seconds for two
 }
+
+# Test visuals
+# res_mean %>%
+#   filter(t == "1993-01-31") %>%
+#   ggplot(aes(x = lon, y = lat, fill = t2m)) +
+#   geom_raster()
 
 
 # Calculate climatologies from single variable data.frame -----------------
