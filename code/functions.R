@@ -213,15 +213,14 @@ load_all_GLORYS_region <- function(file_names){
 # Extract data from ERA 5 NetCDF ------------------------------------------
 
 # Function for loading a single ERA 5 NetCDF file
+# The ERA5 data are saved as annual single variables
 # testers...
 # file_name <- "../../oliver/data/ERA/ERA5/T2M/ERA5_T2M_1993.nc"
 # ncdump::NetCDF(file_name)
 load_ERA5_region <- function(file_name){
-  # The ERA5 data are saved as annual single variables
   res <- tidync(file_name) %>%
     hyper_filter(latitude = dplyr::between(latitude, min(NWA_coords$lat), max(NWA_coords$lat)),
-                 longitude = dplyr::between(longitude, min(NWA_coords$lon)+360, max(NWA_coords$lon)+360),
-                 time = index == 1) %>%
+                 longitude = dplyr::between(longitude, min(NWA_coords$lon)+360, max(NWA_coords$lon)+360)) %>%
     hyper_tibble() %>%
     mutate(time = as.Date(as.POSIXct(time * 3600, origin = '1900-01-01', tz = "GMT"))) %>%
     dplyr::rename(lon = longitude, lat = latitude, t = time) %>% 
@@ -231,20 +230,16 @@ load_ERA5_region <- function(file_name){
     group_by(region, t) %>% 
     summarise_all("mean") %>% 
     ungroup()
-  # Switch to data.table for faster means
-  # res_dt <- data.table(res)
-  # setkey(res_dt, region, t)
-  # res_mean <- res_dt[, lapply(.SD, mean), by = list(region, t)]
-  return(res_mean)
+  return(res)
 }
 
 # Function to load all of the NetCDF files for one ERA 5 variable
 # NB: for some reason this doesn't want to run in parallel
-load_all_ERA5_region <- function(file_names){
-  # system.time(
-  res_all <- plyr::ldply(file_names, load_ERA5_region, .parallel = T)
-  # ) # 35 seconds for one year, 52 seconds for two
-}
+# load_all_ERA5_region <- function(file_names){
+#   # system.time(
+#   res_all <- plyr::ldply(file_names, load_ERA5_region, .parallel = T)
+#   # ) # 35 seconds for one year, 52 seconds for two
+# }
 
 # Test visuals
 # res_mean %>%

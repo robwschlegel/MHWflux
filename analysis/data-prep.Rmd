@@ -155,17 +155,16 @@ saveRDS(GLORYS_region_MHW, "data/GLORYS_region_MHW.Rda")
 
 ## Clims + anoms per variable
 
-The analyses to come are going to be performed on anomaly values, not the original time series. In order to calculate the anomalies we are first going to need the climatologies for each variable. We will use the Hobday definition of climatology creation and then subtract the expected climatology from the observed values.
+The analyses to come are going to be performed on anomaly values, not the original time series. In order to calculate the anomalies we are first going to need the climatologies for each variable. We will use the Hobday definition of climatology creation and then subtract the expected climatology from the observed values. We are again using the 1993-01-01 to 2018-12-25 base period for these calculations to ensure consistency throughout the project.
 
 ```{r clims}
 # Load the data
 GLORYS_all_ts <- readRDS("data/GLORYS_all_ts.Rda")
 ERA5_all_ts <- readRDS("data/ERA5_all_ts.Rda")
-ALL_ts <- rbind(GLORYS_all_ts, ERA5_all_ts) %>% 
-  mutate(product = c(rep("GLORYS")))
+ALL_ts <- left_join(ERA5_all_ts, GLORYS_all_ts, by = c("region", "t"))
 
 # Calculate GLORYS clims and anoms
-GLORYS_all_anom <- GLORYS_all_ts %>%
+ALL_anom <- ALL_ts %>%
   pivot_longer(temp:ssh, names_to = "var", values_to = "val") %>% 
   group_by(region, var) %>%
   nest() %>%
@@ -175,16 +174,6 @@ GLORYS_all_anom <- GLORYS_all_ts %>%
   unnest(cols = clims) %>%
   mutate(anom = val-seas)
 
-# Calculate ERA5 clims
-ERA5_all_anom <- ERA5_all_ts %>%
-  pivot_longer(msnlwrf:t2m, names_to = "var", values_to = "val") %>% 
-  group_by(region, var) %>%
-  nest() %>%
-  mutate(clims = map(data, ts2clm, y = val, roundClm = 6,
-                     climatologyPeriod = c("1993-01-01", "2018-12-31"))) %>% 
-  dplyr::select(-data) %>% 
-  unnest(cols = clims) %>%
-  mutate(anom = val-seas)
 
 # Save
 GLORYS_all_anom <- saveRDS(GLORYS_all_anom, "data/GLORYS_all_anom.Rda")
