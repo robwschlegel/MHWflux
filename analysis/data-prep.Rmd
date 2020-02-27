@@ -165,17 +165,18 @@ ALL_ts <- left_join(ERA5_all_ts, GLORYS_all_ts, by = c("region", "t"))
 
 # Calculate GLORYS clims and anoms
 ALL_anom <- ALL_ts %>%
-  pivot_longer(temp:t2m, names_to = "var", values_to = "val") %>% 
+  pivot_longer(msnlwrf:ssh, names_to = "var", values_to = "val") %>% 
   group_by(region, var) %>%
   nest() %>%
   mutate(clims = map(data, ts2clm, y = val, roundClm = 6,
                      climatologyPeriod = c("1993-01-01", "2018-12-25"))) %>% 
   dplyr::select(-data) %>% 
   unnest(cols = clims) %>%
-  mutate(anom = val-seas)
+  mutate(anom = val-seas) %>% 
+  ungroup()
 
 # Save
-ALL_anom <- saveRDS(ALL_anom, "data/ALL_anom.Rda")
+saveRDS(ALL_anom, "data/ALL_anom.Rda")
 ```
 
 And that's all there is to it. In the next vignette we will take the periods of time over whiche MHWs occurred per region and pair those up with the GLORYS and ERA5 data. This will be used to investigate which drivers are best related to the onset and decline of MHWs.

@@ -72,6 +72,9 @@ GLORYS_MHW_cats <- GLORYS_region_MHW %>%
   select(-events) %>%
   unnest(cats)
 
+# Physical variable anomalies
+ALL_anom <- readRDS("data/ALL_anom.Rda")
+
 # The base land polygon
   # Created in 'MHWNWA/analysis/polygon-prep.Rmd'
 map_base <- readRDS("data/map_base.Rda")
