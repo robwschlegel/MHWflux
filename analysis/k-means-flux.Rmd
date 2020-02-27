@@ -119,6 +119,7 @@ Another option open to us is the use of non-metric muldimensional scaling (NMDS)
 ```{r NMDS}
 all_anom_MDS <- metaMDS(vegdist(decostand(ALL_mean_wide[,-c(1:2)], method = "standardize"),
                                     method = "euclidean"), try = 100)
+
 ```
 
 
