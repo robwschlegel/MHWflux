@@ -23,6 +23,7 @@ The idea laid out in this vignette comes from this publication: https://agupubs.
 # All of the libraries and objects used in the project
 # Note that this also loads the data we will be using in this vignette
 source("code/functions.R")
+library(vegan) # For multivariate analyses
 ```
 
 ## Mean values
@@ -57,28 +58,68 @@ With a nice wide dataframe of anomalies it is now a simple matter of passing `AL
 ALL_mean_wide <- readRDS("data/ALL_mean_wide.Rda")
 
 # Then scale the data to a 0 mean 1 SD scale
+  # NB: It turns out that scaling the data beforehand
+  # causes the model to perform much more poorly
+  # I'm not using the dataframe below, but I've left it in for now
 ALL_scale <- ALL_mean_wide %>% 
   mutate_if(.predicate = is.double, .funs = scale)
 
 # Base function
 kmean_withinss <- function(k) {
-    cluster <- kmeans(ALL_scale[,-c(1:2)], k)
+    cluster <- kmeans(ALL_mean_wide[,-c(1:2)], k)
     return(cluster$tot.withinss)
 }
 
 # sapply() it
-wss <- sapply(2:50, kmean_withinss)
+wss <- sapply(2:30, kmean_withinss)
 
 # Create a dataframe for plotting
-elbow <- data.frame(2:50, wss)
+elbow <- data.frame(2:30, wss)
 
 # Plot
-ggplot(elbow, aes(x = X2.50, y = wss)) +
+ggplot(elbow, aes(x = X2.30, y = wss)) +
     geom_point() +
     geom_line()
 ```
 
-Where exactly in the above elbow one should focus on is open to some interpretation. Does one take it right at where the curve clearly starts, or one or two steps in? I am going to take it right at the curve as I want to avoid overfitting the model as much as possible.
+Where exactly in the above elbow one should focus on is open to some interpretation. Does one take it right at where the curve clearly starts, or one or two steps in? I am going to take it right at the curve as I want to avoid overfitting the model as much as possible. This means we are going with a cluster count of 7. It seems pretty aparent to me that this is a good choice as the gains in model accuracy drammatically slow down after K = 7.
+
+```{r K-res}
+# Performing K-means in R is so easy!
+k_res <- kmeans(ALL_mean_wide[,-c(1:2)], 7, iter.max = 10000)
+# k_res$betweenss/k_res$totss
+k_res
+```
+
+As we may see from the print-out above, the 7 cluster approach explains ~91% of the variance within the dataset. That's pretty good! So let's see what these clusters actually look like in relation to one another.
+
+```{r K-heat-plot}
+# Cast the K-means results long
+k_res_long <- k_res$centers %>% 
+  data.frame() %>% 
+  mutate(cluster = row.names(.)) %>% 
+  pivot_longer(cols = bottomT:v10, names_to = "var", values_to = "val") %>% 
+  filter(var != "msl") %>% # These values are so large they make it impossible to see anything else 
+  mutate(val = scale(val))
+
+# Create a heatmap of the values per cluster
+ggplot(data = k_res_long, aes(x = var, y = as.numeric(cluster), fill = val)) +
+  geom_tile() +
+  scale_y_continuous(breaks = seq(1, 7, by = 1)) +
+  scale_fill_gradient2() +
+  coord_equal(expand = F)
+```
+
+So that's not very useful. The scale of the variables are rather different so I think we are going to need to go for scatterplots with ellipses showing the clustering. This may also be a useful application of a shiny app so that one may quickly go through all of the different combinations of Y vs X axes.
+
+## NMDS
+
+Another option open to us is the use of non-metric muldimensional scaling (NMDS) to reduce the dimensionality in the data before performing a clustering. Thinking out loud now though I don't think this is really necessary as the K-means algorithm above isn't being pushed too much. But I've got the code just lying around so why not just pop it in their and see how it looks.
+
+```{r NMDS}
+all_anom_MDS <- metaMDS(vegdist(decostand(ALL_mean_wide[,-c(1:2)], method = "standardize"),
+                                    method = "euclidean"), try = 100)
+```
 
 
 ## References
