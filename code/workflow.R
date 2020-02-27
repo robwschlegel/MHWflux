@@ -12,7 +12,7 @@
 system.time(
 workflowr::wflow_publish(files = c("analysis/index.Rmd", "analysis/data-prep.Rmd",
                                    "analysis/mhw-flux.Rmd", "analysis/k-means-flux.Rmd"),
-                         message = "Re-publish entire site.")
+                         message = "Re-built site.")
 ) # 70 seconds
 
 

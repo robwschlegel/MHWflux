@@ -19,3 +19,5 @@ knitr::opts_chunk$set(fig.width = 8, fig.align = 'center',
 
 The idea laid out in this vignette comes from this publication: https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2018EA000519 . The idea basically is that by taking the mean of the environmental variables during the MHW in a region we are able to create something useful for multivariate analysis. And according to the publication above this works well with environmental variables and K-means clustering to determine primary flavours of the same phenomenon. So my thinking here (actually Young-oh Kwon's thinking) is that we can do this for MHWs. The anticipated outcome is that we will see groups of MHWs that are clearly due to certain drivers over others. The interesting part will come from seeing if these different flavours of MHWs share some other commonality, like region or season of occurrence.
 
+## References
+

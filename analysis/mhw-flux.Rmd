@@ -34,3 +34,5 @@ The correlation coefficients increase from 0.66in the first half of February to 
 This suggests that more northly jet stream positions result in larger heatflux from the atmosphere into the ocean in the MAB. This is likely due to warmer and more humid air over-lying the continental shelf, which reduces the heat loss from the ocean during the cooling seasons [Chenet al., 2014a]
 Inspring and summer, the air-sea flux may be less correlated with the air temperature due to the shallownessof the surface mixed layer, and thus may be disconnected from large-scale atmospheric circulation, i.e., jetstream variability.
 
+## References
+

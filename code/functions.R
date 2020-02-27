@@ -13,6 +13,10 @@
 
 # The K-means for heat budget fingerprints is also a solid plan
 
+# Could one use a random forest to predict a MHW given environmental anomalies?
+# Could the random forest model be used to determine the most useful variables
+# Can one predict duration/intensity?
+
 
 # Required bits -----------------------------------------------------------
 
@@ -21,10 +25,8 @@
 # Packages used in this script
 library(tidyverse) # Base suite of functions
 library(lubridate) # For convenient date manipulation
-library(data.table) # For faster mean values
 library(heatwaveR, lib.loc = "../R-packages/")
 # cat(paste0("heatwaveR version = ", packageDescription("heatwaveR")$Version))
-library(ncdf4)
 library(tidync, lib.loc = "../R-packages/")
 
 # Set number of cores
@@ -246,71 +248,6 @@ load_ERA5_region <- function(file_name){
 #   filter(t == "1993-01-31") %>%
 #   ggplot(aes(x = lon, y = lat, fill = t2m)) +
 #   geom_raster()
-
-
-# Calculate climatologies from single variable data.frame -----------------
-
-ts2clm_one <- function(df, GLORYS = F){
-  if(ncol(df) > 4) stop("Too many columns")
-  if(GLORYS){
-    clim_end <- "2018-12-25"
-  } else{
-    clim_end <- "2018-12-31"
-  }
-  colnames(df)[4] <- "temp"
-  # system.time(
-  res <- df %>%
-    group_by(lon, lat) %>%
-    nest() %>%
-    mutate(clims = map(data, ts2clm,
-                       climatologyPeriod = c("1993-01-01", clim_end),
-                       clmOnly = T, roundClm = FALSE)) %>%
-    select(-data) %>%
-    unnest() %>%
-    left_join(doy_index, by = c("doy" = "doy_int")) %>%
-    select(-doy) %>%
-    dplyr::rename(doy = doy.y)
-  # ) # 1139 seconds
-  res$thresh <- NULL
-  return(res)
-}
-
-
-# Calculate anomalies for single variable ---------------------------------
-
-anom_one <- function(df, df_clim, point_accuracy){
-  if(ncol(df) > 4) stop("Too many columns")
-  var_name <- colnames(df)[4]
-  colnames(df)[4] <- "temp"
-  # point_accuracy <- max(nchar(strsplit(as.character(df$temp)[1:10], "\\.")[[1]][2]))
-  res <- df %>%
-    mutate(doy = format(t, "%m-%d")) %>%
-    left_join(df_clim, by = c("lon", "lat", "doy")) %>%
-    mutate(anom = round(temp-seas, point_accuracy)) %>%
-    ungroup() %>%
-    select(lon, lat, t, anom)
-  colnames(res)[4] <- paste0(var_name,"_anom")
-  return(res)
-}
-
-
-# Load anomaly data -------------------------------------------------------
-
-# This function loads and filters the anomaly data.frames
-# This just exists to reduce redundancy and keep the code/workflow.R script tidy
-load_anom <- function(file_name, OISST = F){
-  if(OISST){
-    res <- readRDS(file_name) %>%
-      mutate(lon = lon-0.125, lat = lat+0.125)
-  } else{
-    res <- readRDS(file_name) %>%
-      mutate(lon = ifelse(lon > 180, lon-360, lon))
-  }
-  res <- res %>% filter(lon >= NWA_corners[1], lon <= NWA_corners[2],
-                        lat >= NWA_corners[3], lat <= NWA_corners[4])
-  res <- setkey(data.table(res, key = c("lon", "lat", "t")))
-  return(res)
-}
 
 
 # Build data packets ------------------------------------------------------
