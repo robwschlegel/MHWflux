@@ -174,7 +174,6 @@ ALL_anom <- ALL_ts %>%
   unnest(cols = clims) %>%
   mutate(anom = val-seas)
 
-
 # Save
 ALL_anom <- saveRDS(ALL_anom, "data/ALL_anom.Rda")
 ```
