@@ -31,60 +31,13 @@ source("code/functions.R")
 Right, so we are just going to jump straight into it. We know when the MHWs occurred, and our physical data are prepped, so what we need to do is run correlations between SST from the start to peak + peak to end of each event and the full suite of variables. This will show us for each event which values correlated the best for the onset AND decline of the events. We'll also run correlations on the full time series.
 
 ```{r MHW-var-cor}
+GLORYS_MHW_event_index <- GLORYS_MHW_event %>% 
+  select(event_no, region) %>% 
+  mutate(row_index = 1:n())
 
-event_num <- 1
-event_region <- "mab"
-
-# Get the info for the focus event
-event_sub <- GLORYS_MHW_event %>% 
-  filter(event_no == event_num,
-         region == event_region)
-
-# Subset the time series for the onset and decline portions
-ts_temp <- ALL_anom %>% 
-  filter(t >= event_sub$date_start,
-         t <= event_sub$date_end,
-         region == event_sub$region, 
-         var == "temp") %>% 
-  dplyr::rename(temp_anom = anom) %>% 
-  select(region, t, temp_anom)
-ts_full <- ALL_anom %>% 
-  filter(t >= event_sub$date_start,
-         t <= event_sub$date_end,
-         region == event_sub$region) %>% 
-  left_join(ts_temp, by = c("region", "t"))
-ts_onset <- ALL_anom %>% 
-  filter(t >= event_sub$date_start,
-         t <= event_sub$date_peak,
-         region == event_sub$region) %>% 
-  left_join(ts_temp, by = c("region", "t"))
-ts_decline <- ALL_anom %>% 
-  filter(t >= event_sub$date_peak,
-         t <= event_sub$date_end,
-         region == event_sub$region) %>% 
-  left_join(ts_temp, by = c("region", "t"))
-
-ts_onset_cor <- mtcars %>%
- split(.$cyl) %>% 
-map(select, -c(cyl)) %>% 
-map(cor)
-
-
-broom::augment(cor(temp_anom, anom, data = ts_full))
-
-test <- ts_full %>% 
-  group_by(var) %>% 
-  select(var, anom, temp_anom) %>% 
-  nest() %>% 
-  mutate(r = map(data, ~cor(.$temp_anom, .$anom))) %>% 
-  # mutate(model = map(data, ~lm(temp_anom ~ anom, data = .))) %>% 
-  dplyr::select(-data) %>%
-  # mutate(res = broom::glance(model))
-  # unnest(model %>% map(broom::glance))
-  # mutate(data = map(data, cor)) %>% 
-  unnest(col = r) %>% 
-  mutate(r = round(r, 2)) %>% 
-  arrange(-r)
+ALL_cor <- plyr::ddply(GLORYS_MHW_event_index, 
+                       .variables = c("row_index"), .fun = cor_all,
+                       event_num = "event_no", event_region = "region")
 
 ```
 

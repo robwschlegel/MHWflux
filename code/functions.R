@@ -253,6 +253,65 @@ load_ERA5_region <- function(file_name){
 #   geom_raster()
 
 
+# Correlation functions ---------------------------------------------------
+
+# Run multiple ocrrelations on a dataframe
+cor_multi <- function(ts_data){
+  res <- ts_data %>% 
+    group_by(var) %>% 
+    select(var, anom, temp_anom) %>% 
+    nest() %>% 
+    mutate(r = map(data, ~cor(.$temp_anom, .$anom))) %>% 
+    dplyr::select(-data) %>%
+    unnest(col = r) %>% 
+    ungroup() %>% 
+    mutate(r = round(r, 2),
+           n = nrow(ts_data)/length(unique(ts_data$var))) %>% 
+    arrange(-r)
+}
+
+# Subset data based on events and regions and run all correlations
+cor_all <- function(event_num, event_region){
+  # Get the info for the focus event
+  event_sub <- GLORYS_MHW_event %>% 
+    filter(event_no == event_num,
+           region == event_region)
+  
+  # Subset the time series for the onset and decline portions
+  ts_temp <- ALL_anom %>% 
+    filter(t >= event_sub$date_start,
+           t <= event_sub$date_end,
+           region == event_sub$region, 
+           var == "temp") %>% 
+    dplyr::rename(temp_anom = anom) %>% 
+    select(region, t, temp_anom)
+  ts_full <- ALL_anom %>% 
+    filter(t >= event_sub$date_start,
+           t <= event_sub$date_end,
+           region == event_sub$region) %>% 
+    left_join(ts_temp, by = c("region", "t"))
+  ts_onset <- ALL_anom %>% 
+    filter(t >= event_sub$date_start,
+           t <= event_sub$date_peak,
+           region == event_sub$region) %>% 
+    left_join(ts_temp, by = c("region", "t"))
+  ts_decline <- ALL_anom %>% 
+    filter(t >= event_sub$date_peak,
+           t <= event_sub$date_end,
+           region == event_sub$region) %>% 
+    left_join(ts_temp, by = c("region", "t"))
+  
+  # Run the correlations
+  ts_full_cor <- cor_multi(ts_full)
+  ts_onset_cor <- cor_multi(ts_onset)
+  ts_decline_cor <- cor_multi(ts_decline)
+  
+  # COmbine and finish
+  ts_cor <- rbind(ts_full_cor, ts_onset_cor, ts_decline_cor) %>% 
+    mutate(ts = rep(c("full", "onset", "decline"), each = 15))
+}
+
+
 # Build data packets ------------------------------------------------------
 
 # testers...
