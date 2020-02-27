@@ -25,20 +25,73 @@ This vignette will walk through the thinking and the process for how to link phy
 source("code/functions.R")
 ```
 
-
 ## Correlations
 
 Right, so we are just going to jump straight into it. We know when the MHWs occurred, and our physical data are prepped, so what we need to do is run correlations between SST from the start to peak + peak to end of each event and the full suite of variables. This will show us for each event which values correlated the best for the onset AND decline of the events. We'll also run correlations on the full time series.
 
-```{r MHW-var-cor}
+```{r MHW-var-cor, eval=FALSE}
+# Extract just the event info
 GLORYS_MHW_event_index <- GLORYS_MHW_event %>% 
   select(event_no, region) %>% 
+  ungroup() %>% 
   mutate(row_index = 1:n())
 
-ALL_cor <- plyr::ddply(GLORYS_MHW_event_index, 
-                       .variables = c("row_index"), .fun = cor_all,
-                       event_num = "event_no", event_region = "region")
+# Run all the stats
+ALL_cor <- plyr::ddply(GLORYS_MHW_event_index, .parallel = T,
+                       .variables = c("row_index"), .fun = cor_all) %>% 
+  left_join(GLORYS_MHW_event_index, by = "row_index") %>% 
+  select(region, event_no, ts, var, n, r, rmse) %>% 
+  arrange(region, event_no)
 
+# Save
+saveRDS(ALL_cor, "data/ALL_cor.Rda")
+```
+
+Seeing as how we're just running correlations at the moment (I snuck RMSE into the above calcs as well) everything runs pretty quickly. With the method sorted for now we need to have a look at the results. What we have at the moment is a long dataframe containing the correlations of different variables with the temperature anomaly. It must be pointed out that these are for the same day, there is no time lag introduced, which may be important. Below we are going to visualise the range of correlations for each variable to see how much each distribution is skewed. This skewness could probably be quantified in a meaningful way... but let's look at the data first.
+
+```{r cor-visuals}
+# Load data
+ALL_cor <- readRDS("data/ALL_cor.Rda")
+
+# Histogram grid of variable by time series part
+ggplot(filter(ALL_cor, var != "temp"), aes(x = r)) +
+  geom_histogram(bins = 10) +
+  facet_grid(ts ~ var)
+
+# Stacked histogram
+ggplot(filter(ALL_cor, var != "temp"), aes(x = r)) +
+  geom_histogram(aes(fill = region), bins = 10) +
+  facet_grid(ts ~ var)
+
+# Dogded histogram
+ggplot(filter(ALL_cor, var != "temp"), aes(x = r)) +
+  geom_histogram(aes(fill = region), bins = 5, position = "dodge") +
+  facet_grid(ts ~ var)
+```
+
+Wow! What a surprise. There are some really clear patterns coming through in the data. In particular SSS seems to be strongly related to the onset of MHWs. There are a lot of nuances in these data and so I think this is actually an example of where a Shiny app is useful to intergoate the data.
+
+```{r}
+# gm 32
+# Get the info for the focus event
+event_sub <- GLORYS_MHW_event %>% 
+  filter(event_no == 32,
+         region == "gm")
+  
+# Subset the time series for the onset and decline portions
+ts_temp <- ALL_anom %>% 
+  filter(t >= event_sub$date_start,
+         t <= event_sub$date_end,
+         region == event_sub$region, 
+         var == "temp") %>% 
+    dplyr::rename(temp_anom = anom) %>% 
+    select(region, t, temp_anom)
+ts_full <- ALL_anom %>% 
+  filter(t >= event_sub$date_start,
+         t <= event_sub$date_end,
+         region == event_sub$region) %>% 
+  left_join(ts_temp, by = c("region", "t")) %>% 
+  filter(var == "sss")
 ```
 
 

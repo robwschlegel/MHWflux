@@ -255,27 +255,36 @@ load_ERA5_region <- function(file_name){
 
 # Correlation functions ---------------------------------------------------
 
+# Calculate RMSE
+rmse <- function(error){
+  sqrt(mean(error^2))
+}
+
 # Run multiple ocrrelations on a dataframe
+# NB: The calculation of RMSE between variables of different scales is incorrect to do
+# It has been left in here as it will likely be used for something else at a later stage
 cor_multi <- function(ts_data){
   res <- ts_data %>% 
     group_by(var) %>% 
     select(var, anom, temp_anom) %>% 
     nest() %>% 
-    mutate(r = map(data, ~cor(.$temp_anom, .$anom))) %>% 
+    mutate(r = map(data, ~cor(.$temp_anom, .$anom)),
+           rmse = map(data, ~rmse(error = .$temp_anom - .$anom))) %>% 
     dplyr::select(-data) %>%
-    unnest(col = r) %>% 
+    unnest(cols = c(r, rmse)) %>% 
     ungroup() %>% 
     mutate(r = round(r, 2),
+           rmse = round(rmse, 2),
            n = nrow(ts_data)/length(unique(ts_data$var))) %>% 
     arrange(-r)
 }
 
 # Subset data based on events and regions and run all correlations
-cor_all <- function(event_num, event_region){
+cor_all <- function(df){
   # Get the info for the focus event
   event_sub <- GLORYS_MHW_event %>% 
-    filter(event_no == event_num,
-           region == event_region)
+    filter(event_no == df$event_no[1],
+           region == df$region[1])
   
   # Subset the time series for the onset and decline portions
   ts_temp <- ALL_anom %>% 
@@ -306,7 +315,7 @@ cor_all <- function(event_num, event_region){
   ts_onset_cor <- cor_multi(ts_onset)
   ts_decline_cor <- cor_multi(ts_decline)
   
-  # COmbine and finish
+  # Combine and finish
   ts_cor <- rbind(ts_full_cor, ts_onset_cor, ts_decline_cor) %>% 
     mutate(ts = rep(c("full", "onset", "decline"), each = 15))
 }
