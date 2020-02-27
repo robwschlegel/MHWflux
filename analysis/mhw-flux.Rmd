@@ -63,13 +63,19 @@ ggplot(filter(ALL_cor, var != "temp"), aes(x = r)) +
   geom_histogram(aes(fill = region), bins = 10) +
   facet_grid(ts ~ var)
 
-# Dogded histogram
+# Dodged histogram
 ggplot(filter(ALL_cor, var != "temp"), aes(x = r)) +
   geom_histogram(aes(fill = region), bins = 5, position = "dodge") +
   facet_grid(ts ~ var)
 ```
 
-Wow! What a surprise. There are some really clear patterns coming through in the data. In particular SSS seems to be strongly related to the onset of MHWs. There are a lot of nuances in these data and so I think this is actually an example of where a Shiny app is useful to intergoate the data.
+Wow! What a surprise. There are some really clear patterns coming through in the data. In particular SSS seems to be strongly related to the onset of MHWs. There are a lot of nuances in these data and so I think this is actually an example of where a Shiny app is useful to interrogate the data.
+
+```{r shiny-histo}
+source("shiny/app.R")
+```
+
+Below is a chunk of code I've just thrown up to look at specific events with the naked eye.s
 
 ```{r}
 # gm 32
@@ -93,7 +99,6 @@ ts_full <- ALL_anom %>%
   left_join(ts_temp, by = c("region", "t")) %>% 
   filter(var == "sss")
 ```
-
 
 ## Notes
 
