@@ -1,5 +1,5 @@
 ---
-title: "Heat flux K-means"
+title: "Clustering and other dimension reduction techniques"
 author: "Robert Schlegel"
 date: "2020-02-25"
 output: workflowr::wflow_html
@@ -18,6 +18,68 @@ knitr::opts_chunk$set(fig.width = 8, fig.align = 'center',
 ## Introduction
 
 The idea laid out in this vignette comes from this publication: https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2018EA000519 . The idea basically is that by taking the mean of the environmental variables during the MHW in a region we are able to create something useful for multivariate analysis. And according to the publication above this works well with environmental variables and K-means clustering to determine primary flavours of the same phenomenon. So my thinking here (actually Young-oh Kwon's thinking) is that we can do this for MHWs. The anticipated outcome is that we will see groups of MHWs that are clearly due to certain drivers over others. The interesting part will come from seeing if these different flavours of MHWs share some other commonality, like region or season of occurrence.
+
+```{r startup}
+# All of the libraries and objects used in the project
+# Note that this also loads the data we will be using in this vignette
+source("code/functions.R")
+```
+
+## Mean values
+
+Before we can run K-means on the mean states during the MHWs, we need to create the mean states themselves. To do this we will take the `ALL_anom` dataset from the previous vignette and mean those anomaly time series down into single values. We will do this for the full time series', as well as for the onset and decline portions.
+
+```{r mean-states, eval=FALSE}
+# Create the mean values per event
+ALL_mean <- ALL_anom %>% 
+  left_join(GLORYS_MHW_clim[c("region", "doy", "t", "event_no")], 
+            by = c("region", "doy", "t")) %>% 
+  na.omit() %>% 
+  select(-t, -doy) %>% 
+  group_by(region, event_no, var) %>% 
+  summarise_all(mean) %>% 
+  ungroup()
+saveRDS(ALL_mean, "data/ALL_mean.Rda")
+
+# Create a wide version for only anomaly values
+ALL_mean_wide <- ALL_mean %>% 
+  select(-val, -seas, -thresh) %>% 
+  pivot_wider(names_from = var, values_from = anom)
+saveRDS(ALL_mean_wide, "data/ALL_mean_wide.Rda")
+```
+
+## Clustering
+
+With a nice wide dataframe of anomalies it is now a simple matter of passing `ALL_mean_wise` to `kmeans()` and we're done with it. But not really. We first need to know what the appropriate number of clusters to use would be. It would be nice if it were six because this matches the number of regions in the study, but let's let the data take the lead here. Below is the code we use to iterate through the possible results and we end with an elbow plot showing us where the limit of positive returns on model accuracy is. I took this particular code from: https://www.guru99.com/r-k-means-clustering.html.
+
+```{r K-elbow}
+# Load the wide data
+ALL_mean_wide <- readRDS("data/ALL_mean_wide.Rda")
+
+# Then scale the data to a 0 mean 1 SD scale
+ALL_scale <- ALL_mean_wide %>% 
+  mutate_if(.predicate = is.double, .funs = scale)
+
+# Base function
+kmean_withinss <- function(k) {
+    cluster <- kmeans(ALL_scale[,-c(1:2)], k)
+    return(cluster$tot.withinss)
+}
+
+# sapply() it
+wss <- sapply(2:50, kmean_withinss)
+
+# Create a dataframe for plotting
+elbow <- data.frame(2:50, wss)
+
+# Plot
+ggplot(elbow, aes(x = X2.50, y = wss)) +
+    geom_point() +
+    geom_line()
+```
+
+Where exactly in the above elbow one should focus on is open to some interpretation. Does one take it right at where the curve clearly starts, or one or two steps in? I am going to take it right at the curve as I want to avoid overfitting the model as much as possible.
+
 
 ## References
 

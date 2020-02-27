@@ -75,7 +75,7 @@ Wow! What a surprise. There are some really clear patterns coming through in the
 source("shiny/app.R")
 ```
 
-Below is a chunk of code I've just thrown up to look at specific events with the naked eye.s
+Below is a chunk of code I've just thrown up to look at specific events with the naked eye. I still need to create a convenience function that can pull out a chosen event and plot the variables as a scatterplot and time series so it is easy to see what exactly the direction of the correlations means.
 
 ```{r}
 # gm 32
