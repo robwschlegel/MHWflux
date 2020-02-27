@@ -9,10 +9,11 @@
 # dir("analysis", pattern = ".Rmd", full.names = T)
 
 # Run this to re-compile the entire project
-# system.time(
-# workflowr::wflow_publish(files = c("analysis/index.Rmd", "analysis/data-prep.Rmd"),
-#                          message = "Re-publish entire site.")
-# ) # 70 seconds
+system.time(
+workflowr::wflow_publish(files = c("analysis/index.Rmd", "analysis/data-prep.Rmd",
+                                   "analysis/mhw-flux.Rmd", "analysis/k-means-flux.Rmd"),
+                         message = "Re-publish entire site.")
+) # 70 seconds
 
 
 # Startup -----------------------------------------------------------------
