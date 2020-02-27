@@ -6,7 +6,7 @@ output: workflowr::wflow_html
 editor_options:
   chunk_output_type: console
 csl: FMars.csl
-bibliography: MHWNWA.bib
+bibliography: MHWflux.bib
 ---
 
 ```{r global_options, include = FALSE}

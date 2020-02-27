@@ -6,7 +6,7 @@ output: workflowr::wflow_html
 editor_options:
   chunk_output_type: console
 csl: FMars.csl
-bibliography: MHWNWA.bib
+bibliography: MHWflux.bib
 ---
 
 ```{r global_options, include = FALSE}
@@ -125,7 +125,7 @@ saveRDS(GLORYS_all_ts, "data/GLORYS_all_ts.Rda")
 
 The code for the ERA5 data. NB: The ERA5 data are on an hourly 0.25x0.25 spatiotemporal grid. This loading process constrains them to a daily 0.25x0.25 grid.
 
-```{r}
+```{r ERA5-prep, eval=FALSE}
 # See the code/workflow script for the code used for ERA5 data prep
 # There is too much code to run from an RMarkdown document
 ```
@@ -157,7 +157,7 @@ saveRDS(GLORYS_region_MHW, "data/GLORYS_region_MHW.Rda")
 
 The analyses to come are going to be performed on anomaly values, not the original time series. In order to calculate the anomalies we are first going to need the climatologies for each variable. We will use the Hobday definition of climatology creation and then subtract the expected climatology from the observed values. We are again using the 1993-01-01 to 2018-12-25 base period for these calculations to ensure consistency throughout the project.
 
-```{r clims}
+```{r clims, eval=FALSE}
 # Load the data
 GLORYS_all_ts <- readRDS("data/GLORYS_all_ts.Rda")
 ERA5_all_ts <- readRDS("data/ERA5_all_ts.Rda")
