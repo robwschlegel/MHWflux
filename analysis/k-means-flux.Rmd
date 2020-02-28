@@ -112,16 +112,52 @@ ggplot(data = k_res_long, aes(x = var, y = as.numeric(cluster), fill = val)) +
 
 So that's not very useful. The scale of the variables are rather different so I think we are going to need to go for scatterplots with ellipses showing the clustering. This may also be a useful application of a shiny app so that one may quickly go through all of the different combinations of Y vs X axes.
 
+```{r K-scatter}
+# Extract cluster info
+ALL_mean_wide <- ALL_mean_wide %>% 
+  mutate(cluster = k_res$cluster) 
+
+# A scatterplot showing the assigned clusters
+ggplot(data = ALL_mean_wide, aes(x = t2m, y = sss)) +
+  geom_smooth(method = "lm") +
+  geom_point(aes(colour = as.character(cluster), shape = region)) +
+  ggforce::geom_mark_ellipse(aes(group = cluster, colour = as.character(cluster)))
+```
+
+In order to efficiently investigate all of these relationships these data should be fed into the shiny app. Regardless, after looking at this for a little bit it appears that there is no clear relationship between the clusters and the regions of occurrence of the MHWs. In fact, there appears to be very little clustering happening at all. I'm not sure how it is that the K-means results claim to explain 90% of the variance between groups when there appears to be no real difference between clusters. I think I need to have more of a think about how to reduce the dimensionality of these data and what exactly this k-means clustering method is doing/saying.
+
 ## NMDS
 
 Another option open to us is the use of non-metric muldimensional scaling (NMDS) to reduce the dimensionality in the data before performing a clustering. Thinking out loud now though I don't think this is really necessary as the K-means algorithm above isn't being pushed too much. But I've got the code just lying around so why not just pop it in their and see how it looks.
 
-```{r NMDS}
-all_anom_MDS <- metaMDS(vegdist(decostand(ALL_mean_wide[,-c(1:2)], method = "standardize"),
-                                    method = "euclidean"), try = 100)
+```{r NMDS, message=FALSE}
+# The code for an NMDS analysis
+ALL_mean_MDS <- metaMDS(vegdist(decostand(ALL_mean_wide[,-c(1:2)], method = "standardize"),
+                                method = "euclidean"), try = 100)
 
+# Fit environmental variables
+ord_fit <- envfit(ALL_mean_MDS ~ region, data = ALL_mean_wide[,1:2])
+ord_fit_df <- as.data.frame(ord_fit$factors$centroids) %>% 
+  mutate(region = str_remove(row.names(.), "region"))
+
+# Prep for plotting
+mds_df <- data.frame(ALL_mean_MDS$points, ALL_mean_wide)
+
+# The visual
+ggplot(data = mds_df, aes(x = MDS1, y = MDS2)) +
+  geom_point(aes(colour = region)) +
+  geom_segment(data = ord_fit_df, aes(x = 0, y = 0, xend = NMDS1, yend = NMDS2),
+               arrow = arrow(angle = 40, length = unit(0.2, "cm"), type = "open"), 
+               alpha = 1, colour = "black", size = 0.5)  +
+  geom_text(data = ord_fit_df, aes(label = region, x = NMDS1, y = NMDS2), size = 8) +
+  theme_grey() +
+  theme(strip.background = element_rect(fill = NA),
+        panel.border = element_rect(fill = NA, colour = "black", size = 1),
+        axis.text = element_text(size = 12, colour = "black"),
+        axis.ticks = element_line(colour = "black"))
 ```
 
+Meh. The analysis works but it shows that there is little difference between the regions. With the exception of the Soctian Shelf being a bit different than the Mid-Atlantic Bight. We could already see in the correlation results that the Scotial Shelf was a bit different, so these underwhelming results are at least consistent with the story thus far.
 
 ## References
 
