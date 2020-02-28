@@ -46,6 +46,8 @@ saveRDS(GLORYS_all_ts, "data/GLORYS_all_ts.Rda")
 ## One must restart R after each go... dumb
 ## Attempting to run them in serial
 
+## Also need precipitation
+
 ## Long wave radiation
 # "msnlwrf"
 print(paste0("Began loading msnlwrf at ", Sys.time()))

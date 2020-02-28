@@ -220,8 +220,8 @@ load_all_GLORYS_region <- function(file_names){
 # Function for loading a single ERA 5 NetCDF file
 # The ERA5 data are saved as annual single variables
 # testers...
-# file_name <- "../../oliver/data/ERA/ERA5/T2M/ERA5_T2M_1993.nc"
-# ncdump::NetCDF(file_name)
+# file_name <- "../../oliver/data/ERA/ERA5/PRCP/ERA5_PRCP_1979.nc"
+# ncdump::NetCDF(file_name)$variable[1:6]
 load_ERA5_region <- function(file_name){
   res <- tidync(file_name) %>%
     hyper_filter(latitude = dplyr::between(latitude, min(NWA_coords$lat), max(NWA_coords$lat)),

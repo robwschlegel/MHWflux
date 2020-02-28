@@ -69,19 +69,21 @@ ggplot(filter(ALL_cor, var != "temp"), aes(x = r)) +
   facet_grid(ts ~ var)
 ```
 
+We also want to filter by p-value to highlight the strong correlations.
+
 Wow! What a surprise. There are some really clear patterns coming through in the data. In particular SSS seems to be strongly related to the onset of MHWs. There are a lot of nuances in these data and so I think this is actually an example of where a Shiny app is useful to interrogate the data.
 
 ```{r shiny-histo}
-source("shiny/app.R")
+# source("shiny/app.R")
 ```
 
 Below is a chunk of code I've just thrown up to look at specific events with the naked eye. I still need to create a convenience function that can pull out a chosen event and plot the variables as a scatterplot and time series so it is easy to see what exactly the direction of the correlations means.
 
-```{r}
+```{r ts-explore, eval=FALSE}
 # gm 32
 # Get the info for the focus event
 event_sub <- GLORYS_MHW_event %>% 
-  filter(event_no == 32,
+  filter(event_no == 15,
          region == "gm")
   
 # Subset the time series for the onset and decline portions
@@ -96,8 +98,23 @@ ts_full <- ALL_anom %>%
   filter(t >= event_sub$date_start,
          t <= event_sub$date_end,
          region == event_sub$region) %>% 
-  left_join(ts_temp, by = c("region", "t")) %>% 
-  filter(var == "sss")
+  left_join(ts_temp, by = c("region", "t"))# %>% 
+  # filter(var == "temp")
+
+# Time series plot
+ggplot(data = filter(ts_full, var %in% c("msshf", "temp")), aes(x = t, y = anom)) +
+  geom_line(aes(colour = var))
+
+# Wide test data
+ts_wide <- ts_full %>% 
+  dplyr::select(-val, -seas, -thresh, -temp_anom) %>% 
+  pivot_wider(names_from = var, values_from = anom) %>% 
+  filter(t >= event_sub$date_peak)
+
+# Scatterplot
+plotly::ggplotly(ggplot(data = ts_wide, aes(x = msshf, y = temp)) +
+                   geom_smooth(method = "lm") +
+                   geom_point(aes(colour = t)))
 ```
 
 ## Notes

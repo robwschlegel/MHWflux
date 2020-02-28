@@ -15,6 +15,9 @@ knitr::opts_chunk$set(fig.width = 8, fig.align = 'center',
                       eval = TRUE, tidy = FALSE)
 ```
 
+<!-- Look at the NOAA SST instead of GLORYS -->
+<!-- Compare the GORYS and OISST MHW results -->
+
 ## Introduction
 
 Much of the code in this vignette is taken entirely or partially from the [study area prep](https://robwschlegel.github.io/MHWNWA/polygon-prep.html), the [MHW prep](https://robwschlegel.github.io/MHWNWA/sst-prep.html), and the [gridded data prep](https://robwschlegel.github.io/MHWNWA/var-prep.html) vignettes from the drivers of MHWs in the NW Atlantic [project](https://robwschlegel.github.io/MHWNWA/index.html). Because this process has already been established we are going to put it all together in this one vignette in a more streamlined manner.
@@ -178,6 +181,10 @@ ALL_anom <- ALL_ts %>%
 # Save
 saveRDS(ALL_anom, "data/ALL_anom.Rda")
 ```
+
+We also need to create cummulative heatflux terms. This is done by taking the first day during the MHW and adding them to each other as we go along. This daily cumm product should then be divided by the MLD on that day. This aroximates the air-sea flux term. We also need water density and secific heat constant. Q/(rho x Cp x hmld). rho  1042, Cp ~= 4000. And then these daily air-sea flux values are added together each day to create the cumm flux time series. This is done for Qnet, not the individual terms
+
+The movement terms arent very useful and may not be worth including s they dont really show advection SO rather one can say that the parts of the heating that arent exlained by anything else could be attributed to advection through the rocess of elimination.
 
 And that's all there is to it. In the next vignette we will take the periods of time over whiche MHWs occurred per region and pair those up with the GLORYS and ERA5 data. This will be used to investigate which drivers are best related to the onset and decline of MHWs.
 
