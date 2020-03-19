@@ -255,6 +255,9 @@ load_ERA5_region <- function(file_name){
 
 # Correlation functions ---------------------------------------------------
 
+## Consider looking into the functions from this package:
+# https://easystats.github.io/correlation/
+
 # Calculate RMSE
 rmse <- function(error){
   sqrt(mean(error^2))
