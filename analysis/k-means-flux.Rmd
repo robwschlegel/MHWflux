@@ -51,7 +51,7 @@ saveRDS(ALL_mean_wide, "data/ALL_mean_wide.Rda")
 
 ## Clustering
 
-With a nice wide dataframe of anomalies it is now a simple matter of passing `ALL_mean_wise` to `kmeans()` and we're done with it. But not really. We first need to know what the appropriate number of clusters to use would be. It would be nice if it were six because this matches the number of regions in the study, but let's let the data take the lead here. Below is the code we use to iterate through the possible results and we end with an elbow plot showing us where the limit of positive returns on model accuracy is. I took this particular code from: https://www.guru99.com/r-k-means-clustering.html.
+With a nice wide dataframe of anomalies there is not much more to do than pass `ALL_mean_wise` to `kmeans()`. First we need to know what the appropriate number of clusters to use would be. It would be nice if it were six because this matches the number of regions in the study, but let's let the data take the lead here. Below is the code we use to iterate through the possible results and we end with an elbow plot showing us where the limit of positive returns on model accuracy is. I took this particular code from: https://www.guru99.com/r-k-means-clustering.html.
 
 ```{r K-elbow}
 # Load the wide data
@@ -128,7 +128,7 @@ In order to efficiently investigate all of these relationships these data should
 
 ## NMDS
 
-Another option open to us is the use of non-metric muldimensional scaling (NMDS) to reduce the dimensionality in the data before performing a clustering. Thinking out loud now though I don't think this is really necessary as the K-means algorithm above isn't being pushed too much. But I've got the code just lying around so why not just pop it in their and see how it looks.
+Another option open to us is the use of non-metric muldimensional scaling (NMDS) to reduce the dimensionality in the data before performing a clustering. Thinking out loud now though I don't think this is really necessary as the K-means algorithm above isn't being pushed too much. But I've got the code just lying around so why not just pop it in there and see how it looks.
 
 ```{r NMDS, message=FALSE}
 # The code for an NMDS analysis
@@ -157,7 +157,7 @@ ggplot(data = mds_df, aes(x = MDS1, y = MDS2)) +
         axis.ticks = element_line(colour = "black"))
 ```
 
-Meh. The analysis works but it shows that there is little difference between the regions. With the exception of the Soctian Shelf being a bit different than the Mid-Atlantic Bight. We could already see in the correlation results that the Scotial Shelf was a bit different, so these underwhelming results are at least consistent with the story thus far.
+Meh. The analysis works but it shows that there is little difference between the regions. With the exception of the Soctian Shelf being a bit different than the Mid-Atlantic Bight. We could already see in the correlation results that the Scotian Shelf was a bit different, so these underwhelming results are at least consistent with the story thus far.
 
 ## References
 
