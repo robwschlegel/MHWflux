@@ -102,22 +102,33 @@ ts_full <- ALL_anom %>%
   # filter(var == "temp")
 
 # Time series plot
-ggplot(data = filter(ts_full, var %in% c("msshf", "temp")), aes(x = t, y = anom)) +
-  geom_line(aes(colour = var))
+# ggplot(data = filter(ts_full, var %in% c("msshf", "temp")), aes(x = t, y = anom)) +
+#   geom_line(aes(colour = var))
 
 # Wide test data
 ts_wide <- ts_full %>% 
   dplyr::select(-val, -seas, -thresh, -temp_anom) %>% 
   pivot_wider(names_from = var, values_from = anom) %>% 
   filter(t >= event_sub$date_peak)
+  # filter(t <= event_sub$date_peak)
 
 # Scatterplot
-plotly::ggplotly(ggplot(data = ts_wide, aes(x = msshf, y = temp)) +
+plotly::ggplotly(ggplot(data = ts_wide, aes(x = sss, y = temp)) +
                    geom_smooth(method = "lm") +
                    geom_point(aes(colour = t)))
 ```
 
 ## Notes
+
+The deepening of the MLD with MHW onset may be due to wind mixing into the deeper warmer water during winter.
+
+Look into the relationship between MSLP and MHW onset. It is odd.
+
+Categorise the variables that have a story and those that don't. Explain the regional/seasonal structure for variables with a story. This then provides a means to explain the story behind what is driving these events.
+
+Create a table explaining each variable. What the signals are and do they show regional/seasonal patterns.
+
+Calculate the cumulative Qnet heat-flux terms, as well as cumulative for each individual term. Also simply cumulative Qnet.
 
 ### NWA 2012
 
