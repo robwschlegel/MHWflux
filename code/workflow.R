@@ -86,7 +86,7 @@ print(paste0("Began loading u10 at ", Sys.time()))
 ERA5_u_files <- dir("../../oliver/data/ERA/ERA5/U10", full.names = T, pattern = "ERA5")[15:40]
 ERA5_u_ts <- plyr::ldply(ERA5_u_files, load_ERA5_region, .parallel = F, .progress = "text")
 ERA5_u_ts$u10 <- round(ERA5_u_ts$u10, 6)
-# saveRDS(ERA5_u_ts, "data/ERA5_u_ts.Rda")
+saveRDS(ERA5_u_ts, "data/ERA5_u_ts.Rda")
 
 ## Surface winds V component
 # "v10"

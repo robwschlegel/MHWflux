@@ -135,7 +135,9 @@ The code for the ERA5 data. NB: The ERA5 data are on an hourly 0.25x0.25 spatiot
 
 ## MHWs per region
 
-We will be using the SST value from GLORYS for calculating the MHWs and will use the standard Hobday definition with a base period of 1993-01-01 to 2018-12-25. We are using an eneven length year as the data do not quite extend to the end of December. It was decided that the increased accuracy of the climatology from the 2018 year outweighed the negative consideration of having a clim period that excludes a few days of winter.
+We will be using the SST value from GLORYS for calculating the MHWs and will use the standard Hobday definition with a base period of 1993-01-01 to 2018-12-25. We are using an uneven length year as the data do not quite extend to the end of December. It was decided that the increased accuracy of the climatology from the 2018 year outweighed the negative consideration of having a clim period that excludes a few days of winter.
+
+Ke pointed out however that it may be better to use the NOAA OISST data. The reasoning being that because we are not fully closing the heat budget with GLORYS, there is no particular benefit to using the SST data from that modelled ensemble product. Rather it would be better to use the remotely observed NOAA OISST product as this is a more direct measure of the surface temperature of the ocean.
 
 ```{r MHW-calc, eval=FALSE}
 # Load the data
@@ -154,6 +156,9 @@ GLORYS_region_MHW <- GLORYS_all_ts %>%
 
 # Save
 saveRDS(GLORYS_region_MHW, "data/GLORYS_region_MHW.Rda")
+
+# The MHW calculations from the NOAA OISST data may be found here:
+OISST_region_MHW <- readRDS("../MHWNWA/data/OISST_region_MHW.Rda")
 ```
 
 ## Clims + anoms per variable
@@ -182,11 +187,18 @@ ALL_anom <- ALL_ts %>%
 saveRDS(ALL_anom, "data/ALL_anom.Rda")
 ```
 
-We also need to create cummulative heatflux terms. This is done by taking the first day during the MHW and adding them to each other as we go along. This daily cumm product should then be divided by the MLD on that day. This aproximates the air-sea flux term. We also need water density and secific heat constant. Q/(rho x Cp x hmld). rho = 1042, Cp ~= 4000. And then these daily air-sea flux values are added together each day to create the cumm flux time series. This is done for Qnet, not the individual terms
+## Cumulative heat flux terms
 
-The movement terms arent very useful and may not be worth including as they dont really show advection. So rather one can say that the parts of the heating that arent exlained by anything else could be attributed to advection through the process of elimination.
+We also need to create cumulative heatflux terms. This is done by taking the first day during the MHW and adding them to each other as we go along. This daily cumulative product should then be divided by the MLD on that day. This approximates the air-sea flux term. We also need water density and specific heat constant. Q/(rho x Cp x hmld). rho = 1042, Cp ~= 4000. And then these daily air-sea flux values are added together each day to create the cumulative flux time series. This is done for Qnet, not the individual terms. I think it would also be useful to calculate the rate of change of the cumulative heat-flux term.
 
-And that's all there is to it. In the next vignette we will take the periods of time over whiche MHWs occurred per region and pair those up with the GLORYS and ERA5 data. This will be used to investigate which drivers are best related to the onset and decline of MHWs.
+The movement terms aren't very useful and may not be worth including as they don't really show advection. So rather one can say that the parts of the heating that aren't explained by anything else could be attributed to advection through the process of elimination.
+
+```{r cum-heat-flux}
+# We're going to switch over to the NOA OISST data for MHWs now
+
+```
+
+And that's all there is to it. In the next vignette we will take the periods of time over which MHWs occurred per region and pair those up with the GLORYS and ERA5 data. This will be used to investigate which drivers are best related to the onset and decline of MHWs.
 
 ## References
 

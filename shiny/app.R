@@ -5,13 +5,14 @@
 
 # Libraries ---------------------------------------------------------------
 
-library(tidyverse)
+library(tidyverse) # Change this to only the required dependencies for easier publishing
 library(shiny)
+# setwd("shiny")
 
 
 # Data --------------------------------------------------------------------
 
-ALL_cor <- readRDS("../data/ALL_cor.Rda")
+ALL_cor <- readRDS("ALL_cor.Rda")
 
 
 # UI ----------------------------------------------------------------------

@@ -1,0 +1,12 @@
+name: MHWflux
+title: MHWflux
+username:
+account: robert-schlegel
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2121482
+bundleId: 3016744
+url: https://robert-schlegel.shinyapps.io/MHWflux/
+when: 1586954513.92138
+asMultiple: FALSE
+asStatic: FALSE
