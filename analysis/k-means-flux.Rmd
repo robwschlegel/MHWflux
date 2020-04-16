@@ -82,7 +82,7 @@ ggplot(elbow, aes(x = X2.30, y = wss)) +
     geom_line()
 ```
 
-Where exactly in the above elbow one should focus on is open to some interpretation. Does one take it right at where the curve clearly starts, or one or two steps in? I am going to take it right at the curve as I want to avoid overfitting the model as much as possible. This means we are going with a cluster count of 7. It seems pretty aparent to me that this is a good choice as the gains in model accuracy drammatically slow down after K = 7.
+Where exactly in the above elbow one should focus on is open to some interpretation. Does one take it right at where the curve clearly starts, or one or two steps in? I am going to take it right at the curve as I want to avoid overfitting the model as much as possible. This means we are going with a cluster count of 7. It seems pretty apparent to me that this is a good choice as the gains in model accuracy dramatically slow down after K = 7.
 
 ```{r K-res}
 # Performing K-means in R is so easy!
@@ -128,7 +128,7 @@ In order to efficiently investigate all of these relationships these data should
 
 ## NMDS
 
-Another option open to us is the use of non-metric muldimensional scaling (NMDS) to reduce the dimensionality in the data before performing a clustering. Thinking out loud now though I don't think this is really necessary as the K-means algorithm above isn't being pushed too much. But I've got the code just lying around so why not just pop it in there and see how it looks.
+Another option open to us is the use of non-metric multidimensional scaling (NMDS) to reduce the dimensionality in the data before performing a clustering. Thinking out loud now though I don't think this is really necessary as the K-means algorithm above isn't being pushed too much. But I've got the code just lying around so why not just pop it in there and see how it looks.
 
 ```{r NMDS, message=FALSE}
 # The code for an NMDS analysis
@@ -157,7 +157,7 @@ ggplot(data = mds_df, aes(x = MDS1, y = MDS2)) +
         axis.ticks = element_line(colour = "black"))
 ```
 
-Meh. The analysis works but it shows that there is little difference between the regions. With the exception of the Soctian Shelf being a bit different than the Mid-Atlantic Bight. We could already see in the correlation results that the Scotian Shelf was a bit different, so these underwhelming results are at least consistent with the story thus far.
+Meh. The analysis works but it shows that there is little difference between the regions. With the exception of the Scotian Shelf being a bit different than the Mid-Atlantic Bight. We could already see in the correlation results that the Scotian Shelf was a bit different, so these underwhelming results are at least consistent with the story thus far.
 
 ## References
 
