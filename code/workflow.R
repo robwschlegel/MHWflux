@@ -46,8 +46,6 @@ saveRDS(GLORYS_all_ts, "data/GLORYS_all_ts.Rda")
 ## One must restart R after each go... dumb
 ## Attempting to run them in serial
 
-## Also need precipitation
-
 ## Long wave radiation
 # "msnlwrf"
 print(paste0("Began loading msnlwrf at ", Sys.time()))
@@ -104,11 +102,23 @@ ERA5_mslp_ts <- plyr::ldply(ERA5_mslp_files, load_ERA5_region, .parallel = F, .p
 saveRDS(ERA5_mslp_ts, "data/ERA5_mslp_ts.Rda")
 
 ## Air temperature at 2 metres
+# "t2m
 print(paste0("Began loading t2m at ", Sys.time()))
 ERA5_t2m_files <- dir("../../oliver/data/ERA/ERA5/T2M", full.names = T, pattern = "ERA5")[15:40]
 ERA5_t2m_ts <- plyr::ldply(ERA5_t2m_files, load_ERA5_region, .parallel = T, .progress = "text")
 ERA5_t2m_ts$t2m <- round(ERA5_t2m_tst2m, 4)-272.15
 saveRDS(ERA5_t2m_ts, "data/ERA5_t2m_ts.Rda")
+
+## Precipitation
+# "tp"
+print(paste0("Began loading msnpcpf at ", Sys.time()))
+ERA5_pcp_files <- dir("../../oliver/data/ERA/ERA5/PRCP", full.names = T, pattern = "ERA5")[15:40]
+ERA5_pcp_ts <- plyr::ldply(ERA5_pcp_files, load_ERA5_region, .parallel = F, .progress = "text")
+ERA5_pcp_ts$tp <- round(ERA5_pcp_ts$tp, 8)
+saveRDS(ERA5_pcp_ts, "data/ERA5_pcp_ts.Rda")
+
+## Evaporation
+# 
 
 # Reload the data
 ERA5_lwr_ts <- readRDS("data/ERA5_lwr_ts.Rda")
@@ -119,6 +129,7 @@ ERA5_u_ts <- readRDS("data/ERA5_u_ts.Rda")
 ERA5_v_ts <- readRDS("data/ERA5_v_ts.Rda")
 ERA5_mslp_ts <- readRDS("data/ERA5_mslp_ts.Rda")
 ERA5_t2m_ts <- readRDS("data/ERA5_t2m_ts.Rda")
+ERA5_pcp_ts <- readRDS("data/ERA5_pcp_ts.Rda")
 
 # Stitch them together
 join_cols <- c("region", "t")
@@ -128,7 +139,9 @@ ERA5_all_ts <- left_join(ERA5_lwr_ts, ERA5_swr_ts, by = join_cols) %>%
   left_join(ERA5_u_ts, by = join_cols) %>%
   left_join(ERA5_v_ts, by = join_cols) %>%
   left_join(ERA5_mslp_ts, by = join_cols) %>%
-  left_join(ERA5_t2m_ts, by = join_cols)
+  left_join(ERA5_t2m_ts, by = join_cols) %>% 
+  left_join(ERA5_pcp_ts, by = join_cols) %>% 
+  mutate(qnet = msnlwrf + msnswrf + mslhf + msshf)
 saveRDS(ERA5_all_ts, "data/ERA5_all_ts.Rda")
 
 # See the "Preparing the data" vignette for the code used to create the clims and anomalies

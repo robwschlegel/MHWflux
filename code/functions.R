@@ -65,7 +65,13 @@ GLORYS_MHW_event <- GLORYS_region_MHW %>%
   select(-cats) %>%
   unnest(events) %>%
   filter(row_number() %% 2 == 0) %>%
-  unnest(events)
+  unnest(events) %>% 
+  mutate(month_peak = lubridate::month(date_peak, label = T),
+         season = case_when(month_peak %in% c("Jan", "Feb", "Mar") ~ "Winter",
+                            month_peak %in% c("Apr", "May", "Jun") ~ "Spring",
+                            month_peak %in% c("Jul", "Aug", "Sep") ~ "Summer",
+                            month_peak %in% c("Oct", "Nov", "Dec") ~ "Autumn")) %>%
+  select(-month_peak)
 
 # MHW Categories
 GLORYS_MHW_cats <- GLORYS_region_MHW %>%
@@ -74,6 +80,13 @@ GLORYS_MHW_cats <- GLORYS_region_MHW %>%
 
 # Physical variable anomalies
 ALL_anom <- readRDS("data/ALL_anom.Rda")
+ALL_anom_cum <- readRDS("data/ALL_anom_cum.Rda")
+ALL_anom_mld <- readRDS("data/ALL_anom_mld.Rda")
+
+# Combine the anomaly dataframes into one
+ALL_anom_full <- rbind(ALL_anom[,c("region", "var", "t", "anom")], 
+                       ALL_anom_cum[,c("region", "var", "t", "anom")],
+                       ALL_anom_mld[,c("region", "var", "t", "anom")])
 
 # The base land polygon
   # Created in 'MHWNWA/analysis/polygon-prep.Rmd'
@@ -132,40 +145,6 @@ bathy <- readRDS("data/NWA_bathy_lowres.Rda")
 #   filter(lon >= NWA_corners[1], lon <= NWA_corners[2],
 #          lat >= NWA_corners[3], lat <= NWA_corners[4])
 
-
-# Filter out desired eddy trajectories ------------------------------------
-
-# nc <- nc_open("data/eddy_trajectory_2.0exp_19930101_20180118.nc")
-# eddies <- tibble(lat = round(ncvar_get(nc, varid = "latitude"), 4), # observation longitude
-#                  lon = round(ncvar_get(nc, varid = "longitude"), 4), # observation latitude
-#                  # days since 1950-01-01 00:00:00 UTC:
-#                  time = as.Date(ncvar_get(nc, varid = "time"), origin = "1950-01-01"),
-#                  # magnitude of the height difference between (Obs) cm the extremum
-#                  # of SLA within the eddy andthe SLA around the contour defining the
-#                  # eddy perimeter:
-#                  amplitude = round(ncvar_get(nc, varid = "amplitude"), 3),
-#                  # flow orientation of eddies -1 is Cyclonic and 1 is Anticyclonic:
-#                  cyclonic_type = ncvar_get(nc, varid = "cyclonic_type"),
-#                  # observation sequence number, days from eddy start:
-#                  observation_number = ncvar_get(nc, varid = "observation_number"),
-#                  # flag indicating if the value is interpolated between two observations
-#                  # or not (0: observed, 1: interpolated):
-#                  observed_flag = ncvar_get(nc, varid = "observed_flag"),
-#                  # average speed of the contour defining the radius scale L:
-#                  speed_average = ncvar_get(nc, varid = "speed_average"),
-#                  # radius of a circle whose area is equal to that enclosed by the
-#                  # contour of maximum circum-average speed:
-#                  speed_radius = ncvar_get(nc, varid = "speed_radius"),
-#                  # eddy identification number:
-#                  track = ncvar_get(nc, varid = "track")) %>%
-#   mutate(lon = ifelse(lon > 180, lon - 360, lon)) %>%
-#   filter(lon >= NWA_corners[1], lon <= NWA_corners[2],
-#          lat >= NWA_corners[3], lat <= NWA_corners[4],)
-# nc_close(nc); rm(nc)
-# saveRDS(eddies, "data/eddy_tracks.Rds")
-# eddy_tracks <- readRDS("data/eddy_tracks.Rds")
-
-
 # Extract data from GLORYS NetCDF -----------------------------------------
 
 # testers...
@@ -220,8 +199,8 @@ load_all_GLORYS_region <- function(file_names){
 # Function for loading a single ERA 5 NetCDF file
 # The ERA5 data are saved as annual single variables
 # testers...
-# file_name <- "../../oliver/data/ERA/ERA5/PRCP/ERA5_PRCP_1979.nc"
-# ncdump::NetCDF(file_name)$variable[1:6]
+file_name <- "../../oliver/data/ERA/ERA5/T2MDEW/ERA5_T2MDEW_1993.nc"
+ncdump::NetCDF(file_name)$variable[1:6]
 load_ERA5_region <- function(file_name){
   res <- tidync(file_name) %>%
     hyper_filter(latitude = dplyr::between(latitude, min(NWA_coords$lat), max(NWA_coords$lat)),
@@ -290,24 +269,24 @@ cor_all <- function(df){
            region == df$region[1])
   
   # Subset the time series for the onset and decline portions
-  ts_temp <- ALL_anom %>% 
+  ts_temp <- ALL_anom_full %>% 
     filter(t >= event_sub$date_start,
            t <= event_sub$date_end,
            region == event_sub$region, 
            var == "temp") %>% 
     dplyr::rename(temp_anom = anom) %>% 
     select(region, t, temp_anom)
-  ts_full <- ALL_anom %>% 
+  ts_full <- ALL_anom_full %>% 
     filter(t >= event_sub$date_start,
            t <= event_sub$date_end,
            region == event_sub$region) %>% 
     left_join(ts_temp, by = c("region", "t"))
-  ts_onset <- ALL_anom %>% 
+  ts_onset <- ALL_anom_full %>% 
     filter(t >= event_sub$date_start,
            t <= event_sub$date_peak,
            region == event_sub$region) %>% 
     left_join(ts_temp, by = c("region", "t"))
-  ts_decline <- ALL_anom %>% 
+  ts_decline <- ALL_anom_full %>% 
     filter(t >= event_sub$date_peak,
            t <= event_sub$date_end,
            region == event_sub$region) %>% 
@@ -320,7 +299,8 @@ cor_all <- function(df){
   
   # Combine and finish
   ts_cor <- rbind(ts_full_cor, ts_onset_cor, ts_decline_cor) %>% 
-    mutate(ts = rep(c("full", "onset", "decline"), each = 15))
+    mutate(ts = rep(c("full", "onset", "decline"), 
+                    each = length(unique(ts_full$var))))
 }
 
 
