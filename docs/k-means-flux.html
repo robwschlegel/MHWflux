@@ -427,7 +427,7 @@ div.section {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2020-04-16
+<strong>Last updated:</strong> 2020-04-22
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -518,10 +518,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtreee4b95861ce2c9260a5610fb00bbaaaae312108bbtargetblanke4b9586a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/robwschlegel/MHWflux/tree/e4b95861ce2c9260a5610fb00bbaaaae312108bb" target="_blank">e4b9586</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtree2af28b49834dffdb548bc799d21133780284e609targetblank2af28b4a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/robwschlegel/MHWflux/tree/2af28b49834dffdb548bc799d21133780284e609" target="_blank">2af28b4</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtreee4b95861ce2c9260a5610fb00bbaaaae312108bbtargetblanke4b9586a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtree2af28b49834dffdb548bc799d21133780284e609targetblank2af28b4a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -530,25 +530,6 @@ Great! You are using Git for version control. Tracking code development and conn
 Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
-
-Untracked files:
-    Untracked:  data/ALL_anom_cum.Rda
-    Untracked:  data/ALL_anom_mld.Rda
-    Untracked:  data/ERA5_pcp_ts.Rda
-
-Unstaged changes:
-    Deleted:    analysis/figure/mhw-flux.Rmd/cor-visuals-1.png
-    Deleted:    analysis/figure/mhw-flux.Rmd/cor-visuals-2.png
-    Deleted:    analysis/figure/mhw-flux.Rmd/cor-visuals-3.png
-    Modified:   code/functions.R
-    Modified:   code/workflow.R
-    Modified:   data/ALL_anom.Rda
-    Modified:   data/ALL_cor.Rda
-    Modified:   data/ERA5_all_ts.Rda
-    Modified:   data/GLORYS_region_MHW.Rda
-    Modified:   shiny/ALL_cor.Rda
-    Modified:   shiny/app.R
-    Modified:   shiny/rsconnect/shinyapps.io/robert-schlegel/MHWflux.dcf
 
 </code></pre>
 <p>
@@ -587,6 +568,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/robwschlegel/MHWflux/99eda29f90adff0f3e31c25474df8597da58033a/docs/k-means-flux.html" target="_blank">99eda29</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-04-16
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -856,6 +854,43 @@ ggplot(elbow, aes(x = X2.30, y = wss)) +
     geom_point() +
     geom_line()</code></pre>
 <p><img src="figure/k-means-flux.Rmd/K-elbow-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-K-elbow-1">
+Past versions of K-elbow-1.png
+</button>
+</p>
+<div id="fig-K-elbow-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/99eda29f90adff0f3e31c25474df8597da58033a/docs/figure/k-means-flux.Rmd/K-elbow-1.png" target="_blank">99eda29</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-04-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Where exactly in the above elbow one should focus on is open to some interpretation. Does one take it right at where the curve clearly starts, or one or two steps in? I am going to take it right at the curve as I want to avoid overfitting the model as much as possible. This means we are going with a cluster count of 7. It seems pretty apparent to me that this is a good choice as the gains in model accuracy dramatically slow down after K = 7.</p>
 <pre class="r"><code># Performing K-means in R is so easy!
 k_res &lt;- kmeans(ALL_mean_wide[,-c(1:2)], 7, iter.max = 10000)
@@ -922,6 +957,43 @@ ggplot(data = k_res_long, aes(x = var, y = as.numeric(cluster), fill = val)) +
   scale_fill_gradient2() +
   coord_equal(expand = F)</code></pre>
 <p><img src="figure/k-means-flux.Rmd/K-heat-plot-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-K-heat-plot-1">
+Past versions of K-heat-plot-1.png
+</button>
+</p>
+<div id="fig-K-heat-plot-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/99eda29f90adff0f3e31c25474df8597da58033a/docs/figure/k-means-flux.Rmd/K-heat-plot-1.png" target="_blank">99eda29</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-04-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>So that’s not very useful. The scale of the variables are rather different so I think we are going to need to go for scatterplots with ellipses showing the clustering. This may also be a useful application of a shiny app so that one may quickly go through all of the different combinations of Y vs X axes.</p>
 <pre class="r"><code># Extract cluster info
 ALL_mean_wide &lt;- ALL_mean_wide %&gt;% 
@@ -933,6 +1005,43 @@ ggplot(data = ALL_mean_wide, aes(x = t2m, y = sss)) +
   geom_point(aes(colour = as.character(cluster), shape = region)) +
   ggforce::geom_mark_ellipse(aes(group = cluster, colour = as.character(cluster)))</code></pre>
 <p><img src="figure/k-means-flux.Rmd/K-scatter-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-K-scatter-1">
+Past versions of K-scatter-1.png
+</button>
+</p>
+<div id="fig-K-scatter-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/99eda29f90adff0f3e31c25474df8597da58033a/docs/figure/k-means-flux.Rmd/K-scatter-1.png" target="_blank">99eda29</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-04-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>In order to efficiently investigate all of these relationships these data should be fed into the shiny app. Regardless, after looking at this for a little bit it appears that there is no clear relationship between the clusters and the regions of occurrence of the MHWs. In fact, there appears to be very little clustering happening at all. I’m not sure how it is that the K-means results claim to explain 90% of the variance between groups when there appears to be no real difference between clusters. I think I need to have more of a think about how to reduce the dimensionality of these data and what exactly this k-means clustering method is doing/saying.</p>
 </div>
 <div id="nmds" class="section level2">
@@ -1096,6 +1205,43 @@ ggplot(data = mds_df, aes(x = MDS1, y = MDS2)) +
         axis.text = element_text(size = 12, colour = &quot;black&quot;),
         axis.ticks = element_line(colour = &quot;black&quot;))</code></pre>
 <p><img src="figure/k-means-flux.Rmd/NMDS-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-NMDS-1">
+Past versions of NMDS-1.png
+</button>
+</p>
+<div id="fig-NMDS-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/99eda29f90adff0f3e31c25474df8597da58033a/docs/figure/k-means-flux.Rmd/NMDS-1.png" target="_blank">99eda29</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-04-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Meh. The analysis works but it shows that there is little difference between the regions. With the exception of the Scotian Shelf being a bit different than the Mid-Atlantic Bight. We could already see in the correlation results that the Scotian Shelf was a bit different, so these underwhelming results are at least consistent with the story thus far.</p>
 </div>
 <div id="references" class="section level2">
@@ -1139,25 +1285,25 @@ other attached packages:
 
 loaded via a namespace (and not attached):
  [1] httr_1.4.1         jsonlite_1.6.1     viridisLite_0.3.0  foreach_1.4.4     
- [5] modelr_0.1.6       assertthat_0.2.1   ncdump_0.0.3       cellranger_1.1.0  
- [9] yaml_2.2.1         pillar_1.4.3       backports_1.1.5    glue_1.3.1        
-[13] digest_0.6.25      polyclip_1.10-0    promises_1.1.0     rvest_0.3.5       
-[17] colorspace_1.4-1   Matrix_1.2-14      htmltools_0.4.0    httpuv_1.5.2.9000 
-[21] pkgconfig_2.0.3    broom_0.5.5        haven_2.2.0        scales_1.1.0      
-[25] tweenr_1.0.1       whisker_0.4        later_1.0.0        ggforce_0.3.1.9000
-[29] git2r_0.26.1       mgcv_1.8-24        farver_2.0.3       generics_0.0.2    
-[33] withr_2.1.2        lazyeval_0.2.2     cli_2.0.2          magrittr_1.5      
-[37] crayon_1.3.4       readxl_1.3.1       evaluate_0.14      fs_1.3.1          
-[41] ncdf4_1.17         fansi_0.4.1        doParallel_1.0.15  nlme_3.1-137      
-[45] MASS_7.3-50        xml2_1.2.2         tools_3.6.3        data.table_1.12.8 
-[49] hms_0.5.3          lifecycle_0.1.0    plotly_4.9.2       munsell_0.5.0     
-[53] reprex_0.3.0       cluster_2.0.7-1    compiler_3.6.3     RNetCDF_2.1-1     
-[57] rlang_0.4.5        grid_3.6.3         iterators_1.0.10   rstudioapi_0.11   
-[61] htmlwidgets_1.5.1  labeling_0.3       rmarkdown_2.1      gtable_0.3.0      
-[65] codetools_0.2-15   DBI_1.0.0          R6_2.4.1           ncmeta_0.2.0      
-[69] knitr_1.28         workflowr_1.6.0    rprojroot_1.3-2    stringi_1.4.6     
-[73] parallel_3.6.3     Rcpp_1.0.3         vctrs_0.2.3        dbplyr_1.4.2      
-[77] tidyselect_1.0.0   xfun_0.12         </code></pre>
+ [5] modelr_0.1.6       assertthat_0.2.1   cellranger_1.1.0   yaml_2.2.1        
+ [9] pillar_1.4.3       backports_1.1.5    glue_1.3.1         digest_0.6.25     
+[13] polyclip_1.10-0    promises_1.1.0     rvest_0.3.5        colorspace_1.4-1  
+[17] Matrix_1.2-14      htmltools_0.4.0    httpuv_1.5.2.9000  pkgconfig_2.0.3   
+[21] broom_0.5.5        haven_2.2.0        scales_1.1.0       tweenr_1.0.1      
+[25] whisker_0.4        later_1.0.0        ggforce_0.3.1.9000 git2r_0.26.1      
+[29] mgcv_1.8-24        farver_2.0.3       generics_0.0.2     withr_2.1.2       
+[33] lazyeval_0.2.2     cli_2.0.2          magrittr_1.5       crayon_1.3.4      
+[37] readxl_1.3.1       evaluate_0.14      fs_1.3.1           ncdf4_1.17        
+[41] fansi_0.4.1        doParallel_1.0.15  nlme_3.1-137       MASS_7.3-50       
+[45] xml2_1.2.2         tools_3.6.3        data.table_1.12.8  hms_0.5.3         
+[49] lifecycle_0.1.0    plotly_4.9.2       munsell_0.5.0      reprex_0.3.0      
+[53] cluster_2.0.7-1    compiler_3.6.3     RNetCDF_2.1-1      rlang_0.4.5       
+[57] grid_3.6.3         iterators_1.0.10   rstudioapi_0.11    htmlwidgets_1.5.1 
+[61] labeling_0.3       rmarkdown_2.1      gtable_0.3.0       codetools_0.2-15  
+[65] DBI_1.0.0          R6_2.4.1           ncmeta_0.2.0       knitr_1.28        
+[69] workflowr_1.6.0    rprojroot_1.3-2    stringi_1.4.6      parallel_3.6.3    
+[73] Rcpp_1.0.3         vctrs_0.2.3        dbplyr_1.4.2       tidyselect_1.0.0  
+[77] xfun_0.12         </code></pre>
 </div>
 </div>
 
