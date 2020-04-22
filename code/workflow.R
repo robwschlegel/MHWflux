@@ -111,14 +111,19 @@ saveRDS(ERA5_t2m_ts, "data/ERA5_t2m_ts.Rda")
 
 ## Precipitation
 # "tp"
-print(paste0("Began loading msnpcpf at ", Sys.time()))
+print(paste0("Began loading tp at ", Sys.time()))
 ERA5_pcp_files <- dir("../../oliver/data/ERA/ERA5/PRCP", full.names = T, pattern = "ERA5")[15:40]
 ERA5_pcp_ts <- plyr::ldply(ERA5_pcp_files, load_ERA5_region, .parallel = F, .progress = "text")
 ERA5_pcp_ts$tp <- round(ERA5_pcp_ts$tp, 8)
 saveRDS(ERA5_pcp_ts, "data/ERA5_pcp_ts.Rda")
 
 ## Evaporation
-# 
+# "e"
+print(paste0("Began loading e at ", Sys.time()))
+ERA5_evp_files <- dir("../../oliver/data/ERA/ERA5/EVAP", full.names = T, pattern = "ERA5")[15:40]
+ERA5_evp_ts <- plyr::ldply(ERA5_evp_files, load_ERA5_region, .parallel = F, .progress = "text")
+ERA5_evp_ts$e <- round(ERA5_evp_ts$e, 8)
+saveRDS(ERA5_evp_ts, "data/ERA5_evp_ts.Rda")
 
 # Reload the data
 ERA5_lwr_ts <- readRDS("data/ERA5_lwr_ts.Rda")
@@ -130,6 +135,7 @@ ERA5_v_ts <- readRDS("data/ERA5_v_ts.Rda")
 ERA5_mslp_ts <- readRDS("data/ERA5_mslp_ts.Rda")
 ERA5_t2m_ts <- readRDS("data/ERA5_t2m_ts.Rda")
 ERA5_pcp_ts <- readRDS("data/ERA5_pcp_ts.Rda")
+ERA5_evp_ts <- readRDS("data/ERA5_evp_ts.Rda")
 
 # Stitch them together
 join_cols <- c("region", "t")
@@ -141,6 +147,7 @@ ERA5_all_ts <- left_join(ERA5_lwr_ts, ERA5_swr_ts, by = join_cols) %>%
   left_join(ERA5_mslp_ts, by = join_cols) %>%
   left_join(ERA5_t2m_ts, by = join_cols) %>% 
   left_join(ERA5_pcp_ts, by = join_cols) %>% 
+  left_join(ERA5_evp_ts, by = join_cols) %>% 
   mutate(qnet = msnlwrf + msnswrf + mslhf + msshf)
 saveRDS(ERA5_all_ts, "data/ERA5_all_ts.Rda")
 

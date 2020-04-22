@@ -81,6 +81,8 @@ In the shiny app it also comes out that the longer events tend not to correlate 
 
 ```{r shiny-histo}
 # source("shiny/app.R")
+# Or it is live here:
+# https://robert-schlegel.shinyapps.io/MHWflux/
 ```
 
 Below is a chunk of code I've just thrown up to look at specific events with the naked eye. I still need to create a convenience function that can pull out a chosen event and plot the variables as a scatterplot and time series so it is easy to see what exactly the direction of the correlations means.
@@ -93,14 +95,14 @@ event_sub <- GLORYS_MHW_event %>%
          region == "gm")
   
 # Subset the time series for the onset and decline portions
-ts_temp <- ALL_anom %>% 
+ts_temp <- ALL_anom_full %>% 
   filter(t >= event_sub$date_start,
          t <= event_sub$date_end,
          region == event_sub$region, 
          var == "temp") %>% 
     dplyr::rename(temp_anom = anom) %>% 
     select(region, t, temp_anom)
-ts_full <- ALL_anom %>% 
+ts_full <- ALL_anom_full %>% 
   filter(t >= event_sub$date_start,
          t <= event_sub$date_end,
          region == event_sub$region) %>% 
@@ -113,13 +115,13 @@ ts_full <- ALL_anom %>%
 
 # Wide test data
 ts_wide <- ts_full %>% 
-  dplyr::select(-val, -seas, -thresh, -temp_anom) %>% 
+  dplyr::select(-temp_anom) %>% 
   pivot_wider(names_from = var, values_from = anom) %>% 
   filter(t >= event_sub$date_peak)
   # filter(t <= event_sub$date_peak)
 
 # Scatterplot
-plotly::ggplotly(ggplot(data = ts_wide, aes(x = sss, y = temp)) +
+plotly::ggplotly(ggplot(data = ts_wide, aes(x = qnet_cum, y = temp)) +
                    geom_smooth(method = "lm") +
                    geom_point(aes(colour = t)))
 ```
@@ -128,6 +130,8 @@ plotly::ggplotly(ggplot(data = ts_wide, aes(x = sss, y = temp)) +
 
 With the correlations calculated for the onset, decline, and full extent of each MHW, we also want to know if any signals emerge from the regions and/or seasons of occurrence of these events. Is the relationship between SSS and MHW onset stronger in the winter? Stronger in certain region? I'm thinking a linear model may be the way to go on this.
 
+Having manually looked through the Shiny app it does look like there are some patterns. These will be written down in the table below.
+
 ```{r}
 
 ```
@@ -135,7 +139,7 @@ With the correlations calculated for the onset, decline, and full extent of each
 
 ## Relationships
 
-Now that all of the patterns have been pulled out by region and season, we now want to see if there are any relationships between MHWs that show strong correlations at onset with a particular variables and strong correlations at decline with other. We will look for this within regions and seasons as well. For example, do MHWs that correlate well with an increase in SSS also correlate well with a decrease in long-wave radiation during the decline of the event? I'm not sure how best to go about this in a clean manner. I'll have to think of something clever.
+Now that all of the patterns have been pulled out by region and season, we want to see if there are any relationships between MHWs that show strong correlations at onset with a particular variables and strong correlations at decline with another. We will look for this within regions and seasons as well. For example, do MHWs that correlate well with an increase in SSS also correlate well with a decrease in long-wave radiation during the decline of the event? I'm not sure how best to go about this in a clean manner. I'll have to think of something clever.
 
 One possibility could be to look at correlations between r values themselves. And to do so by region + season. It may also work to just directly correlate different values with one another. See if any patterns come out by region and/or season.
 
@@ -150,6 +154,14 @@ Categorise the variables that have a story and those that don't. Explain the reg
 Create a table explaining each variable. What the signals are and do they show regional/seasonal patterns.
 
 In the following table a more concise summary of the results is presented.
+
+```{r}
+res_table <- data.frame(var = unique(ALL_cor$var),
+                        overall = c(),
+                        season = c(),
+                        region = c())
+```
+
 
 ## Notes
 
