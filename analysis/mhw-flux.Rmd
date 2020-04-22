@@ -149,88 +149,11 @@ One possibility could be to look at correlations between r values themselves. An
 
 ## Results
 
-Categorise the variables that have a story and those that don't. Explain the regional/seasonal structure for variables with a story. This then provides a means to explain the story behind what is driving these events.
-
-Create a table explaining each variable. What the signals are and do they show regional/seasonal patterns.
-
 In the following table a more concise summary of the results is presented.
 
-```{r, echo=FALSE}
-res_table <- data.frame(variable = c("Air temperature", "Total precipitation", "Total evaporation", "Air Northerly", "Air Easterly",
-                                     "Mean sea level pressure", "Mean sea level pressure (cumulative)", "Sea surfce height", 
-                                     "Current Northerly", "Current Easterly",  "Sea surface salinity", "Mixed layer depth",
-                                     "Bottom temperature", "Latent heat flux", "Sensible heat flux", "Longwave radiation",
-                                     "Shortwave radiation", "Net heat flux"),
-                        abreviation = c("t2m", "tp", "e", "v10", "u10", "msl", "msl_cum", "ssh", "v", "u", "sss", "mld", "bottomT",
-                                        "mslhf_mld", "msshf_mld", "msnlwrf_mld", "msnswrf_mld", "qnet_mld"),
-                        onset = c("Even throughout",
-                                  "Normal with slight positive",
-                                  "Even throughout",
-                                  "Three hump",
-                                  "Slight positive",
-                                  "Strong negative with positive tail",
-                                  "Strong negative and positive",
-                                  "Even throughout",
-                                  "Normal but flat",
-                                  "Normal with positive tail"),
-                        full = c("Slight positive",
-                                 "Normal distribution",
-                                 "Normal distribution",
-                                 "Normal distribution",
-                                 "Normal distribution",
-                                 "Slight negative to normal",
-                                 "Normal but flat",
-                                 "Slight negative",
-                                 "Normal distribution",
-                                 "Normal distribution"),
-                        decline = c("Strong positive",
-                                    "Even throughout",
-                                    "Strong positive",
-                                    "Three hump",
-                                    "Slight negative",
-                                    "Even with positive tail",
-                                    "Strong positive with small negative tail",
-                                    "Positive tail",
-                                    "Positive with small negative tail",
-                                    "Slight three hump"),
-                        season = c("Autumn always strong positive for decline. Spring decline has large range.",
-                                   "Autumn and Winter slightly more positive with Spring decline usually negative.",
-                                   "Spring is the only season that isn't mostly positive for decline.",
-                                   "Large spread for all seasons with Autumn tending towards positive for onset and decline.",
-                                   "Least amount of range in Autumn onset.",
-                                   "Autumn is much more negative for onset and decline. Spring and Summer onset tend positive.",
-                                   "Full range in onset and decline for all seasons except positive Spring onset. Autumn onset tends negative.",
-                                   "Not much difference. Winter onset tends more negative.",
-                                   "Autumn decline tends positive while Summer tends negative."),
-                        region = c("Stronger positive for GSL and MAB.",
-                                   "Nothing clear. SS and NFS decline most often r ~= 0.",
-                                   "SS is the only region not mostly positive for decline.",
-                                   "Not much difference. NFS tends a bit more towards positive onset and decline than others.",
-                                   "GM tends to have the least range and be the most negative for onset and decline.",
-                                   "GM and NFS more positive for decline.",
-                                   "Full range for all. GM decline tends positive. CBS onset tends negative, NFS and SS onset tend positive.",
-                                   "GM onset and decline tend more positive.",
-                                   "NFS onset tends most positive."),
-                        overall = c("Much clearer relationship for decline than onset.",
-                                    "Meh.",
-                                    "Important for the decline of events, except often in Spring.",
-                                    "There are some signals in there, but they are not clear.",
-                                    "Slight positive onset and slight negative decline imply this vaguely shows a thermal gradient.",
-                                    "Decrease in MSLP is often important for the onset of events",
-                                    "Stronger signals than for MSLP non-cumulative.",
-                                    "The strong positive signal for decline implies a height anomaly (i.e. an eddy) leaving the area.",
-                                    "Meh.",
-                                    "Possibly something there for onset of events in NFS."),
-                        story = c(TRUE,
-                                  FALSE,
-                                  TRUE,
-                                  FALSE,
-                                  FALSE,
-                                  TRUE,
-                                  TRUE,
-                                  TRUE,
-                                  FALSE,
-                                  FALSE))
+```{r, echo=FALSE, message=FALSE}
+# NB: This table was created manually by going through the Shiny app one variable at a time.
+res_table <- read_csv("data/res_table.csv")
 knitr::kable(res_table, caption = "Most of the variables that have been correlated against the temperature anomalies during the onset, decline, and full duration of MHWs. The cumulative heat flux terms were corrected for by the daily MLD (Q/(rho x Cp x hmld)) before the correlations were calculated. Correlations were also run on the cumulative flux terms without correcting for MLD, but there was little difference so the results are not itemised here. This table shows the full names of the variables, as well as the abbreviations used in the code. The 'onset' column describes (in shorthand) what the tendency of correlations for the MHWs is during the onset of events. This is repeated for the 'full' and 'decline' columns respectively. The 'season' column briefly states the most clear/notewrothy pattern(s) when looking at how the correlations are divided up by season. The same is done in the 'region' column. The last column, 'story', gives a TRUE/FALSE if I think the variable has a story to tell. Something worth pursuing further. Particularly to see if the variables realte strongly to other variables, not just temperature. THis then could provide a framework for determining 'types' of MHWs (e.g. strong SSS change with strong latent heat flux).")
 ```
 
