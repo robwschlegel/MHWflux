@@ -13,7 +13,7 @@
 
 <meta name="date" content="2020-02-25" />
 
-<title>Heat flux K-means</title>
+<title>Clustering and other dimension reduction techniques</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -400,7 +400,7 @@ div.section {
 
 
 
-<h1 class="title toc-ignore">Heat flux K-means</h1>
+<h1 class="title toc-ignore">Clustering and other dimension reduction techniques</h1>
 <h4 class="author">Robert Schlegel</h4>
 <h4 class="date">2020-02-25</h4>
 
@@ -427,7 +427,7 @@ div.section {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2020-02-26
+<strong>Last updated:</strong> 2020-04-16
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -518,10 +518,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtree891e53a509c264f81c2ee2d56c6e0aee08256d13targetblank891e53aa"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/robwschlegel/MHWflux/tree/891e53a509c264f81c2ee2d56c6e0aee08256d13" target="_blank">891e53a</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtreee4b95861ce2c9260a5610fb00bbaaaae312108bbtargetblanke4b9586a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/robwschlegel/MHWflux/tree/e4b95861ce2c9260a5610fb00bbaaaae312108bb" target="_blank">e4b9586</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtree891e53a509c264f81c2ee2d56c6e0aee08256d13targetblank891e53aa" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtreee4b95861ce2c9260a5610fb00bbaaaae312108bbtargetblanke4b9586a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -531,9 +531,24 @@ Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
 
+Untracked files:
+    Untracked:  data/ALL_anom_cum.Rda
+    Untracked:  data/ALL_anom_mld.Rda
+    Untracked:  data/ERA5_pcp_ts.Rda
+
 Unstaged changes:
+    Deleted:    analysis/figure/mhw-flux.Rmd/cor-visuals-1.png
+    Deleted:    analysis/figure/mhw-flux.Rmd/cor-visuals-2.png
+    Deleted:    analysis/figure/mhw-flux.Rmd/cor-visuals-3.png
     Modified:   code/functions.R
     Modified:   code/workflow.R
+    Modified:   data/ALL_anom.Rda
+    Modified:   data/ALL_cor.Rda
+    Modified:   data/ERA5_all_ts.Rda
+    Modified:   data/GLORYS_region_MHW.Rda
+    Modified:   shiny/ALL_cor.Rda
+    Modified:   shiny/app.R
+    Modified:   shiny/rsconnect/shinyapps.io/robert-schlegel/MHWflux.dcf
 
 </code></pre>
 <p>
@@ -572,6 +587,142 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/e4b95861ce2c9260a5610fb00bbaaaae312108bb/analysis/k-means-flux.Rmd" target="_blank">e4b9586</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-04-16
+</td>
+<td>
+Re-built site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/d22d6a7a8cd3f3b3ef7221ab0451123f81fd9f73/analysis/k-means-flux.Rmd" target="_blank">d22d6a7</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-04-14
+</td>
+<td>
+Text edits
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/3089c7b53be56e63b900632679eb1580e8bcd198/analysis/k-means-flux.Rmd" target="_blank">3089c7b</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-02-28
+</td>
+<td>
+More visuals for the K-means and NMDS results
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/03696de6beceeb6b343a87dd26e078f36f61b49a/analysis/k-means-flux.Rmd" target="_blank">03696de</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-02-27
+</td>
+<td>
+Minor tweek
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/d97e7bb02007cffae18dcfc7b948b3cfd955c3e5/analysis/k-means-flux.Rmd" target="_blank">d97e7bb</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-02-27
+</td>
+<td>
+More work on dimension reduction
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/c31db050ad685011126d91c03b1a5951982109cf/analysis/k-means-flux.Rmd" target="_blank">c31db05</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-02-27
+</td>
+<td>
+Working on K-means analysis
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/10c69f8e81db7f409076e819181d476e9c988d99/analysis/k-means-flux.Rmd" target="_blank">10c69f8</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-02-26
+</td>
+<td>
+A few smol things
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/robwschlegel/MHWflux/50eb5a58b28dae6acf8179bf4d8246cbf02c7ca7/docs/k-means-flux.html" target="_blank">50eb5a5</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-02-26
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -650,6 +801,305 @@ Adding the foundational content to the site
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
 <p>The idea laid out in this vignette comes from this publication: <a href="https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2018EA000519" class="uri">https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2018EA000519</a> . The idea basically is that by taking the mean of the environmental variables during the MHW in a region we are able to create something useful for multivariate analysis. And according to the publication above this works well with environmental variables and K-means clustering to determine primary flavours of the same phenomenon. So my thinking here (actually Young-oh Kwon’s thinking) is that we can do this for MHWs. The anticipated outcome is that we will see groups of MHWs that are clearly due to certain drivers over others. The interesting part will come from seeing if these different flavours of MHWs share some other commonality, like region or season of occurrence.</p>
+<pre class="r"><code># All of the libraries and objects used in the project
+# Note that this also loads the data we will be using in this vignette
+source(&quot;code/functions.R&quot;)
+library(vegan) # For multivariate analyses</code></pre>
+</div>
+<div id="mean-values" class="section level2">
+<h2>Mean values</h2>
+<p>Before we can run K-means on the mean states during the MHWs, we need to create the mean states themselves. To do this we will take the <code>ALL_anom</code> dataset from the previous vignette and mean those anomaly time series down into single values. We will do this for the full time series’, as well as for the onset and decline portions.</p>
+<pre class="r"><code># Create the mean values per event
+ALL_mean &lt;- ALL_anom %&gt;% 
+  left_join(GLORYS_MHW_clim[c(&quot;region&quot;, &quot;doy&quot;, &quot;t&quot;, &quot;event_no&quot;)], 
+            by = c(&quot;region&quot;, &quot;doy&quot;, &quot;t&quot;)) %&gt;% 
+  na.omit() %&gt;% 
+  select(-t, -doy) %&gt;% 
+  group_by(region, event_no, var) %&gt;% 
+  summarise_all(mean) %&gt;% 
+  ungroup()
+saveRDS(ALL_mean, &quot;data/ALL_mean.Rda&quot;)
+
+# Create a wide version for only anomaly values
+ALL_mean_wide &lt;- ALL_mean %&gt;% 
+  select(-val, -seas, -thresh) %&gt;% 
+  pivot_wider(names_from = var, values_from = anom)
+saveRDS(ALL_mean_wide, &quot;data/ALL_mean_wide.Rda&quot;)</code></pre>
+</div>
+<div id="clustering" class="section level2">
+<h2>Clustering</h2>
+<p>With a nice wide dataframe of anomalies there is not much more to do than pass <code>ALL_mean_wise</code> to <code>kmeans()</code>. First we need to know what the appropriate number of clusters to use would be. It would be nice if it were six because this matches the number of regions in the study, but let’s let the data take the lead here. Below is the code we use to iterate through the possible results and we end with an elbow plot showing us where the limit of positive returns on model accuracy is. I took this particular code from: <a href="https://www.guru99.com/r-k-means-clustering.html" class="uri">https://www.guru99.com/r-k-means-clustering.html</a>.</p>
+<pre class="r"><code># Load the wide data
+ALL_mean_wide &lt;- readRDS(&quot;data/ALL_mean_wide.Rda&quot;)
+
+# Then scale the data to a 0 mean 1 SD scale
+  # NB: It turns out that scaling the data beforehand
+  # causes the model to perform much more poorly
+  # I&#39;m not using the dataframe below, but I&#39;ve left it in for now
+ALL_scale &lt;- ALL_mean_wide %&gt;% 
+  mutate_if(.predicate = is.double, .funs = scale)
+
+# Base function
+kmean_withinss &lt;- function(k) {
+    cluster &lt;- kmeans(ALL_mean_wide[,-c(1:2)], k)
+    return(cluster$tot.withinss)
+}
+
+# sapply() it
+wss &lt;- sapply(2:30, kmean_withinss)
+
+# Create a dataframe for plotting
+elbow &lt;- data.frame(2:30, wss)
+
+# Plot
+ggplot(elbow, aes(x = X2.30, y = wss)) +
+    geom_point() +
+    geom_line()</code></pre>
+<p><img src="figure/k-means-flux.Rmd/K-elbow-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>Where exactly in the above elbow one should focus on is open to some interpretation. Does one take it right at where the curve clearly starts, or one or two steps in? I am going to take it right at the curve as I want to avoid overfitting the model as much as possible. This means we are going with a cluster count of 7. It seems pretty apparent to me that this is a good choice as the gains in model accuracy dramatically slow down after K = 7.</p>
+<pre class="r"><code># Performing K-means in R is so easy!
+k_res &lt;- kmeans(ALL_mean_wide[,-c(1:2)], 7, iter.max = 10000)
+# k_res$betweenss/k_res$totss
+k_res</code></pre>
+<pre><code>K-means clustering with 7 clusters of sizes 45, 45, 22, 55, 14, 5, 72
+
+Cluster means:
+      bottomT        mld         msl     mslhf    msnlwrf     msnswrf
+1 0.471574741 -2.2443399  -477.68844  4.177967   5.680558  -5.0115799
+2 0.516124796 -1.3044380   257.36320  4.808300   3.764252   1.1349830
+3 0.386566719 -1.9107403   522.52090  5.550448   3.281895   1.6940040
+4 0.543045116 -0.6390683  -161.76380  2.474876   5.470377  -3.3218037
+5 0.629883474 -1.4163425 -1036.10471 -6.002791  13.733660 -12.2098929
+6 0.005459932 -0.8848696   824.85607 -3.533757 -18.419867  36.6760660
+7 0.673140077 -1.0285660    68.56557  3.510061   4.349774  -0.7638414
+       msshf        ssh        sss      t2m     temp            u        u10
+1  2.4087017 0.01405337 0.06571314 1.669855 1.600572  0.005533407 -0.8342249
+2  2.9757419 0.02166502 0.01510074 2.013063 1.754287  0.012380538 -0.6569050
+3  1.7913637 0.01314387 0.08456167 1.807464 1.602244  0.010869651 -0.6904076
+4  0.4154442 0.01917429 0.01413808 1.807151 1.708835  0.009187343 -0.3785695
+5 -2.2931055 0.02206284 0.16471180 2.100224 1.472360 -0.002747002 -0.5593309
+6 -3.0066297 0.00430838 0.05820023 1.101243 1.472727 -0.004518998 -0.3504811
+7  1.7170301 0.01789951 0.09585039 1.957934 1.769406  0.007803413 -0.6152098
+            v         v10
+1 0.016251349  0.29116593
+2 0.017520679  0.88400732
+3 0.016634591  0.94010401
+4 0.010857590  0.28184880
+5 0.002993552 -0.46579516
+6 0.005990604  0.02350157
+7 0.016718279  0.33955102
+
+Clustering vector:
+  [1] 7 1 7 6 4 1 2 2 1 7 6 5 7 3 2 7 4 2 1 4 1 1 5 3 2 7 2 7 4 7 2 2 2 1 4 1 3
+ [38] 2 1 4 3 1 7 2 7 3 2 7 2 6 1 4 1 4 3 5 4 4 7 7 4 4 1 7 7 4 7 7 2 3 3 1 2 4
+ [75] 7 7 3 7 7 1 1 5 7 7 4 2 7 5 4 1 7 2 7 4 7 7 4 2 4 4 7 4 1 4 4 7 4 1 7 1 7
+[112] 1 5 5 2 1 3 5 7 7 7 5 3 4 4 2 4 4 7 5 7 2 7 7 2 2 7 4 4 2 4 1 4 4 4 7 1 1
+[149] 7 7 4 4 7 1 2 1 1 4 3 3 7 1 4 7 7 4 4 7 4 7 7 5 7 4 7 3 4 2 7 6 1 7 2 2 1
+[186] 4 4 2 1 1 3 2 3 4 7 7 7 2 4 2 7 1 3 4 1 3 1 6 2 3 3 2 1 2 1 7 3 1 2 2 2 1
+[223] 7 2 7 7 1 1 5 7 2 4 7 7 2 5 2 2 4 4 1 4 7 1 5 7 3 7 7 4 7 7 1 7 4 4 2 2
+
+Within cluster sum of squares by cluster:
+[1]  636108.7  181580.3  158182.9  291988.0 2029562.8   51376.7  273470.3
+ (between_SS / total_SS =  91.5 %)
+
+Available components:
+
+[1] &quot;cluster&quot;      &quot;centers&quot;      &quot;totss&quot;        &quot;withinss&quot;     &quot;tot.withinss&quot;
+[6] &quot;betweenss&quot;    &quot;size&quot;         &quot;iter&quot;         &quot;ifault&quot;      </code></pre>
+<p>As we may see from the print-out above, the 7 cluster approach explains ~91% of the variance within the dataset. That’s pretty good! So let’s see what these clusters actually look like in relation to one another.</p>
+<pre class="r"><code># Cast the K-means results long
+k_res_long &lt;- k_res$centers %&gt;% 
+  data.frame() %&gt;% 
+  mutate(cluster = row.names(.)) %&gt;% 
+  pivot_longer(cols = bottomT:v10, names_to = &quot;var&quot;, values_to = &quot;val&quot;) %&gt;% 
+  filter(var != &quot;msl&quot;) %&gt;% # These values are so large they make it impossible to see anything else 
+  mutate(val = scale(val))
+
+# Create a heatmap of the values per cluster
+ggplot(data = k_res_long, aes(x = var, y = as.numeric(cluster), fill = val)) +
+  geom_tile() +
+  scale_y_continuous(breaks = seq(1, 7, by = 1)) +
+  scale_fill_gradient2() +
+  coord_equal(expand = F)</code></pre>
+<p><img src="figure/k-means-flux.Rmd/K-heat-plot-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>So that’s not very useful. The scale of the variables are rather different so I think we are going to need to go for scatterplots with ellipses showing the clustering. This may also be a useful application of a shiny app so that one may quickly go through all of the different combinations of Y vs X axes.</p>
+<pre class="r"><code># Extract cluster info
+ALL_mean_wide &lt;- ALL_mean_wide %&gt;% 
+  mutate(cluster = k_res$cluster) 
+
+# A scatterplot showing the assigned clusters
+ggplot(data = ALL_mean_wide, aes(x = t2m, y = sss)) +
+  geom_smooth(method = &quot;lm&quot;) +
+  geom_point(aes(colour = as.character(cluster), shape = region)) +
+  ggforce::geom_mark_ellipse(aes(group = cluster, colour = as.character(cluster)))</code></pre>
+<p><img src="figure/k-means-flux.Rmd/K-scatter-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>In order to efficiently investigate all of these relationships these data should be fed into the shiny app. Regardless, after looking at this for a little bit it appears that there is no clear relationship between the clusters and the regions of occurrence of the MHWs. In fact, there appears to be very little clustering happening at all. I’m not sure how it is that the K-means results claim to explain 90% of the variance between groups when there appears to be no real difference between clusters. I think I need to have more of a think about how to reduce the dimensionality of these data and what exactly this k-means clustering method is doing/saying.</p>
+</div>
+<div id="nmds" class="section level2">
+<h2>NMDS</h2>
+<p>Another option open to us is the use of non-metric multidimensional scaling (NMDS) to reduce the dimensionality in the data before performing a clustering. Thinking out loud now though I don’t think this is really necessary as the K-means algorithm above isn’t being pushed too much. But I’ve got the code just lying around so why not just pop it in there and see how it looks.</p>
+<pre class="r"><code># The code for an NMDS analysis
+ALL_mean_MDS &lt;- metaMDS(vegdist(decostand(ALL_mean_wide[,-c(1:2)], method = &quot;standardize&quot;),
+                                method = &quot;euclidean&quot;), try = 100)</code></pre>
+<pre><code>Run 0 stress 0.2132493 
+Run 1 stress 0.4176571 
+Run 2 stress 0.2132428 
+... New best solution
+... Procrustes: rmse 0.001859736  max resid 0.01875967 
+Run 3 stress 0.2132517 
+... Procrustes: rmse 0.0006015007  max resid 0.007648459 
+... Similar to previous best
+Run 4 stress 0.2132583 
+... Procrustes: rmse 0.001349996  max resid 0.01505539 
+Run 5 stress 0.2138856 
+Run 6 stress 0.2157486 
+Run 7 stress 0.2151014 
+Run 8 stress 0.2132509 
+... Procrustes: rmse 0.0005757542  max resid 0.007202895 
+... Similar to previous best
+Run 9 stress 0.2138627 
+Run 10 stress 0.213873 
+Run 11 stress 0.2194757 
+Run 12 stress 0.2132368 
+... New best solution
+... Procrustes: rmse 0.001376315  max resid 0.02063375 
+Run 13 stress 0.2132458 
+... Procrustes: rmse 0.001545518  max resid 0.02350355 
+Run 14 stress 0.2151054 
+Run 15 stress 0.2394474 
+Run 16 stress 0.2196631 
+Run 17 stress 0.2138745 
+Run 18 stress 0.2156997 
+Run 19 stress 0.2491919 
+Run 20 stress 0.215084 
+Run 21 stress 0.2214643 
+Run 22 stress 0.2157033 
+Run 23 stress 0.2213485 
+Run 24 stress 0.2150825 
+Run 25 stress 0.2138667 
+Run 26 stress 0.2138929 
+Run 27 stress 0.2132434 
+... Procrustes: rmse 0.002582142  max resid 0.03487173 
+Run 28 stress 0.21571 
+Run 29 stress 0.2138832 
+Run 30 stress 0.2157632 
+Run 31 stress 0.2213175 
+Run 32 stress 0.2138726 
+Run 33 stress 0.2151527 
+Run 34 stress 0.2150993 
+Run 35 stress 0.2150867 
+Run 36 stress 0.2132491 
+... Procrustes: rmse 0.001487244  max resid 0.02099956 
+Run 37 stress 0.21325 
+... Procrustes: rmse 0.002077323  max resid 0.02583564 
+Run 38 stress 0.2132406 
+... Procrustes: rmse 0.002489677  max resid 0.03432218 
+Run 39 stress 0.2151057 
+Run 40 stress 0.2132381 
+... Procrustes: rmse 0.0002400459  max resid 0.003355589 
+... Similar to previous best
+Run 41 stress 0.2369653 
+Run 42 stress 0.2209695 
+Run 43 stress 0.2202639 
+Run 44 stress 0.2157601 
+Run 45 stress 0.2132355 
+... New best solution
+... Procrustes: rmse 0.0004714176  max resid 0.005284649 
+... Similar to previous best
+Run 46 stress 0.221348 
+Run 47 stress 0.2376108 
+Run 48 stress 0.2215817 
+Run 49 stress 0.2132456 
+... Procrustes: rmse 0.001518405  max resid 0.02246817 
+Run 50 stress 0.2132405 
+... Procrustes: rmse 0.002363793  max resid 0.03269779 
+Run 51 stress 0.2132607 
+... Procrustes: rmse 0.0007328484  max resid 0.007237298 
+... Similar to previous best
+Run 52 stress 0.2132589 
+... Procrustes: rmse 0.00181695  max resid 0.01810557 
+Run 53 stress 0.2213675 
+Run 54 stress 0.2157101 
+Run 55 stress 0.2138703 
+Run 56 stress 0.2146074 
+Run 57 stress 0.2214572 
+Run 58 stress 0.2151144 
+Run 59 stress 0.2132473 
+... Procrustes: rmse 0.0015219  max resid 0.02207271 
+Run 60 stress 0.2342896 
+Run 61 stress 0.2132415 
+... Procrustes: rmse 0.002383193  max resid 0.03266069 
+Run 62 stress 0.2151081 
+Run 63 stress 0.2290111 
+Run 64 stress 0.2132373 
+... Procrustes: rmse 0.0004750876  max resid 0.004411598 
+... Similar to previous best
+Run 65 stress 0.2132636 
+... Procrustes: rmse 0.002381171  max resid 0.02370774 
+Run 66 stress 0.4176901 
+Run 67 stress 0.2157103 
+Run 68 stress 0.2409388 
+Run 69 stress 0.2132449 
+... Procrustes: rmse 0.001433844  max resid 0.01989819 
+Run 70 stress 0.2138676 
+Run 71 stress 0.2157298 
+Run 72 stress 0.2150971 
+Run 73 stress 0.2151096 
+Run 74 stress 0.2213797 
+Run 75 stress 0.2353764 
+Run 76 stress 0.2198894 
+Run 77 stress 0.2194868 
+Run 78 stress 0.2138875 
+Run 79 stress 0.2138892 
+Run 80 stress 0.2221134 
+Run 81 stress 0.2156991 
+Run 82 stress 0.221347 
+Run 83 stress 0.2437205 
+Run 84 stress 0.2139238 
+Run 85 stress 0.2150864 
+Run 86 stress 0.2132433 
+... Procrustes: rmse 0.001403583  max resid 0.02017026 
+Run 87 stress 0.2157055 
+Run 88 stress 0.2132415 
+... Procrustes: rmse 0.002378864  max resid 0.03279467 
+Run 89 stress 0.2140778 
+Run 90 stress 0.2138856 
+Run 91 stress 0.213889 
+Run 92 stress 0.2394837 
+Run 93 stress 0.2157035 
+Run 94 stress 0.2150795 
+Run 95 stress 0.2150863 
+Run 96 stress 0.2322319 
+Run 97 stress 0.2413702 
+Run 98 stress 0.2191436 
+Run 99 stress 0.2213802 
+Run 100 stress 0.2417051 
+*** Solution reached</code></pre>
+<pre class="r"><code># Fit environmental variables
+ord_fit &lt;- envfit(ALL_mean_MDS ~ region, data = ALL_mean_wide[,1:2])
+ord_fit_df &lt;- as.data.frame(ord_fit$factors$centroids) %&gt;% 
+  mutate(region = str_remove(row.names(.), &quot;region&quot;))
+
+# Prep for plotting
+mds_df &lt;- data.frame(ALL_mean_MDS$points, ALL_mean_wide)
+
+# The visual
+ggplot(data = mds_df, aes(x = MDS1, y = MDS2)) +
+  geom_point(aes(colour = region)) +
+  geom_segment(data = ord_fit_df, aes(x = 0, y = 0, xend = NMDS1, yend = NMDS2),
+               arrow = arrow(angle = 40, length = unit(0.2, &quot;cm&quot;), type = &quot;open&quot;), 
+               alpha = 1, colour = &quot;black&quot;, size = 0.5)  +
+  geom_text(data = ord_fit_df, aes(label = region, x = NMDS1, y = NMDS2), size = 8) +
+  theme_grey() +
+  theme(strip.background = element_rect(fill = NA),
+        panel.border = element_rect(fill = NA, colour = &quot;black&quot;, size = 1),
+        axis.text = element_text(size = 12, colour = &quot;black&quot;),
+        axis.ticks = element_line(colour = &quot;black&quot;))</code></pre>
+<p><img src="figure/k-means-flux.Rmd/NMDS-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>Meh. The analysis works but it shows that there is little difference between the regions. With the exception of the Scotian Shelf being a bit different than the Mid-Atlantic Bight. We could already see in the correlation results that the Scotian Shelf was a bit different, so these underwhelming results are at least consistent with the story thus far.</p>
+</div>
+<div id="references" class="section level2">
+<h2>References</h2>
 <div id="refs">
 
 </div>
@@ -661,7 +1111,7 @@ Adding the foundational content to the site
 </p>
 <div id="workflowr-sessioninfo" class="collapse">
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>R version 3.6.2 (2019-12-12)
+<pre><code>R version 3.6.3 (2020-02-29)
 Platform: x86_64-pc-linux-gnu (64-bit)
 Running under: Ubuntu 16.04.6 LTS
 
@@ -680,14 +1130,34 @@ locale:
 attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
+other attached packages:
+ [1] vegan_2.5-6          lattice_0.20-35      permute_0.9-5       
+ [4] tidync_0.2.3         heatwaveR_0.4.2.9001 lubridate_1.7.4     
+ [7] forcats_0.5.0        stringr_1.4.0        dplyr_0.8.4         
+[10] purrr_0.3.3          readr_1.3.1          tidyr_1.0.2         
+[13] tibble_2.1.3         ggplot2_3.2.1        tidyverse_1.3.0     
+
 loaded via a namespace (and not attached):
- [1] workflowr_1.6.0 Rcpp_1.0.3      rprojroot_1.3-2 digest_0.6.23  
- [5] later_1.0.0     R6_2.4.1        backports_1.1.5 git2r_0.26.1   
- [9] magrittr_1.5    evaluate_0.14   stringi_1.4.5   rlang_0.4.4    
-[13] fs_1.3.1        promises_1.1.0  whisker_0.4     rmarkdown_2.0  
-[17] tools_3.6.2     stringr_1.4.0   glue_1.3.1      httpuv_1.5.2   
-[21] xfun_0.12       yaml_2.2.1      compiler_3.6.2  htmltools_0.4.0
-[25] knitr_1.27     </code></pre>
+ [1] httr_1.4.1         jsonlite_1.6.1     viridisLite_0.3.0  foreach_1.4.4     
+ [5] modelr_0.1.6       assertthat_0.2.1   ncdump_0.0.3       cellranger_1.1.0  
+ [9] yaml_2.2.1         pillar_1.4.3       backports_1.1.5    glue_1.3.1        
+[13] digest_0.6.25      polyclip_1.10-0    promises_1.1.0     rvest_0.3.5       
+[17] colorspace_1.4-1   Matrix_1.2-14      htmltools_0.4.0    httpuv_1.5.2.9000 
+[21] pkgconfig_2.0.3    broom_0.5.5        haven_2.2.0        scales_1.1.0      
+[25] tweenr_1.0.1       whisker_0.4        later_1.0.0        ggforce_0.3.1.9000
+[29] git2r_0.26.1       mgcv_1.8-24        farver_2.0.3       generics_0.0.2    
+[33] withr_2.1.2        lazyeval_0.2.2     cli_2.0.2          magrittr_1.5      
+[37] crayon_1.3.4       readxl_1.3.1       evaluate_0.14      fs_1.3.1          
+[41] ncdf4_1.17         fansi_0.4.1        doParallel_1.0.15  nlme_3.1-137      
+[45] MASS_7.3-50        xml2_1.2.2         tools_3.6.3        data.table_1.12.8 
+[49] hms_0.5.3          lifecycle_0.1.0    plotly_4.9.2       munsell_0.5.0     
+[53] reprex_0.3.0       cluster_2.0.7-1    compiler_3.6.3     RNetCDF_2.1-1     
+[57] rlang_0.4.5        grid_3.6.3         iterators_1.0.10   rstudioapi_0.11   
+[61] htmlwidgets_1.5.1  labeling_0.3       rmarkdown_2.1      gtable_0.3.0      
+[65] codetools_0.2-15   DBI_1.0.0          R6_2.4.1           ncmeta_0.2.0      
+[69] knitr_1.28         workflowr_1.6.0    rprojroot_1.3-2    stringi_1.4.6     
+[73] parallel_3.6.3     Rcpp_1.0.3         vctrs_0.2.3        dbplyr_1.4.2      
+[77] tidyselect_1.0.0   xfun_0.12         </code></pre>
 </div>
 </div>
 
