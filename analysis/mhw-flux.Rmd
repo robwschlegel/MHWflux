@@ -55,7 +55,7 @@ ALL_anom_full %>%
   correlation() %>% 
   plot()
 
-event_sub <- GLORYS_MHW_event[1,]
+event_sub <- GLORYS_MHW_event[200,]
 
 # The full correlations for one event
 ALL_anom_full_wide %>% 
@@ -71,7 +71,8 @@ ALL_anom_full_wide %>%
     filter(t >= event_sub$date_start,
            t <= event_sub$date_peak,
            region == event_sub$region) %>%
-  dplyr::select(region, msnlwrf_mld, msnswrf_mld, mslhf_mld, msshf_mld, qnet_mld, temp) %>% 
+  dplyr::select(msnlwrf_mld, msnswrf_mld, mslhf_mld, msshf_mld, qnet_mld, temp) %>% 
+  # dplyr::select(msnlwrf_mld, msnswrf_mld, mslhf_mld, msshf_mld, qnet_mld, temp) %>% 
   correlation() %>% 
   plot()
 
@@ -80,7 +81,7 @@ ALL_anom_full_wide %>%
     filter(t >= event_sub$date_peak,
            t <= event_sub$date_end,
            region == event_sub$region) %>%
-  dplyr::select(region, msnlwrf_mld, msnswrf_mld, mslhf_mld, msshf_mld, qnet_mld, temp) %>% 
+  dplyr::select(msnlwrf_mld, msnswrf_mld, mslhf_mld, msshf_mld, qnet_mld, temp) %>% 
   correlation() %>% 
   plot()
 ```
@@ -158,7 +159,7 @@ ts_wide <- ts_full %>%
   # filter(t <= event_sub$date_peak)
 
 # Scatterplot
-plotly::ggplotly(ggplot(data = ts_wide, aes(x = qnet_cum, y = temp)) +
+plotly::ggplotly(ggplot(data = ts_wide, aes(x = sss, y = temp)) +
                    geom_smooth(method = "lm") +
                    geom_point(aes(colour = t)))
 ```

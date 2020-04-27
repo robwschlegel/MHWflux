@@ -25,9 +25,9 @@
 # Packages used in this script
 library(tidyverse) # Base suite of functions
 library(lubridate) # For convenient date manipulation
-library(heatwaveR, lib.loc = "../R-packages/")
+library(heatwaveR)
 # cat(paste0("heatwaveR version = ", packageDescription("heatwaveR")$Version))
-library(tidync, lib.loc = "../R-packages/")
+library(tidync)
 library(correlation)
 library(ggraph)
 
@@ -72,7 +72,8 @@ GLORYS_MHW_event <- GLORYS_region_MHW %>%
          season = case_when(month_peak %in% c("Jan", "Feb", "Mar") ~ "Winter",
                             month_peak %in% c("Apr", "May", "Jun") ~ "Spring",
                             month_peak %in% c("Jul", "Aug", "Sep") ~ "Summer",
-                            month_peak %in% c("Oct", "Nov", "Dec") ~ "Autumn")) %>%
+                            month_peak %in% c("Oct", "Nov", "Dec") ~ "Autumn"),
+         season = factor(season, levels = c("Spring", "Summer", "Autumn", "Winter"))) %>%
   select(-month_peak)
 
 # MHW Categories
@@ -269,16 +270,16 @@ cor_all <- function(df){
            region == event_sub$region)
   
   # Run the correlations
-  ts_full_cor <- correlation(ts_full) %>% 
+  ts_full_cor <- correlation(ts_full, redundant = T) %>% 
     mutate(ts = "full")
   if(nrow(ts_onset) > 2){
-    ts_onset_cor <- correlation(ts_onset) %>% 
+    ts_onset_cor <- correlation(ts_onset, redundant = T) %>% 
       mutate(ts = "onset")
   } else {
     ts_onset_cor <- ts_full_cor[0,]
   }
   if(nrow(ts_decline) > 2){
-    ts_decline_cor <- correlation(ts_decline) %>% 
+    ts_decline_cor <- correlation(ts_decline, redundant = T) %>% 
       mutate(ts = "decline")
   } else {
     ts_decline_cor <- ts_full_cor[0,]
@@ -286,13 +287,12 @@ cor_all <- function(df){
   
   # Combine and finish
   ts_cor <- rbind(ts_full_cor, ts_onset_cor, ts_decline_cor) %>% 
-    # cbind(df) %>% 
     mutate(p = round(p, 4),
            r = round(r, 2),
            CI_low = round(CI_low, 2),
            CI_high = round(CI_high, 2),
-           t = round(t, 4)) #%>%
-    # dplyr::select(region, event_no, season, ts, everything())
+           t = round(t, 4),
+           ts = factor(ts, levels = c("onset", "full", "decline")))
 }
 
 
