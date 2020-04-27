@@ -133,30 +133,10 @@ event_sub <- GLORYS_MHW_event %>%
          region == "gm")
   
 # Subset the time series for the onset and decline portions
-ts_temp <- ALL_anom_full %>% 
+ts_wide <- ALL_anom_full_wide %>%
   filter(t >= event_sub$date_start,
          t <= event_sub$date_end,
-         region == event_sub$region, 
-         var == "temp") %>% 
-    dplyr::rename(temp_anom = anom) %>% 
-    select(region, t, temp_anom)
-ts_full <- ALL_anom_full %>% 
-  filter(t >= event_sub$date_start,
-         t <= event_sub$date_end,
-         region == event_sub$region) %>% 
-  left_join(ts_temp, by = c("region", "t"))# %>% 
-  # filter(var == "temp")
-
-# Time series plot
-# ggplot(data = filter(ts_full, var %in% c("msshf", "temp")), aes(x = t, y = anom)) +
-#   geom_line(aes(colour = var))
-
-# Wide test data
-ts_wide <- ts_full %>% 
-  dplyr::select(-temp_anom) %>% 
-  pivot_wider(names_from = var, values_from = anom) %>% 
-  filter(t >= event_sub$date_peak)
-  # filter(t <= event_sub$date_peak)
+         region == event_sub$region)
 
 # Scatterplot
 plotly::ggplotly(ggplot(data = ts_wide, aes(x = sss, y = temp)) +
