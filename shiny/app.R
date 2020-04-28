@@ -81,8 +81,8 @@ ui <- dashboardPage(
     # The primary options
     dashboardSidebar(
         sidebarMenu(id = "mainMenu",
-                    menuItem("Summary", tabName = "summary", icon = icon("chart-bar")),
-                    menuItem("Event", tabName = "event", icon = icon("chart-pie"), selected = TRUE),
+                    menuItem("Summary", tabName = "summary", icon = icon("chart-bar"), selected = TRUE),
+                    menuItem("Event", tabName = "event", icon = icon("chart-pie")),
                     menuItem("About", tabName = "about", icon = icon("question")),
                     # The reactive controls based on the primary option chosen
                     uiOutput(outputId = "sidebar_controls"))
@@ -124,13 +124,33 @@ ui <- dashboardPage(
     # Event figures -----------------------------------------------------------
 
             tabItem(tabName = "event",
+                    # The event metric table
                     fluidRow(box(dataTableOutput("eventTable"), width = 12, title = "Event metrics", 
                                  status = "primary", solidHeader = TRUE, collapsible = TRUE)),
-                    fluidRow(box(plotOutput("correlationPlot"), width = 6, title = "Correlation plot", 
-                                 status = "primary", solidHeader = TRUE, collapsible = TRUE),
-                             box(plotOutput("scatterPlot"), width = 6, title = "Scatterplot", 
-                                 status = "primary", solidHeader = TRUE, collapsible = TRUE)),
-                    fluidRow(box(verbatimTextOutput("devel")))),
+                    # The correlation plot
+                    fluidRow(box(width = 6, title = "Correlation plot", status = "primary", solidHeader = TRUE, collapsible = TRUE,
+                                 dropdownButton(
+                                     h4("Correlation controls:"),
+                                     selectInput(inputId = "vars2", label = "Variables:",
+                                                 choices = levels(ALL_cor$Parameter2), multiple = TRUE, 
+                                                 selected = c("temp", "msnlwrf_mld", "mslhf_mld", 
+                                                              "msshf_mld", "msnswrf_mld", "qnet_mld")),
+                                     circle = TRUE, status = "danger", icon = icon("gear")),
+                                 plotOutput("correlationPlot")),
+                             # The scatterplot
+                             box(width = 6, title = "Scatterplot", status = "primary", solidHeader = TRUE, collapsible = TRUE,
+                                 dropdownButton(
+                                     h4("Scatter controls:"),
+                                     selectInput(inputId = "scat_x", label = "X axis:",
+                                                 choices = unique(ALL_anom_full$var),
+                                                 selected = "qnet_mld"),
+                                     selectInput(inputId = "scat_y", label = "Y axis:",
+                                                 choices = unique(ALL_anom_full$var),
+                                                 selected = "temp"),
+                                     circle = TRUE, status = "danger", icon = icon("gear")),
+                                 plotOutput("scatterPlot")))),
+                    # Test box
+                    # fluidRow(box(verbatimTextOutput("devel")))),
             
 
     # App explanation ---------------------------------------------------------
@@ -154,7 +174,7 @@ server <- function(input, output, session) {
         if(input$mainMenu == "summary"){
             sidebarMenu(
                 pickerInput(inputId = "vars", label = "Variables:",
-                            choices = unique(ALL_cor$Parameter2), multiple = TRUE,
+                            choices = levels(ALL_cor$Parameter2), multiple = TRUE,
                             options = list(size = 6),
                             selected = c("msnlwrf_mld", "mslhf_mld", 
                                          "msshf_mld", "msnswrf_mld", "qnet_mld")),
@@ -187,6 +207,9 @@ server <- function(input, output, session) {
                 pickerInput(inputId = "seasons", label = "Seasons:",
                             choices = levels(ALL_cor$season), multiple = TRUE,
                             selected = levels(ALL_cor$season)),
+                pickerInput(inputId = "ts", label = "MHW section:",
+                            choices = levels(ALL_cor$ts), multiple = FALSE,
+                            selected = "full"),
                 sliderInput(inputId = "duration", label = "Max Duraion:",
                             min = 1, max = max(GLORYS_MHW_event$duration),
                             value = max(GLORYS_MHW_event$duration))
@@ -201,7 +224,7 @@ server <- function(input, output, session) {
 
     # The correlations results
     cor_data <- reactive({
-        req(input$vars)
+        req(input$vars); req(input$p_val)
         ALL_cor_sub <- ALL_cor %>% 
             filter(Parameter1 == "temp",
                    Parameter2 %in% input$vars,
@@ -239,18 +262,31 @@ server <- function(input, output, session) {
         event_sub <- MHW_data[input$eventTable_cell_clicked$row,]
 
         # Filter accordingly
-        ts_wide <- ALL_anom_full_wide %>%
-            filter(t >= event_sub$start,
-                   t <= event_sub$end,
-                   region == event_sub$region)
+        if(input$ts == "full"){
+            ts_wide <- ALL_anom_full_wide %>%
+                filter(t >= event_sub$start,
+                       t <= event_sub$end,
+                       region == event_sub$region)
+        } else if(input$ts == "onset"){
+            ts_wide <- ALL_anom_full_wide %>%
+                filter(t >= event_sub$start,
+                       t <= event_sub$peak,
+                       region == event_sub$region)
+        } else if(input$ts == "decline"){
+            ts_wide <- ALL_anom_full_wide %>%
+                filter(t >= event_sub$peak,
+                       t <= event_sub$end,
+                       region == event_sub$region)
+        }
         return(ts_wide)
     })
+    
 
     # Summary figures ---------------------------------------------------------
     
     # Histogram
     output$histPlot <- renderPlot({
-        req(input$vars)
+        req(input$vars); req(input$p_val)
         if(input$fill != "none"){
             ggplot(cor_data(), aes(x = r)) +
                 geom_vline(aes(xintercept = 0), colour = "red", size = 1) +
@@ -266,7 +302,7 @@ server <- function(input, output, session) {
     
     # Boxplot
     output$boxPlot <- renderPlot({
-        req(input$vars)
+        req(input$vars); req(input$p_val)
         if(input$fill != "none"){
             ggplot(cor_data(), aes(x = ts, y = r)) +
                 geom_hline(aes(yintercept = 0), colour = "red", size = 1) +
@@ -306,18 +342,21 @@ server <- function(input, output, session) {
     
     # Correlation plot for single figure
     output$correlationPlot <- renderPlot({
-        
+        req(input$vars2)
         # TO DO: Add functionaility to chose variables
         MHW_single() %>%
-            correlation() %>% 
+        # ALL_anom_full_wide %>% 
+            pivot_longer(cols = msnlwrf:qnet_mld) %>% 
+            filter(name %in% input$vars2) %>%
+            # filter(name %in% vars) %>%
+            pivot_wider(names_from = name, values_from = value) %>% 
+            correlation() %>%
             plot()
     })
     
     # Scatterplot of two variable during onset, full, or decline of a single event
     output$scatterPlot <- renderPlot({
-        
-        # TO DO: Add functionaility to chose MHW section
-        ggplot(data = MHW_single(), aes(x = sss, y = temp)) +
+        ggplot(data = MHW_single(), aes_string(x = input$scat_x, y = input$scat_y)) +
             geom_smooth(method = "lm") +
             geom_point(aes(colour = t))
     })

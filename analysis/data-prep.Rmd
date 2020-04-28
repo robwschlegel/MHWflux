@@ -121,7 +121,9 @@ doParallel::registerDoParallel(cores = 25)
 GLORYS_files <- dir("../data/GLORYS", full.names = T, pattern = "MHWflux")
 system.time(
 GLORYS_all_ts <- load_all_GLORYS_region(GLORYS_files) %>% 
-  dplyr::arrange(region, t)
+  dplyr::arrange(region, t) %>% 
+  mutate(cur_spd = round(sqrt(u^2 + v^2), 2),
+         cur_dir = round((270-(atan2(v, u)*(180/pi)))%%360))
 ) # 187 seconds on 25 cores
 saveRDS(GLORYS_all_ts, "data/GLORYS_all_ts.Rda")
 ```
@@ -174,7 +176,8 @@ ALL_ts <- left_join(ERA5_all_ts, GLORYS_all_ts, by = c("region", "t"))
 
 # Calculate GLORYS clims and anoms
 ALL_anom <- ALL_ts %>%
-  pivot_longer(msnlwrf:ssh, names_to = "var", values_to = "val") %>% 
+  dplyr::select(-wind_dir, -cur_dir) %>% 
+  pivot_longer(msnlwrf:cur_spd, names_to = "var", values_to = "val") %>% 
   group_by(region, var) %>%
   nest() %>%
   mutate(clims = map(data, ts2clm, y = val, roundClm = 6,
@@ -202,14 +205,14 @@ The movement terms aren't very useful and may not be worth including as they don
 ALL_anom_cum <- ALL_anom %>%
   dplyr::select(region, var, t, anom) %>% 
   pivot_wider(id_cols = c(region, var, t), names_from = var, values_from = anom) %>% 
-  dplyr::select(region:msshf, msl, qnet) %>% 
+  dplyr::select(region:msshf, msl, qnet, tcc, p_e) %>% 
   left_join(GLORYS_MHW_clim[,c("region", "t", "event_no")], by = c("region", "t")) %>% 
   filter(event_no > 0) %>% 
   group_by(region, event_no) %>% 
   mutate_if(is.numeric, cumsum) %>% 
   ungroup() %>% 
   dplyr::select(region, event_no, t, everything()) %>% 
-  pivot_longer(cols = msnlwrf:qnet, names_to = "var", values_to = "anom") %>% 
+  pivot_longer(cols = msnlwrf:p_e, names_to = "var", values_to = "anom") %>% 
   mutate(var = paste0(var,"_cum")) %>% 
   dplyr::select(region, var, event_no, t, anom)
 
@@ -239,7 +242,6 @@ ALL_anom_mld <- ALL_anom %>%
 saveRDS(ALL_anom_mld, "data/ALL_anom_mld.Rda")
 saveRDS(ALL_anom_mld, "shiny/ALL_anom_mld.Rda")
 ```
-
 
 And that's all there is to it. In the next vignette we will take the periods of time over which MHWs occurred per region and pair those up with the GLORYS and ERA5 data. This will be used to investigate which drivers are best related to the onset and decline of MHWs.
 

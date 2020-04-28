@@ -41,81 +41,17 @@ ALL_cor <- plyr::ddply(GLORYS_MHW_event_index, .parallel = T,
                        .variables = c("row_index"), .fun = cor_all) %>% 
   left_join(GLORYS_MHW_event_index, by = "row_index") %>% 
   select(region, season, event_no, ts, everything()) %>%
-  arrange(region, event_no)
+  arrange(region, event_no) %>% 
+  mutate(Parameter2 = factor(Parameter2))
 
 # Save
 saveRDS(ALL_cor, "data/ALL_cor.Rda")
 saveRDS(ALL_cor, "shiny/ALL_cor.Rda")
-
-# Visualise all correlations together
-ALL_anom_full %>% 
-  pivot_wider(values_from = anom, names_from = var) %>% 
-  dplyr::select(region, msnlwrf_mld, msnswrf_mld, mslhf_mld, msshf_mld, qnet_mld, temp) %>% 
-  # group_by(region) %>% # THis is weird...
-  correlation() %>% 
-  plot()
-
-event_sub <- GLORYS_MHW_event[200,]
-
-# The full correlations for one event
-ALL_anom_full_wide %>% 
-    filter(t >= event_sub$date_start,
-           t <= event_sub$date_end,
-           region == event_sub$region) %>%
-  dplyr::select(region, msnlwrf_mld, msnswrf_mld, mslhf_mld, msshf_mld, qnet_mld, temp) %>% 
-  correlation() %>% 
-  plot()
-
-# The onset correlations for one event
-ALL_anom_full_wide %>% 
-    filter(t >= event_sub$date_start,
-           t <= event_sub$date_peak,
-           region == event_sub$region) %>%
-  dplyr::select(msnlwrf_mld, msnswrf_mld, mslhf_mld, msshf_mld, qnet_mld, temp) %>% 
-  # dplyr::select(msnlwrf_mld, msnswrf_mld, mslhf_mld, msshf_mld, qnet_mld, temp) %>% 
-  correlation() %>% 
-  plot()
-
-# The decline correlations for one event
-ALL_anom_full_wide %>% 
-    filter(t >= event_sub$date_peak,
-           t <= event_sub$date_end,
-           region == event_sub$region) %>%
-  dplyr::select(msnlwrf_mld, msnswrf_mld, mslhf_mld, msshf_mld, qnet_mld, temp) %>% 
-  correlation() %>% 
-  plot()
 ```
 
-Seeing as how we're just running correlations at the moment (I snuck RMSE into the above calcs as well) everything runs pretty quickly. With the method sorted for now we need to have a look at the results. What we have at the moment is a long dataframe containing the correlations of different variables with the temperature anomaly. It must be pointed out that these are for the same day, there is no time lag introduced, which may be important. Below we are going to visualise the range of correlations for each variable to see how much each distribution is skewed. This skewness could probably be quantified in a meaningful way... but let's look at the data first.
-
-```{r cor-visuals}
-# Load data
-ALL_cor <- readRDS("data/ALL_cor.Rda")
-
-# Histogram grid of variable by time series part
-ggplot(filter(ALL_cor, var != "temp"), aes(x = r)) +
-  geom_histogram(bins = 10) +
-  facet_grid(ts ~ var)
-
-# Stacked histogram
-ggplot(filter(ALL_cor, var != "temp"), aes(x = r)) +
-  geom_histogram(aes(fill = region), bins = 10) +
-  facet_grid(ts ~ var)
-
-# Dodged histogram
-ggplot(filter(ALL_cor, var != "temp"), aes(x = r)) +
-  geom_histogram(aes(fill = region), bins = 5, position = "dodge") +
-  facet_grid(ts ~ var)
-
-# Boxplots of r values based on seasons or regions
-## See shiny app
-```
+Seeing as how we're just running correlations at the moment everything runs pretty quickly. With the method sorted for now we need to have a look at the results. What we have at the moment is a long dataframe containing the correlations of different variables with the temperature anomaly. It must be pointed out that these are for the same day, there is no time lag introduced, which may be important. Below we are going to visualise the range of correlations for each variable to see how much each distribution is skewed. This skewness could probably be quantified in a meaningful way... but let's look at the data first.
 
 We also want to filter by p-value to highlight the strong correlations.
-
-Wow! What a surprise. There are some really clear patterns coming through in the data. In particular SSS seems to be strongly related to the onset of MHWs. There are a lot of nuances in these data and so I think this is actually an example of where a Shiny app is useful to interrogate the data.
-
-In the shiny app it also comes out that the longer events tend not to correlate strongly with a single variable. This is to be expected and supports the argument that very persistent MHWs are supported by a confluence of variables. How to parse that out is an interesting challenge.
 
 ```{r shiny-histo}
 # source("shiny/app.R")
@@ -123,26 +59,9 @@ In the shiny app it also comes out that the longer events tend not to correlate 
 # https://robert-schlegel.shinyapps.io/MHWflux/
 ```
 
-Below is a chunk of code I've just thrown up to look at specific events with the naked eye. I still need to create a convenience function that can pull out a chosen event and plot the variables as a scatterplot and time series so it is easy to see what exactly the direction of the correlations means.
+Wow! What a surprise. There are some really clear patterns coming through in the data. In particular SSS seems to be strongly related to the onset of MHWs. There are a lot of nuances in these data and so I think this is actually an example of where a Shiny app is useful to interrogate the data.
 
-```{r ts-explore, eval=FALSE}
-# gm 32
-# Get the info for the focus event
-event_sub <- GLORYS_MHW_event %>% 
-  filter(event_no == 15,
-         region == "gm")
-  
-# Subset the time series for the onset and decline portions
-ts_wide <- ALL_anom_full_wide %>%
-  filter(t >= event_sub$date_start,
-         t <= event_sub$date_end,
-         region == event_sub$region)
-
-# Scatterplot
-plotly::ggplotly(ggplot(data = ts_wide, aes(x = sss, y = temp)) +
-                   geom_smooth(method = "lm") +
-                   geom_point(aes(colour = t)))
-```
+In the shiny app it also comes out that the longer events tend not to correlate strongly with a single variable. This is to be expected and supports the argument that very persistent MHWs are supported by a confluence of variables. How to parse that out is an interesting challenge.
 
 ## Regions + Seasons
 
@@ -153,7 +72,6 @@ Having manually looked through the Shiny app it does look like there are some pa
 ```{r}
 
 ```
-
 
 ## Relationships
 
@@ -180,7 +98,6 @@ With a table organised by each variable, it makes sense to also create a table o
 ```{r}
 
 ```
-
 
 ## Notes
 

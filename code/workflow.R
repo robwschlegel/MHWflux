@@ -78,6 +78,14 @@ ERA5_shf_ts <- plyr::ldply(ERA5_shf_files, load_ERA5_region, .parallel = F, .pro
 ERA5_shf_ts$msshf <- round(ERA5_shf_ts$msshf, 6)
 saveRDS(ERA5_shf_ts, "data/ERA5_shf_ts.Rda")
 
+## Cloud cover
+# "tcc"
+print(paste0("Began loading e at ", Sys.time()))
+ERA5_tcc_files <- dir("../../oliver/data/ERA/ERA5/CLOUD/", full.names = T, pattern = "ERA5")
+ERA5_tcc_ts <- plyr::ldply(ERA5_tcc_files, load_ERA5_region, .parallel = F, .progress = "text")
+ERA5_tcc_ts$tcc <- round(ERA5_tcc_ts$tcc, 4)
+saveRDS(ERA5_tcc_ts, "data/ERA5_tcc_ts.Rda")
+
 ## Surface winds U component
 # "u10"
 print(paste0("Began loading u10 at ", Sys.time()))
@@ -105,8 +113,8 @@ saveRDS(ERA5_mslp_ts, "data/ERA5_mslp_ts.Rda")
 # "t2m
 print(paste0("Began loading t2m at ", Sys.time()))
 ERA5_t2m_files <- dir("../../oliver/data/ERA/ERA5/T2M", full.names = T, pattern = "ERA5")[15:40]
-ERA5_t2m_ts <- plyr::ldply(ERA5_t2m_files, load_ERA5_region, .parallel = T, .progress = "text")
-ERA5_t2m_ts$t2m <- round(ERA5_t2m_tst2m, 4)-272.15
+ERA5_t2m_ts <- plyr::ldply(ERA5_t2m_files, load_ERA5_region, .parallel = F, .progress = "text")
+ERA5_t2m_ts$t2m <- round(ERA5_t2m_ts$t2m-273.15, 4)
 saveRDS(ERA5_t2m_ts, "data/ERA5_t2m_ts.Rda")
 
 ## Precipitation
@@ -130,6 +138,7 @@ ERA5_lwr_ts <- readRDS("data/ERA5_lwr_ts.Rda")
 ERA5_swr_ts <- readRDS("data/ERA5_swr_ts.Rda")
 ERA5_lhf_ts <- readRDS("data/ERA5_lhf_ts.Rda")
 ERA5_shf_ts <- readRDS("data/ERA5_shf_ts.Rda")
+ERA5_tcc_ts <- readRDS("data/ERA5_tcc_ts.Rda")
 ERA5_u_ts <- readRDS("data/ERA5_u_ts.Rda")
 ERA5_v_ts <- readRDS("data/ERA5_v_ts.Rda")
 ERA5_mslp_ts <- readRDS("data/ERA5_mslp_ts.Rda")
@@ -142,13 +151,17 @@ join_cols <- c("region", "t")
 ERA5_all_ts <- left_join(ERA5_lwr_ts, ERA5_swr_ts, by = join_cols) %>%
   left_join(ERA5_lhf_ts, by = join_cols) %>%
   left_join(ERA5_shf_ts, by = join_cols) %>%
+  left_join(ERA5_tcc_ts, by = join_cols) %>%
   left_join(ERA5_u_ts, by = join_cols) %>%
   left_join(ERA5_v_ts, by = join_cols) %>%
   left_join(ERA5_mslp_ts, by = join_cols) %>%
   left_join(ERA5_t2m_ts, by = join_cols) %>% 
   left_join(ERA5_pcp_ts, by = join_cols) %>% 
   left_join(ERA5_evp_ts, by = join_cols) %>% 
-  mutate(qnet = msnlwrf + msnswrf + mslhf + msshf)
+  mutate(p_e = tp+e, # All ERA5 values are positive downward, so negative evaporation shows water leaving the surface
+         qnet = msnlwrf + msnswrf + mslhf + msshf,
+         wind_spd = round(sqrt(u10^2 + v10^2), 2),
+         wind_dir = round((270-(atan2(v10, u10)*(180/pi)))%%360))
 saveRDS(ERA5_all_ts, "data/ERA5_all_ts.Rda")
 
 # See the "Preparing the data" vignette for the code used to create the clims and anomalies
