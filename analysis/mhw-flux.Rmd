@@ -69,19 +69,82 @@ With the correlations calculated for the onset, decline, and full extent of each
 
 Having manually looked through the Shiny app it does look like there are some patterns. These will be written down in the table below.
 
-```{r}
-
-```
-
 ## Relationships
 
-Now that all of the patterns have been pulled out by region and season, we want to see if there are any relationships between MHWs that show strong correlations at onset with a particular variables and strong correlations at decline with another. We will look for this within regions and seasons as well. For example, do MHWs that correlate well with an increase in SSS also correlate well with a decrease in long-wave radiation during the decline of the event? I'm not sure how best to go about this in a clean manner. I'll have to think of something clever.
+With patterns pulled out by region and season, we want to see if there are any relationships between MHWs that show strong correlations at onset with a particular variables and strong correlations at decline with another. We will look for this within regions and seasons as well. For example, do MHWs that correlate well with an increase in SSS also correlate well with a decrease in long-wave radiation during the decline of the event? I'm not sure how best to go about this in a clean manner. I'll have to think of something clever.
 
 One possibility could be to look at correlations between r values themselves. And to do so by region + season. It may also work to just directly correlate different values with one another. See if any patterns come out by region and/or season.
 
 ```{r relationships}
 
 ```
+
+Another thing to consider would be if fast onset slow decline (and vie versa) events have different characteristics to slower evolving events. The same question could be posed to long vs short ebents and those with high intensities vs low. In order to begin this investigation we must join the MHW results to the correlation results. Yet another thing to look at is the number of days in the MHW section and the correlations of that events with the variables.
+
+```{r metrics_cor_cor, eval=FALSE}
+ALL_cor_wide <- readRDS("data/ALL_cor.Rda") %>% 
+  ungroup() %>% 
+  filter(Parameter1 == "temp") %>% 
+  dplyr::select(region:ts, Parameter2, r, n_Obs) %>% 
+  pivot_wider(values_from = r, names_from = Parameter2)
+
+# Combine MHW metrics and correlation results
+events_cor_prep <- GLORYS_MHW_event %>% 
+  dplyr::select(region, season, event_no, duration, intensity_mean, intensity_max, 
+                intensity_cumulative, rate_onset, rate_decline) %>% 
+  left_join(ALL_cor_wide, by = c("region", "season", "event_no")) %>% 
+  dplyr::select(-event_no)
+
+# All correlations by region
+events_cor_region <- events_cor_prep %>% 
+  group_by(region, ts) %>% 
+  correlation(redundant = TRUE) %>% 
+  mutate_if(is.numeric, round, 4) %>% 
+  filter(Parameter1 %in% c("duration", "intensity_mean", "intensity_max", 
+                           "intensity_cumulative", "rate_onset", "rate_decline"),
+         !Parameter2 %in% c("duration", "intensity_mean", "intensity_max",
+                           "intensity_cumulative", "rate_onset", "rate_decline"))
+saveRDS(events_cor_region, "data/events_cor_region.Rds")
+
+# All correlations by season
+events_cor_season <- events_cor_prep %>% 
+  group_by(season, ts) %>% 
+  correlation(redundant = TRUE) %>% 
+  mutate_if(is.numeric, round, 4) %>% 
+  filter(Parameter1 %in% c("duration", "intensity_mean", "intensity_max", 
+                           "intensity_cumulative", "rate_onset", "rate_decline"),
+         !Parameter2 %in% c("duration", "intensity_mean", "intensity_max",
+                           "intensity_cumulative", "rate_onset", "rate_decline"))
+saveRDS(events_cor_season, "data/events_cor_season.Rds")
+
+# All correlations by region+season
+# Some groupings don't have enough observations
+# This throws an error but it still runs
+# events_cor_region_season <- events_cor_prep %>%
+#   group_by(region, season, ts) %>%
+#   correlation(redundant = TRUE) %>%
+#   mutate_if(is.numeric, round, 4) %>%
+#   filter(Parameter1 %in% c("duration", "intensity_mean", "intensity_max",
+#                            "intensity_cumulative", "rate_onset", "rate_decline"),
+#          !Parameter2 %in% c("duration", "intensity_mean", "intensity_max",
+#                            "intensity_cumulative", "rate_onset", "rate_decline"))
+# saveRDS(events_cor_region_season, "data/events_cor_region_season.Rds")
+
+# test visuals
+events_cor_prep %>% 
+  filter(region == "nfs", ts == "onset") %>% 
+  ggplot(aes(x = intensity_mean, y = msshf_mld)) +
+  geom_smooth(method = "lm", se = FALSE, colour = "black") +
+  geom_point(aes(colour = season))
+```
+
+These correlations between the MHW metrics and the correlations from the previous round of calculations do show som einteresting results, but are a bit difficult to interpret. I think it would also be useful to create the summary stats of the r values, too. These are visible in the Shiny app but are not currently saved in this project.
+
+```{r}
+
+```
+
+I'm statrting to think I'm going to need to cluster these results in order to make the results more manageable.
 
 ## Results
 
@@ -105,9 +168,7 @@ The deepening of the MLD with MHW onset may be due to wind mixing into the deepe
 
 Look into the relationship between MSLP and MHW onset. It is odd.
 
-Look into relationship between decrease in SSS with decline and also decrease in latent heat flux/ evaporation.
-
-Another thing to consider would be if fast onset slow decline (and vie versa) events have different characteristics to slower evolving events.
+Look into relationship between decrease in SSS with decline and also decrease in latent heat flux/evaporation.
 
 ### NWA 2012
 
