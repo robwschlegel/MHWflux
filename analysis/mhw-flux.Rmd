@@ -40,12 +40,50 @@ GLORYS_MHW_event_index <- GLORYS_MHW_event %>%
 ALL_cor <- plyr::ddply(GLORYS_MHW_event_index, .parallel = T,
                        .variables = c("row_index"), .fun = cor_all) %>% 
   left_join(GLORYS_MHW_event_index, by = "row_index") %>% 
-  select(region, season, event_no, ts, var, n, r, rmse) %>% 
+  select(region, season, event_no, ts, everything()) %>%
   arrange(region, event_no)
 
 # Save
 saveRDS(ALL_cor, "data/ALL_cor.Rda")
 saveRDS(ALL_cor, "shiny/ALL_cor.Rda")
+
+# Visualise all correlations together
+ALL_anom_full %>% 
+  pivot_wider(values_from = anom, names_from = var) %>% 
+  dplyr::select(region, msnlwrf_mld, msnswrf_mld, mslhf_mld, msshf_mld, qnet_mld, temp) %>% 
+  # group_by(region) %>% # THis is weird...
+  correlation() %>% 
+  plot()
+
+event_sub <- GLORYS_MHW_event[200,]
+
+# The full correlations for one event
+ALL_anom_full_wide %>% 
+    filter(t >= event_sub$date_start,
+           t <= event_sub$date_end,
+           region == event_sub$region) %>%
+  dplyr::select(region, msnlwrf_mld, msnswrf_mld, mslhf_mld, msshf_mld, qnet_mld, temp) %>% 
+  correlation() %>% 
+  plot()
+
+# The onset correlations for one event
+ALL_anom_full_wide %>% 
+    filter(t >= event_sub$date_start,
+           t <= event_sub$date_peak,
+           region == event_sub$region) %>%
+  dplyr::select(msnlwrf_mld, msnswrf_mld, mslhf_mld, msshf_mld, qnet_mld, temp) %>% 
+  # dplyr::select(msnlwrf_mld, msnswrf_mld, mslhf_mld, msshf_mld, qnet_mld, temp) %>% 
+  correlation() %>% 
+  plot()
+
+# The decline correlations for one event
+ALL_anom_full_wide %>% 
+    filter(t >= event_sub$date_peak,
+           t <= event_sub$date_end,
+           region == event_sub$region) %>%
+  dplyr::select(msnlwrf_mld, msnswrf_mld, mslhf_mld, msshf_mld, qnet_mld, temp) %>% 
+  correlation() %>% 
+  plot()
 ```
 
 Seeing as how we're just running correlations at the moment (I snuck RMSE into the above calcs as well) everything runs pretty quickly. With the method sorted for now we need to have a look at the results. What we have at the moment is a long dataframe containing the correlations of different variables with the temperature anomaly. It must be pointed out that these are for the same day, there is no time lag introduced, which may be important. Below we are going to visualise the range of correlations for each variable to see how much each distribution is skewed. This skewness could probably be quantified in a meaningful way... but let's look at the data first.
@@ -95,33 +133,13 @@ event_sub <- GLORYS_MHW_event %>%
          region == "gm")
   
 # Subset the time series for the onset and decline portions
-ts_temp <- ALL_anom_full %>% 
+ts_wide <- ALL_anom_full_wide %>%
   filter(t >= event_sub$date_start,
          t <= event_sub$date_end,
-         region == event_sub$region, 
-         var == "temp") %>% 
-    dplyr::rename(temp_anom = anom) %>% 
-    select(region, t, temp_anom)
-ts_full <- ALL_anom_full %>% 
-  filter(t >= event_sub$date_start,
-         t <= event_sub$date_end,
-         region == event_sub$region) %>% 
-  left_join(ts_temp, by = c("region", "t"))# %>% 
-  # filter(var == "temp")
-
-# Time series plot
-# ggplot(data = filter(ts_full, var %in% c("msshf", "temp")), aes(x = t, y = anom)) +
-#   geom_line(aes(colour = var))
-
-# Wide test data
-ts_wide <- ts_full %>% 
-  dplyr::select(-temp_anom) %>% 
-  pivot_wider(names_from = var, values_from = anom) %>% 
-  filter(t >= event_sub$date_peak)
-  # filter(t <= event_sub$date_peak)
+         region == event_sub$region)
 
 # Scatterplot
-plotly::ggplotly(ggplot(data = ts_wide, aes(x = qnet_cum, y = temp)) +
+plotly::ggplotly(ggplot(data = ts_wide, aes(x = sss, y = temp)) +
                    geom_smooth(method = "lm") +
                    geom_point(aes(colour = t)))
 ```
@@ -149,17 +167,18 @@ One possibility could be to look at correlations between r values themselves. An
 
 ## Results
 
-Categorise the variables that have a story and those that don't. Explain the regional/seasonal structure for variables with a story. This then provides a means to explain the story behind what is driving these events.
-
-Create a table explaining each variable. What the signals are and do they show regional/seasonal patterns.
-
 In the following table a more concise summary of the results is presented.
 
+```{r, echo=FALSE, message=FALSE}
+# NB: This table was created manually by going through the Shiny app one variable at a time.
+res_table <- read_csv("data/res_table.csv")
+knitr::kable(res_table, caption = "Most of the variables that have been correlated against the temperature anomalies during the onset, decline, and full duration of MHWs. The cumulative heat flux terms were corrected for by the daily MLD (Q/(rho x Cp x hmld)) before the correlations were calculated. Correlations were also run on the cumulative flux terms without correcting for MLD, but there was little difference so the results are not itemised here. This table shows the full names of the variables, as well as the abbreviations used in the code. The 'onset' column describes (in shorthand) what the tendency of correlations for the MHWs is during the onset of events. This is repeated for the 'full' and 'decline' columns respectively. The 'season' column briefly states the most clear/notewrothy pattern(s) when looking at how the correlations are divided up by season. The same is done in the 'region' column. The last column, 'story', gives a TRUE/FALSE if I think the variable has a story to tell. Something worth pursuing further. Particularly to see if the variables realte strongly to other variables, not just temperature. THis then could provide a framework for determining 'types' of MHWs (e.g. strong SSS change with strong latent heat flux).")
+```
+
+With a table organised by each variable, it makes sense to also create a table organised by season, and another by region.
+
 ```{r}
-res_table <- data.frame(var = unique(ALL_cor$var),
-                        overall = c(),
-                        season = c(),
-                        region = c())
+
 ```
 
 
@@ -169,7 +188,9 @@ The deepening of the MLD with MHW onset may be due to wind mixing into the deepe
 
 Look into the relationship between MSLP and MHW onset. It is odd.
 
-Calculate the cumulative Qnet heat-flux terms, as well as cumulative for each individual term. Also simply cumulative Qnet.
+Look into relationship between decrease in SSS with decline and also decrease in latent heat flux/ evaporation.
+
+Another thing to consider would be if fast onset slow decline (and vie versa) events have different characteristics to slower evolving events.
 
 ### NWA 2012
 

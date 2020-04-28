@@ -25,9 +25,11 @@
 # Packages used in this script
 library(tidyverse) # Base suite of functions
 library(lubridate) # For convenient date manipulation
-library(heatwaveR, lib.loc = "../R-packages/")
+library(heatwaveR)
 # cat(paste0("heatwaveR version = ", packageDescription("heatwaveR")$Version))
-library(tidync, lib.loc = "../R-packages/")
+library(tidync)
+library(correlation)
+library(ggraph)
 
 # Set number of cores
 doParallel::registerDoParallel(cores = 50)
@@ -70,7 +72,8 @@ GLORYS_MHW_event <- GLORYS_region_MHW %>%
          season = case_when(month_peak %in% c("Jan", "Feb", "Mar") ~ "Winter",
                             month_peak %in% c("Apr", "May", "Jun") ~ "Spring",
                             month_peak %in% c("Jul", "Aug", "Sep") ~ "Summer",
-                            month_peak %in% c("Oct", "Nov", "Dec") ~ "Autumn")) %>%
+                            month_peak %in% c("Oct", "Nov", "Dec") ~ "Autumn"),
+         season = factor(season, levels = c("Spring", "Summer", "Autumn", "Winter"))) %>%
   select(-month_peak)
 
 # MHW Categories
@@ -87,6 +90,8 @@ ALL_anom_mld <- readRDS("data/ALL_anom_mld.Rda")
 ALL_anom_full <- rbind(ALL_anom[,c("region", "var", "t", "anom")], 
                        ALL_anom_cum[,c("region", "var", "t", "anom")],
                        ALL_anom_mld[,c("region", "var", "t", "anom")])
+ALL_anom_full_wide <- ALL_anom_full %>% 
+  pivot_wider(values_from = anom, names_from = var)
 
 # The base land polygon
   # Created in 'MHWNWA/analysis/polygon-prep.Rmd'
@@ -242,65 +247,52 @@ rmse <- function(error){
   sqrt(mean(error^2))
 }
 
-# Run multiple ocrrelations on a dataframe
-# NB: The calculation of RMSE between variables of different scales is incorrect to do
-# It has been left in here as it will likely be used for something else at a later stage
-cor_multi <- function(ts_data){
-  res <- ts_data %>% 
-    group_by(var) %>% 
-    select(var, anom, temp_anom) %>% 
-    nest() %>% 
-    mutate(r = map(data, ~cor(.$temp_anom, .$anom)),
-           rmse = map(data, ~rmse(error = .$temp_anom - .$anom))) %>% 
-    dplyr::select(-data) %>%
-    unnest(cols = c(r, rmse)) %>% 
-    ungroup() %>% 
-    mutate(r = round(r, 2),
-           rmse = round(rmse, 2),
-           n = nrow(ts_data)/length(unique(ts_data$var))) %>% 
-    arrange(-r)
-}
-
 # Subset data based on events and regions and run all correlations
 cor_all <- function(df){
+  
   # Get the info for the focus event
   event_sub <- GLORYS_MHW_event %>% 
     filter(event_no == df$event_no[1],
            region == df$region[1])
   
   # Subset the time series for the onset and decline portions
-  ts_temp <- ALL_anom_full %>% 
+  ts_full <- ALL_anom_full_wide %>% 
     filter(t >= event_sub$date_start,
            t <= event_sub$date_end,
-           region == event_sub$region, 
-           var == "temp") %>% 
-    dplyr::rename(temp_anom = anom) %>% 
-    select(region, t, temp_anom)
-  ts_full <- ALL_anom_full %>% 
-    filter(t >= event_sub$date_start,
-           t <= event_sub$date_end,
-           region == event_sub$region) %>% 
-    left_join(ts_temp, by = c("region", "t"))
-  ts_onset <- ALL_anom_full %>% 
+           region == event_sub$region,)
+  ts_onset <- ALL_anom_full_wide %>% 
     filter(t >= event_sub$date_start,
            t <= event_sub$date_peak,
-           region == event_sub$region) %>% 
-    left_join(ts_temp, by = c("region", "t"))
-  ts_decline <- ALL_anom_full %>% 
+           region == event_sub$region)
+  ts_decline <- ALL_anom_full_wide %>% 
     filter(t >= event_sub$date_peak,
            t <= event_sub$date_end,
-           region == event_sub$region) %>% 
-    left_join(ts_temp, by = c("region", "t"))
+           region == event_sub$region)
   
   # Run the correlations
-  ts_full_cor <- cor_multi(ts_full)
-  ts_onset_cor <- cor_multi(ts_onset)
-  ts_decline_cor <- cor_multi(ts_decline)
+  ts_full_cor <- correlation(ts_full, redundant = T) %>% 
+    mutate(ts = "full")
+  if(nrow(ts_onset) > 2){
+    ts_onset_cor <- correlation(ts_onset, redundant = T) %>% 
+      mutate(ts = "onset")
+  } else {
+    ts_onset_cor <- ts_full_cor[0,]
+  }
+  if(nrow(ts_decline) > 2){
+    ts_decline_cor <- correlation(ts_decline, redundant = T) %>% 
+      mutate(ts = "decline")
+  } else {
+    ts_decline_cor <- ts_full_cor[0,]
+  }
   
   # Combine and finish
   ts_cor <- rbind(ts_full_cor, ts_onset_cor, ts_decline_cor) %>% 
-    mutate(ts = rep(c("full", "onset", "decline"), 
-                    each = length(unique(ts_full$var))))
+    mutate(p = round(p, 4),
+           r = round(r, 2),
+           CI_low = round(CI_low, 2),
+           CI_high = round(CI_high, 2),
+           t = round(t, 4),
+           ts = factor(ts, levels = c("onset", "full", "decline")))
 }
 
 
