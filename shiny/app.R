@@ -68,6 +68,9 @@ ALL_anom_full_wide <- ALL_anom_full %>%
 # The correlations
 ALL_cor <- readRDS("ALL_cor.Rda")
 
+# The results text table
+# res_table <- read_csv("res_table.csv")
+
 
 # UI ----------------------------------------------------------------------
 
@@ -83,6 +86,7 @@ ui <- dashboardPage(
         sidebarMenu(id = "mainMenu",
                     menuItem("Summary", tabName = "summary", icon = icon("chart-bar"), selected = TRUE),
                     menuItem("Event", tabName = "event", icon = icon("chart-pie")),
+                    # menuItem("Tables", tabname = "tables", icon = icon("table")),
                     menuItem("About", tabName = "about", icon = icon("question")),
                     # The reactive controls based on the primary option chosen
                     uiOutput(outputId = "sidebar_controls"))
@@ -151,7 +155,13 @@ ui <- dashboardPage(
                                  plotOutput("scatterPlot")))),
                     # Test box
                     # fluidRow(box(verbatimTextOutput("devel")))),
-            
+
+    # Tables ------------------------------------------------------------------
+
+            # tabItem(tabname = "tables",
+            #         # tableOutput("resultsKable"),
+            #         h2("test")),
+                
 
     # App explanation ---------------------------------------------------------
 
@@ -286,7 +296,7 @@ server <- function(input, output, session) {
     
     # Histogram
     output$histPlot <- renderPlot({
-        req(input$vars); req(input$p_val)
+        req(input$vars); req(input$p_val); req(input$ts)
         if(input$fill != "none"){
             ggplot(cor_data(), aes(x = r)) +
                 geom_vline(aes(xintercept = 0), colour = "red", size = 1) +
@@ -302,7 +312,7 @@ server <- function(input, output, session) {
     
     # Boxplot
     output$boxPlot <- renderPlot({
-        req(input$vars); req(input$p_val)
+        req(input$vars); req(input$p_val); req(input$ts)
         if(input$fill != "none"){
             ggplot(cor_data(), aes(x = ts, y = r)) +
                 geom_hline(aes(yintercept = 0), colour = "red", size = 1) +
@@ -318,7 +328,7 @@ server <- function(input, output, session) {
 
     # Lineplot
     output$linePlot <- renderPlot({
-        req(input$vars)
+        req(input$vars); req(input$p_val); req(input$ts)
         if(input$fill != "none"){
             ggplot(cor_data(), aes(x = n_Obs, y = r)) +
                 geom_point(aes_string(colour = input$fill)) +
@@ -367,6 +377,34 @@ server <- function(input, output, session) {
         # input$eventTable_cell_clicked
         MHW_single()
     })
+    
+
+    # Tables ------------------------------------------------------------------
+
+    # output$resultsKable <- function() {
+    #     res_table %>% 
+    #         knitr::kable(format = "html", caption = "Most of the variables that have been 
+    #         correlated against the temperature anomalies during the onset, 
+    #                                     decline, and full duration of MHWs. The cumulative heat flux terms 
+    #                                     were corrected for by the daily MLD (Q/(rho x Cp x hmld)) before 
+    #                                     the correlations were calculated. Correlations were also run on the 
+    #                                     cumulative flux terms without correcting for MLD, but there was little 
+    #                                     difference so the results are not itemised here. This table shows the 
+    #                                     full names of the variables, as well as the abbreviations used in the code. 
+    #                                     The 'onset' column describes (in shorthand) what the tendency of correlations 
+    #                                     for the MHWs is during the onset of events. This is repeated for the 'full' 
+    #                                     and 'decline' columns respectively. The 'season' column briefly states the 
+    #                                     most clear/notewrothy pattern(s) when looking at how the correlations are 
+    #                                     divided up by season. The same is done in the 'region' column. The last column, 
+    #                                     'story', gives a TRUE/FALSE if I think the variable has a story to tell. 
+    #                                     Something worth pursuing further. Particularly to see if the variables realte 
+    #                                     strongly to other variables, not just temperature. THis then could provide a 
+    #                                     framework for determining 'types' of MHWs (e.g. strong SSS change with 
+    #                                     strong latent heat flux).") #%>% 
+    #         # kable_styling("striped", full_width = T) #%>%
+    #         # add_header_above(c(" ", "Group 1" = 5, "Group 2" = 6))
+    # }
+
     
     # This automatically ends the session when the app is closed
     session$onSessionEnded(stopApp)
