@@ -17,7 +17,7 @@ knitr::opts_chunk$set(fig.width = 8, fig.align = 'center',
 
 ## Introduction
 
-This vignette will walk through the thinking and the process for how to link physical variables to their potential effect on driving or dissipating MHWs. The primary source that inspired this work was @Chen2016. In this paper the authors were able to illustrate which parts of the heat budget were most likely driving the anomalous heat content in the surface of the ocean. What this analysis seeks to do is to build on this methodology by applying the fundamental concept to ALL of the MHWs detected in the NW Atlantic. Fundamentally we are running thousands of correlations between SST anomalies and the cooccurrent anomalies for a range of physical variables. The stronger the correlation (both positive and negative) the more of an indication this is to us that these phenomena are related.
+This vignette will walk through the thinking and the process for how to link physical variables to their potential effect on driving or dissipating MHWs. The primary source that inspired this work was @Chen2016. In this paper the authors were able to illustrate which parts of the heat budget were most likely driving the anomalous heat content in the surface of the ocean. What this analysis seeks to do is to build on this methodology by applying the fundamental concept to ALL of the MHWs detected in the NW Atlantic. Fundamentally we are running thousands of correlations between SST anomalies and the co-occurrent anomalies for a range of physical variables. The stronger the correlation (both positive and negative) the more of an indication this is to us that these phenomena are related.
 
 ```{r startup}
 # All of the libraries and objects used in the project
@@ -79,7 +79,7 @@ One possibility could be to look at correlations between r values themselves. An
 
 ```
 
-Another thing to consider would be if fast onset slow decline (and vie versa) events have different characteristics to slower evolving events. The same question could be posed to long vs short ebents and those with high intensities vs low. In order to begin this investigation we must join the MHW results to the correlation results. Yet another thing to look at is the number of days in the MHW section and the correlations of that events with the variables.
+Another thing to consider would be if fast onset slow decline (and vice versa) events have different characteristics to slower evolving events. The same question could be posed to long vs short events and those with high intensities vs low. In order to begin this investigation we must join the MHW results to the correlation results. Yet another thing to look at is the number of days in the MHW section and the correlations of that events with the variables.
 
 ```{r metrics_cor_cor, eval=FALSE}
 ALL_cor_wide <- readRDS("data/ALL_cor.Rda") %>% 
@@ -138,13 +138,19 @@ events_cor_prep %>%
   geom_point(aes(colour = season))
 ```
 
-These correlations between the MHW metrics and the correlations from the previous round of calculations do show som einteresting results, but are a bit difficult to interpret. I think it would also be useful to create the summary stats of the r values, too. These are visible in the Shiny app but are not currently saved in this project.
+These correlations between the MHW metrics and the correlations from the previous round of calculations do show som interesting results, but are a bit difficult to interpret. I think it would also be useful to create the summary stats of the r values, too. These are visible in the Shiny app but are not currently saved in this project.
 
 ```{r}
 
 ```
 
-I'm statrting to think I'm going to need to cluster these results in order to make the results more manageable.
+Another thought now was to show the summary stats of the r results by MHW metric.
+
+```{r}
+
+```
+
+I'm starting to think I'm going to need to cluster these results in order to make the results more manageable.
 
 ## Results
 
@@ -153,7 +159,7 @@ In the following table a more concise summary of the results is presented.
 ```{r, echo=FALSE, message=FALSE}
 # NB: This table was created manually by going through the Shiny app one variable at a time.
 res_table <- read_csv("data/res_table.csv")
-knitr::kable(res_table, caption = "Most of the variables that have been correlated against the temperature anomalies during the onset, decline, and full duration of MHWs. The cumulative heat flux terms were corrected for by the daily MLD (Q/(rho x Cp x hmld)) before the correlations were calculated. Correlations were also run on the cumulative flux terms without correcting for MLD, but there was little difference so the results are not itemised here. This table shows the full names of the variables, as well as the abbreviations used in the code. The 'onset' column describes (in shorthand) what the tendency of correlations for the MHWs is during the onset of events. This is repeated for the 'full' and 'decline' columns respectively. The 'season' column briefly states the most clear/notewrothy pattern(s) when looking at how the correlations are divided up by season. The same is done in the 'region' column. The last column, 'story', gives a TRUE/FALSE if I think the variable has a story to tell. Something worth pursuing further. Particularly to see if the variables realte strongly to other variables, not just temperature. THis then could provide a framework for determining 'types' of MHWs (e.g. strong SSS change with strong latent heat flux).")
+knitr::kable(res_table, caption = "Most of the variables that have been correlated against the temperature anomalies during the onset, decline, and full duration of MHWs. The cumulative heat flux terms were corrected for by the daily MLD (Q/(rho x Cp x hmld)) before the correlations were calculated. Correlations were also run on the cumulative flux terms without correcting for MLD, but there was little difference so the results are not itemised here. This table shows the full names of the variables, as well as the abbreviations used in the code. The 'onset' column describes (in shorthand) what the tendency of correlations for the MHWs is during the onset of events. This is repeated for the 'full' and 'decline' columns respectively. The 'season' column briefly states the most clear/noteworthy pattern(s) when looking at how the correlations are divided up by season. The same is done in the 'region' column. The last column, 'story', gives a TRUE/FALSE if I think the variable has a story to tell. Something worth pursuing further. Particularly to see if the variables relate strongly to other variables, not just temperature. This then could provide a framework for determining 'types' of MHWs (e.g. strong SSS change with strong latent heat flux).")
 ```
 
 With a table organised by each variable, it makes sense to also create a table organised by season, and another by region.
