@@ -427,7 +427,7 @@ div.section {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2020-04-22
+<strong>Last updated:</strong> 2020-04-29
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -518,10 +518,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtree2af28b49834dffdb548bc799d21133780284e609targetblank2af28b4a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/robwschlegel/MHWflux/tree/2af28b49834dffdb548bc799d21133780284e609" target="_blank">2af28b4</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtreee3591eb8d633180f8c72ba999d11eeea7fb0483dtargetblanke3591eba"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/robwschlegel/MHWflux/tree/e3591eb8d633180f8c72ba999d11eeea7fb0483d" target="_blank">e3591eb</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtree2af28b49834dffdb548bc799d21133780284e609targetblank2af28b4a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtreee3591eb8d633180f8c72ba999d11eeea7fb0483dtargetblanke3591eba" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -530,6 +530,13 @@ Great! You are using Git for version control. Tracking code development and conn
 Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
+
+Untracked files:
+    Untracked:  shiny/res_table.csv
+
+Unstaged changes:
+    Modified:   shiny/app.R
+    Modified:   shiny/rsconnect/shinyapps.io/robert-schlegel/MHWflux.dcf
 
 </code></pre>
 <p>
@@ -568,6 +575,57 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/bc4ee87c0074d22538e8437ac26b25fdc8c74545/analysis/data-prep.Rmd" target="_blank">bc4ee87</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-04-28
+</td>
+<td>
+Added more functionality to app. Added cloud coverage, speds, and precip-evap.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/29eb557406fe567f68bdd9096d93868752ab81c7/analysis/data-prep.Rmd" target="_blank">29eb557</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-04-27
+</td>
+<td>
+Much progress on shiny app
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/robwschlegel/MHWflux/7c043116bb0cc6102efc9fffb499b0029726650e/docs/data-prep.html" target="_blank">7c04311</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-04-22
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -961,7 +1019,9 @@ doParallel::registerDoParallel(cores = 25)
 GLORYS_files &lt;- dir(&quot;../data/GLORYS&quot;, full.names = T, pattern = &quot;MHWflux&quot;)
 system.time(
 GLORYS_all_ts &lt;- load_all_GLORYS_region(GLORYS_files) %&gt;% 
-  dplyr::arrange(region, t)
+  dplyr::arrange(region, t) %&gt;% 
+  mutate(cur_spd = round(sqrt(u^2 + v^2), 2),
+         cur_dir = round((270-(atan2(v, u)*(180/pi)))%%360))
 ) # 187 seconds on 25 cores
 saveRDS(GLORYS_all_ts, &quot;data/GLORYS_all_ts.Rda&quot;)</code></pre>
 <p>The code for the ERA5 data. NB: The ERA5 data are on an hourly 0.25x0.25 spatiotemporal grid. This loading process constrains them to a daily 0.25x0.25 grid.</p>
@@ -988,6 +1048,7 @@ GLORYS_region_MHW &lt;- GLORYS_all_ts %&gt;%
 
 # Save
 saveRDS(GLORYS_region_MHW, &quot;data/GLORYS_region_MHW.Rda&quot;)
+saveRDS(GLORYS_region_MHW, &quot;shiny/GLORYS_region_MHW.Rda&quot;)
 
 # The MHW calculations from the NOAA OISST data may be found here:
 OISST_region_MHW &lt;- readRDS(&quot;../MHWNWA/data/OISST_region_MHW.Rda&quot;)</code></pre>
@@ -1002,7 +1063,8 @@ ALL_ts &lt;- left_join(ERA5_all_ts, GLORYS_all_ts, by = c(&quot;region&quot;, &q
 
 # Calculate GLORYS clims and anoms
 ALL_anom &lt;- ALL_ts %&gt;%
-  pivot_longer(msnlwrf:ssh, names_to = &quot;var&quot;, values_to = &quot;val&quot;) %&gt;% 
+  dplyr::select(-wind_dir, -cur_dir) %&gt;% 
+  pivot_longer(msnlwrf:cur_spd, names_to = &quot;var&quot;, values_to = &quot;val&quot;) %&gt;% 
   group_by(region, var) %&gt;%
   nest() %&gt;%
   mutate(clims = map(data, ts2clm, y = val, roundClm = 6,
@@ -1013,7 +1075,8 @@ ALL_anom &lt;- ALL_ts %&gt;%
   ungroup()
 
 # Save
-saveRDS(ALL_anom, &quot;data/ALL_anom.Rda&quot;)</code></pre>
+saveRDS(ALL_anom, &quot;data/ALL_anom.Rda&quot;)
+saveRDS(ALL_anom, &quot;shiny/ALL_anom.Rda&quot;)</code></pre>
 </div>
 <div id="cumulative-heat-flux-terms" class="section level2">
 <h2>Cumulative heat flux terms</h2>
@@ -1025,19 +1088,20 @@ saveRDS(ALL_anom, &quot;data/ALL_anom.Rda&quot;)</code></pre>
 ALL_anom_cum &lt;- ALL_anom %&gt;%
   dplyr::select(region, var, t, anom) %&gt;% 
   pivot_wider(id_cols = c(region, var, t), names_from = var, values_from = anom) %&gt;% 
-  dplyr::select(region:msshf, msl, qnet) %&gt;% 
+  dplyr::select(region:msshf, msl, qnet, tcc, p_e) %&gt;% 
   left_join(GLORYS_MHW_clim[,c(&quot;region&quot;, &quot;t&quot;, &quot;event_no&quot;)], by = c(&quot;region&quot;, &quot;t&quot;)) %&gt;% 
   filter(event_no &gt; 0) %&gt;% 
   group_by(region, event_no) %&gt;% 
   mutate_if(is.numeric, cumsum) %&gt;% 
   ungroup() %&gt;% 
   dplyr::select(region, event_no, t, everything()) %&gt;% 
-  pivot_longer(cols = msnlwrf:qnet, names_to = &quot;var&quot;, values_to = &quot;anom&quot;) %&gt;% 
+  pivot_longer(cols = msnlwrf:p_e, names_to = &quot;var&quot;, values_to = &quot;anom&quot;) %&gt;% 
   mutate(var = paste0(var,&quot;_cum&quot;)) %&gt;% 
   dplyr::select(region, var, event_no, t, anom)
 
 # Save
-saveRDS(ALL_anom_cum, &quot;data/ALL_anom_cum.Rda&quot;)</code></pre>
+saveRDS(ALL_anom_cum, &quot;data/ALL_anom_cum.Rda&quot;)
+saveRDS(ALL_anom_cum, &quot;shiny/ALL_anom_cum.Rda&quot;)</code></pre>
 <pre class="r"><code>ALL_anom_mld &lt;- ALL_anom %&gt;%
   dplyr::select(region, var, t, anom) %&gt;% 
   left_join(GLORYS_all_ts[,c(&quot;region&quot;, &quot;t&quot;, &quot;mld&quot;)], by = c(&quot;region&quot;, &quot;t&quot;)) %&gt;%
@@ -1055,7 +1119,8 @@ saveRDS(ALL_anom_cum, &quot;data/ALL_anom_cum.Rda&quot;)</code></pre>
   dplyr::select(region, var, event_no, t, anom)
 
 # Save
-saveRDS(ALL_anom_mld, &quot;data/ALL_anom_mld.Rda&quot;)</code></pre>
+saveRDS(ALL_anom_mld, &quot;data/ALL_anom_mld.Rda&quot;)
+saveRDS(ALL_anom_mld, &quot;shiny/ALL_anom_mld.Rda&quot;)</code></pre>
 <p>And that’s all there is to it. In the next vignette we will take the periods of time over which MHWs occurred per region and pair those up with the GLORYS and ERA5 data. This will be used to investigate which drivers are best related to the onset and decline of MHWs.</p>
 </div>
 <div id="references" class="section level2">
@@ -1093,32 +1158,35 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
- [1] SDMTools_1.1-221     tidync_0.2.3         heatwaveR_0.4.2.9001
- [4] lubridate_1.7.4      forcats_0.5.0        stringr_1.4.0       
- [7] dplyr_0.8.4          purrr_0.3.3          readr_1.3.1         
-[10] tidyr_1.0.2          tibble_2.1.3         ggplot2_3.2.1       
-[13] tidyverse_1.3.0     
+ [1] SDMTools_1.1-221     ggraph_1.0.2         correlation_0.2.0   
+ [4] tidync_0.2.3         heatwaveR_0.4.2.9001 lubridate_1.7.4     
+ [7] forcats_0.5.0        stringr_1.4.0        dplyr_0.8.4         
+[10] purrr_0.3.3          readr_1.3.1          tidyr_1.0.2         
+[13] tibble_2.1.3         ggplot2_3.2.1        tidyverse_1.3.0     
 
 loaded via a namespace (and not attached):
- [1] httr_1.4.1        jsonlite_1.6.1    viridisLite_0.3.0 foreach_1.4.4    
- [5] R.utils_2.7.0     modelr_0.1.6      assertthat_0.2.1  cellranger_1.1.0 
- [9] yaml_2.2.1        pillar_1.4.3      backports_1.1.5   lattice_0.20-35  
-[13] glue_1.3.1        digest_0.6.25     promises_1.1.0    rvest_0.3.5      
-[17] colorspace_1.4-1  htmltools_0.4.0   httpuv_1.5.2.9000 R.oo_1.22.0      
-[21] pkgconfig_2.0.3   broom_0.5.5       haven_2.2.0       scales_1.1.0     
-[25] whisker_0.4       later_1.0.0       git2r_0.26.1      farver_2.0.3     
-[29] generics_0.0.2    withr_2.1.2       lazyeval_0.2.2    cli_2.0.2        
-[33] magrittr_1.5      crayon_1.3.4      readxl_1.3.1      evaluate_0.14    
-[37] R.methodsS3_1.7.1 fs_1.3.1          ncdf4_1.17        fansi_0.4.1      
-[41] doParallel_1.0.15 nlme_3.1-137      xml2_1.2.2        tools_3.6.3      
-[45] data.table_1.12.8 hms_0.5.3         lifecycle_0.1.0   plotly_4.9.2     
-[49] munsell_0.5.0     reprex_0.3.0      compiler_3.6.3    RNetCDF_2.1-1    
-[53] rlang_0.4.5       grid_3.6.3        iterators_1.0.10  rstudioapi_0.11  
-[57] htmlwidgets_1.5.1 labeling_0.3      rmarkdown_2.1     gtable_0.3.0     
-[61] codetools_0.2-15  DBI_1.0.0         R6_2.4.1          ncmeta_0.2.0     
-[65] knitr_1.28        workflowr_1.6.0   rprojroot_1.3-2   stringi_1.4.6    
-[69] parallel_3.6.3    Rcpp_1.0.3        vctrs_0.2.3       dbplyr_1.4.2     
-[73] tidyselect_1.0.0  xfun_0.12        </code></pre>
+ [1] nlme_3.1-137       fs_1.3.1           doParallel_1.0.15  insight_0.8.3     
+ [5] httr_1.4.1         rprojroot_1.3-2    tools_3.6.3        backports_1.1.5   
+ [9] R6_2.4.1           DBI_1.0.0          lazyeval_0.2.2     colorspace_1.4-1  
+[13] withr_2.1.2        tidyselect_1.0.0   gridExtra_2.3      compiler_3.6.3    
+[17] git2r_0.26.1       cli_2.0.2          rvest_0.3.5        RNetCDF_2.1-1     
+[21] xml2_1.2.2         plotly_4.9.2       labeling_0.3       bayestestR_0.6.0  
+[25] scales_1.1.0       digest_0.6.25      R.utils_2.7.0      rmarkdown_2.1     
+[29] pkgconfig_2.0.3    htmltools_0.4.0    dbplyr_1.4.2       htmlwidgets_1.5.1 
+[33] rlang_0.4.5        readxl_1.3.1       rstudioapi_0.11    generics_0.0.2    
+[37] farver_2.0.3       jsonlite_1.6.1     R.oo_1.22.0        magrittr_1.5      
+[41] ncmeta_0.2.0       parameters_0.6.1   Rcpp_1.0.3         munsell_0.5.0     
+[45] fansi_0.4.1        viridis_0.5.1      R.methodsS3_1.7.1  lifecycle_0.1.0   
+[49] stringi_1.4.6      whisker_0.4        yaml_2.2.1         MASS_7.3-50       
+[53] plyr_1.8.5         grid_3.6.3         parallel_3.6.3     promises_1.1.0    
+[57] ggrepel_0.8.1      crayon_1.3.4       lattice_0.20-35    haven_2.2.0       
+[61] hms_0.5.3          knitr_1.28         pillar_1.4.3       igraph_1.2.2      
+[65] effectsize_0.3.0   codetools_0.2-15   reprex_0.3.0       glue_1.3.1        
+[69] evaluate_0.14      data.table_1.12.8  modelr_0.1.6       foreach_1.4.4     
+[73] vctrs_0.2.3        tweenr_1.0.1       httpuv_1.5.2.9000  cellranger_1.1.0  
+[77] gtable_0.3.0       polyclip_1.10-0    assertthat_0.2.1   xfun_0.12         
+[81] ggforce_0.3.1.9000 broom_0.5.5        later_1.0.0        ncdf4_1.17        
+[85] viridisLite_0.3.0  iterators_1.0.10   workflowr_1.6.0   </code></pre>
 </div>
 </div>
 
