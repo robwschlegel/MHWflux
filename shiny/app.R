@@ -16,6 +16,7 @@ library(tidyr)
 library(ggplot2)
 library(ggraph)
 library(plotly)
+library(see)
 # setwd("shiny")
 
 
@@ -71,6 +72,10 @@ GLORYS_MHW_cats <- GLORYS_region_MHW %>%
     unnest(cats) %>% 
     ungroup()
 
+# List of desired variables
+choose_vars <- c("temp", "bottomT", "sss", "mld", "t2m", "tcc_cum", "p_e_cum", "msl_cum",
+                 "msnlwrf_mld", "msnswrf_mld", "mslhf_mld", "msshf_mld", "qnet_mld")
+
 # Physical variable anomalies
 ALL_anom <- readRDS("ALL_anom.Rda")
 ALL_anom_cum <- readRDS("ALL_anom_cum.Rda")
@@ -80,13 +85,24 @@ ALL_anom_mld <- readRDS("ALL_anom_mld.Rda")
 ALL_anom_full <- rbind(ALL_anom[,c("region", "var", "t", "anom")], 
                        ALL_anom_cum[,c("region", "var", "t", "anom")],
                        ALL_anom_mld[,c("region", "var", "t", "anom")]) %>% 
-  mutate(region = factor(region, levels = c("mab", "gm", "ss", "cbs", "gsl", "nfs")))
+  filter(var %in% choose_vars) %>% 
+  mutate(region = factor(region, levels = c("mab", "gm", "ss", "cbs", "gsl", "nfs")),
+         var = case_when(var == "temp" ~ "SST",
+                         var == "bottomT" ~ "SBT",
+                         var == "sss" ~ "SSS",
+                         var == "mld" ~ "MLD",
+                         var == "t2m" ~ "Air_temp",
+                         var == "tcc_cum" ~ "Cloud_cover_c",
+                         var == "p_e_cum" ~ "Precip_Evap_c",
+                         var == "msl_cum" ~ "MSLP_c",
+                         var == "msnlwrf_mld" ~ "Qlw",
+                         var == "msnswrf_mld" ~ "Qsw",
+                         var == "mslhf_mld" ~ "Qlh",
+                         var == "msshf_mld" ~ "Qsh",
+                         var == "qnet_mld" ~ "Qnet",
+                         TRUE ~ var))
 ALL_anom_full_wide <- ALL_anom_full %>% 
     pivot_wider(values_from = anom, names_from = var)
-
-# List of desired variables
-choose_vars <- c("temp", "bottomT", "sss", "mld", "t2m", "tcc_cum", "p_e_cum", "msl_cum",
-                 "msnlwrf_mld", "msnswrf_mld", "mslhf_mld", "msshf_mld", "qnet_mld")
 
 # The correlations
 ALL_cor <- readRDS("ALL_cor.Rda") %>% 
@@ -99,10 +115,10 @@ ALL_cor <- readRDS("ALL_cor.Rda") %>%
                                 Parameter1 == "bottomT" ~ "SBT",
                                 Parameter1 == "sss" ~ "SSS",
                                 Parameter1 == "mld" ~ "MLD",
-                                Parameter1 == "t2m" ~ "Air temp",
-                                Parameter1 == "tcc_cum" ~ "Cloud cover (c)",
-                                Parameter1 == "p_e_cum" ~ "Precip-Evap (c)",
-                                Parameter1 == "msl_cum" ~ "MSLP (c)",
+                                Parameter1 == "t2m" ~ "Air_temp",
+                                Parameter1 == "tcc_cum" ~ "Cloud_cover_c",
+                                Parameter1 == "p_e_cum" ~ "Precip_Evap_c",
+                                Parameter1 == "msl_cum" ~ "MSLP_c",
                                 Parameter1 == "msnlwrf_mld" ~ "Qlw",
                                 Parameter1 == "msnswrf_mld" ~ "Qsw",
                                 Parameter1 == "mslhf_mld" ~ "Qlh",
@@ -113,10 +129,10 @@ ALL_cor <- readRDS("ALL_cor.Rda") %>%
                                 Parameter2 == "bottomT" ~ "SBT",
                                 Parameter2 == "sss" ~ "SSS",
                                 Parameter2 == "mld" ~ "MLD",
-                                Parameter2 == "t2m" ~ "Air temp",
-                                Parameter2 == "tcc_cum" ~ "Cloud cover (c)",
-                                Parameter2 == "p_e_cum" ~ "Precip-Evap (c)",
-                                Parameter2 == "msl_cum" ~ "MSLP (c)",
+                                Parameter2 == "t2m" ~ "Air_temp",
+                                Parameter2 == "tcc_cum" ~ "Cloud_cover_c",
+                                Parameter2 == "p_e_cum" ~ "Precip_Evap_c",
+                                Parameter2 == "msl_cum" ~ "MSLP_c",
                                 Parameter2 == "msnlwrf_mld" ~ "Qlw",
                                 Parameter2 == "msnswrf_mld" ~ "Qsw",
                                 Parameter2 == "mslhf_mld" ~ "Qlh",
@@ -202,7 +218,13 @@ ui <- dashboardPage(
                                  dropdownButton(
                                      h4("Correlation controls:"),
                                      selectInput(inputId = "vars2", label = "Variables:",
-                                                 choices = levels(ALL_cor$Parameter2), multiple = TRUE, 
+                                                 # choices = list(
+                                                 #   Flux = c("Qnet", "Qlw", "Qsw", "Qlh", "Qsh"),
+                                                 #   Air = c("Air temp", "Cloud cover (c)", "Precip-Evap (c)", "MSLP (c)"),
+                                                 #   Sea = c("SST", "SSS", "MLD", "SBT")
+                                                 # ), 
+                                                 choices = unique(ALL_cor$Parameter2), 
+                                                 multiple = TRUE, 
                                                  selected = c("SST", "Qlw", "Qsw", "Qlh", "Qsh", "Qnet")),
                                      circle = TRUE, status = "danger", icon = icon("gear")),
                                  plotOutput("correlationPlot")),
@@ -218,7 +240,7 @@ ui <- dashboardPage(
                                                  choices = unique(ALL_anom_full$var),
                                                  selected = "SST"),
                                      circle = TRUE, status = "danger", icon = icon("gear")),
-                                 plotlyOutput("scatterPlot")))),
+                                 plotOutput("scatterPlot")))),
             # Test box
             # fluidRow(box(verbatimTextOutput("devel")))),
             
@@ -291,9 +313,14 @@ server <- function(input, output, session) {
 
     # Select variables from a dropdown
     picker_vars <- pickerInput(inputId = "vars", label = "Variables:",
-                              choices = levels(ALL_cor$Parameter2), multiple = TRUE,
-                              options = list(size = 6),
-                              selected = c("Qlw", "Qsw", "Qlh", "Qsh", "Qnet"))
+                               choices = list(
+                                 Flux = c("Qnet", "Qlw", "Qsw", "Qlh", "Qsh"),
+                                 Air = c("Air_temp", "Cloud_cover_c", "Precip_Evap_c", "MSLP_c"),
+                                 Sea = c("SST", "SSS", "MLD", "SBT")
+                                 ), 
+                               multiple = TRUE,
+                               options = list(size = 6),
+                               selected = c("Qlw", "Qsw", "Qlh", "Qsh", "Qnet"))
     
     # Select regions from a dropdown
     picker_regions <- pickerInput(inputId = "regions", label = "Regions:",
@@ -402,7 +429,7 @@ server <- function(input, output, session) {
     cor_data <- reactive({
         req(input$vars); req(input$p_val)
         ALL_cor_sub <- ALL_cor %>% 
-            filter(Parameter1 == "temp",
+            filter(Parameter1 == "SST",
                    Parameter2 %in% input$vars,
                    region %in% input$regions,
                    ts %in% input$ts_multiple,
@@ -475,10 +502,10 @@ server <- function(input, output, session) {
                Qlw >= input$Qlw[1], Qlw <= input$Qlw[2],
                Qsw >= input$Qsw[1], Qsw <= input$Qsw[2],
                # Air filters
-               `Air temp` >= input$air[1], `Air temp` <= input$air[2],
-               `Cloud cover (c)` >= input$cloud[1], `Cloud cover (c)` <= input$cloud[2],
-               `Precip-Evap (c)` >= input$p_e[1], `Precip-Evap (c)` <= input$p_e[2],
-               `MSLP (c)` >= input$MSLP[1], `MSLP (c)` <= input$MSLP[2],
+               Air_temp >= input$air[1], Air_temp <= input$air[2],
+               Cloud_cover_c >= input$cloud[1], Cloud_cover_c <= input$cloud[2],
+               Precip_Evap_c >= input$p_e[1], Precip_Evap_c <= input$p_e[2],
+               MSLP_c >= input$MSLP[1], MSLP_c <= input$MSLP[2],
                # Sea filters
                SBT >= input$SBT[1], SBT <= input$SBT[2],
                SSS >= input$SSS[1], SSS <= input$SSS[2],
@@ -574,7 +601,7 @@ server <- function(input, output, session) {
             scale_x_date(expand = c(0, 0), date_labels = "%b %Y", 
                          limits = c(min(MHW_data$start-61), max(MHW_data$end+61))) +
             scale_y_continuous(expand = c(0,0), limits = c(0, max(MHW_data$i_max)*1.1)) +
-            labs(x = "", y = "Max. Intensity (°C)", title = "MHWS") +
+            labs(x = "", y = "Max. Intensity (°C)") +
             facet_wrap(~region, ncol = 1)
         ggplotly(el, tooltip = "text", dynamicTicks = F) %>% 
             layout(showlegend = FALSE)
@@ -592,7 +619,7 @@ server <- function(input, output, session) {
     output$correlationPlot <- renderPlot({
         req(input$vars2)
         MHW_single() %>%
-            pivot_longer(cols = msnlwrf:qnet_mld) %>% 
+            pivot_longer(cols = c(-region, -t)) %>% 
             filter(name %in% input$vars2) %>%
             pivot_wider(names_from = name, values_from = value) %>% 
             correlation() %>%
@@ -602,13 +629,16 @@ server <- function(input, output, session) {
     # This needs to be fixed
     
     # Scatterplot of two variable during onset, full, or decline of a single event
-    output$scatterPlot <- renderPlotly({
-      sp <- ggplot(data = MHW_single(), aes_string(x = input$scat_x, y = input$scat_y)) +
+    output$scatterPlot <- renderPlot({
+      MHW_single <- MHW_single()
+      sp <- ggplot(data = MHW_single, aes_string(x = input$scat_x, y = input$scat_y)) +
         geom_smooth(method = "lm", formula = 'y ~ x') +
         geom_point(aes(colour = t)) +
+        scale_colour_date(low = "red", high = "blue") +
         labs(colour = "Date")
-      ggplotly(sp, tooltip = "text", dynamicTicks = F) %>% 
-        layout(showlegend = FALSE)
+      sp
+      # ggplotly(sp, tooltip = "text", dynamicTicks = F) %>% 
+      #   layout(showlegend = FALSE)
     })
     
     # Test text output for table interaction
@@ -623,36 +653,39 @@ server <- function(input, output, session) {
     
     # Histogram
     output$histPlot <- renderPlot({
-        req(input$vars); req(input$p_val); req(input$ts_multiple)
-        if(input$fill != "none"){
-            ggplot(cor_data(), aes(x = r)) +
-                geom_vline(aes(xintercept = 0), colour = "red", size = 1) +
-                geom_histogram(aes_string(fill = input$fill), bins = input$bins, position = input$position) +
-                facet_grid(ts ~ Parameter2)
-            } else {
-                ggplot(cor_data(), aes(x = r)) +
-                    geom_vline(aes(xintercept = 0), colour = "red", size = 1) +
-                    geom_histogram(bins = input$bins, position = input$position) +
-                    facet_grid(ts ~ Parameter2)
-            }
-        })
+      req(input$vars); req(input$p_val); req(input$ts_multiple)
+      if(input$fill != "none"){
+        ggplot(cor_data(), aes(x = r)) +
+          geom_vline(aes(xintercept = 0), colour = "red", size = 1) +
+          geom_histogram(aes_string(fill = input$fill), bins = input$bins, position = input$position) +
+          facet_grid(ts ~ Parameter2)
+        } else {
+          ggplot(cor_data(), aes(x = r)) +
+            geom_vline(aes(xintercept = 0), colour = "red", size = 1) +
+            geom_histogram(bins = input$bins, position = input$position) +
+            facet_grid(ts ~ Parameter2)
+          }
+      })
     
     # Boxplot
     output$boxPlot <- renderPlot({
-        req(input$vars); req(input$p_val); req(input$ts_multiple)
-        if(input$fill != "none"){
-            ggplot(cor_data(), aes(x = ts, y = r)) +
-                geom_hline(aes(yintercept = 0), colour = "red", size = 1) +
-                geom_boxplot(aes_string(fill = input$fill), notch = input$notch) +
-                facet_wrap(~Parameter2)
-            } else {
-                ggplot(cor_data(), aes(x = ts, y = r)) +
-                    geom_hline(aes(yintercept = 0), colour = "red", size = 1) +
-                    geom_boxplot(notch = input$notch) +
-                    facet_wrap(~Parameter2)
-            }
-        })
-
+      req(input$vars); req(input$p_val); req(input$ts_multiple)
+      
+      cor_data <- cor_data()
+      
+      if(input$fill != "none"){
+        ggplot(data = cor_data, aes(x = ts, y = r)) +
+          geom_hline(aes(yintercept = 0), colour = "red", size = 1) +
+          geom_boxplot(aes_string(fill = input$fill), notch = input$notch) +
+          facet_wrap(~Parameter2)
+        } else {
+          ggplot(data = cor_data, aes(x = ts, y = r)) +
+            geom_hline(aes(yintercept = 0), colour = "red", size = 1) +
+            geom_boxplot(notch = input$notch) +
+            facet_wrap(~Parameter2)
+          }
+      })
+    
     # Lineplot
     output$linePlot <- renderPlot({
         req(input$vars); req(input$p_val); req(input$ts_multiple)
@@ -674,6 +707,7 @@ server <- function(input, output, session) {
 
     # Flavourplot
     output$flavourPlot <- renderPlotly({
+      req(input$ts_single)
       
       flavour_data <- flavour_data()
       
@@ -688,12 +722,14 @@ server <- function(input, output, session) {
       fp <- ggplot(data = flavour_count, aes(x = region, y = season)) +
         geom_point(aes(colour = region, size = sub_count,
                        text = paste0(sub_count,"/",count))) +
-        scale_size(range = c(1, 25), limits = c(0, 19)) +
+        # geom_label(aes(label = paste0(sub_count,"/",count))) +
+        scale_size(range = c(1, 30), limits = c(1, 19)) +
         # scale_y_reverse() +
         # ylim(breaks = c("Spring", "Summer", "Autumn", "Winter")) +
         ylim(breaks = c("Winter", "Spring", "Summer", "Autumn")) +
         labs(x = NULL, y = NULL)
-      ggplotly(fp, tooltip = "text", dynamicTicks = F) %>% 
+      # fp
+      ggplotly(fp, tooltip = "text", dynamicTicks = F) %>%
         layout(showlegend = FALSE)
     })
 
@@ -716,7 +752,7 @@ server <- function(input, output, session) {
     #                                     divided up by season. The same is done in the 'region' column. The last column, 
     #                                     'story', gives a TRUE/FALSE if I think the variable has a story to tell. 
     #                                     Something worth pursuing further. Particularly to see if the variables realte 
-    #                                     strongly to other variables, not just temperature. THis then could provide a 
+    #                                     strongly to other variables, not just temperature. This then could provide a 
     #                                     framework for determining 'types' of MHWs (e.g. strong SSS change with 
     #                                     strong latent heat flux).") #%>% 
     #         # kable_styling("striped", full_width = T) #%>%
