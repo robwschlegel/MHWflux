@@ -73,33 +73,34 @@ GLORYS_MHW_cats <- GLORYS_region_MHW %>%
     ungroup()
 
 # List of desired variables
-choose_vars <- c("temp", "bottomT", "sss", "mld", "t2m", "tcc_cum", "p_e_cum", "msl_cum",
-                 "msnlwrf_mld", "msnswrf_mld", "mslhf_mld", "msshf_mld", "qnet_mld")
+choose_vars <- c("temp", "bottomT", "sss", "mld_cum", "mld_1_cum", "t2m", "tcc_cum", "p_e_cum", "msl_cum",
+                 "msnlwrf_mld_cum", "msnswrf_mld_cum", "mslhf_mld_cum", "msshf_mld_cum", "qnet_mld_cum")
 
 # Physical variable anomalies
 ALL_anom <- readRDS("ALL_anom.Rda")
 ALL_anom_cum <- readRDS("ALL_anom_cum.Rda")
-ALL_anom_mld <- readRDS("ALL_anom_mld.Rda")
+# ALL_anom_mld <- readRDS("ALL_anom_mld.Rda")
 
 # Combine the anomaly dataframes into one
 ALL_anom_full <- rbind(ALL_anom[,c("region", "var", "t", "anom")], 
-                       ALL_anom_cum[,c("region", "var", "t", "anom")],
-                       ALL_anom_mld[,c("region", "var", "t", "anom")]) %>% 
+                       ALL_anom_cum[,c("region", "var", "t", "anom")]) %>% #,
+                       # ALL_anom_mld[,c("region", "var", "t", "anom")]) %>% 
   filter(var %in% choose_vars) %>% 
   mutate(region = factor(region, levels = c("mab", "gm", "ss", "cbs", "gsl", "nfs")),
          var = case_when(var == "temp" ~ "SST",
                          var == "bottomT" ~ "SBT",
                          var == "sss" ~ "SSS",
-                         var == "mld" ~ "MLD",
+                         var == "mld_cum" ~ "MLD_c",
+                         var == "mld_1_cum" ~ "MLD_1_c",
                          var == "t2m" ~ "Air_temp",
                          var == "tcc_cum" ~ "Cloud_cover_c",
                          var == "p_e_cum" ~ "Precip_Evap_c",
                          var == "msl_cum" ~ "MSLP_c",
-                         var == "msnlwrf_mld" ~ "Qlw",
-                         var == "msnswrf_mld" ~ "Qsw",
-                         var == "mslhf_mld" ~ "Qlh",
-                         var == "msshf_mld" ~ "Qsh",
-                         var == "qnet_mld" ~ "Qnet",
+                         var == "msnlwrf_mld_cum" ~ "Qlw",
+                         var == "msnswrf_mld_cum" ~ "Qsw",
+                         var == "mslhf_mld_cum" ~ "Qlh",
+                         var == "msshf_mld_cum" ~ "Qsh",
+                         var == "qnet_mld_cum" ~ "Qnet",
                          TRUE ~ var))
 ALL_anom_full_wide <- ALL_anom_full %>% 
     pivot_wider(values_from = anom, names_from = var)
@@ -114,30 +115,32 @@ ALL_cor <- readRDS("ALL_cor.Rda") %>%
   mutate(Parameter1 = case_when(Parameter1 == "temp" ~ "SST",
                                 Parameter1 == "bottomT" ~ "SBT",
                                 Parameter1 == "sss" ~ "SSS",
-                                Parameter1 == "mld" ~ "MLD",
+                                Parameter1 == "mld_cum" ~ "MLD_c",
+                                Parameter1 == "mld_1_cum" ~ "MLD_1_c",
                                 Parameter1 == "t2m" ~ "Air_temp",
                                 Parameter1 == "tcc_cum" ~ "Cloud_cover_c",
                                 Parameter1 == "p_e_cum" ~ "Precip_Evap_c",
                                 Parameter1 == "msl_cum" ~ "MSLP_c",
-                                Parameter1 == "msnlwrf_mld" ~ "Qlw",
-                                Parameter1 == "msnswrf_mld" ~ "Qsw",
-                                Parameter1 == "mslhf_mld" ~ "Qlh",
-                                Parameter1 == "msshf_mld" ~ "Qsh",
-                                Parameter1 == "qnet_mld" ~ "Qnet",
+                                Parameter1 == "msnlwrf_mld_cum" ~ "Qlw",
+                                Parameter1 == "msnswrf_mld_cum" ~ "Qsw",
+                                Parameter1 == "mslhf_mld_cum" ~ "Qlh",
+                                Parameter1 == "msshf_mld_cum" ~ "Qsh",
+                                Parameter1 == "qnet_mld_cum" ~ "Qnet",
                                 TRUE ~ Parameter1),
          Parameter2 = case_when(Parameter2 == "temp" ~ "SST",
                                 Parameter2 == "bottomT" ~ "SBT",
                                 Parameter2 == "sss" ~ "SSS",
-                                Parameter2 == "mld" ~ "MLD",
+                                Parameter2 == "mld_cum" ~ "MLD_c",
+                                Parameter2 == "mld_1_cum" ~ "MLD_1_c",
                                 Parameter2 == "t2m" ~ "Air_temp",
                                 Parameter2 == "tcc_cum" ~ "Cloud_cover_c",
                                 Parameter2 == "p_e_cum" ~ "Precip_Evap_c",
                                 Parameter2 == "msl_cum" ~ "MSLP_c",
-                                Parameter2 == "msnlwrf_mld" ~ "Qlw",
-                                Parameter2 == "msnswrf_mld" ~ "Qsw",
-                                Parameter2 == "mslhf_mld" ~ "Qlh",
-                                Parameter2 == "msshf_mld" ~ "Qsh",
-                                Parameter2 == "qnet_mld" ~ "Qnet",
+                                Parameter2 == "msnlwrf_mld_cum" ~ "Qlw",
+                                Parameter2 == "msnswrf_mld_cum" ~ "Qsw",
+                                Parameter2 == "mslhf_mld_cum" ~ "Qlh",
+                                Parameter2 == "msshf_mld_cum" ~ "Qsh",
+                                Parameter2 == "qnet_mld_cum" ~ "Qnet",
                                 TRUE ~ Parameter2))
 
 # Corners of the study area
@@ -221,7 +224,7 @@ ui <- dashboardPage(
                                                  # choices = list(
                                                  #   Flux = c("Qnet", "Qlw", "Qsw", "Qlh", "Qsh"),
                                                  #   Air = c("Air temp", "Cloud cover (c)", "Precip-Evap (c)", "MSLP (c)"),
-                                                 #   Sea = c("SST", "SSS", "MLD", "SBT")
+                                                 #   Sea = c("SST", "SSS", "MLD", "MLD_1", "SBT")
                                                  # ), 
                                                  choices = unique(ALL_cor$Parameter2), 
                                                  multiple = TRUE, 
@@ -316,7 +319,7 @@ server <- function(input, output, session) {
                                choices = list(
                                  Flux = c("Qnet", "Qlw", "Qsw", "Qlh", "Qsh"),
                                  Air = c("Air_temp", "Cloud_cover_c", "Precip_Evap_c", "MSLP_c"),
-                                 Sea = c("SST", "SSS", "MLD", "SBT")
+                                 Sea = c("SST", "SSS", "MLD_c", "MLD_1_c", "SBT")
                                  ), 
                                multiple = TRUE,
                                options = list(size = 6),
@@ -376,8 +379,10 @@ server <- function(input, output, session) {
                               min = -1, max = 1, value = c(-1, 1), step = 0.1)
     slider_SSS <- sliderInput(inputId = "SSS", label = "SSS:",
                               min = -1, max = 1, value = c(-1, 1), step = 0.1)
-    slider_MLD <- sliderInput(inputId = "MLD", label = "MLD:",
+    slider_MLD <- sliderInput(inputId = "MLD", label = "MLD (c):",
                               min = -1, max = 1, value = c(-1, 1), step = 0.1)
+    slider_MLD_1 <- sliderInput(inputId = "MLD_1", label = "1/MLD (c):",
+                                min = -1, max = 1, value = c(-1, 1), step = 0.1)
     
     # Filter events by air variables
     slider_air <- sliderInput(inputId = "air", label = "Air temp:",
@@ -403,7 +408,7 @@ server <- function(input, output, session) {
     output$sea <- renderUI({
       dropdownButton(status = "primary", icon = icon("tint"), circle = TRUE, 
                      tooltip = TRUE, label = "Sea", inline = T,
-                     slider_SBT, slider_SSS, slider_MLD)
+                     slider_SBT, slider_SSS, slider_MLD, slider_MLD_1)
     })
     
     # The chosen controls per tab
@@ -509,7 +514,8 @@ server <- function(input, output, session) {
                # Sea filters
                SBT >= input$SBT[1], SBT <= input$SBT[2],
                SSS >= input$SSS[1], SSS <= input$SSS[2],
-               MLD >= input$MLD[1], MLD <= input$MLD[2])
+               MLD_c >= input$MLD[1], MLD_c <= input$MLD[2],
+               MLD_1_c >= input$MLD_1[1], MLD_1_c <= input$MLD_1[2])
       return(flavour_data)
     })
     

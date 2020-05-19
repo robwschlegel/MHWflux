@@ -84,12 +84,12 @@ GLORYS_MHW_cats <- GLORYS_region_MHW %>%
 # Physical variable anomalies
 ALL_anom <- readRDS("data/ALL_anom.Rda")
 ALL_anom_cum <- readRDS("data/ALL_anom_cum.Rda")
-ALL_anom_mld <- readRDS("data/ALL_anom_mld.Rda")
+# ALL_anom_mld <- readRDS("data/ALL_anom_mld.Rda")
 
 # Combine the anomaly dataframes into one
 ALL_anom_full <- rbind(ALL_anom[,c("region", "var", "t", "anom")], 
-                       ALL_anom_cum[,c("region", "var", "t", "anom")],
-                       ALL_anom_mld[,c("region", "var", "t", "anom")])
+                       ALL_anom_cum[,c("region", "var", "t", "anom")])#,
+                       # ALL_anom_mld[,c("region", "var", "t", "anom")])
 ALL_anom_full_wide <- ALL_anom_full %>% 
   pivot_wider(values_from = anom, names_from = var)
 
