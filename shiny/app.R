@@ -344,7 +344,7 @@ server <- function(input, output, session) {
                                     choices = levels(ALL_cor$ts), multiple = FALSE,
                                     selected = "onset")
     
-    # Radio buttons to choose fill f histograms and boxplots
+    # Radio buttons to choose fill of histograms and boxplots
     radio_fill <- prettyRadioButtons(inputId = "fill", label = "Grouping:", 
                                      choices = c("region", "season", "none"),
                                      selected = "none", inline = T,
