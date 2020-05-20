@@ -150,6 +150,13 @@ Another thought now was to show the summary stats of the r results by MHW metric
 
 ```
 
+Here is a heat map of important variables ordered by MHW length.
+
+```{r}
+
+```
+
+
 I'm starting to think I'm going to need to cluster these results in order to make the results more manageable.
 
 ## Results

@@ -27,7 +27,11 @@ All of the libraries and functions used in this vignette, and the project more b
 ```{r satrtup}
 # get everything up and running in one go
 source("code/functions.R")
-library(SDMTools) # For finding points within polygons
+library(ggpubr)
+library(gridExtra)
+  # NB: This package was removed from CRAN :(
+  # It may be downloaded manually at: https://cran.r-project.org/src/contrib/Archive/SDMTools/
+# library(SDMTools) # For finding points within polygons
 ```
 
 ## Study area
@@ -139,8 +143,6 @@ The code for the ERA5 data. NB: The ERA5 data are on an hourly 0.25x0.25 spatiot
 
 We will be using the SST value from GLORYS for calculating the MHWs and will use the standard Hobday definition with a base period of 1993-01-01 to 2018-12-25. We are using an uneven length year as the data do not quite extend to the end of December. It was decided that the increased accuracy of the climatology from the 2018 year outweighed the negative consideration of having a clim period that excludes a few days of winter.
 
-Ke pointed out however that it may be better to use the NOAA OISST data. The reasoning being that because we are not fully closing the heat budget with GLORYS, there is no particular benefit to using the SST data from that modelled ensemble product. Rather it would be better to use the remotely observed NOAA OISST product as this is a more direct measure of the surface temperature of the ocean.
-
 ```{r MHW-calc, eval=FALSE}
 # Load the data
 GLORYS_all_ts <- readRDS("data/GLORYS_all_ts.Rda")
@@ -159,10 +161,175 @@ GLORYS_region_MHW <- GLORYS_all_ts %>%
 # Save
 saveRDS(GLORYS_region_MHW, "data/GLORYS_region_MHW.Rda")
 saveRDS(GLORYS_region_MHW, "shiny/GLORYS_region_MHW.Rda")
-
-# The MHW calculations from the NOAA OISST data may be found here:
-OISST_region_MHW <- readRDS("../MHWNWA/data/OISST_region_MHW.Rda")
 ```
+
+Ke pointed out however that it may be better to use the NOAA OISST data. The reasoning being that because we are not fully closing the heat budget with GLORYS, there is no particular benefit to using the SST data from that modelled ensemble product. Rather it would be better to use the remotely observed NOAA OISST product as this is a more direct measure of the surface temperature of the ocean. Then again, there is a lot of benefit to just using two products instead of three. Particularly considering that all of the marine variables used here come from the GLORYS product. To that end the GLORYS and OISST MHWs must be compared to see if they are markedly different. If not, we will use the GLORYS SST data.
+
+```{r GLORYS-OISST-comp}
+# Load the MHW calculations from the NOAA OISST data
+OISST_region_MHW <- readRDS("../MHWNWA/data/OISST_region_MHW.Rda")
+
+# Load the GLORYS MHW data
+GLORYS_region_MHW <- readRDS("data/GLORYS_region_MHW.Rda")
+
+# Extract the time series
+OISST_MHW_clim <- OISST_region_MHW %>%
+  select(-cats) %>%
+  unnest(events) %>%
+  filter(row_number() %% 2 == 1) %>%
+  unnest(events) %>% 
+  mutate(product = "OISST")
+GLORYS_MHW_clim <- GLORYS_region_MHW %>%
+  select(-cats) %>%
+  unnest(events) %>%
+  filter(row_number() %% 2 == 1) %>%
+  unnest(events) %>% 
+  mutate(product = "GLORYS")
+MHW_clim <- rbind(OISST_MHW_clim, GLORYS_MHW_clim) %>% 
+  mutate(anom = temp-seas)
+
+# Extract the events
+OISST_MHW_event <- OISST_region_MHW %>%
+  select(-cats) %>%
+  unnest(events) %>%
+  filter(row_number() %% 2 == 0) %>%
+  unnest(events) %>% 
+  mutate(product = "OISST")
+GLORYS_MHW_event <- GLORYS_region_MHW %>%
+  select(-cats) %>%
+  unnest(events) %>%
+  filter(row_number() %% 2 == 0) %>%
+  unnest(events) %>% 
+  mutate(product = "GLORYS")
+MHW_event <- rbind(OISST_MHW_event, GLORYS_MHW_event) %>% 
+  mutate(month_peak = lubridate::month(date_peak, label = T),
+         season = case_when(month_peak %in% c("Jan", "Feb", "Mar") ~ "Winter",
+                            month_peak %in% c("Apr", "May", "Jun") ~ "Spring",
+                            month_peak %in% c("Jul", "Aug", "Sep") ~ "Summer",
+                            month_peak %in% c("Oct", "Nov", "Dec") ~ "Autumn"),
+         season = factor(season, levels = c("Spring", "Summer", "Autumn", "Winter"))) %>%
+  select(-month_peak)
+
+# Compare time series
+MHW_clim_wide <- MHW_clim %>% 
+  dplyr::select(product, region, doy, t, anom) %>% 
+  pivot_wider(names_from = product, values_from = anom) %>% 
+  mutate(t_diff = OISST-GLORYS)
+MHW_clim_wide_monthly <- MHW_clim_wide %>% 
+  mutate(t = round_date(t, unit = "month")) %>%
+  group_by(region, t) %>% 
+  summarise(t_diff = mean(t_diff, na.rm = T))
+
+# Plot regional anomaly comparison
+ts_comp <- ggplot(data = MHW_clim_wide, aes(x = t, y = t_diff)) +
+  geom_line(aes(colour = region), alpha = 0.5, show.legend = F) +
+  geom_line(data = MHW_clim_wide_monthly, show.legend = F,
+            aes(colour = region)) +
+  geom_smooth(method = "lm", show.legend = F) +
+  facet_wrap(~region) +
+  labs(x = "Date", y = "OISST anom. - GLORYS anom.", 
+       title = "Daily anomaly comparisons", 
+       subtitle = paste0("Faint line shows daily differences, bold line shows monthly.",
+                         "\nStraight blue line shows linear trend in daily differences."))
+
+# Plot the comparison of the seasonal and threshold signals
+seas_thresh_comp <- MHW_clim %>% 
+  dplyr::select(product, region, doy, seas, thresh) %>%
+  unique() %>% 
+  pivot_wider(names_from = product, values_from = c(seas, thresh)) %>% 
+  mutate(seas_diff = seas_OISST-seas_GLORYS,
+         thresh_diff = thresh_OISST-thresh_GLORYS) %>% 
+  ggplot(aes(x = doy)) +
+  geom_line(aes(y = seas_diff, colour = region), linetype = "solid", show.legend = F) +
+  geom_line(aes(y = thresh_diff, colour = region), linetype = "dashed", show.legend = F) +
+  facet_wrap(~region) +
+  labs(x = "Day-of-year (doy)", y = "OISST clim. - GLORYS clim.",
+       title = "Difference per day-of-year (doy)",
+       subtitle = paste0("Solid line shows seasonal climatology,",
+                         "\ndashed line shows threshold."))
+
+
+# Plot average doy difference histogram
+doy_comp <- MHW_clim_wide %>%
+  group_by(region, doy) %>% 
+  summarise(doy_diff = mean(t_diff)) %>% 
+  ggplot(aes(x = doy_diff)) +
+  geom_histogram(aes(fill = region), bins = 20, show.legend = F) +
+  facet_wrap(~region) +
+  labs(x = "Mean difference (OISST - GLORYS) per doy",
+       title = "Distribution of mean differences per doy")
+
+# Combine
+OISST_GLORYS_ts_comp <- ggarrange(ts_comp,
+                                  ggarrange(seas_thresh_comp, doy_comp, ncol = 2, nrow = 1, align = "hv", labels = c("B", "C")),
+                                  nrow = 2, labels = "A", align = "hv")
+# ggsave(plot = OISST_GLORYS_ts_comp, filename = "output/OISST_GLORYS_ts_comp.png", height = 8, width = 10)
+
+# Compare MHW results
+MHW_event_comp <- MHW_event %>% 
+  group_by(product, region) %>% 
+  summarise(event_count = n(),
+            dur = mean(duration),
+            int_mean = mean(intensity_mean),
+            int_cum_mean = mean(intensity_cumulative),
+            int_max = max(intensity_max),
+            onset = mean(rate_onset),
+            decline = mean(rate_decline)) %>% 
+  ungroup() %>%
+  arrange(region, product) %>% 
+  mutate_if(is.numeric, round, 2) #%>% 
+  # pivot_wider(names_from = product, values_from = c(event_count:decline))
+  # tableGrob(rows = NULL)
+
+event_count_table <- MHW_event_comp %>% 
+  dplyr::select(product:event_count) %>% 
+  pivot_wider(names_from = region, values_from = event_count) %>% 
+  tableGrob(rows = NULL)
+
+# Boxplot of key variables
+box_comp <- MHW_event %>% 
+  dplyr::select(product, region, duration, intensity_mean,
+                intensity_cumulative, intensity_max, rate_onset, rate_decline) %>% 
+  pivot_longer(cols = duration:rate_decline) %>% 
+  ggplot(aes(x = region, y = value, fill = region)) +
+  geom_boxplot(aes(colour = product), notch = TRUE) +
+  scale_colour_manual(values = c("black", "red")) +
+  facet_wrap(~name, scales = "free_y") +
+  labs(fill = "Region", colour = "Product", x = NULL, y = "Value fo given facet",
+       title = "Boxplots showing range of values for MHWs in each region")
+# box_comp
+
+OISST_GLORYS_MHW_comp <- ggarrange(box_comp, event_count_table, ncol = 1, nrow = 2, 
+                                   heights = c(8, 1), labels = c("A", "B"), align = "hv")
+# ggsave(plot = OISST_GLORYS_MHW_comp, filename = "output/OISST_GLORYS_MHW_comp.png", height = 8, width = 10)
+
+# Seasons within regions
+MHW_event_season_comp <- MHW_event %>% 
+  group_by(product, region, season) %>% 
+  summarise(event_count = n(),
+            dur = mean(duration),
+            int_mean = mean(intensity_mean),
+            int_cum_mean = mean(intensity_cumulative),
+            int_max = max(intensity_max),
+            onset = mean(rate_onset),
+            decline = mean(rate_decline)) %>% 
+  ungroup() %>%
+  arrange(region, season, product) %>% 
+  mutate_if(is.numeric, round, 2)
+knitr::kable(MHW_event_season_comp)
+
+# Compare top 3 events per region
+MHW_event_top <- MHW_event %>% 
+  dplyr::select(product, everything()) %>% 
+  group_by(product, region) %>% 
+  dplyr::top_n(3, intensity_cumulative) %>% 
+  ungroup() %>% 
+  arrange(region, product) %>% 
+    dplyr::select(product, region, event_no, date_start, date_peak, date_end, duration, 
+                  intensity_mean, intensity_cumulative, intensity_max, rate_onset, rate_decline)
+knitr::kable(MHW_event_top)
+```
+
 
 ## Clims + anoms per variable
 
