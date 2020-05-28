@@ -265,6 +265,23 @@ events_cor_SOM %>%
   scale_fill_gradient2(low = "blue", high = "red") +
   coord_cartesian(expand = F) +
   labs(y = NULL, fill = "r (mean)")
+
+# Boxplots for correlation values only
+events_cor_SOM %>% 
+  dplyr::select(node, ts, bottomT:qnet_mld_cum) %>% 
+  mutate(node = as.factor(node)) %>% 
+  group_by(node, ts) %>%
+  # summarise_if(is.numeric, mean) %>% 
+  # dplyr::select(duration) %>% 
+  pivot_longer(cols = bottomT:qnet_mld_cum) %>%
+  filter(name != "temp",
+         ts != "full") %>%
+  ggplot(aes(x = node, y = value)) +
+  geom_boxplot(aes(fill = ts)) +
+  facet_wrap(~name, scales = "free") +
+  # scale_fill_gradient2(low = "blue", high = "red") +
+  coord_cartesian(expand = F) +
+  labs(y = NULL, fill = "time series\nsection")
 ```
 
 Some important patterns come through when we look at the summary correlation and MHW metric results when grouped into their SOM nodes. This is as far as the numeric results will go. From here out it is necessary for a human to look at these summary results with the SOM node results to discern the meaning of the combined results.
