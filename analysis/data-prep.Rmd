@@ -20,7 +20,7 @@ knitr::opts_chunk$set(fig.width = 8, fig.align = 'center',
 
 ## Introduction
 
-Much of the code in this vignette is taken entirely or partially from the [study area prep](https://robwschlegel.github.io/MHWNWA/polygon-prep.html), the [MHW prep](https://robwschlegel.github.io/MHWNWA/sst-prep.html), and the [gridded data prep](https://robwschlegel.github.io/MHWNWA/var-prep.html) vignettes from the drivers of MHWs in the NW Atlantic [project](https://robwschlegel.github.io/MHWNWA/index.html). Because this process has already been established we are going to put it all together in this one vignette in a more streamlined manner.
+Much of the code in this vignette is taken entirely or partially from the [study area prep](https://robwschlegel.github.io/MHWNWA/polygon-prep.html), the [MHW prep](https://robwschlegel.github.io/MHWNWA/sst-prep.html), and the [gridded data prep](https://robwschlegel.github.io/MHWNWA/var-prep.html) vignettes from the drivers of MHWs in the [NW Atlantic project](https://robwschlegel.github.io/MHWNWA/index.html). Because this process has already been established we are going to put it all together in this one vignette in a more streamlined manner.
 
 All of the libraries and functions used in this vignette, and the project more broadly may be found [here](https://github.com/robwschlegel/MHWflux/blob/master/code/functions.R).
 
@@ -141,7 +141,7 @@ The code for the ERA5 data. NB: The ERA5 data are on an hourly 0.25x0.25 spatiot
 
 ## MHWs per region
 
-We will be using the SST value from GLORYS for calculating the MHWs and will use the standard Hobday definition with a base period of 1993-01-01 to 2018-12-25. We are using an uneven length year as the data do not quite extend to the end of December. It was decided that the increased accuracy of the climatology from the 2018 year outweighed the negative consideration of having a clim period that excludes a few days of winter.
+We will be using the SST values from GLORYS for calculating the MHWs and will use the standard Hobday definition with a base period of 1993-01-01 to 2018-12-25. We are using an uneven length year as the data do not quite extend to the end of December. It was decided that the increased accuracy of the climatology from the 2018 year outweighed the negative consideration of having a clim period that excludes a few days of winter.
 
 ```{r MHW-calc, eval=FALSE}
 # Load the data
@@ -263,6 +263,7 @@ doy_comp <- MHW_clim_wide %>%
 OISST_GLORYS_ts_comp <- ggarrange(ts_comp,
                                   ggarrange(seas_thresh_comp, doy_comp, ncol = 2, nrow = 1, align = "hv", labels = c("B", "C")),
                                   nrow = 2, labels = "A", align = "hv")
+OISST_GLORYS_ts_comp
 # ggsave(plot = OISST_GLORYS_ts_comp, filename = "output/OISST_GLORYS_ts_comp.png", height = 8, width = 10)
 
 # Compare MHW results
@@ -295,12 +296,13 @@ box_comp <- MHW_event %>%
   geom_boxplot(aes(colour = product), notch = TRUE) +
   scale_colour_manual(values = c("black", "red")) +
   facet_wrap(~name, scales = "free_y") +
-  labs(fill = "Region", colour = "Product", x = NULL, y = "Value fo given facet",
+  labs(fill = "Region", colour = "Product", x = NULL, y = "Value for given facet",
        title = "Boxplots showing range of values for MHWs in each region")
 # box_comp
 
 OISST_GLORYS_MHW_comp <- ggarrange(box_comp, event_count_table, ncol = 1, nrow = 2, 
                                    heights = c(8, 1), labels = c("A", "B"), align = "hv")
+OISST_GLORYS_MHW_comp
 # ggsave(plot = OISST_GLORYS_MHW_comp, filename = "output/OISST_GLORYS_MHW_comp.png", height = 8, width = 10)
 
 # Seasons within regions
@@ -330,6 +332,7 @@ MHW_event_top <- MHW_event %>%
 knitr::kable(MHW_event_top)
 ```
 
+From the figures and tables output from this comparison analysis we may see that there are some larger differences than were expected. Most importantly perhaps is the the MHWs in the OISST data are more numerous, intense, and shorter in duration. It appears that the GLORYS data assimilation methodology smooths the data more than what we see in the remotely sensed SST. I think it still best to use the GLORYS data as the SST should match more closely to the flux terms considering they are also likely smoothed more than a different more direct sensing would report. In the peer-reviewed write-up this difference between OISST and GLORYS smoothness will need to be discussed.
 
 ## Clims + anoms per variable
 
@@ -342,13 +345,16 @@ ERA5_all_ts <- readRDS("data/ERA5_all_ts.Rda")
 ALL_ts <- left_join(ERA5_all_ts, GLORYS_all_ts, by = c("region", "t"))
 
 # Calculate GLORYS clims and anoms
+  # Also give better names to the variables
 ALL_anom <- ALL_ts %>%
+  dplyr::rename(lwr = msnlwrf, swr = msnswrf, lhf = mslhf, 
+                shf = msshf, mslp = msl, sst = temp) %>% 
   dplyr::select(-wind_dir, -cur_dir) %>% 
   mutate(qnet_mld = qnet/(mld*1042*4000),
-         msnlwrf_mld = msnlwrf/(mld*1042*4000),
-         msnswrf_mld = msnswrf/(mld*1042*4000),
-         mslhf_mld = mslhf/(mld*1042*4000),
-         msshf_mld = msshf/(mld*1042*4000),
+         lwr_mld = lwr/(mld*1042*4000),
+         swr_mld = swr/(mld*1042*4000),
+         lhf_mld = lhf/(mld*1042*4000),
+         shf_mld = shf/(mld*1042*4000),
          mld_1 = 1/mld) %>% 
   pivot_longer(cols = c(-region, -t), names_to = "var", values_to = "val") %>% 
   group_by(region, var) %>%
@@ -367,9 +373,9 @@ saveRDS(ALL_anom, "shiny/ALL_anom.Rda")
 
 ## Cumulative heat flux terms
 
-We also need to create cumulative heatflux terms. This is done by taking the first day during the MHW and adding them to each other as we go along. This daily cumulative product should then be divided by the MLD on that day. This approximates the air-sea flux term. We also need water density and specific heat constant. Q/(rho x Cp x hmld). rho = 1042, Cp ~= 4000. And then these daily air-sea flux values are added together each day to create the cumulative flux time series. This is done for Qnet, not the individual terms. I think it would also be useful to calculate the rate of change of the cumulative heat-flux term.
+We also need to create cumulative heatflux terms as well as a few other choice variables. This is done by taking the first day during the MHW and adding the daily values together cummulatively until the end of the event. The daily values are first divided by the MLD on that day as seen above. The MLD value used to divide the daily variables accounts for the water density and specific heat constant: Q/(rho x Cp x hmld), where rho = 1042 and Cp ~= 4000. Th Qnet term calculated this way approximates the air-sea flux term.
 
-The movement terms aren't very useful and may not be worth including as they don't really show advection. So rather one can say that the parts of the heating that aren't explained by anything else could be attributed to advection through the process of elimination.
+The movement terms aren't very useful and may not be worth including as they don't really show advection. So rather one can say that the parts of the heating that aren't explained by anything else could be attributed to advection through the process of elimination. For the mment they are still left in here.
 
 ```{r cum-heat-flux, eval=FALSE}
 # We're going to switch over to the NOAA OISST data for MHWs now
@@ -378,7 +384,7 @@ The movement terms aren't very useful and may not be worth including as they don
 ALL_anom_cum <- ALL_anom %>%
   dplyr::select(region, var, t, anom) %>% 
   pivot_wider(id_cols = c(region, var, t), names_from = var, values_from = anom) %>% 
-  dplyr::select(region:tcc, msl, qnet, p_e, mld, mld_1, qnet_mld:msshf_mld) %>% 
+  dplyr::select(region:tcc, mslp, qnet, p_e, mld, mld_1, qnet_mld:shf_mld) %>% 
   left_join(GLORYS_MHW_clim[,c("region", "t", "event_no")], by = c("region", "t")) %>% 
   filter(event_no > 0) %>% 
   group_by(region, event_no) %>% 
@@ -394,7 +400,7 @@ saveRDS(ALL_anom_cum, "data/ALL_anom_cum.Rda")
 saveRDS(ALL_anom_cum, "shiny/ALL_anom_cum.Rda")
 ```
 
-And that's all there is to it. In the next vignette we will take the periods of time over which MHWs occurred per region and pair those up with the GLORYS and ERA5 data. This will be used to investigate which drivers are best related to the onset and decline of MHWs.
+In the next vignette we will take the periods of time over which MHWs occurred per region and pair those up with the GLORYS and ERA5 data. This will be used to investigate which drivers are best related to the onset and decline of MHWs.
 
 ## References
 

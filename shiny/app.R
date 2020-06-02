@@ -73,8 +73,8 @@ GLORYS_MHW_cats <- GLORYS_region_MHW %>%
     ungroup()
 
 # List of desired variables
-choose_vars <- c("temp", "bottomT", "sss", "mld_cum", "mld_1_cum", "t2m", "tcc_cum", "p_e_cum", "msl_cum",
-                 "msnlwrf_mld_cum", "msnswrf_mld_cum", "mslhf_mld_cum", "msshf_mld_cum", "qnet_mld_cum")
+choose_vars <- c("sst", "bottomT", "sss", "mld_cum", "mld_1_cum", "t2m", "tcc_cum", "p_e_cum", "mslp_cum",
+                 "lwr_mld_cum", "swr_mld_cum", "lhf_mld_cum", "shf_mld_cum", "qnet_mld_cum")
 
 # Physical variable anomalies
 ALL_anom <- readRDS("ALL_anom.Rda")
@@ -87,7 +87,7 @@ ALL_anom_full <- rbind(ALL_anom[,c("region", "var", "t", "anom")],
                        # ALL_anom_mld[,c("region", "var", "t", "anom")]) %>% 
   filter(var %in% choose_vars) %>% 
   mutate(region = factor(region, levels = c("mab", "gm", "ss", "cbs", "gsl", "nfs")),
-         var = case_when(var == "temp" ~ "SST",
+         var = case_when(var == "sst" ~ "SST",
                          var == "bottomT" ~ "SBT",
                          var == "sss" ~ "SSS",
                          var == "mld_cum" ~ "MLD_c",
@@ -95,11 +95,11 @@ ALL_anom_full <- rbind(ALL_anom[,c("region", "var", "t", "anom")],
                          var == "t2m" ~ "Air_temp",
                          var == "tcc_cum" ~ "Cloud_cover_c",
                          var == "p_e_cum" ~ "Precip_Evap_c",
-                         var == "msl_cum" ~ "MSLP_c",
-                         var == "msnlwrf_mld_cum" ~ "Qlw",
-                         var == "msnswrf_mld_cum" ~ "Qsw",
-                         var == "mslhf_mld_cum" ~ "Qlh",
-                         var == "msshf_mld_cum" ~ "Qsh",
+                         var == "mslp_cum" ~ "MSLP_c",
+                         var == "lwr_mld_cum" ~ "Qlw",
+                         var == "swr_mld_cum" ~ "Qsw",
+                         var == "lhf_mld_cum" ~ "Qlh",
+                         var == "shf_mld_cum" ~ "Qsh",
                          var == "qnet_mld_cum" ~ "Qnet",
                          TRUE ~ var))
 ALL_anom_full_wide <- ALL_anom_full %>% 
@@ -112,7 +112,7 @@ ALL_cor <- readRDS("ALL_cor.Rda") %>%
          Parameter2 = as.character(Parameter2)) %>% 
   filter(Parameter1 %in% choose_vars,
          Parameter2 %in% choose_vars) %>% 
-  mutate(Parameter1 = case_when(Parameter1 == "temp" ~ "SST",
+  mutate(Parameter1 = case_when(Parameter1 == "sst" ~ "SST",
                                 Parameter1 == "bottomT" ~ "SBT",
                                 Parameter1 == "sss" ~ "SSS",
                                 Parameter1 == "mld_cum" ~ "MLD_c",
@@ -120,14 +120,14 @@ ALL_cor <- readRDS("ALL_cor.Rda") %>%
                                 Parameter1 == "t2m" ~ "Air_temp",
                                 Parameter1 == "tcc_cum" ~ "Cloud_cover_c",
                                 Parameter1 == "p_e_cum" ~ "Precip_Evap_c",
-                                Parameter1 == "msl_cum" ~ "MSLP_c",
-                                Parameter1 == "msnlwrf_mld_cum" ~ "Qlw",
-                                Parameter1 == "msnswrf_mld_cum" ~ "Qsw",
-                                Parameter1 == "mslhf_mld_cum" ~ "Qlh",
-                                Parameter1 == "msshf_mld_cum" ~ "Qsh",
+                                Parameter1 == "mslp_cum" ~ "MSLP_c",
+                                Parameter1 == "lwr_mld_cum" ~ "Qlw",
+                                Parameter1 == "swr_mld_cum" ~ "Qsw",
+                                Parameter1 == "lhf_mld_cum" ~ "Qlh",
+                                Parameter1 == "shf_mld_cum" ~ "Qsh",
                                 Parameter1 == "qnet_mld_cum" ~ "Qnet",
                                 TRUE ~ Parameter1),
-         Parameter2 = case_when(Parameter2 == "temp" ~ "SST",
+         Parameter2 = case_when(Parameter2 == "sst" ~ "SST",
                                 Parameter2 == "bottomT" ~ "SBT",
                                 Parameter2 == "sss" ~ "SSS",
                                 Parameter2 == "mld_cum" ~ "MLD_c",
@@ -135,11 +135,11 @@ ALL_cor <- readRDS("ALL_cor.Rda") %>%
                                 Parameter2 == "t2m" ~ "Air_temp",
                                 Parameter2 == "tcc_cum" ~ "Cloud_cover_c",
                                 Parameter2 == "p_e_cum" ~ "Precip_Evap_c",
-                                Parameter2 == "msl_cum" ~ "MSLP_c",
-                                Parameter2 == "msnlwrf_mld_cum" ~ "Qlw",
-                                Parameter2 == "msnswrf_mld_cum" ~ "Qsw",
-                                Parameter2 == "mslhf_mld_cum" ~ "Qlh",
-                                Parameter2 == "msshf_mld_cum" ~ "Qsh",
+                                Parameter2 == "mslp_cum" ~ "MSLP_c",
+                                Parameter2 == "lwr_mld_cum" ~ "Qlw",
+                                Parameter2 == "swr_mld_cum" ~ "Qsw",
+                                Parameter2 == "lhf_mld_cum" ~ "Qlh",
+                                Parameter2 == "shf_mld_cum" ~ "Qsh",
                                 Parameter2 == "qnet_mld_cum" ~ "Qnet",
                                 TRUE ~ Parameter2))
 

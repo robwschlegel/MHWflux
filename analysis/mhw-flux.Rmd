@@ -27,7 +27,7 @@ source("code/functions.R")
 
 ## Correlations
 
-We know when the MHWs occurred, and our physical data are prepped, so what we need to do is run correlations between SST from the start to peak and peak to end of each event for the full suite of variables. This will show us for each event which values correlated the best for the onset AND decline of the events. We'll also run correlations on the full time series.
+We know when the MHWs occurred, and our physical data are prepped, so what we need to do is run correlations between SST from the start to peak and peak to end of each event for the full suite of variables. This will show us for each event which values correlated the best for the onset AND decline of the events. We will run correlations on the full time series, too.
 
 ```{r MHW-var-cor, eval=FALSE}
 # Extract just the event info
@@ -49,7 +49,7 @@ saveRDS(ALL_cor, "data/ALL_cor.Rda")
 saveRDS(ALL_cor, "shiny/ALL_cor.Rda")
 ```
 
-Seeing as how we're just running correlations at the moment everything runs pretty quickly. With the method sorted for now we need to have a look at the results. What we have at the moment is a long dataframe containing the correlations of different variables with the temperature anomaly. It must be pointed out that these are for the same day, there is no time lag introduced, which may be important. Below we are going to visualise the range of correlations for each variable to see how much each distribution is skewed. This skewness could probably be quantified in a meaningful way... but let's look at the data first.
+Seeing as how we're running correlations verything runs pretty quickly. With the method sorted for now we need to have a look at the results. What we have at the moment is a long dataframe containing the correlations of different variables with temperature anomalies. It must be pointed out that these are for the same day, there is no time lag introduced, which may be important. Below we are going to visualise the range of correlations for each variable to see how much each distribution is skewed. This skewness could probably be quantified in a meaningful way... but let's look at the data first.
 
 We also want to filter by p-value to highlight the strong correlations.
 
@@ -65,9 +65,7 @@ In the shiny app it also comes out that the longer events tend not to correlate 
 
 ## Regions + Seasons
 
-With the correlations calculated for the onset, decline, and full extent of each MHW, we also want to know if any signals emerge from the regions and/or seasons of occurrence of these events. Is the relationship between SSS and MHW onset stronger in the winter? Stronger in certain region? I'm thinking a linear model may be the way to go on this.
-
-Having manually looked through the Shiny app it does look like there are some patterns. These will be written down in the table below.
+With the correlations calculated for the onset, decline, and full extent of each MHW, we also want to know if any signals emerge from the regions and/or seasons of occurrence of these events. Is the relationship between SSS and MHW onset stronger in the winter? Stronger in certain region? Having manually looked through the Shiny app it does look like there are some patterns. These will be written down in the results table below.
 
 ## Relationships
 
@@ -78,7 +76,7 @@ Another thing to consider would be if fast onset slow decline (and vice versa) e
 ```{r metrics_cor}
 ALL_cor_wide <- readRDS("data/ALL_cor.Rda") %>% 
   ungroup() %>% 
-  filter(Parameter1 == "temp") %>% 
+  filter(Parameter1 == "sst") %>% 
   dplyr::select(region:ts, Parameter2, r, n_Obs) %>% 
   pivot_wider(values_from = r, names_from = Parameter2)
 
@@ -88,15 +86,15 @@ events_cor_prep <- GLORYS_MHW_event %>%
                 intensity_cumulative, rate_onset, rate_decline) %>% 
   left_join(ALL_cor_wide, by = c("region", "season", "event_no")) %>% 
   ungroup() %>% 
-  dplyr::select(region:n_Obs, temp, bottomT, sss, mld_cum, mld_1_cum, t2m, tcc_cum, p_e_cum, msl_cum,
-                 msnlwrf_mld_cum, msnswrf_mld_cum, mslhf_mld_cum, msshf_mld_cum, qnet_mld_cum)
+  dplyr::select(region:n_Obs, sst, bottomT, sss, mld_cum, mld_1_cum, t2m, tcc_cum, p_e_cum, mslp_cum,
+                 lwr_mld_cum, swr_mld_cum, lhf_mld_cum, shf_mld_cum, qnet_mld_cum)
 
 # Heatmap showing average correlations by MHW duration
 events_cor_prep %>% 
   group_by(ts, duration) %>% 
   summarise_if(is.numeric, mean) %>% 
-  pivot_longer(cols = temp:qnet_mld_cum) %>% 
-  filter(name != "temp",
+  pivot_longer(cols = sst:qnet_mld_cum) %>% 
+  filter(name != "sst",
          ts != "full") %>% 
   ggplot(aes(x = duration, y = name)) +
   geom_tile(aes(fill = value)) +
@@ -110,8 +108,8 @@ events_cor_prep %>%
   mutate(intensity_max = round(intensity_max, 1)) %>% 
   group_by(ts, intensity_max) %>% 
   summarise_if(is.numeric, mean) %>% 
-  pivot_longer(cols = temp:qnet_mld_cum) %>% 
-  filter(name != "temp",
+  pivot_longer(cols = sst:qnet_mld_cum) %>% 
+  filter(name != "sst",
          ts != "full") %>% 
   ggplot(aes(x = intensity_max, y = name)) +
   geom_tile(aes(fill = value)) +
@@ -122,14 +120,14 @@ events_cor_prep %>%
 
 # Heatmap showing average correlations by MHW rate onset
 events_cor_prep %>% 
-  ungroup() %>% 
-  dplyr::select(rate_onset, ts, temp, bottomT, sss, mld_cum, mld_1_cum, t2m, tcc_cum, p_e_cum, msl_cum,
-                 msnlwrf_mld_cum, msnswrf_mld_cum, mslhf_mld_cum, msshf_mld_cum, qnet_mld_cum) %>% 
+  # ungroup() %>% 
+  # dplyr::select(rate_onset, ts, sst, bottomT, sss, mld_cum, mld_1_cum, t2m, tcc_cum, p_e_cum, 
+                # mslp_cum, lwr_mld_cum, swr_mld_cum, lhf_mld_cum, shf_mld_cum, qnet_mld_cum) %>% 
   mutate(rate_onset = round(rate_onset, 1)) %>% 
   group_by(ts, rate_onset) %>% 
   summarise_if(is.numeric, mean) %>% 
-  pivot_longer(cols = temp:qnet_mld_cum) %>% 
-  filter(name != "temp",
+  pivot_longer(cols = sst:qnet_mld_cum) %>% 
+  filter(name != "sst",
          ts != "full") %>% 
   ggplot(aes(x = rate_onset, y = name)) +
   geom_tile(aes(fill = value)) +
@@ -143,8 +141,8 @@ events_cor_prep %>%
   mutate(rate_decline = round(rate_decline, 1)) %>% 
   group_by(ts, rate_decline) %>% 
   summarise_if(is.numeric, mean) %>% 
-  pivot_longer(cols = temp:qnet_mld_cum) %>% 
-  filter(name != "temp",
+  pivot_longer(cols = sst:qnet_mld_cum) %>% 
+  filter(name != "sst",
          ts != "full") %>% 
   ggplot(aes(x = rate_decline, y = name)) +
   geom_tile(aes(fill = value)) +
@@ -201,7 +199,18 @@ events_cor_prep %>%
 
 ```
 
-I'm starting to think I'm going to need to cluster these results in order to make the results more manageable.
+## Choice events
+
+Group events by their strongest Qx relationship or advection
+Then find their strongest relationship with the next level of variables
+MLD, MSLP, and so on
+This requires that layers of importance be assigned to variables
+Find the top four flavours
+Don’t need to look at all events, just the longest/most intense with strong r values
+Cut out all Cat. I events
+Significant correlations with long events
+Should just be a few
+
 
 ## SOM
 
