@@ -91,7 +91,7 @@ events_cor_prep <- GLORYS_MHW_event %>%
 
 # Heatmap showing average correlations by MHW duration
 events_cor_prep %>% 
-  mutate(duration = plyr::round_any(duration, 5)) %>% 
+  mutate(duration = plyr::round_any(duration, 10)) %>% 
   group_by(ts, duration) %>% 
   mutate(count = n()) %>% 
   summarise_if(is.numeric, mean) %>% 
@@ -100,15 +100,16 @@ events_cor_prep %>%
          ts != "full") %>% 
   ggplot(aes(x = duration, y = name)) +
   geom_tile(aes(fill = value)) +
-  geom_label(aes(label = count)) +
+  geom_text(aes(label = count)) +
   facet_wrap(~ts) +
   scale_fill_gradient2(low = "blue", high = "red") +
   coord_cartesian(expand = F) +
-  labs(y = NULL, x = "Duration (5 day steps)", fill = "r (mean)")
+  labs(y = NULL, x = "Duration (10 day steps)", fill = "r (mean)") +
+  theme(legend.position = "bottom")
 
 # Heatmap showing average correlations by MHW max intensity
 events_cor_prep %>% 
-  mutate(intensity_max = plyr::round_any(intensity_max, 0.25)) %>% 
+  mutate(intensity_max = plyr::round_any(intensity_max, 0.5)) %>% 
   group_by(ts, intensity_max) %>%
   mutate(count = n()) %>% 
   summarise_if(is.numeric, mean) %>% 
@@ -117,11 +118,12 @@ events_cor_prep %>%
          ts != "full") %>% 
   ggplot(aes(x = intensity_max, y = name)) +
   geom_tile(aes(fill = value)) +
-  geom_label(aes(label = count)) +
+  geom_text(aes(label = count)) +
   facet_wrap(~ts) +
   scale_fill_gradient2(low = "blue", high = "red") +
   coord_cartesian(expand = F) +
-  labs(y = NULL, x = "Max Intensity (°C; 0.25° steps)", fill = "r (mean)")
+  labs(y = NULL, x = "Max Intensity (°C; 0.5° steps)", fill = "r (mean)") +
+  theme(legend.position = "bottom")
 
 # Heatmap showing average correlations by MHW rate onset
 events_cor_prep %>% 
@@ -134,15 +136,17 @@ events_cor_prep %>%
          ts != "full") %>% 
   ggplot(aes(x = rate_onset, y = name)) +
   geom_tile(aes(fill = value)) +
-  geom_label(aes(label = count)) +
+  geom_text(aes(label = count)) +
   facet_wrap(~ts) +
   scale_fill_gradient2(low = "blue", high = "red") +
   coord_cartesian(expand = F) +
-  labs(y = NULL, x = "Rate of onset (°C; 0.1° steps)", fill = "r (mean)")
+  labs(y = NULL, x = "Rate of onset (°C; 0.1° steps)", fill = "r (mean)") +
+  theme(legend.position = "bottom")
 
 # Heatmap showing average correlations by MHW rate decline
 events_cor_prep %>% 
   mutate(rate_decline = round(rate_decline, 1)) %>% 
+  filter(rate_decline <= 0.6) %>% # nip off a couple of outliers
   group_by(ts, rate_decline) %>% 
   mutate(count = n()) %>% 
   summarise_if(is.numeric, mean) %>% 
@@ -151,11 +155,12 @@ events_cor_prep %>%
          ts != "full") %>% 
   ggplot(aes(x = rate_decline, y = name)) +
   geom_tile(aes(fill = value)) +
-  geom_label(aes(label = count)) +
+  geom_text(aes(label = count)) +
   facet_wrap(~ts) +
   scale_fill_gradient2(low = "blue", high = "red") +
   coord_cartesian(expand = F) +
-  labs(y = NULL, x = "Rate of decline (°C; 0.1° steps)", fill = "r (mean)")
+  labs(y = NULL, x = "Rate of decline (°C; 0.1° steps)", fill = "r (mean)") +
+  theme(legend.position = "bottom")
 ```
 
 In the code chunk below we look at the correlations of the correlation results. This isn't terribly useful...
@@ -227,7 +232,9 @@ events_cor_cat %>%
 
 ## SOM
 
-The code used for the MHWNWA project was also used on the GLORYS MHW results to create a SOM for the GLORYS data. These SOM nodes are used below to cluster the correlation results to see how the differ based on the SOM.
+The code used for the MHWNWA project was also used on the GLORYS MHW results to create a SOM for the GLORYS data. These SOM nodes are used below to cluster the correlation results to see how the differ based on the SOM. For reference to the results below let's see what the SOM results for Air temperature and MSLP look like.
+
+![](../MHWNWA/output/SOM/air_u_v_mslp_anom_GLORYS.png)
 
 ```{r SOM}
 # Load the SOM from the MHWNWA
@@ -248,7 +255,6 @@ plot_func <- function(df, name) {
     coord_cartesian(expand = F)
 }
 
-
 # Summary stats per node shown as heatmap
 nested_SOM <- events_cor_SOM %>% 
   dplyr::select(-event_no) %>% 
@@ -261,11 +267,11 @@ nested_SOM <- events_cor_SOM %>%
   group_by(name) %>% 
   nest() %>% 
   mutate(plots = map2(data, name, plot_func)) 
-gridExtra::grid.arrange(grobs = nested_SOM$plots)
+# gridExtra::grid.arrange(grobs = nested_SOM$plots) # NB: The legends are too large for HTML
 
 # Summary heatmap for correlation values only
 events_cor_SOM %>% 
-  dplyr::select(node, ts, bottomT:qnet_mld_cum) %>% 
+  dplyr::select(node, ts, bottomT:qnet_mld_cum, -mld_1_cum) %>% 
   mutate(node = as.factor(node)) %>% 
   group_by(node, ts) %>% 
   summarise_if(is.numeric, mean) %>% 
@@ -278,11 +284,12 @@ events_cor_SOM %>%
   facet_wrap(~name, scales = "free") +
   scale_fill_gradient2(low = "blue", high = "red") +
   coord_cartesian(expand = F) +
-  labs(y = NULL, fill = "r (mean)")
+  labs(y = NULL, fill = "r (mean)") +
+  theme(legend.position = "bottom")
 
 # Boxplots for correlation values only
 events_cor_SOM %>% 
-  dplyr::select(node, ts, bottomT:qnet_mld_cum) %>% 
+  dplyr::select(node, ts, bottomT:qnet_mld_cum, -mld_1_cum) %>% 
   mutate(node = as.factor(node)) %>% 
   group_by(node, ts) %>%
   # summarise_if(is.numeric, mean) %>% 
@@ -295,7 +302,8 @@ events_cor_SOM %>%
   facet_wrap(~name, scales = "free") +
   # scale_fill_gradient2(low = "blue", high = "red") +
   coord_cartesian(expand = F) +
-  labs(y = NULL, fill = "time series\nsection")
+  labs(y = "correlation (r)", fill = "time series\nsection") +
+  theme(legend.position = "bottom")
 ```
 
 Some important patterns come through when we look at the summary correlation and MHW metric results when grouped into their SOM nodes. This is as far as the numeric results will go. From here out it is necessary for a human to look at these summary results with the SOM node results to discern the meaning of the combined results.
