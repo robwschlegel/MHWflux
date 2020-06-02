@@ -211,7 +211,7 @@ There are a lot of results to wade through and though it is clear there are impo
 
 Once this has been done we group events by their strongest Qx relationship. Then find their strongest relationship with the next level of variables (e.g. MLD, MSLP, and so on). Ideally one may find the top four flavours.
 
-```{r choice-events}
+```{r choice-events, eval=FALSE}
 # Filter out smol events
 events_cor_cat <- events_cor_prep %>% 
   left_join(GLORYS_MHW_cats[,c("region", "event_no", "category")], by = c("region", "event_no")) %>% 
@@ -221,7 +221,7 @@ events_cor_cat <- events_cor_prep %>%
 events_cor_cat %>% 
   filter(ts == "onset", lwr_mld_cum >= 0.7)
 
-# Melt the data frame and find the g term with the highest correlation
+# Melt the data frame and find the q term with the highest correlation
 # Those are then used to separate events into groups
 ```
 
@@ -255,17 +255,9 @@ nested_SOM <- events_cor_SOM %>%
   mutate(node = as.factor(node)) %>% 
   group_by(node, ts) %>% 
   summarise_if(is.numeric, mean) %>% 
-  # dplyr::select(duration) %>% 
   pivot_longer(cols = duration:count) %>%
   filter(name != "temp",
          ts != "full") %>%
-  # ggplot(aes(x = node, y = ts)) +
-  # geom_tile(aes(fill = value)) +
-  # facet_wrap(~name, scales = "free") +
-  # scale_fill_gradient2(low = "blue", high = "red") +
-  # coord_cartesian(expand = F)# +
-  # labs(y = NULL, fill = "value")
-# nested_tmp <- tmp %>% 
   group_by(name) %>% 
   nest() %>% 
   mutate(plots = map2(data, name, plot_func)) 
