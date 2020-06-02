@@ -30,6 +30,14 @@
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/master/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
   pre:not([class]) {
@@ -389,13 +397,6 @@ div.tocify {
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-<!-- Add a small amount of space between sections. -->
-<style type="text/css">
-div.section {
-  padding-top: 12px;
-}
-</style>
-
 <div class="fluid-row" id="header">
 
 
@@ -427,7 +428,7 @@ div.section {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2020-04-29
+<strong>Last updated:</strong> 2020-06-02
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -437,7 +438,7 @@ div.section {
 </p>
 <p>
 This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
-  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.6.0). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.6.2). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
 </p>
 <hr>
 </div>
@@ -518,25 +519,24 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtreee3591eb8d633180f8c72ba999d11eeea7fb0483dtargetblanke3591eba"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/robwschlegel/MHWflux/tree/e3591eb8d633180f8c72ba999d11eeea7fb0483d" target="_blank">e3591eb</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtreef3a6c78db926ea2ee00d2dabc0660370a05705adtargetblankf3a6c78a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/robwschlegel/MHWflux/tree/f3a6c78db926ea2ee00d2dabc0660370a05705ad" target="_blank">f3a6c78</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtreee3591eb8d633180f8c72ba999d11eeea7fb0483dtargetblanke3591eba" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtreef3a6c78db926ea2ee00d2dabc0660370a05705adtargetblankf3a6c78a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
-Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version <a href="https://github.com/robwschlegel/MHWflux/tree/f3a6c78db926ea2ee00d2dabc0660370a05705ad" target="_blank">f3a6c78</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
 </p>
 <pre><code>
 Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
-
-Untracked files:
-    Untracked:  shiny/res_table.csv
-
-Unstaged changes:
-    Modified:   shiny/app.R
-    Modified:   shiny/rsconnect/shinyapps.io/robert-schlegel/MHWflux.dcf
 
 </code></pre>
 <p>
@@ -551,7 +551,7 @@ Note that any generated files, e.g. HTML, png, CSS, etc., are not included in t
 <div id="versions" class="tab-pane fade">
 
 <p>
-These are the previous versions of the R Markdown and HTML files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view them.
+These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/mhw-flux.Rmd</code>) and HTML (<code>docs/mhw-flux.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
 </p>
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
@@ -575,6 +575,142 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/f3a6c78db926ea2ee00d2dabc0660370a05705ad/analysis/mhw-flux.Rmd" target="_blank">f3a6c78</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-06-02
+</td>
+<td>
+Small changes
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/56e60203535779bcf9e266dab98405707daa2f7d/analysis/mhw-flux.Rmd" target="_blank">56e6020</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-06-02
+</td>
+<td>
+Working on some choice event grouping by Q terms
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/c8395116945de22fc1fd7a8e3698786c7512c1e9/analysis/mhw-flux.Rmd" target="_blank">c839511</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-06-02
+</td>
+<td>
+Working back over some old thoughts
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/cedc39955539490b8c9a2736e00adaaec255b2b9/analysis/mhw-flux.Rmd" target="_blank">cedc399</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-05-28
+</td>
+<td>
+Created some boxplots as well.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/588922ad4aa3579c60f3d816605de2e971e06ab3/analysis/mhw-flux.Rmd" target="_blank">588922a</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-05-28
+</td>
+<td>
+Another look at the correlations clustered by SOM node.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/9e749bcb37fd3c207bcf0f3ac89858d111c50a70/analysis/mhw-flux.Rmd" target="_blank">9e749bc</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-05-28
+</td>
+<td>
+First pass at connecting the SOM results to the correlations
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/09ce92584574a64ae7159c822b16936258818fc3/analysis/mhw-flux.Rmd" target="_blank">09ce925</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-05-20
+</td>
+<td>
+Some work on comparing the OISST and GLORYS MHWs. They are somewhat different…
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/robwschlegel/MHWflux/12b4f673f911e7a1a646317e3a2d99a9e280c601/docs/mhw-flux.html" target="_blank">12b4f67</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-04-29
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1067,7 +1203,7 @@ source(&quot;code/functions.R&quot;)</code></pre>
 </div>
 <div id="correlations" class="section level2">
 <h2>Correlations</h2>
-<p>We know when the MHWs occurred, and our physical data are prepped, so what we need to do is run correlations between SST from the start to peak and peak to end of each event for the full suite of variables. This will show us for each event which values correlated the best for the onset AND decline of the events. We’ll also run correlations on the full time series.</p>
+<p>We know when the MHWs occurred, and our physical data are prepped, so what we need to do is run correlations between SST from the start to peak and peak to end of each event for the full suite of variables. This will show us for each event which values correlated the best for the onset AND decline of the events. We will run correlations on the full time series, too.</p>
 <pre class="r"><code># Extract just the event info
 GLORYS_MHW_event_index &lt;- GLORYS_MHW_event %&gt;% 
   select(event_no, region, season) %&gt;% 
@@ -1085,27 +1221,25 @@ ALL_cor &lt;- plyr::ddply(GLORYS_MHW_event_index, .parallel = T,
 # Save
 saveRDS(ALL_cor, &quot;data/ALL_cor.Rda&quot;)
 saveRDS(ALL_cor, &quot;shiny/ALL_cor.Rda&quot;)</code></pre>
-<p>Seeing as how we’re just running correlations at the moment everything runs pretty quickly. With the method sorted for now we need to have a look at the results. What we have at the moment is a long dataframe containing the correlations of different variables with the temperature anomaly. It must be pointed out that these are for the same day, there is no time lag introduced, which may be important. Below we are going to visualise the range of correlations for each variable to see how much each distribution is skewed. This skewness could probably be quantified in a meaningful way… but let’s look at the data first.</p>
+<p>Seeing as how we’re running correlations verything runs pretty quickly. With the method sorted for now we need to have a look at the results. What we have at the moment is a long dataframe containing the correlations of different variables with temperature anomalies. It must be pointed out that these are for the same day, there is no time lag introduced, which may be important. Below we are going to visualise the range of correlations for each variable to see how much each distribution is skewed. This skewness could probably be quantified in a meaningful way… but let’s look at the data first.</p>
 <p>We also want to filter by p-value to highlight the strong correlations.</p>
 <pre class="r"><code># source(&quot;shiny/app.R&quot;)
 # Or it is live here:
 # https://robert-schlegel.shinyapps.io/MHWflux/</code></pre>
-<p>Wow! What a surprise. There are some really clear patterns coming through in the data. In particular SSS seems to be strongly related to the onset of MHWs. There are a lot of nuances in these data and so I think this is actually an example of where a Shiny app is useful to interrogate the data.</p>
+<p>There are some really clear patterns coming through in the data. In particular SSS seems to be strongly related to the onset of MHWs. There are a lot of nuances in these data and so I think this is actually an example of where a Shiny app is useful to interrogate the data.</p>
 <p>In the shiny app it also comes out that the longer events tend not to correlate strongly with a single variable. This is to be expected and supports the argument that very persistent MHWs are supported by a confluence of variables. How to parse that out is an interesting challenge.</p>
 </div>
 <div id="regions-seasons" class="section level2">
 <h2>Regions + Seasons</h2>
-<p>With the correlations calculated for the onset, decline, and full extent of each MHW, we also want to know if any signals emerge from the regions and/or seasons of occurrence of these events. Is the relationship between SSS and MHW onset stronger in the winter? Stronger in certain region? I’m thinking a linear model may be the way to go on this.</p>
-<p>Having manually looked through the Shiny app it does look like there are some patterns. These will be written down in the table below.</p>
+<p>With the correlations calculated for the onset, decline, and full extent of each MHW, we also want to know if any signals emerge from the regions and/or seasons of occurrence of these events. Is the relationship between SSS and MHW onset stronger in the winter? Stronger in certain region? Having manually looked through the Shiny app it does look like there are some patterns. These will be written down in the results table below.</p>
 </div>
 <div id="relationships" class="section level2">
 <h2>Relationships</h2>
-<p>With patterns pulled out by region and season, we want to see if there are any relationships between MHWs that show strong correlations at onset with a particular variables and strong correlations at decline with another. We will look for this within regions and seasons as well. For example, do MHWs that correlate well with an increase in SSS also correlate well with a decrease in long-wave radiation during the decline of the event? I’m not sure how best to go about this in a clean manner. I’ll have to think of something clever.</p>
-<p>One possibility could be to look at correlations between r values themselves. And to do so by region + season. It may also work to just directly correlate different values with one another. See if any patterns come out by region and/or season.</p>
-<p>Another thing to consider would be if fast onset slow decline (and vice versa) events have different characteristics to slower evolving events. The same question could be posed to long vs short events and those with high intensities vs low. In order to begin this investigation we must join the MHW results to the correlation results. Yet another thing to look at is the number of days in the MHW section and the correlations of that events with the variables.</p>
+<p>With patterns pulled out by region and season, we want to see if there are any relationships between MHWs that show strong correlations at onset with a particular variables and strong correlations at decline with another. We will look for this within regions and seasons as well. For example, do MHWs that correlate well with an increase in SSS also correlate well with a decrease in long-wave radiation during the decline of the event? I’m not sure how best to go about this in a clean manner.</p>
+<p>Another thing to consider would be if fast onset slow decline (and vice versa) events have different characteristics to slower evolving events. The same question could be posed to long vs short events and those with high intensities vs low. In order to begin this investigation we must join the MHW results to the correlation results. We will visualise these patterns with heatmaps.</p>
 <pre class="r"><code>ALL_cor_wide &lt;- readRDS(&quot;data/ALL_cor.Rda&quot;) %&gt;% 
   ungroup() %&gt;% 
-  filter(Parameter1 == &quot;temp&quot;) %&gt;% 
+  filter(Parameter1 == &quot;sst&quot;) %&gt;% 
   dplyr::select(region:ts, Parameter2, r, n_Obs) %&gt;% 
   pivot_wider(values_from = r, names_from = Parameter2)
 
@@ -1114,9 +1248,80 @@ events_cor_prep &lt;- GLORYS_MHW_event %&gt;%
   dplyr::select(region, season, event_no, duration, intensity_mean, intensity_max, 
                 intensity_cumulative, rate_onset, rate_decline) %&gt;% 
   left_join(ALL_cor_wide, by = c(&quot;region&quot;, &quot;season&quot;, &quot;event_no&quot;)) %&gt;% 
-  dplyr::select(-event_no)
+  ungroup() %&gt;% 
+  dplyr::select(region:n_Obs, sst, bottomT, sss, mld_cum, mld_1_cum, t2m, tcc_cum, p_e_cum, mslp_cum,
+                 lwr_mld_cum, swr_mld_cum, lhf_mld_cum, shf_mld_cum, qnet_mld_cum)
 
-# All correlations by region
+# Heatmap showing average correlations by MHW duration
+events_cor_prep %&gt;% 
+  mutate(duration = plyr::round_any(duration, 5)) %&gt;% 
+  group_by(ts, duration) %&gt;% 
+  mutate(count = n()) %&gt;% 
+  summarise_if(is.numeric, mean) %&gt;% 
+  pivot_longer(cols = sst:qnet_mld_cum) %&gt;% 
+  filter(name != &quot;sst&quot;,
+         ts != &quot;full&quot;) %&gt;% 
+  ggplot(aes(x = duration, y = name)) +
+  geom_tile(aes(fill = value)) +
+  geom_label(aes(label = count)) +
+  facet_wrap(~ts) +
+  scale_fill_gradient2(low = &quot;blue&quot;, high = &quot;red&quot;) +
+  coord_cartesian(expand = F) +
+  labs(y = NULL, x = &quot;Duration (5 day steps)&quot;, fill = &quot;r (mean)&quot;)</code></pre>
+<p><img src="figure/mhw-flux.Rmd/metrics_cor-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Heatmap showing average correlations by MHW max intensity
+events_cor_prep %&gt;% 
+  mutate(intensity_max = plyr::round_any(intensity_max, 0.25)) %&gt;% 
+  group_by(ts, intensity_max) %&gt;%
+  mutate(count = n()) %&gt;% 
+  summarise_if(is.numeric, mean) %&gt;% 
+  pivot_longer(cols = sst:qnet_mld_cum) %&gt;% 
+  filter(name != &quot;sst&quot;,
+         ts != &quot;full&quot;) %&gt;% 
+  ggplot(aes(x = intensity_max, y = name)) +
+  geom_tile(aes(fill = value)) +
+  geom_label(aes(label = count)) +
+  facet_wrap(~ts) +
+  scale_fill_gradient2(low = &quot;blue&quot;, high = &quot;red&quot;) +
+  coord_cartesian(expand = F) +
+  labs(y = NULL, x = &quot;Max Intensity (°C; 0.25° steps)&quot;, fill = &quot;r (mean)&quot;)</code></pre>
+<p><img src="figure/mhw-flux.Rmd/metrics_cor-2.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Heatmap showing average correlations by MHW rate onset
+events_cor_prep %&gt;% 
+  mutate(rate_onset = round(rate_onset, 1)) %&gt;% 
+  group_by(ts, rate_onset) %&gt;% 
+  mutate(count = n()) %&gt;% 
+  summarise_if(is.numeric, mean) %&gt;% 
+  pivot_longer(cols = sst:qnet_mld_cum) %&gt;% 
+  filter(name != &quot;sst&quot;,
+         ts != &quot;full&quot;) %&gt;% 
+  ggplot(aes(x = rate_onset, y = name)) +
+  geom_tile(aes(fill = value)) +
+  geom_label(aes(label = count)) +
+  facet_wrap(~ts) +
+  scale_fill_gradient2(low = &quot;blue&quot;, high = &quot;red&quot;) +
+  coord_cartesian(expand = F) +
+  labs(y = NULL, x = &quot;Rate of onset (°C; 0.1° steps)&quot;, fill = &quot;r (mean)&quot;)</code></pre>
+<p><img src="figure/mhw-flux.Rmd/metrics_cor-3.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Heatmap showing average correlations by MHW rate decline
+events_cor_prep %&gt;% 
+  mutate(rate_decline = round(rate_decline, 1)) %&gt;% 
+  group_by(ts, rate_decline) %&gt;% 
+  mutate(count = n()) %&gt;% 
+  summarise_if(is.numeric, mean) %&gt;% 
+  pivot_longer(cols = sst:qnet_mld_cum) %&gt;% 
+  filter(name != &quot;sst&quot;,
+         ts != &quot;full&quot;) %&gt;% 
+  ggplot(aes(x = rate_decline, y = name)) +
+  geom_tile(aes(fill = value)) +
+  geom_label(aes(label = count)) +
+  facet_wrap(~ts) +
+  scale_fill_gradient2(low = &quot;blue&quot;, high = &quot;red&quot;) +
+  coord_cartesian(expand = F) +
+  labs(y = NULL, x = &quot;Rate of decline (°C; 0.1° steps)&quot;, fill = &quot;r (mean)&quot;)</code></pre>
+<p><img src="figure/mhw-flux.Rmd/metrics_cor-4.png" width="768" style="display: block; margin: auto;" /></p>
+<p>In the code chunk below we look at the correlations of the correlation results. This isn’t terribly useful…</p>
+<pre class="r"><code># All correlations by region
 events_cor_region &lt;- events_cor_prep %&gt;% 
   group_by(region, ts) %&gt;% 
   correlation(redundant = TRUE) %&gt;% 
@@ -1152,14 +1357,99 @@ saveRDS(events_cor_season, &quot;data/events_cor_season.Rds&quot;)
 # saveRDS(events_cor_region_season, &quot;data/events_cor_region_season.Rds&quot;)
 
 # test visuals
-events_cor_prep %&gt;% 
-  filter(region == &quot;nfs&quot;, ts == &quot;onset&quot;) %&gt;% 
+events_cor_prep %&gt;%
+  filter(region == &quot;nfs&quot;, ts == &quot;onset&quot;) %&gt;%
   ggplot(aes(x = intensity_mean, y = msshf_mld)) +
   geom_smooth(method = &quot;lm&quot;, se = FALSE, colour = &quot;black&quot;) +
   geom_point(aes(colour = season))</code></pre>
-<p>These correlations between the MHW metrics and the correlations from the previous round of calculations do show som interesting results, but are a bit difficult to interpret. I think it would also be useful to create the summary stats of the r values, too. These are visible in the Shiny app but are not currently saved in this project.</p>
-<p>Another thought now was to show the summary stats of the r results by MHW metric.</p>
-<p>I’m starting to think I’m going to need to cluster these results in order to make the results more manageable.</p>
+</div>
+<div id="choice-events" class="section level2">
+<h2>Choice events</h2>
+<p>There are a lot of results to wade through and though it is clear there are important signals in the results, it is proving difficult to distill them. One thought is that we don’t need to look at all of the events, just the longest/most intense events with strong r values. This is first done by cutting out all Cat. I events. We then find strong correlations with long events. There should just be a few.</p>
+<p>Once this has been done we group events by their strongest Qx relationship. Then find their strongest relationship with the next level of variables (e.g. MLD, MSLP, and so on). Ideally one may find the top four flavours.</p>
+<pre class="r"><code># Filter out smol events
+events_cor_cat &lt;- events_cor_prep %&gt;% 
+  left_join(GLORYS_MHW_cats[,c(&quot;region&quot;, &quot;event_no&quot;, &quot;category&quot;)], by = c(&quot;region&quot;, &quot;event_no&quot;)) %&gt;% 
+  filter(category != &quot;I Moderate&quot;, duration &gt;= 21)
+
+# Events with high Qlw correlations at onset
+events_cor_cat %&gt;% 
+  filter(ts == &quot;onset&quot;, lwr_mld_cum &gt;= 0.7)
+
+# Melt the data frame and find the q term with the highest correlation
+# Those are then used to separate events into groups</code></pre>
+</div>
+<div id="som" class="section level2">
+<h2>SOM</h2>
+<p>The code used for the MHWNWA project was also used on the GLORYS MHW results to create a SOM for the GLORYS data. These SOM nodes are used below to cluster the correlation results to see how the differ based on the SOM.</p>
+<pre class="r"><code># Load the SOM from the MHWNWA
+SOM &lt;- readRDS(&quot;../MHWNWA/data/SOM/som_GLORYS.Rda&quot;)
+
+# Grab only the node info
+SOM_info &lt;- SOM$info
+
+# Join to the GLORYS MHW correlation results
+events_cor_SOM &lt;- left_join(events_cor_prep, SOM_info, by = c(&quot;region&quot;, &quot;event_no&quot;))
+
+# Plotting function
+plot_func &lt;- function(df, name) {
+  ggplot(data = df, aes(x = node, y = ts)) +
+    geom_tile(aes(fill = value)) +
+    # facet_wrap(~name, scales = &quot;free&quot;) +
+    scale_fill_gradient2(low = &quot;blue&quot;, high = &quot;red&quot;, name = name) +
+    coord_cartesian(expand = F)
+}
+
+
+# Summary stats per node shown as heatmap
+nested_SOM &lt;- events_cor_SOM %&gt;% 
+  dplyr::select(-event_no) %&gt;% 
+  mutate(node = as.factor(node)) %&gt;% 
+  group_by(node, ts) %&gt;% 
+  summarise_if(is.numeric, mean) %&gt;% 
+  pivot_longer(cols = duration:count) %&gt;%
+  filter(name != &quot;temp&quot;,
+         ts != &quot;full&quot;) %&gt;%
+  group_by(name) %&gt;% 
+  nest() %&gt;% 
+  mutate(plots = map2(data, name, plot_func)) 
+gridExtra::grid.arrange(grobs = nested_SOM$plots)</code></pre>
+<p><img src="figure/mhw-flux.Rmd/SOM-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Summary heatmap for correlation values only
+events_cor_SOM %&gt;% 
+  dplyr::select(node, ts, bottomT:qnet_mld_cum) %&gt;% 
+  mutate(node = as.factor(node)) %&gt;% 
+  group_by(node, ts) %&gt;% 
+  summarise_if(is.numeric, mean) %&gt;% 
+  # dplyr::select(duration) %&gt;% 
+  pivot_longer(cols = bottomT:qnet_mld_cum) %&gt;%
+  filter(name != &quot;temp&quot;,
+         ts != &quot;full&quot;) %&gt;%
+  ggplot(aes(x = node, y = ts)) +
+  geom_tile(aes(fill = value)) +
+  facet_wrap(~name, scales = &quot;free&quot;) +
+  scale_fill_gradient2(low = &quot;blue&quot;, high = &quot;red&quot;) +
+  coord_cartesian(expand = F) +
+  labs(y = NULL, fill = &quot;r (mean)&quot;)</code></pre>
+<p><img src="figure/mhw-flux.Rmd/SOM-2.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Boxplots for correlation values only
+events_cor_SOM %&gt;% 
+  dplyr::select(node, ts, bottomT:qnet_mld_cum) %&gt;% 
+  mutate(node = as.factor(node)) %&gt;% 
+  group_by(node, ts) %&gt;%
+  # summarise_if(is.numeric, mean) %&gt;% 
+  # dplyr::select(duration) %&gt;% 
+  pivot_longer(cols = bottomT:qnet_mld_cum) %&gt;%
+  filter(name != &quot;temp&quot;,
+         ts != &quot;full&quot;) %&gt;%
+  ggplot(aes(x = node, y = value)) +
+  geom_boxplot(aes(fill = ts)) +
+  facet_wrap(~name, scales = &quot;free&quot;) +
+  # scale_fill_gradient2(low = &quot;blue&quot;, high = &quot;red&quot;) +
+  coord_cartesian(expand = F) +
+  labs(y = NULL, fill = &quot;time series\nsection&quot;)</code></pre>
+<p><img src="figure/mhw-flux.Rmd/SOM-3.png" width="768" style="display: block; margin: auto;" /></p>
+<p>Some important patterns come through when we look at the summary correlation and MHW metric results when grouped into their SOM nodes. This is as far as the numeric results will go. From here out it is necessary for a human to look at these summary results with the SOM node results to discern the meaning of the combined results.</p>
 </div>
 <div id="results" class="section level2">
 <h2>Results</h2>
@@ -1473,7 +1763,7 @@ events_cor_prep %&gt;%
 </p>
 <div id="workflowr-sessioninfo" class="collapse">
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>R version 3.6.3 (2020-02-29)
+<pre><code>R version 4.0.0 (2020-04-24)
 Platform: x86_64-pc-linux-gnu (64-bit)
 Running under: Ubuntu 16.04.6 LTS
 
@@ -1493,34 +1783,35 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
- [1] ggraph_1.0.2         correlation_0.2.0    tidync_0.2.3        
- [4] heatwaveR_0.4.2.9001 lubridate_1.7.4      forcats_0.5.0       
- [7] stringr_1.4.0        dplyr_0.8.4          purrr_0.3.3         
-[10] readr_1.3.1          tidyr_1.0.2          tibble_2.1.3        
-[13] ggplot2_3.2.1        tidyverse_1.3.0     
+ [1] ggraph_2.0.2         correlation_0.2.1    tidync_0.2.3        
+ [4] heatwaveR_0.4.2.9004 lubridate_1.7.8      forcats_0.5.0       
+ [7] stringr_1.4.0        dplyr_0.8.5          purrr_0.3.4         
+[10] readr_1.3.1          tidyr_1.0.3          tibble_3.0.1        
+[13] ggplot2_3.3.0        tidyverse_1.3.0     
 
 loaded via a namespace (and not attached):
- [1] nlme_3.1-137       fs_1.3.1           doParallel_1.0.15  insight_0.8.3     
- [5] httr_1.4.1         rprojroot_1.3-2    tools_3.6.3        backports_1.1.5   
- [9] R6_2.4.1           DBI_1.0.0          lazyeval_0.2.2     colorspace_1.4-1  
-[13] withr_2.1.2        tidyselect_1.0.0   gridExtra_2.3      compiler_3.6.3    
-[17] git2r_0.26.1       cli_2.0.2          rvest_0.3.5        RNetCDF_2.1-1     
-[21] xml2_1.2.2         plotly_4.9.2       bayestestR_0.6.0   scales_1.1.0      
-[25] digest_0.6.25      rmarkdown_2.1      pkgconfig_2.0.3    htmltools_0.4.0   
-[29] highr_0.8          dbplyr_1.4.2       htmlwidgets_1.5.1  rlang_0.4.5       
-[33] readxl_1.3.1       rstudioapi_0.11    generics_0.0.2     farver_2.0.3      
-[37] jsonlite_1.6.1     magrittr_1.5       ncmeta_0.2.0       parameters_0.6.1  
-[41] Rcpp_1.0.3         munsell_0.5.0      fansi_0.4.1        viridis_0.5.1     
-[45] lifecycle_0.1.0    stringi_1.4.6      whisker_0.4        yaml_2.2.1        
-[49] MASS_7.3-50        plyr_1.8.5         grid_3.6.3         parallel_3.6.3    
-[53] promises_1.1.0     ggrepel_0.8.1      crayon_1.3.4       lattice_0.20-35   
-[57] haven_2.2.0        hms_0.5.3          knitr_1.28         pillar_1.4.3      
-[61] igraph_1.2.2       effectsize_0.3.0   codetools_0.2-15   reprex_0.3.0      
-[65] glue_1.3.1         evaluate_0.14      data.table_1.12.8  modelr_0.1.6      
-[69] foreach_1.4.4      vctrs_0.2.3        tweenr_1.0.1       httpuv_1.5.2.9000 
-[73] cellranger_1.1.0   gtable_0.3.0       polyclip_1.10-0    assertthat_0.2.1  
-[77] xfun_0.12          ggforce_0.3.1.9000 broom_0.5.5        later_1.0.0       
-[81] ncdf4_1.17         viridisLite_0.3.0  iterators_1.0.10   workflowr_1.6.0   </code></pre>
+ [1] nlme_3.1-147       fs_1.4.1           doParallel_1.0.15  insight_0.8.3     
+ [5] httr_1.4.1         rprojroot_1.3-2    tools_4.0.0        backports_1.1.7   
+ [9] R6_2.4.1           DBI_1.1.0          lazyeval_0.2.2     colorspace_1.4-1  
+[13] withr_2.2.0        gridExtra_2.3      tidyselect_1.1.0   compiler_4.0.0    
+[17] git2r_0.27.1       cli_2.0.2          rvest_0.3.5        RNetCDF_2.3-1     
+[21] xml2_1.3.2         plotly_4.9.2.1     labeling_0.3       bayestestR_0.6.0  
+[25] scales_1.1.1       digest_0.6.25      rmarkdown_2.1      pkgconfig_2.0.3   
+[29] htmltools_0.4.0    highr_0.8          dbplyr_1.4.3       htmlwidgets_1.5.1 
+[33] rlang_0.4.6        readxl_1.3.1       rstudioapi_0.11    generics_0.0.2    
+[37] farver_2.0.3       jsonlite_1.6.1     magrittr_1.5       ncmeta_0.2.0      
+[41] parameters_0.6.1   Rcpp_1.0.4.6       munsell_0.5.0      fansi_0.4.1       
+[45] viridis_0.5.1      lifecycle_0.2.0    stringi_1.4.6      whisker_0.4       
+[49] yaml_2.2.1         MASS_7.3-51.6      plyr_1.8.6         grid_4.0.0        
+[53] parallel_4.0.0     promises_1.1.0     ggrepel_0.8.2      crayon_1.3.4      
+[57] lattice_0.20-41    graphlayouts_0.7.0 haven_2.2.0        hms_0.5.3         
+[61] knitr_1.28         pillar_1.4.4       igraph_1.2.5       effectsize_0.3.0  
+[65] codetools_0.2-16   reprex_0.3.0       glue_1.4.1         evaluate_0.14     
+[69] data.table_1.12.8  modelr_0.1.7       foreach_1.5.0      vctrs_0.3.0       
+[73] tweenr_1.0.1       httpuv_1.5.2       cellranger_1.1.0   gtable_0.3.0      
+[77] polyclip_1.10-0    assertthat_0.2.1   xfun_0.13          ggforce_0.3.1     
+[81] broom_0.5.6        tidygraph_1.1.2    later_1.0.0        ncdf4_1.17        
+[85] viridisLite_0.3.0  iterators_1.0.12   workflowr_1.6.2    ellipsis_0.3.0    </code></pre>
 </div>
 </div>
 
