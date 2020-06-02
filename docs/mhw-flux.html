@@ -519,16 +519,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtreef3a6c78db926ea2ee00d2dabc0660370a05705adtargetblankf3a6c78a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/robwschlegel/MHWflux/tree/f3a6c78db926ea2ee00d2dabc0660370a05705ad" target="_blank">f3a6c78</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtreeae74e76346acf08a40ebbbac341c93819b942291targetblankae74e76a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/robwschlegel/MHWflux/tree/ae74e76346acf08a40ebbbac341c93819b942291" target="_blank">ae74e76</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtreef3a6c78db926ea2ee00d2dabc0660370a05705adtargetblankf3a6c78a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtreeae74e76346acf08a40ebbbac341c93819b942291targetblankae74e76a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/robwschlegel/MHWflux/tree/f3a6c78db926ea2ee00d2dabc0660370a05705ad" target="_blank">f3a6c78</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/robwschlegel/MHWflux/tree/ae74e76346acf08a40ebbbac341c93819b942291" target="_blank">ae74e76</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -575,6 +575,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/ae74e76346acf08a40ebbbac341c93819b942291/analysis/mhw-flux.Rmd" target="_blank">ae74e76</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-06-02
+</td>
+<td>
+Re-built site.
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/robwschlegel/MHWflux/c6087d9b0fc349e3e566290d3406147941b13a73/docs/mhw-flux.html" target="_blank">c6087d9</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-06-02
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1254,7 +1288,7 @@ events_cor_prep &lt;- GLORYS_MHW_event %&gt;%
 
 # Heatmap showing average correlations by MHW duration
 events_cor_prep %&gt;% 
-  mutate(duration = plyr::round_any(duration, 5)) %&gt;% 
+  mutate(duration = plyr::round_any(duration, 10)) %&gt;% 
   group_by(ts, duration) %&gt;% 
   mutate(count = n()) %&gt;% 
   summarise_if(is.numeric, mean) %&gt;% 
@@ -1263,15 +1297,53 @@ events_cor_prep %&gt;%
          ts != &quot;full&quot;) %&gt;% 
   ggplot(aes(x = duration, y = name)) +
   geom_tile(aes(fill = value)) +
-  geom_label(aes(label = count)) +
+  geom_text(aes(label = count)) +
   facet_wrap(~ts) +
   scale_fill_gradient2(low = &quot;blue&quot;, high = &quot;red&quot;) +
   coord_cartesian(expand = F) +
-  labs(y = NULL, x = &quot;Duration (5 day steps)&quot;, fill = &quot;r (mean)&quot;)</code></pre>
+  labs(y = NULL, x = &quot;Duration (10 day steps)&quot;, fill = &quot;r (mean)&quot;) +
+  theme(legend.position = &quot;bottom&quot;)</code></pre>
 <p><img src="figure/mhw-flux.Rmd/metrics_cor-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-metrics_cor-1">
+Past versions of metrics_cor-1.png
+</button>
+</p>
+<div id="fig-metrics_cor-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/c6087d9b0fc349e3e566290d3406147941b13a73/docs/figure/mhw-flux.Rmd/metrics_cor-1.png" target="_blank">c6087d9</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-06-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code># Heatmap showing average correlations by MHW max intensity
 events_cor_prep %&gt;% 
-  mutate(intensity_max = plyr::round_any(intensity_max, 0.25)) %&gt;% 
+  mutate(intensity_max = plyr::round_any(intensity_max, 0.5)) %&gt;% 
   group_by(ts, intensity_max) %&gt;%
   mutate(count = n()) %&gt;% 
   summarise_if(is.numeric, mean) %&gt;% 
@@ -1280,12 +1352,50 @@ events_cor_prep %&gt;%
          ts != &quot;full&quot;) %&gt;% 
   ggplot(aes(x = intensity_max, y = name)) +
   geom_tile(aes(fill = value)) +
-  geom_label(aes(label = count)) +
+  geom_text(aes(label = count)) +
   facet_wrap(~ts) +
   scale_fill_gradient2(low = &quot;blue&quot;, high = &quot;red&quot;) +
   coord_cartesian(expand = F) +
-  labs(y = NULL, x = &quot;Max Intensity (°C; 0.25° steps)&quot;, fill = &quot;r (mean)&quot;)</code></pre>
+  labs(y = NULL, x = &quot;Max Intensity (°C; 0.5° steps)&quot;, fill = &quot;r (mean)&quot;) +
+  theme(legend.position = &quot;bottom&quot;)</code></pre>
 <p><img src="figure/mhw-flux.Rmd/metrics_cor-2.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-metrics_cor-2">
+Past versions of metrics_cor-2.png
+</button>
+</p>
+<div id="fig-metrics_cor-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/c6087d9b0fc349e3e566290d3406147941b13a73/docs/figure/mhw-flux.Rmd/metrics_cor-2.png" target="_blank">c6087d9</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-06-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code># Heatmap showing average correlations by MHW rate onset
 events_cor_prep %&gt;% 
   mutate(rate_onset = round(rate_onset, 1)) %&gt;% 
@@ -1297,15 +1407,54 @@ events_cor_prep %&gt;%
          ts != &quot;full&quot;) %&gt;% 
   ggplot(aes(x = rate_onset, y = name)) +
   geom_tile(aes(fill = value)) +
-  geom_label(aes(label = count)) +
+  geom_text(aes(label = count)) +
   facet_wrap(~ts) +
   scale_fill_gradient2(low = &quot;blue&quot;, high = &quot;red&quot;) +
   coord_cartesian(expand = F) +
-  labs(y = NULL, x = &quot;Rate of onset (°C; 0.1° steps)&quot;, fill = &quot;r (mean)&quot;)</code></pre>
+  labs(y = NULL, x = &quot;Rate of onset (°C; 0.1° steps)&quot;, fill = &quot;r (mean)&quot;) +
+  theme(legend.position = &quot;bottom&quot;)</code></pre>
 <p><img src="figure/mhw-flux.Rmd/metrics_cor-3.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-metrics_cor-3">
+Past versions of metrics_cor-3.png
+</button>
+</p>
+<div id="fig-metrics_cor-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/c6087d9b0fc349e3e566290d3406147941b13a73/docs/figure/mhw-flux.Rmd/metrics_cor-3.png" target="_blank">c6087d9</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-06-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code># Heatmap showing average correlations by MHW rate decline
 events_cor_prep %&gt;% 
   mutate(rate_decline = round(rate_decline, 1)) %&gt;% 
+  filter(rate_decline &lt;= 0.6) %&gt;% # nip off a couple of outliers
   group_by(ts, rate_decline) %&gt;% 
   mutate(count = n()) %&gt;% 
   summarise_if(is.numeric, mean) %&gt;% 
@@ -1314,12 +1463,50 @@ events_cor_prep %&gt;%
          ts != &quot;full&quot;) %&gt;% 
   ggplot(aes(x = rate_decline, y = name)) +
   geom_tile(aes(fill = value)) +
-  geom_label(aes(label = count)) +
+  geom_text(aes(label = count)) +
   facet_wrap(~ts) +
   scale_fill_gradient2(low = &quot;blue&quot;, high = &quot;red&quot;) +
   coord_cartesian(expand = F) +
-  labs(y = NULL, x = &quot;Rate of decline (°C; 0.1° steps)&quot;, fill = &quot;r (mean)&quot;)</code></pre>
+  labs(y = NULL, x = &quot;Rate of decline (°C; 0.1° steps)&quot;, fill = &quot;r (mean)&quot;) +
+  theme(legend.position = &quot;bottom&quot;)</code></pre>
 <p><img src="figure/mhw-flux.Rmd/metrics_cor-4.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-metrics_cor-4">
+Past versions of metrics_cor-4.png
+</button>
+</p>
+<div id="fig-metrics_cor-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/c6087d9b0fc349e3e566290d3406147941b13a73/docs/figure/mhw-flux.Rmd/metrics_cor-4.png" target="_blank">c6087d9</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-06-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>In the code chunk below we look at the correlations of the correlation results. This isn’t terribly useful…</p>
 <pre class="r"><code># All correlations by region
 events_cor_region &lt;- events_cor_prep %&gt;% 
@@ -1381,7 +1568,8 @@ events_cor_cat %&gt;%
 </div>
 <div id="som" class="section level2">
 <h2>SOM</h2>
-<p>The code used for the MHWNWA project was also used on the GLORYS MHW results to create a SOM for the GLORYS data. These SOM nodes are used below to cluster the correlation results to see how the differ based on the SOM.</p>
+<p>The code used for the MHWNWA project was also used on the GLORYS MHW results to create a SOM for the GLORYS data. These SOM nodes are used below to cluster the correlation results to see how the differ based on the SOM. For reference to the results below let’s see what the SOM results for Air temperature and MSLP look like.</p>
+<p><img src="../MHWNWA/output/SOM/air_u_v_mslp_anom_GLORYS.png" /></p>
 <pre class="r"><code># Load the SOM from the MHWNWA
 SOM &lt;- readRDS(&quot;../MHWNWA/data/SOM/som_GLORYS.Rda&quot;)
 
@@ -1400,7 +1588,6 @@ plot_func &lt;- function(df, name) {
     coord_cartesian(expand = F)
 }
 
-
 # Summary stats per node shown as heatmap
 nested_SOM &lt;- events_cor_SOM %&gt;% 
   dplyr::select(-event_no) %&gt;% 
@@ -1413,11 +1600,11 @@ nested_SOM &lt;- events_cor_SOM %&gt;%
   group_by(name) %&gt;% 
   nest() %&gt;% 
   mutate(plots = map2(data, name, plot_func)) 
-gridExtra::grid.arrange(grobs = nested_SOM$plots)</code></pre>
-<p><img src="figure/mhw-flux.Rmd/SOM-1.png" width="768" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># Summary heatmap for correlation values only
+# gridExtra::grid.arrange(grobs = nested_SOM$plots) # NB: The legends are too large for HTML
+
+# Summary heatmap for correlation values only
 events_cor_SOM %&gt;% 
-  dplyr::select(node, ts, bottomT:qnet_mld_cum) %&gt;% 
+  dplyr::select(node, ts, bottomT:qnet_mld_cum, -mld_1_cum) %&gt;% 
   mutate(node = as.factor(node)) %&gt;% 
   group_by(node, ts) %&gt;% 
   summarise_if(is.numeric, mean) %&gt;% 
@@ -1430,11 +1617,49 @@ events_cor_SOM %&gt;%
   facet_wrap(~name, scales = &quot;free&quot;) +
   scale_fill_gradient2(low = &quot;blue&quot;, high = &quot;red&quot;) +
   coord_cartesian(expand = F) +
-  labs(y = NULL, fill = &quot;r (mean)&quot;)</code></pre>
-<p><img src="figure/mhw-flux.Rmd/SOM-2.png" width="768" style="display: block; margin: auto;" /></p>
+  labs(y = NULL, fill = &quot;r (mean)&quot;) +
+  theme(legend.position = &quot;bottom&quot;)</code></pre>
+<p><img src="figure/mhw-flux.Rmd/SOM-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-SOM-1">
+Past versions of SOM-1.png
+</button>
+</p>
+<div id="fig-SOM-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/c6087d9b0fc349e3e566290d3406147941b13a73/docs/figure/mhw-flux.Rmd/SOM-1.png" target="_blank">c6087d9</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-06-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code># Boxplots for correlation values only
 events_cor_SOM %&gt;% 
-  dplyr::select(node, ts, bottomT:qnet_mld_cum) %&gt;% 
+  dplyr::select(node, ts, bottomT:qnet_mld_cum, -mld_1_cum) %&gt;% 
   mutate(node = as.factor(node)) %&gt;% 
   group_by(node, ts) %&gt;%
   # summarise_if(is.numeric, mean) %&gt;% 
@@ -1447,8 +1672,46 @@ events_cor_SOM %&gt;%
   facet_wrap(~name, scales = &quot;free&quot;) +
   # scale_fill_gradient2(low = &quot;blue&quot;, high = &quot;red&quot;) +
   coord_cartesian(expand = F) +
-  labs(y = NULL, fill = &quot;time series\nsection&quot;)</code></pre>
-<p><img src="figure/mhw-flux.Rmd/SOM-3.png" width="768" style="display: block; margin: auto;" /></p>
+  labs(y = &quot;correlation (r)&quot;, fill = &quot;time series\nsection&quot;) +
+  theme(legend.position = &quot;bottom&quot;)</code></pre>
+<p><img src="figure/mhw-flux.Rmd/SOM-2.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-SOM-2">
+Past versions of SOM-2.png
+</button>
+</p>
+<div id="fig-SOM-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/c6087d9b0fc349e3e566290d3406147941b13a73/docs/figure/mhw-flux.Rmd/SOM-2.png" target="_blank">c6087d9</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-06-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Some important patterns come through when we look at the summary correlation and MHW metric results when grouped into their SOM nodes. This is as far as the numeric results will go. From here out it is necessary for a human to look at these summary results with the SOM node results to discern the meaning of the combined results.</p>
 </div>
 <div id="results" class="section level2">
