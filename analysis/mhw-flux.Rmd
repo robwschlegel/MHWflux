@@ -234,7 +234,7 @@ events_cor_cat %>%
 
 The code used for the MHWNWA project was also used on the GLORYS MHW results to create a SOM for the GLORYS data. These SOM nodes are used below to cluster the correlation results to see how the differ based on the SOM. For reference to the results below let's see what the SOM results for Air temperature and MSLP look like.
 
-![](../MHWNWA/output/SOM/air_u_v_mslp_anom_GLORYS.png)
+![](../../MHWNWA/output/SOM/air_u_v_mslp_anom_GLORYS.png)
 
 ```{r SOM}
 # Load the SOM from the MHWNWA
