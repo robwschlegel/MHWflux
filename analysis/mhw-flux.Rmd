@@ -91,65 +91,71 @@ events_cor_prep <- GLORYS_MHW_event %>%
 
 # Heatmap showing average correlations by MHW duration
 events_cor_prep %>% 
+  mutate(duration = plyr::round_any(duration, 5)) %>% 
   group_by(ts, duration) %>% 
+  mutate(count = n()) %>% 
   summarise_if(is.numeric, mean) %>% 
   pivot_longer(cols = sst:qnet_mld_cum) %>% 
   filter(name != "sst",
          ts != "full") %>% 
   ggplot(aes(x = duration, y = name)) +
   geom_tile(aes(fill = value)) +
+  geom_label(aes(label = count)) +
   facet_wrap(~ts) +
   scale_fill_gradient2(low = "blue", high = "red") +
   coord_cartesian(expand = F) +
-  labs(y = NULL, fill = "r (mean)")
+  labs(y = NULL, x = "Duration (5 day steps)", fill = "r (mean)")
 
 # Heatmap showing average correlations by MHW max intensity
 events_cor_prep %>% 
-  mutate(intensity_max = round(intensity_max, 1)) %>% 
-  group_by(ts, intensity_max) %>% 
+  mutate(intensity_max = plyr::round_any(intensity_max, 0.25)) %>% 
+  group_by(ts, intensity_max) %>%
+  mutate(count = n()) %>% 
   summarise_if(is.numeric, mean) %>% 
   pivot_longer(cols = sst:qnet_mld_cum) %>% 
   filter(name != "sst",
          ts != "full") %>% 
   ggplot(aes(x = intensity_max, y = name)) +
   geom_tile(aes(fill = value)) +
+  geom_label(aes(label = count)) +
   facet_wrap(~ts) +
   scale_fill_gradient2(low = "blue", high = "red") +
   coord_cartesian(expand = F) +
-  labs(y = NULL, fill = "r (mean)")
+  labs(y = NULL, x = "Max Intensity (°C; 0.25° steps)", fill = "r (mean)")
 
 # Heatmap showing average correlations by MHW rate onset
 events_cor_prep %>% 
-  # ungroup() %>% 
-  # dplyr::select(rate_onset, ts, sst, bottomT, sss, mld_cum, mld_1_cum, t2m, tcc_cum, p_e_cum, 
-                # mslp_cum, lwr_mld_cum, swr_mld_cum, lhf_mld_cum, shf_mld_cum, qnet_mld_cum) %>% 
   mutate(rate_onset = round(rate_onset, 1)) %>% 
   group_by(ts, rate_onset) %>% 
+  mutate(count = n()) %>% 
   summarise_if(is.numeric, mean) %>% 
   pivot_longer(cols = sst:qnet_mld_cum) %>% 
   filter(name != "sst",
          ts != "full") %>% 
   ggplot(aes(x = rate_onset, y = name)) +
   geom_tile(aes(fill = value)) +
+  geom_label(aes(label = count)) +
   facet_wrap(~ts) +
   scale_fill_gradient2(low = "blue", high = "red") +
   coord_cartesian(expand = F) +
-  labs(y = NULL, fill = "r (mean)")
+  labs(y = NULL, x = "Rate of onset (°C; 0.1° steps)", fill = "r (mean)")
 
 # Heatmap showing average correlations by MHW rate decline
 events_cor_prep %>% 
   mutate(rate_decline = round(rate_decline, 1)) %>% 
   group_by(ts, rate_decline) %>% 
+  mutate(count = n()) %>% 
   summarise_if(is.numeric, mean) %>% 
   pivot_longer(cols = sst:qnet_mld_cum) %>% 
   filter(name != "sst",
          ts != "full") %>% 
   ggplot(aes(x = rate_decline, y = name)) +
   geom_tile(aes(fill = value)) +
+  geom_label(aes(label = count)) +
   facet_wrap(~ts) +
   scale_fill_gradient2(low = "blue", high = "red") +
   coord_cartesian(expand = F) +
-  labs(y = NULL, fill = "r (mean)")
+  labs(y = NULL, x = "Rate of decline (°C; 0.1° steps)", fill = "r (mean)")
 ```
 
 In the code chunk below we look at the correlations of the correlation results. This isn't terribly useful...
@@ -201,16 +207,23 @@ events_cor_prep %>%
 
 ## Choice events
 
-Group events by their strongest Qx relationship or advection
-Then find their strongest relationship with the next level of variables
-MLD, MSLP, and so on
-This requires that layers of importance be assigned to variables
-Find the top four flavours
-Don’t need to look at all events, just the longest/most intense with strong r values
-Cut out all Cat. I events
-Significant correlations with long events
-Should just be a few
+There are a lot of results to wade through and though it is clear there are important signals in the results, it is proving difficult to distill them. One thought is that we don't need to look at all of the events, just the longest/most intense events with strong r values. This is first done by cutting out all Cat. I events. We then find strong correlations with long events. There should just be a few.
 
+Once this has been done we group events by their strongest Qx relationship. Then find their strongest relationship with the next level of variables (e.g. MLD, MSLP, and so on). Ideally one may find the top four flavours.
+
+```{r choice-events}
+# Filter out smol events
+events_cor_cat <- events_cor_prep %>% 
+  left_join(GLORYS_MHW_cats[,c("region", "event_no", "category")], by = c("region", "event_no")) %>% 
+  filter(category != "I Moderate", duration >= 21)
+
+# Events with high Qlw correlations at onset
+events_cor_cat %>% 
+  filter(ts == "onset", lwr_mld_cum >= 0.7)
+
+# Melt the data frame and find the g term with the highest correlation
+# Those are then used to separate events into groups
+```
 
 ## SOM
 
