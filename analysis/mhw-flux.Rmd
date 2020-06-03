@@ -216,7 +216,7 @@ There are a lot of results to wade through and though it is clear there are impo
 
 Once this has been done we group events by their strongest Qx relationship. Then find their strongest relationship with the next level of variables (e.g. MLD, MSLP, and so on). Ideally one may find the top four flavours.
 
-```{r choice-events, eval=FALSE}
+```{r choice-events}
 # Filter out smol events
 events_cor_cat <- events_cor_prep %>% 
   left_join(GLORYS_MHW_cats[,c("region", "event_no", "category")], by = c("region", "event_no")) %>% 
@@ -228,11 +228,37 @@ events_cor_cat %>%
 
 # Melt the data frame and find the q term with the highest correlation
 # Those are then used to separate events into groups
+events_q_onset <- events_cor_cat %>% 
+  filter(ts == "onset") %>% 
+  dplyr::select(region:event_no, ts, lwr_mld_cum:shf_mld_cum) %>% 
+  pivot_longer(cols = lwr_mld_cum:shf_mld_cum, names_to = "var", values_to = "val") %>% 
+  group_by(region, season, event_no) %>% 
+  filter(abs(val) == max(abs(val)))
+
+# With this guide one may then parse out the q groups
+events_lhf_p_onset <- events_q_onset %>% 
+  filter(val >= 0, var == "lhf_mld_cum") %>% 
+  left_join(events_cor_cat) %>% 
+  ungroup() %>% 
+  # unite(region, season, event_no, sep = "_")
+  mutate(event_no = as.factor(event_no)) %>% 
+  dplyr::select(region:ts, bottomT:qnet_mld_cum, -mld_1_cum) %>% 
+  pivot_longer(bottomT:qnet_mld_cum) %>% 
+  ggplot(aes(x = event_no, y = name)) +
+  geom_tile(aes(fill = value)) +
+  # facet_wrap(~name, scales = "free") +
+  scale_fill_gradient2(low = "blue", high = "red") +
+  coord_cartesian(expand = F) +
+  labs(y = NULL, fill = "r (mean)") +
+  theme(legend.position = "bottom")
+events_lhf_p_onset
 ```
 
 ## SOM
 
-The code used for the MHWNWA project was also used on the GLORYS MHW results to create a SOM for the GLORYS data. These SOM nodes are used below to cluster the correlation results to see how the differ based on the SOM. For reference to the results below let's see what the SOM results for Air temperature and MSLP look like.
+The code used for the MHWNWA project was also used on the GLORYS MHW results to create a SOM for the GLORYS data. These SOM nodes are used below to cluster the correlation results to see how the differ based on the SOM. For reference to the results below let's see what the SOM results for the regions + seasns and Air temperature + MSLP look like.
+
+![](../../MHWNWA/output/SOM/region_season_GLORYS.png)
 
 ![](../../MHWNWA/output/SOM/air_u_v_mslp_anom_GLORYS.png)
 
@@ -275,7 +301,6 @@ events_cor_SOM %>%
   mutate(node = as.factor(node)) %>% 
   group_by(node, ts) %>% 
   summarise_if(is.numeric, mean) %>% 
-  # dplyr::select(duration) %>% 
   pivot_longer(cols = bottomT:qnet_mld_cum) %>%
   filter(name != "temp",
          ts != "full") %>%
@@ -300,7 +325,6 @@ events_cor_SOM %>%
   ggplot(aes(x = node, y = value)) +
   geom_boxplot(aes(fill = ts)) +
   facet_wrap(~name, scales = "free") +
-  # scale_fill_gradient2(low = "blue", high = "red") +
   coord_cartesian(expand = F) +
   labs(y = "correlation (r)", fill = "time series\nsection") +
   theme(legend.position = "bottom")
