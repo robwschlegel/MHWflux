@@ -332,7 +332,9 @@ MHW_event_top <- MHW_event %>%
 knitr::kable(MHW_event_top)
 ```
 
-From the figures and tables output from this comparison analysis we may see that there are some larger differences than were expected. Most importantly perhaps is the the MHWs in the OISST data are more numerous, intense, and shorter in duration. It appears that the GLORYS data assimilation methodology smooths the data more than what we see in the remotely sensed SST. I think it still best to use the GLORYS data as the SST should match more closely to the flux terms considering they are also likely smoothed more than a different more direct sensing would report. In the peer-reviewed write-up this difference between OISST and GLORYS smoothness will need to be discussed.
+From the figures and tables output from this comparison analysis we may see that there are some larger differences than were expected. Most importantly perhaps is the the MHWs in the OISST data are more numerous, intense, and shorter in duration. It appears that the GLORYS data assimilation methodology smooths the data more than what we see in the remotely sensed SST. In the peer-reviewed write-up this difference between OISST and GLORYS smoothness will need to be discussed. I think it still best to use the GLORYS data as the SST should match more closely to the flux terms considering they are also likely smoothed more than a different more direct sensing would report. There are arguments for and against the use of the SST from GLORYS or NOAA but looking at the SOM results with the different SST products it appears that the OISST allows for more meaningful nodes. So I'm now swapping out the GORYS SST for NOAA and will see if the correlation results still hold up.
+
+<!-- I think it still best to use the GLORYS data as the SST should match more closely to the flux terms considering they are also likely smoothed more than a different more direct sensing would report. -->
 
 ## Clims + anoms per variable
 
@@ -375,17 +377,23 @@ saveRDS(ALL_anom, "shiny/ALL_anom.Rda")
 
 We also need to create cumulative heatflux terms as well as a few other choice variables. This is done by taking the first day during the MHW and adding the daily values together cummulatively until the end of the event. The daily values are first divided by the MLD on that day as seen above. The MLD value used to divide the daily variables accounts for the water density and specific heat constant: Q/(rho x Cp x hmld), where rho = 1042 and Cp ~= 4000. Th Qnet term calculated this way approximates the air-sea flux term.
 
-The movement terms aren't very useful and may not be worth including as they don't really show advection. So rather one can say that the parts of the heating that aren't explained by anything else could be attributed to advection through the process of elimination. For the mment they are still left in here.
+The movement terms aren't very useful and may not be worth including as they don't really show advection. So rather one can say that the parts of the heating that aren't explained by anything else could be attributed to advection through the process of elimination. For the moment they are still left in here.
 
 ```{r cum-heat-flux, eval=FALSE}
 # We're going to switch over to the NOAA OISST data for MHWs now
-# OISST_region_MHW <- readRDS("../MHWNWA/data/OISST_region_MHW.Rda")
-# Actually sticking with GLORYS MHWs for now
+OISST_region_MHW <- readRDS("../MHWNWA/data/OISST_region_MHW.Rda")
+OISST_MHW_clim <- OISST_region_MHW %>%
+  select(-cats) %>%
+  unnest(events) %>%
+  filter(row_number() %% 2 == 1) %>%
+  unnest(events)
+
 ALL_anom_cum <- ALL_anom %>%
   dplyr::select(region, var, t, anom) %>% 
   pivot_wider(id_cols = c(region, var, t), names_from = var, values_from = anom) %>% 
   dplyr::select(region:tcc, mslp, qnet, p_e, mld, mld_1, qnet_mld:shf_mld) %>% 
-  left_join(GLORYS_MHW_clim[,c("region", "t", "event_no")], by = c("region", "t")) %>% 
+  # Change this line depending on GLORYS or NOAA use
+  left_join(OISST_MHW_clim[,c("region", "t", "event_no")], by = c("region", "t")) %>% 
   filter(event_no > 0) %>% 
   group_by(region, event_no) %>% 
   mutate_if(is.numeric, cumsum) %>% 

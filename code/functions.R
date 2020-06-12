@@ -51,7 +51,7 @@ NWA_coords <- readRDS("data/NWA_coords.Rda")
 GLORYS_regions <- readRDS("data/GLORYS_regions.Rda")
 ERA5_regions <- readRDS("data/ERA5_regions.Rda")
 
-# MHW results
+# GLORYS MHW results
   # Created in 'analysis/data-prep.Rmd'
 GLORYS_region_MHW <- readRDS("data/GLORYS_region_MHW.Rda")
 
@@ -78,6 +78,35 @@ GLORYS_MHW_event <- GLORYS_region_MHW %>%
 
 # MHW Categories
 GLORYS_MHW_cats <- GLORYS_region_MHW %>%
+  select(-events) %>%
+  unnest(cats)
+
+# OISST MHW results
+OISST_region_MHW <- readRDS("../MHWNWA/data/OISST_region_MHW.Rda")
+
+# OISST MHW Clims
+OISST_MHW_clim <- OISST_region_MHW %>%
+  select(-cats) %>%
+  unnest(events) %>%
+  filter(row_number() %% 2 == 1) %>%
+  unnest(events)
+
+# OISST events
+OISST_MHW_event <- OISST_region_MHW %>%
+  select(-cats) %>%
+  unnest(events) %>%
+  filter(row_number() %% 2 == 0) %>%
+  unnest(events) %>% 
+  mutate(month_peak = lubridate::month(date_peak, label = T),
+         season = case_when(month_peak %in% c("Jan", "Feb", "Mar") ~ "Winter",
+                            month_peak %in% c("Apr", "May", "Jun") ~ "Spring",
+                            month_peak %in% c("Jul", "Aug", "Sep") ~ "Summer",
+                            month_peak %in% c("Oct", "Nov", "Dec") ~ "Autumn"),
+         season = factor(season, levels = c("Spring", "Summer", "Autumn", "Winter"))) %>%
+  select(-month_peak)
+
+# OISST MHW Categories
+OISST_MHW_cats <- OISST_region_MHW %>%
   select(-events) %>%
   unnest(cats)
 
@@ -248,10 +277,10 @@ rmse <- function(error){
 }
 
 # Subset data based on events and regions and run all correlations
-cor_all <- function(df){
+cor_all <- function(df, df_event){
   
   # Get the info for the focus event
-  event_sub <- GLORYS_MHW_event %>% 
+  event_sub <- df_event %>% 
     filter(event_no == df$event_no[1],
            region == df$region[1])
   

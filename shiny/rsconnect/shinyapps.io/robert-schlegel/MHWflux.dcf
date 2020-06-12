@@ -5,8 +5,8 @@ account: robert-schlegel
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 2121482
-bundleId: 3120310
+bundleId: 3253782
 url: https://robert-schlegel.shinyapps.io/MHWflux/
-when: 1588940109.87512
+when: 1591822622.77853
 asMultiple: FALSE
 asStatic: FALSE

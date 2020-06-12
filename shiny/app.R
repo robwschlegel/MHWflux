@@ -22,12 +22,13 @@ library(see)
 
 # Data --------------------------------------------------------------------
 
-# The GLOYS MHW events by region
+# The GLORYS MHW events by region
 # Created in 'analysis/data-prep.Rmd'
-GLORYS_region_MHW <- readRDS("GLORYS_region_MHW.Rda")
+# region_MHW <- readRDS("GLORYS_region_MHW.Rda")
+region_MHW <- readRDS("OISST_region_MHW.Rda")
 
 # MHW Clims
-GLORYS_MHW_clim <- GLORYS_region_MHW %>%
+MHW_clim <- region_MHW %>%
     select(-cats) %>%
     unnest(events) %>%
     filter(row_number() %% 2 == 1) %>%
@@ -35,7 +36,7 @@ GLORYS_MHW_clim <- GLORYS_region_MHW %>%
     ungroup()
 
 # MHW Events
-GLORYS_MHW_event <- GLORYS_region_MHW %>%
+MHW_event <- region_MHW %>%
     select(-cats) %>%
     unnest(events) %>%
     filter(row_number() %% 2 == 0) %>%
@@ -51,26 +52,26 @@ GLORYS_MHW_event <- GLORYS_region_MHW %>%
     select(-month_peak) %>% 
     mutate_if(is.numeric, round, 2)
 
+# MHW Categories
+MHW_cats <- region_MHW %>%
+  select(-events) %>%
+  unnest(cats) %>% 
+  ungroup()
+
 # Event count by region 
-region_count <- GLORYS_MHW_event %>% 
+region_count <- MHW_event %>% 
     group_by(region) %>% 
     summarise(count = n())
 
 # Event count by region 
-season_count <- GLORYS_MHW_event %>% 
+season_count <- MHW_event %>% 
     group_by(season) %>% 
     summarise(count = n())
 
 # Event count by region 
-region_season_count <- GLORYS_MHW_event %>% 
+region_season_count <- MHW_event %>% 
     group_by(region, season) %>% 
     summarise(count = n())
-
-# MHW Categories
-GLORYS_MHW_cats <- GLORYS_region_MHW %>%
-    select(-events) %>%
-    unnest(cats) %>% 
-    ungroup()
 
 # List of desired variables
 choose_vars <- c("sst", "bottomT", "sss", "mld_cum", "mld_1_cum", "t2m", "tcc_cum", "p_e_cum", "mslp_cum",
@@ -327,9 +328,9 @@ server <- function(input, output, session) {
     
     # Select regions from a dropdown
     picker_regions <- pickerInput(inputId = "regions", label = "Regions:",
-                                  choices = levels(GLORYS_MHW_event$region), multiple = TRUE,
+                                  choices = levels(MHW_event$region), multiple = TRUE,
                                   options = list(`actions-box` = TRUE, size = 6),
-                                  selected = levels(GLORYS_MHW_event$region))
+                                  selected = levels(MHW_event$region))
     
     # Select seasons from a dropdown
     picker_seasons <- pickerInput(inputId = "seasons", label = "Seasons:",
@@ -355,8 +356,8 @@ server <- function(input, output, session) {
                                        min = 1, max = max(ALL_cor$n_Obs),
                                        value = c(1, max(ALL_cor$n_Obs)))
     slider_duration <- sliderInput(inputId = "duration", label = "Duration:",
-                                   min = 1, max = max(GLORYS_MHW_event$duration),
-                                   value = c(1, max(GLORYS_MHW_event$duration)))
+                                   min = 1, max = max(MHW_event$duration),
+                                   value = c(1, max(MHW_event$duration)))
     
     # Filter correlations by p-value
     slider_p_val <- sliderInput(inputId = "p_val", label = "Max p:",
@@ -449,7 +450,7 @@ server <- function(input, output, session) {
     # The GLORYS MHW metrics
     MHW_data <- reactive({
         req(input$regions)
-        GLORYS_MHW_event_sub <- GLORYS_MHW_event %>% 
+        MHW_event_sub <- MHW_event %>% 
             dplyr::rename(i_mean = intensity_mean, i_max = intensity_max, i_cum = intensity_cumulative,
                           start = date_start, peak = date_peak, end = date_end, event = event_no) %>% 
             dplyr::select(region, season, event, start, peak, end, duration,
@@ -459,7 +460,7 @@ server <- function(input, output, session) {
                    duration >= input$duration[1],
                    duration <= input$duration[2]) %>% 
             mutate_if(is.numeric, round, 2)
-        return(GLORYS_MHW_event_sub)
+        return(MHW_event_sub)
     })
     
     # Data for the selected MHW

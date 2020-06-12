@@ -11,7 +11,7 @@
 # Run this to re-compile the entire project
 system.time(
 workflowr::wflow_publish(files = c("analysis/index.Rmd", 
-                                   # "analysis/data-prep.Rmd",
+                                   "analysis/data-prep.Rmd",
                                    "analysis/mhw-flux.Rmd"#, 
                                    # "analysis/k-means-flux.Rmd"
                                    ),
