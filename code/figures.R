@@ -12,7 +12,42 @@ source("code/functions.R")
 
 # The study area polygons and MHWs detected thereien
 
-# This figure is currently created in the MHWNWA project
+# Study area
+NWA_study_area <- ggplot(data = NWA_coords, aes(x = lon, y = lat)) +
+  geom_polygon(aes(colour = region, fill = region), size = 1.5, alpha = 0.2) +
+  geom_polygon(data = map_base, aes(group = group), show.legend = F) +
+  coord_cartesian(xlim = c(min(NWA_coords$lon)-2, max(NWA_coords$lon)+2),
+                  ylim = c(min(NWA_coords$lat)-2, max(NWA_coords$lat)+0.5),
+                  expand = FALSE) +
+  scale_x_continuous(breaks = seq(-70, -50, 10),
+                     labels = c("70°W", "60°W", "50°W"),
+                     position = "top") +
+  scale_y_continuous(breaks = c(40, 50),
+                     labels = scales::unit_format(suffix = "°N", sep = "")) +
+  scale_colour_manual(values = RColorBrewer::brewer.pal(n = 6, name = 'Dark2')[c(1,2,4,5,3,6)]) +
+  scale_fill_manual(values = RColorBrewer::brewer.pal(n = 6, name = 'Dark2')[c(1,2,4,5,3,6)]) +
+  labs(x = NULL, y = NULL, colour = "Region", fill = "Region") +
+  theme_bw() +
+  theme(legend.position = c(0.6, 0.2),
+        legend.background = element_rect(colour = "black"),
+        legend.direction = "horizontal")
+NWA_study_area
+
+# Lollis
+MHW_lolli_plot <- ggplot(data = OISST_MHW_event , aes(x = date_peak, y = intensity_cumulative)) +
+  geom_lolli(aes(colour = region), colour_n = "red", n = 0, size = 0.8, show.legend = F) +
+  labs(x = "Peak Date", y = "Cum. Intensity (°C x days)") +
+  scale_colour_manual(values = RColorBrewer::brewer.pal(n = 6, name = 'Dark2')[c(1,2,4,5,3,6)]) +
+  scale_y_continuous(limits = c(0, 250), breaks = seq(50, 200, 50), expand = c(0,0)) +
+  facet_wrap(~region, ncol = 2) +
+  theme(strip.background = element_blank(),
+        strip.text.x = element_blank())
+MHW_lolli_plot
+
+# Combine
+fig_1 <- cowplot::plot_grid(NWA_study_area, MHW_lolli_plot, labels = c('A)', 'B)'), label_size = 10,
+                            align = 'hv', rel_widths = c(1.2, 1), nrow = 1, axis = "l")
+ggsave("figures/fig_1.png", fig_1, height = 7, width = 14)
 
 
 # Figure 2 ----------------------------------------------------------------
@@ -95,7 +130,19 @@ ggsave("figures/fig_3.png", fig_3, height = 10, width = 14)
 
 # Figure 4 ----------------------------------------------------------------
 
-# Importance of variables as MHW metrics increse
+# SOM region + season panels.
+# Created in the MHWNWA project.
+
+
+# Figure 5 ----------------------------------------------------------------
+
+# SOM atmosphere panels.
+# Created in the MHWNWA project.
+
+
+# Figure 6 ----------------------------------------------------------------
+
+# The correlation results clustered by SOM node
 
 # Load correlations
 ALL_cor_wide <- readRDS("data/ALL_cor.Rda") %>% 
@@ -113,60 +160,6 @@ events_cor_prep <- OISST_MHW_event %>%
   dplyr::select(region:n_Obs, sst, bottomT, sss, mld_cum, mld_1_cum, t2m, tcc_cum, p_e_cum, mslp_cum,
                 lwr_mld_cum, swr_mld_cum, lhf_mld_cum, shf_mld_cum, qnet_mld_cum)
 
-fig_4 <- events_cor_prep %>% 
-  mutate(duration = plyr::round_any(duration, 10)) %>% 
-  group_by(ts, duration) %>% 
-  mutate(count = n()) %>% 
-  summarise_if(is.numeric, mean) %>% 
-  pivot_longer(cols = sst:qnet_mld_cum) %>% 
-  ungroup() %>% 
-  filter(name != "sst",
-         ts != "full",
-         name != "mld_1_cum") %>% # Only 1 event is longer than this 
-  mutate(name = case_when(name == "sst" ~ "SST",
-                          name == "bottomT" ~ "Bottom",
-                          name == "sss" ~ "SSS",
-                          name == "mld_cum" ~ "MLD",
-                          name == "mld_1_cum" ~ "MLD_1_c",
-                          name == "t2m" ~ "Air",
-                          name == "tcc_cum" ~ "Cloud",
-                          name == "p_e_cum" ~ "P_E",
-                          name == "mslp_cum" ~ "MSLP",
-                          name == "lwr_mld_cum" ~ "Qlw",
-                          name == "swr_mld_cum" ~ "Qsw",
-                          name == "lhf_mld_cum" ~ "Qlh",
-                          name == "shf_mld_cum" ~ "Qsh",
-                          name == "qnet_mld_cum" ~ "Qnet",
-                          TRUE ~ name),
-         name = factor(name, levels = rev(c("Qnet", "Qlw", "Qsw", "Qlh", "Qsh", "Cloud", 
-                                        "P_E", "Air", "MSLP", "MLD", "SSS", "Bottom")))) %>% 
-  ggplot(aes(x = duration, y = name)) +
-  geom_tile(aes(fill = value)) +
-  geom_text(aes(label = count)) +
-  facet_wrap(~ts) +
-  scale_fill_gradient2(low = "blue", high = "red") +
-  coord_cartesian(expand = F) +
-  labs(y = NULL, x = "Duration (10 day bins)", fill = "r (mean)") +
-  theme(legend.position = "bottom")
-# fig_4
-ggsave("figures/fig_4.png", height = 8, width = 10)
-
-
-# Figure 5 ----------------------------------------------------------------
-
-# SOM region + season panels.
-# Created in the MHWNWA project.
-
-
-# Figure 6 ----------------------------------------------------------------
-
-# SOM atmosphere panels.
-# Created in the MHWNWA project.
-
-
-# Figure 7 ----------------------------------------------------------------
-
-# The correlation results clustered by SOM node
 
 # Load the SOM from the MHWNWA
 SOM <- readRDS("../MHWNWA/data/SOM/som.Rda")
@@ -177,7 +170,7 @@ SOM_info <- SOM$info
 # Join to the GLORYS MHW correlation results
 events_cor_SOM <- left_join(events_cor_prep, SOM_info, by = c("region", "event_no"))
 
-fig_7 <- events_cor_SOM %>% 
+fig_6 <- events_cor_SOM %>% 
   dplyr::select(node, ts, bottomT:qnet_mld_cum, -mld_1_cum) %>% 
   group_by(node, ts) %>% 
   summarise_if(is.numeric, mean) %>% 
@@ -213,5 +206,6 @@ fig_7 <- events_cor_SOM %>%
   theme(legend.position = "bottom",
         axis.text.y = element_text(angle = 90, hjust = 0.5),
         axis.text.x = element_text(angle = 30, hjust = 1.0))
-# fig_7
-ggsave("figures/fig_7.png", fig_7, height = 6, width = 12)
+# fig_6
+ggsave("figures/fig_6.png", fig_6, height = 7, width = 14)
+
