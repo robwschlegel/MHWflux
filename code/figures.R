@@ -12,6 +12,12 @@ source("code/functions.R")
 
 # The study area polygons and MHWs detected thereien
 
+# Convert study area labels to uppercase
+NWA_coords$region <- toupper(NWA_coords$region)
+
+# Reorder site labels
+NWA_coords$region <- factor(NWA_coords$region, levels = c("MAB", "GM", "SS", "GSL", "CBS", "NFS"))
+
 # Study area
 NWA_study_area <- ggplot(data = NWA_coords, aes(x = lon, y = lat)) +
   geom_polygon(aes(colour = region, fill = region), size = 1.5, alpha = 0.2) +
@@ -24,30 +30,29 @@ NWA_study_area <- ggplot(data = NWA_coords, aes(x = lon, y = lat)) +
                      position = "top") +
   scale_y_continuous(breaks = c(40, 50),
                      labels = scales::unit_format(suffix = "°N", sep = "")) +
-  scale_colour_manual(values = RColorBrewer::brewer.pal(n = 6, name = 'Dark2')[c(1,2,4,5,3,6)]) +
-  scale_fill_manual(values = RColorBrewer::brewer.pal(n = 6, name = 'Dark2')[c(1,2,4,5,3,6)]) +
+  scale_colour_manual(values = RColorBrewer::brewer.pal(n = 6, name = 'Dark2')[c(1,2,5,4,3,6)], aesthetics = c("colour", "fill")) +
   labs(x = NULL, y = NULL, colour = "Region", fill = "Region") +
   theme_bw() +
   theme(legend.position = c(0.6, 0.2),
         legend.background = element_rect(colour = "black"),
         legend.direction = "horizontal")
-NWA_study_area
+# NWA_study_area
 
 # Lollis
 MHW_lolli_plot <- ggplot(data = OISST_MHW_event , aes(x = date_peak, y = intensity_cumulative)) +
-  geom_lolli(aes(colour = region), colour_n = "red", n = 0, size = 0.8, show.legend = F) +
+  geom_lolli(aes(colour = region), colour_n = "red", n = 0, size = 1.0, show.legend = F) +
   labs(x = "Peak Date", y = "Cum. Intensity (°C x days)") +
-  scale_colour_manual(values = RColorBrewer::brewer.pal(n = 6, name = 'Dark2')[c(1,2,4,5,3,6)]) +
+  scale_colour_manual(values = RColorBrewer::brewer.pal(n = 6, name = 'Dark2')[c(1,2,5,4,3,6)]) +
   scale_y_continuous(limits = c(0, 250), breaks = seq(50, 200, 50), expand = c(0,0)) +
   facet_wrap(~region, ncol = 2) +
   theme(strip.background = element_blank(),
         strip.text.x = element_blank())
-MHW_lolli_plot
+# MHW_lolli_plot
 
 # Combine
 fig_1 <- cowplot::plot_grid(NWA_study_area, MHW_lolli_plot, labels = c('A)', 'B)'), label_size = 10,
                             align = 'hv', rel_widths = c(1.2, 1), nrow = 1, axis = "l")
-ggsave("figures/fig_1.png", fig_1, height = 7, width = 14)
+ggsave("figures/fig_1.png", fig_1, height = 5, width = 10)
 
 
 # Figure 2 ----------------------------------------------------------------
