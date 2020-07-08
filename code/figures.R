@@ -65,39 +65,48 @@ ALL_cor <- readRDS("data/ALL_cor.Rda") %>%
                                 Parameter2 == "bottomT" ~ "Bottom",
                                 Parameter2 == "sss" ~ "SSS",
                                 Parameter2 == "mld_cum" ~ "MLD",
-                                Parameter2 == "mld_1_cum" ~ "MLD_1_c",
+                                Parameter2 == "mld_1_cum" ~ "MLD_1",
                                 Parameter2 == "t2m" ~ "Air",
                                 Parameter2 == "tcc_cum" ~ "Cloud",
-                                Parameter2 == "p_e_cum" ~ "P_E",
+                                Parameter2 == "p_e_cum" ~ "P-E",
                                 Parameter2 == "mslp_cum" ~ "MSLP",
                                 Parameter2 == "lwr_mld_cum" ~ "Qlw",
                                 Parameter2 == "swr_mld_cum" ~ "Qsw",
                                 Parameter2 == "lhf_mld_cum" ~ "Qlh",
                                 Parameter2 == "shf_mld_cum" ~ "Qsh",
                                 Parameter2 == "qnet_mld_cum" ~ "Qnet",
-                                TRUE ~ Parameter2))
+                                TRUE ~ Parameter2),
+         Parameter2 = factor(Parameter2, levels = c("Qnet", "Qlh", "Qsh", "Qlw", "Qsw",
+                                                    "Air", "Cloud", "P-E", "MSLP",
+                                                    "SST", "SSS", "MLD", "MLD_1", "Bottom")))
+
 # Function for plotting histograms of chosen variables
 hist_var <- function(var_choices, y_label){
   ALL_cor %>% 
     filter(Parameter2 %in% var_choices) %>% 
     ggplot(aes(x = r)) +
     geom_vline(aes(xintercept = 0), colour = "red", size = 1) +
-    geom_histogram(bins = 20) +
+    geom_histogram(bins = 10) +
     scale_y_continuous(expand = c(0, 0)) +
-    scale_x_continuous(expand = c(0, 0)) +
+    scale_x_continuous(expand = c(0, 0), breaks = c(-0.9, -0.5, 0, 0.5, 0.9)) +
     facet_grid(ts ~ Parameter2) +
     labs(x = NULL, y = y_label) +
     theme(axis.title.y = element_text(size = 16)) +
     coord_fixed(ratio = 0.01)
 }
 
+# The three figures
 hist_Q <- hist_var(c("Qnet", "Qlh", "Qsh", "Qlw", "Qsw"), "Heat flux")
-hist_air <- hist_var(c("Air", "Cloud", "P_E", "MSLP"), "Atmosphere")
+hist_air <- hist_var(c("Air", "P-E", "MSLP"), "Atmosphere")
 hist_ocean <- hist_var(c("SSS", "MLD", "Bottom"), "Ocean")
 
-fig_2 <- ggpubr::ggarrange(hist_Q, hist_air, hist_ocean, ncol = 1, nrow = 3, align = "h",  labels = c("A)", "B)", "C)"))
-fig_2
-ggsave("figures/fig_2.png", fig_2, height = 10, width = 14)
+# Combine bottom two
+hist_bottom <- ggpubr::ggarrange(hist_air, hist_ocean, ncol = 2, nrow = 1, align = "h",  labels = c("B)", "C)"))
+
+# The final figure
+fig_2 <- ggpubr::ggarrange(hist_Q, hist_bottom, ncol = 1, nrow = 2, align = "h",  labels = c("A)"))
+# fig_2
+ggsave("figures/fig_2.png", fig_2, height = 5, width = 10)
 
 
 # Figure 3 ----------------------------------------------------------------
@@ -110,6 +119,7 @@ boxplot_var <-  function(var_choices, y_label){
     geom_hline(aes(yintercept = 0), colour = "red", size = 1) +
     geom_boxplot(aes(fill = season), notch = F) +
     facet_wrap(~Parameter2, nrow = 1) +
+    scale_fill_manual(values = c("chartreuse", "gold", "orangered", "slateblue")) +
     # scale_y_continuous(expand = c(0, 0)) +
     # scale_x_continuous(expand = c(0, 0)) +
     # facet_grid(ts ~ Parameter2) +
@@ -119,13 +129,16 @@ boxplot_var <-  function(var_choices, y_label){
 }
 
 box_Q <- boxplot_var(c("Qnet", "Qlh", "Qsh", "Qlw", "Qsw"), "Heat flux")
-box_air <- boxplot_var(c("Air", "Cloud", "P_E", "MSLP"), "Atmosphere")
+box_air <- boxplot_var(c("Air", "P-E", "MSLP"), "Atmosphere")
 box_ocean <- boxplot_var(c("SSS", "MLD", "Bottom"), "Ocean")
 
-fig_3 <- ggpubr::ggarrange(box_Q, box_air, box_ocean, ncol = 1, nrow = 3, align = "h",  
-                           labels = c("A)", "B)", "C)"), common.legend = T)
-fig_3
-ggsave("figures/fig_3.png", fig_3, height = 10, width = 14)
+# Combine bottom two
+box_bottom <- ggpubr::ggarrange(box_air, box_ocean, ncol = 2, nrow = 1, align = "h",  labels = c("B)", "C)"), legend = "none")
+
+# The final figure
+fig_3 <- ggpubr::ggarrange(box_Q, box_bottom, ncol = 1, nrow = 2, align = "h",  labels = c("A)"), common.legend = T)
+# fig_3
+ggsave("figures/fig_3.png", fig_3, height = 5, width = 10)
 
 
 # Figure 4 ----------------------------------------------------------------

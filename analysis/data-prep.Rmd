@@ -248,7 +248,6 @@ seas_thresh_comp <- MHW_clim %>%
        subtitle = paste0("Solid line shows seasonal climatology,",
                          "\ndashed line shows threshold."))
 
-
 # Plot average doy difference histogram
 doy_comp <- MHW_clim_wide %>%
   group_by(region, doy) %>% 
@@ -332,9 +331,16 @@ MHW_event_top <- MHW_event %>%
 knitr::kable(MHW_event_top)
 ```
 
-From the figures and tables output from this comparison analysis we may see that there are some larger differences than were expected. Most importantly perhaps is the the MHWs in the OISST data are more numerous, intense, and shorter in duration. It appears that the GLORYS data assimilation methodology smooths the data more than what we see in the remotely sensed SST. In the peer-reviewed write-up this difference between OISST and GLORYS smoothness will need to be discussed. I think it still best to use the GLORYS data as the SST should match more closely to the flux terms considering they are also likely smoothed more than a different more direct sensing would report. There are arguments for and against the use of the SST from GLORYS or NOAA but looking at the SOM results with the different SST products it appears that the OISST allows for more meaningful nodes. So I'm now swapping out the GORYS SST for NOAA and will see if the correlation results still hold up.
+From the figures and tables output from this comparison analysis we may see that there are some larger differences than were expected. Most importantly perhaps is the the MHWs in the OISST data are more numerous, intense, and shorter in duration. It appears that the GLORYS data assimilation methodology smooths the data more than what we see in the remotely sensed SST. In the peer-reviewed write-up this difference between OISST and GLORYS smoothness will need to be discussed. I think it still best to use the GLORYS data as the SST should match more closely to the flux terms considering they are also likely smoothed more than a different more direct sensing would report. There are arguments for and against the use of the SST from GLORYS or NOAA but looking at the SOM results with the different SST products it appears that the OISST allows for more meaningful nodes. So I'm now swapping out the GLORYS SST for NOAA and will see if the correlation results still hold up. (They did)
 
-<!-- I think it still best to use the GLORYS data as the SST should match more closely to the flux terms considering they are also likely smoothed more than a different more direct sensing would report. -->
+### MHW results
+
+As this is not really the focus of the paper, I will quickly go over the MHW results here. Specifically we are looking at the summary stats for MHWs per region and season, and how they may differ between those classifying groups. The stats created here are used in the results section of the manuscript and some of the musings will be used for the discussion.
+
+```{r MHW-results}
+
+```
+
 
 ## Clims + anoms per variable
 
