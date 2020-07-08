@@ -132,7 +132,7 @@ GLORYS_all_ts <- load_all_GLORYS_region(GLORYS_files) %>%
 saveRDS(GLORYS_all_ts, "data/GLORYS_all_ts.Rda")
 ```
 
-The code for the ERA5 data. NB: The ERA5 data are on an hourly 0.25x0.25 spatiotemporal grid. This loading process constrains them to a daily 0.25x0.25 grid.
+The code for the ERA5 data. NB: The ERA5 data are on an hourly 0.25 degree spatiotemporal grid. This loading process constrains them to a daily 0.25 degree grid.
 
 ```{r ERA5-prep, eval=FALSE}
 # See the code/workflow script for the code used for ERA5 data prep
@@ -338,7 +338,10 @@ From the figures and tables output from this comparison analysis we may see that
 As this is not really the focus of the paper, I will quickly go over the MHW results here. Specifically we are looking at the summary stats for MHWs per region and season, and how they may differ between those classifying groups. The stats created here are used in the results section of the manuscript and some of the musings will be used for the discussion.
 
 ```{r MHW-results}
-
+MHW_annual_count <- OISST_MHW_event %>%
+  mutate(year = year(date_peak)) %>% 
+  group_by(year) %>% 
+  summarise(count = n())
 ```
 
 
@@ -358,11 +361,11 @@ ALL_anom <- ALL_ts %>%
   dplyr::rename(lwr = msnlwrf, swr = msnswrf, lhf = mslhf, 
                 shf = msshf, mslp = msl, sst = temp) %>% 
   dplyr::select(-wind_dir, -cur_dir) %>% 
-  mutate(qnet_mld = qnet/(mld*1042*4000),
-         lwr_mld = lwr/(mld*1042*4000),
-         swr_mld = swr/(mld*1042*4000),
-         lhf_mld = lhf/(mld*1042*4000),
-         shf_mld = shf/(mld*1042*4000),
+  mutate(qnet_mld = qnet/(mld*1024*4000),
+         lwr_mld = lwr/(mld*1024*4000),
+         swr_mld = swr/(mld*1024*4000),
+         lhf_mld = lhf/(mld*1024*4000),
+         shf_mld = shf/(mld*1024*4000),
          mld_1 = 1/mld) %>% 
   pivot_longer(cols = c(-region, -t), names_to = "var", values_to = "val") %>% 
   group_by(region, var) %>%

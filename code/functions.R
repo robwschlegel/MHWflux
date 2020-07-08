@@ -30,6 +30,7 @@ library(heatwaveR)
 library(tidync)
 library(correlation)
 library(ggraph)
+library(Metrics) # For RMSE calcs
 
 # Set number of cores
 doParallel::registerDoParallel(cores = 50)
@@ -230,6 +231,9 @@ load_all_GLORYS_region <- function(file_names){
 
 # Extract data from ERA 5 NetCDF ------------------------------------------
 
+# The ERA5 data need to be loaded from midday to midday
+# The final midday is the date for that averaged datum
+
 # Function for loading a single ERA 5 NetCDF file
 # The ERA5 data are saved as annual single variables
 # testers...
@@ -245,6 +249,7 @@ load_ERA5_region <- function(file_name){
     mutate(lon = if_else(lon > 180, lon -360, lon)) %>% 
     right_join(ERA5_regions, by = c("lon", "lat")) %>% 
     dplyr::select(-lon, -lat) %>% 
+    # 12 hour shift 
     group_by(region, t) %>% 
     summarise_all("mean") %>% 
     ungroup()
@@ -267,14 +272,6 @@ load_ERA5_region <- function(file_name){
 
 
 # Correlation functions ---------------------------------------------------
-
-## Consider looking into the functions from this package:
-# https://easystats.github.io/correlation/
-
-# Calculate RMSE
-rmse <- function(error){
-  sqrt(mean(error^2))
-}
 
 # Subset data based on events and regions and run all correlations
 cor_all <- function(df, df_event){
@@ -301,6 +298,14 @@ cor_all <- function(df, df_event){
   # Run the correlations
   ts_full_cor <- correlation(ts_full, redundant = T) %>% 
     mutate(ts = "full")
+  ts_test <- rmse(ts_full$sst, ts_full$qnet_mld_cum*86400)
+  # SST anomalies should be used for this as they are relative to the preceeding day of the event
+  # So take the day before the start of the event and subtract that from all days of the MHW
+  # The offset of heat flux and temperature is not 0
+  # ts_full_rmse <- ts_full %>% 
+  #   pivot_longer() %>% 
+  #   nest() %>% 
+  #   mutate(fit = map(data, ~ rmse(arr_delay ~ ., data = .)))
   if(nrow(ts_onset) > 2){
     ts_onset_cor <- correlation(ts_onset, redundant = T) %>% 
       mutate(ts = "onset")

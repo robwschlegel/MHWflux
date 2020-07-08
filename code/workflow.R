@@ -36,6 +36,9 @@ source("code/functions.R")
 # NB: This is very RAM heavy, be carfeul with core use
 doParallel::registerDoParallel(cores = 26)
 
+# Check the exact time frame of the daily GLORYS data
+GLORYS_info <- ncdump::NetCDF("../data/GLORYS/MHWflux_GLORYS_1993-1.nc")
+
 # Prep all GLORYS data in one go
 GLORYS_files <- dir("../data/GLORYS", full.names = T, pattern = "MHWflux")
 system.time(
