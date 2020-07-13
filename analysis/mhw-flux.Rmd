@@ -64,6 +64,22 @@ There are some really clear patterns coming through in the data. In particular S
 
 In the shiny app it also comes out that the longer events tend not to correlate strongly with a single variable. This is to be expected and supports the argument that very persistent MHWs are supported by a confluence of variables. How to parse that out is an interesting challenge.
 
+## RMSE
+
+Running correlations is useful to see how well certain variables change in relation to the SST anomalies, but these do not show how similar those proportions of change are. In order to do this we need to calculate the RMSE between the SST anomalies and the Qx terms. This may only be done with the Qx terms because they are in the same units as SST. One additional tweek we will need here is to subtract the SST anomaly from the dat before the onset of the MHW from day one of the event. THis is done so that we may see more closely how the developing Qx term matches to the development of the SST anomaly.
+
+```{r RMSE}
+  ts_test <- rmse(ts_full$sst, ts_full$qnet_mld_cum)
+  # SST anomalies should be used for this as they are relative to the preceeding day of the event
+  # So take the day before the start of the event and subtract that from all days of the MHW
+  # The offset of heat flux and temperature is not 0
+  # ts_full_rmse <- ts_full %>% 
+  #   pivot_longer() %>% 
+  #   nest() %>% 
+  #   mutate(fit = map(data, ~ rmse(arr_delay ~ ., data = .)))
+```
+
+
 ## Regions + Seasons
 
 With the correlations calculated for the onset, decline, and full extent of each MHW, we also want to know if any signals emerge from the regions and/or seasons of occurrence of these events. Is the relationship between SSS and MHW onset stronger in the winter? Stronger in certain region? Having manually looked through the Shiny app it does look like there are some patterns. These will be written down in the results table below.

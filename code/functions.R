@@ -298,14 +298,6 @@ cor_all <- function(df, df_event){
   # Run the correlations
   ts_full_cor <- correlation(ts_full, redundant = T) %>% 
     mutate(ts = "full")
-  ts_test <- rmse(ts_full$sst, ts_full$qnet_mld_cum*86400)
-  # SST anomalies should be used for this as they are relative to the preceeding day of the event
-  # So take the day before the start of the event and subtract that from all days of the MHW
-  # The offset of heat flux and temperature is not 0
-  # ts_full_rmse <- ts_full %>% 
-  #   pivot_longer() %>% 
-  #   nest() %>% 
-  #   mutate(fit = map(data, ~ rmse(arr_delay ~ ., data = .)))
   if(nrow(ts_onset) > 2){
     ts_onset_cor <- correlation(ts_onset, redundant = T) %>% 
       mutate(ts = "onset")
