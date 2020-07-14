@@ -16,7 +16,7 @@ workflowr::wflow_publish(files = c("analysis/index.Rmd",
                                    # "analysis/k-means-flux.Rmd"
                                    ),
                          message = "Re-built site.")
-) # 70 seconds
+) # 85 seconds
 
 
 # Startup -----------------------------------------------------------------
