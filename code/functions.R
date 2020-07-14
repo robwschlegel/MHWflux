@@ -274,6 +274,7 @@ load_ERA5_region <- function(file_name){
 # Correlation functions ---------------------------------------------------
 
 # Subset data based on events and regions and run all correlations
+# THis also runs RMSE for the Qx terms
 cor_all <- function(df, df_event){
   
   # Get the info for the focus event
@@ -281,19 +282,23 @@ cor_all <- function(df, df_event){
     filter(event_no == df$event_no[1],
            region == df$region[1])
   
+  # Find the SST on the day before the event started
+  sst_pre <- ALL_anom_full_wide %>% 
+    filter(t == event_sub$date_start-1,
+           region == event_sub$region)
+  
   # Subset the time series for the onset and decline portions
   ts_full <- ALL_anom_full_wide %>% 
     filter(t >= event_sub$date_start,
            t <= event_sub$date_end,
-           region == event_sub$region,)
-  ts_onset <- ALL_anom_full_wide %>% 
+           region == event_sub$region) %>% 
+    mutate(sst_start = sst - sst_pre$sst)
+  ts_onset <- ts_full %>% 
     filter(t >= event_sub$date_start,
-           t <= event_sub$date_peak,
-           region == event_sub$region)
-  ts_decline <- ALL_anom_full_wide %>% 
+           t <= event_sub$date_peak)
+  ts_decline <- ts_full %>% 
     filter(t >= event_sub$date_peak,
-           t <= event_sub$date_end,
-           region == event_sub$region)
+           t <= event_sub$date_end)
   
   # Run the correlations
   ts_full_cor <- correlation(ts_full, redundant = T) %>% 

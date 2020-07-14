@@ -353,15 +353,17 @@ The analyses to come are going to be performed on anomaly values, not the origin
 # Load the data
 GLORYS_all_ts <- readRDS("data/GLORYS_all_ts.Rda")
 ERA5_all_ts <- readRDS("data/ERA5_all_ts.Rda")
-ALL_ts <- left_join(ERA5_all_ts, GLORYS_all_ts, by = c("region", "t"))
+OISST_all_ts <- readRDS("../MHWNWA/data/OISST_region.Rda")
+ALL_ts <- left_join(ERA5_all_ts, GLORYS_all_ts, by = c("region", "t")) %>% 
+  left_join(OISST_all_ts, by = c("region", "t"))
 
 # Calculate GLORYS clims and anoms
   # Also give better names to the variables
   # Also convert the Qx terms from seconds to days by multiplying by 86,400
 ALL_anom <- ALL_ts %>%
   dplyr::rename(lwr = msnlwrf, swr = msnswrf, lhf = mslhf, 
-                shf = msshf, mslp = msl, sst = temp) %>% 
-  dplyr::select(-wind_dir, -cur_dir) %>% 
+                shf = msshf, mslp = msl, sst = temp.y) %>% 
+  dplyr::select(-wind_dir, -cur_dir, -temp.x) %>% 
   mutate(qnet_mld = (qnet*86400)/(mld*1024*4000),
          lwr_mld = (lwr*86400)/(mld*1024*4000),
          swr_mld = (swr*86400)/(mld*1024*4000),

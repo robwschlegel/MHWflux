@@ -69,6 +69,8 @@ In the shiny app it also comes out that the longer events tend not to correlate 
 Running correlations is useful to see how well certain variables change in relation to the SST anomalies, but these do not show how similar those proportions of change are. In order to do this we need to calculate the RMSE between the SST anomalies and the Qx terms. This may only be done with the Qx terms because they are in the same units as SST. One additional tweek we will need here is to subtract the SST anomaly from the dat before the onset of the MHW from day one of the event. THis is done so that we may see more closely how the developing Qx term matches to the development of the SST anomaly.
 
 ```{r RMSE}
+
+
   ts_test <- rmse(ts_full$sst, ts_full$qnet_mld_cum)
   # SST anomalies should be used for this as they are relative to the preceeding day of the event
   # So take the day before the start of the event and subtract that from all days of the MHW
