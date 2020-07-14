@@ -29,6 +29,8 @@ source("code/functions.R")
 
 We know when the MHWs occurred, and our physical data are prepped, so what we need to do is run correlations between SST from the start to peak and peak to end of each event for the full suite of variables. This will show us for each event which values correlated the best for the onset AND decline of the events. We will run correlations on the full time series, too.
 
+Running correlations is useful to see how well certain variables change in relation to the SST anomalies, but these do not show how similar those proportions of change are. In order to do this we need to calculate the RMSE between the SST anomalies and the Qx terms. This may only be done with the Qx terms because they are in the same units as SST. One additional tweek we will need here is to subtract the SST anomaly from the dat before the onset of the MHW from day one of the event. THis is done so that we may see more closely how the developing Qx term matches to the development of the SST anomaly.
+
 ```{r MHW-var-cor, eval=FALSE}
 # Extract just the event info
 OISST_MHW_event_index <- OISST_MHW_event %>% 
@@ -64,23 +66,35 @@ There are some really clear patterns coming through in the data. In particular S
 
 In the shiny app it also comes out that the longer events tend not to correlate strongly with a single variable. This is to be expected and supports the argument that very persistent MHWs are supported by a confluence of variables. How to parse that out is an interesting challenge.
 
-## RMSE
+### 12 hour offset
 
-Running correlations is useful to see how well certain variables change in relation to the SST anomalies, but these do not show how similar those proportions of change are. In order to do this we need to calculate the RMSE between the SST anomalies and the Qx terms. This may only be done with the Qx terms because they are in the same units as SST. One additional tweek we will need here is to subtract the SST anomaly from the dat before the onset of the MHW from day one of the event. THis is done so that we may see more closely how the developing Qx term matches to the development of the SST anomaly.
+While going through the data it was discovered that the OISST temperature values represent an average from midnight to midnight. This therefore puts them off set to the Qx terms, which were also being caluclated over the same time period. But to compare teh Qx terms to SST there should be a 12 hour offset. So 12 hours were added to the terms before re-running the pipeline and recalculating all of the correlations and RMSE. In the code chuk below we compare the stats pre-12 hour shift and afterwards.
 
-```{r RMSE}
+```{r shift-compare}
+# Load old and new data
+ALL_cor_old <- readRDS("data/ALL_cor_old.Rda") %>% 
+  mutate(run = "old")
+ALL_cor <- readRDS("data/ALL_cor.Rda") %>% 
+  mutate(run = "new")
+ALL_cor_stack <- rbind(ALL_cor, ALL_cor_old)
 
+# Compare RMSE quantiles
+ALL_cor_stack %>% 
+  filter(rmse > 0) %>% 
+  group_by(run, region, ts, Parameter2) %>% 
+  summarise(q10 = quantile(rmse, 0.10), 
+            q50 = quantile(rmse, 0.50),
+            q90 = quantile(rmse, 0.90)) %>% 
+  pivot_wider(names_from = run, values_from = q10:q90)
 
-  ts_test <- rmse(ts_full$sst, ts_full$qnet_mld_cum)
-  # SST anomalies should be used for this as they are relative to the preceeding day of the event
-  # So take the day before the start of the event and subtract that from all days of the MHW
-  # The offset of heat flux and temperature is not 0
-  # ts_full_rmse <- ts_full %>% 
-  #   pivot_longer() %>% 
-  #   nest() %>% 
-  #   mutate(fit = map(data, ~ rmse(arr_delay ~ ., data = .)))
+# Plot difference
+ALL_cor_stack %>% 
+  filter(rmse > 0) %>% 
+  ggplot(aes(x = ts, y = rmse)) +
+  geom_boxplot(aes(fill = run)) +
+  facet_grid(Parameter2~region) #+
+  # scale_y_continuous(limits = c(0, 2))
 ```
-
 
 ## Regions + Seasons
 

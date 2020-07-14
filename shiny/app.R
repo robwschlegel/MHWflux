@@ -75,17 +75,15 @@ region_season_count <- MHW_event %>%
 
 # List of desired variables
 choose_vars <- c("sst", "bottomT", "sss", "mld_cum", "mld_1_cum", "t2m", "tcc_cum", "p_e_cum", "mslp_cum",
-                 "lwr_mld_cum", "swr_mld_cum", "lhf_mld_cum", "shf_mld_cum", "qnet_mld_cum")
+                 "lwr_mld_cum", "swr_mld_cum", "lhf_mld_cum", "shf_mld_cum", "qnet_mld_cum", "sst_thresh")
 
 # Physical variable anomalies
 ALL_anom <- readRDS("ALL_anom.Rda")
 ALL_anom_cum <- readRDS("ALL_anom_cum.Rda")
-# ALL_anom_mld <- readRDS("ALL_anom_mld.Rda")
 
 # Combine the anomaly dataframes into one
 ALL_anom_full <- rbind(ALL_anom[,c("region", "var", "t", "anom")], 
-                       ALL_anom_cum[,c("region", "var", "t", "anom")]) %>% #,
-                       # ALL_anom_mld[,c("region", "var", "t", "anom")]) %>% 
+                       ALL_anom_cum[,c("region", "var", "t", "anom")]) %>%
   filter(var %in% choose_vars) %>% 
   mutate(region = factor(region, levels = c("mab", "gm", "ss", "cbs", "gsl", "nfs")),
          var = case_when(var == "sst" ~ "SST",
@@ -104,7 +102,7 @@ ALL_anom_full <- rbind(ALL_anom[,c("region", "var", "t", "anom")],
                          var == "qnet_mld_cum" ~ "Qnet",
                          TRUE ~ var))
 ALL_anom_full_wide <- ALL_anom_full %>% 
-    pivot_wider(values_from = anom, names_from = var)
+    pivot_wider(values_from = anom, names_from = var, values_fn = mean)
 
 # The correlations
 ALL_cor <- readRDS("ALL_cor.Rda") %>% 
@@ -218,7 +216,7 @@ ui <- dashboardPage(
                     fluidRow(box(dataTableOutput("eventTable"), width = 12, title = "Event metrics", 
                                  status = "primary", solidHeader = TRUE, collapsible = TRUE)),
                     # The correlation plot
-                    fluidRow(box(width = 6, title = "Correlation plot", status = "primary", solidHeader = TRUE, collapsible = TRUE,
+                    fluidRow(box(width = 4, title = "Correlation plot", status = "primary", solidHeader = TRUE, collapsible = TRUE,
                                  dropdownButton(
                                      h4("Correlation controls:"),
                                      selectInput(inputId = "vars2", label = "Variables:",
@@ -233,7 +231,7 @@ ui <- dashboardPage(
                                      circle = TRUE, status = "danger", icon = icon("gear")),
                                  plotOutput("correlationPlot")),
                              # The scatterplot
-                             box(width = 6, title = "Scatterplot", status = "primary", solidHeader = TRUE, collapsible = TRUE,
+                             box(width = 4, title = "Scatterplot", status = "primary", solidHeader = TRUE, collapsible = TRUE,
                                  dropdownButton(
                                      h4("Scatter controls:"),
                                      # These inputs need to be ordered by category
@@ -244,7 +242,15 @@ ui <- dashboardPage(
                                                  choices = unique(ALL_anom_full$var),
                                                  selected = "SST"),
                                      circle = TRUE, status = "danger", icon = icon("gear")),
-                                 plotOutput("scatterPlot")))),
+                                 plotOutput("scatterPlot")),
+                             box(width = 4, title = "RMSE", status = "primary", solidHeader = TRUE, collapsible = TRUE,
+                                 dropdownButton(
+                                   h4("RMSE controls:"),
+                                   selectInput(inputId = "rmse_var", label = "Qx:",
+                                               choices = c("Qnet", "Qlw", "Qsw", "Qlh", "Qsh"),
+                                               selected = "Qnet"),
+                                   circle = TRUE, status = "danger", icon = icon("gear")),
+                                 plotOutput("rmsePlot")))),
             # Test box
             # fluidRow(box(verbatimTextOutput("devel")))),
             
@@ -447,7 +453,7 @@ server <- function(input, output, session) {
         return(ALL_cor_sub)
     })
     
-    # The GLORYS MHW metrics
+    # The OISST MHW metrics
     MHW_data <- reactive({
         req(input$regions)
         MHW_event_sub <- MHW_event %>% 
@@ -646,6 +652,40 @@ server <- function(input, output, session) {
       sp
       # ggplotly(sp, tooltip = "text", dynamicTicks = F) %>% 
       #   layout(showlegend = FALSE)
+    })
+    
+    # RMSE scatterplot of SST and a Qx variable during onset, full, or decline of a single event
+    output$rmsePlot <- renderPlot({
+      # Prep ts data
+      MHW_single <- MHW_single()
+      MHW_single <- left_join(MHW_single, MHW_clim[,c("region", "t", "temp", "thresh")],
+                              by = c("region", "t")) %>% 
+        mutate(SST_thresh = temp-thresh)
+      # Find RMSE value
+      MHW_data <- MHW_data()
+      event_sub <- MHW_data[input$eventTable_cell_clicked$row,]
+      MHW_rmse <- ALL_cor %>% 
+        filter(region == event_sub$region,
+               event_no == event_sub$event,
+               ts == input$ts_single,
+               Parameter2 == input$rmse_var) %>% 
+        na.omit()
+      # Find y for Qx
+      Qx_y <- as.numeric(MHW_single[1,input$rmse_var])
+      # The plot
+      rp <- ggplot(data = MHW_single, aes(x = t)) +
+        geom_point(aes(y = SST_thresh), colour = "red") +
+        geom_line(aes(y = SST_thresh), colour = "red") +
+        geom_point(aes_string(y = input$rmse_var), colour = "blue") +
+        geom_line(aes_string(y = input$rmse_var), colour = "blue") +
+        geom_label(aes(x = t[1], y = SST_thresh[1],
+                       label = "SST"), colour = "red") +
+        geom_label(aes(x = t[1], y = Qx_y,
+                       label = input$rmse_var), colour = "blue") +
+        geom_label(aes(x = mean(t), y = quantile(SST_thresh, 0.1),
+                       label = paste0("RMSE = ",MHW_rmse$rmse[1]))) +
+        labs(x = NULL, y = "SST-thresh (°C) | Qx/MLD (°C)")
+      rp
     })
     
     # Test text output for table interaction

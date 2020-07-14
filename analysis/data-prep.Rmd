@@ -393,16 +393,10 @@ The movement terms aren't very useful and may not be worth including as they don
 
 ```{r cum-heat-flux, eval=FALSE}
 # We're going to switch over to the NOAA OISST data for MHWs now
-OISST_region_MHW <- readRDS("../MHWNWA/data/OISST_region_MHW.Rda")
-OISST_MHW_clim <- OISST_region_MHW %>%
-  select(-cats) %>%
-  unnest(events) %>%
-  filter(row_number() %% 2 == 1) %>%
-  unnest(events)
-
 ALL_anom_cum <- ALL_anom %>%
   dplyr::select(region, var, t, anom) %>% 
-  pivot_wider(id_cols = c(region, var, t), names_from = var, values_from = anom) %>% 
+  pivot_wider(id_cols = c("region", "var", "t"), names_from = var, 
+              values_from = anom, values_fn = mean) %>% 
   dplyr::select(region:tcc, mslp, qnet, p_e, mld, mld_1, qnet_mld:shf_mld) %>% 
   # Change this line depending on GLORYS or NOAA use
   left_join(OISST_MHW_clim[,c("region", "t", "event_no")], by = c("region", "t")) %>% 

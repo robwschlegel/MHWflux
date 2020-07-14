@@ -121,7 +121,7 @@ ALL_anom_full <- rbind(ALL_anom[,c("region", "var", "t", "anom")],
                        ALL_anom_cum[,c("region", "var", "t", "anom")])#,
                        # ALL_anom_mld[,c("region", "var", "t", "anom")])
 ALL_anom_full_wide <- ALL_anom_full %>% 
-  pivot_wider(values_from = anom, names_from = var)
+  pivot_wider(values_from = anom, names_from = var, values_fn = mean)
 
 # The base land polygon
   # Created in 'MHWNWA/analysis/polygon-prep.Rmd'
@@ -237,19 +237,22 @@ load_all_GLORYS_region <- function(file_names){
 # Function for loading a single ERA 5 NetCDF file
 # The ERA5 data are saved as annual single variables
 # testers...
-# file_name <- "../../oliver/data/ERA/ERA5/EVAP/ERA5_EVAP_1980.nc"
+# file_name <- "../../oliver/data/ERA/ERA5/LWR/ERA5_LWR_1993.nc"
 # ncdump::NetCDF(file_name)$variable[1:6]
-load_ERA5_region <- function(file_name){
+load_ERA5_region <- function(file_name, time_shift = 0){
   res <- tidync(file_name) %>%
     hyper_filter(latitude = dplyr::between(latitude, min(NWA_coords$lat), max(NWA_coords$lat)),
                  longitude = dplyr::between(longitude, min(NWA_coords$lon)+360, max(NWA_coords$lon)+360)) %>%
     hyper_tibble() %>%
-    mutate(time = as.Date(as.POSIXct(time * 3600, origin = '1900-01-01', tz = "GMT"))) %>%
     dplyr::rename(lon = longitude, lat = latitude, t = time) %>% 
     mutate(lon = if_else(lon > 180, lon -360, lon)) %>% 
     right_join(ERA5_regions, by = c("lon", "lat")) %>% 
-    dplyr::select(-lon, -lat) %>% 
+    mutate(t = as.POSIXct(t * 3600, origin = '1900-01-01', tz = "GMT")) %>%
     # 12 hour shift 
+    mutate(t = t + time_shift) %>% 
+    #
+    mutate(t = as.Date(t)) %>% 
+    dplyr::select(-lon, -lat) %>% 
     group_by(region, t) %>% 
     summarise_all("mean") %>% 
     ungroup()
@@ -273,8 +276,20 @@ load_ERA5_region <- function(file_name){
 
 # Correlation functions ---------------------------------------------------
 
+# Convenience wrapper for RMSE calculations
+rmse_wrap <- function(df_sub){
+  df_res <- df_sub %>% 
+    summarise(qnet_mld_cum = rmse(sst_thresh, qnet_mld_cum),
+              lhf_mld_cum = rmse(sst_thresh, lhf_mld_cum),
+              shf_mld_cum = rmse(sst_thresh, shf_mld_cum),
+              lwr_mld_cum = rmse(sst_thresh, lwr_mld_cum),
+              swr_mld_cum = rmse(sst_thresh, swr_mld_cum)) %>% 
+    pivot_longer(cols = everything(), names_to = "Parameter2", values_to = "rmse") %>% 
+    mutate(Parameter1 = "sst")
+}
+
 # Subset data based on events and regions and run all correlations
-# THis also runs RMSE for the Qx terms
+# This also runs RMSE for the Qx terms
 cor_all <- function(df, df_event){
   
   # Get the info for the focus event
@@ -282,17 +297,14 @@ cor_all <- function(df, df_event){
     filter(event_no == df$event_no[1],
            region == df$region[1])
   
-  # Find the SST on the day before the event started
-  sst_pre <- ALL_anom_full_wide %>% 
-    filter(t == event_sub$date_start-1,
-           region == event_sub$region)
-  
   # Subset the time series for the onset and decline portions
   ts_full <- ALL_anom_full_wide %>% 
+    left_join(OISST_MHW_clim[,c("region", "t", "thresh", "temp")], by = c("region", "t")) %>% 
     filter(t >= event_sub$date_start,
            t <= event_sub$date_end,
            region == event_sub$region) %>% 
-    mutate(sst_start = sst - sst_pre$sst)
+    mutate(sst_thresh = temp - thresh) %>% 
+    select(-temp, -thresh)
   ts_onset <- ts_full %>% 
     filter(t >= event_sub$date_start,
            t <= event_sub$date_peak)
@@ -302,16 +314,19 @@ cor_all <- function(df, df_event){
   
   # Run the correlations
   ts_full_cor <- correlation(ts_full, redundant = T) %>% 
-    mutate(ts = "full")
+    mutate(ts = "full") %>% 
+    left_join(rmse_wrap(ts_full), by = c("Parameter1", "Parameter2"))
   if(nrow(ts_onset) > 2){
     ts_onset_cor <- correlation(ts_onset, redundant = T) %>% 
-      mutate(ts = "onset")
+      mutate(ts = "onset") %>% 
+      left_join(rmse_wrap(ts_onset), by = c("Parameter1", "Parameter2"))
   } else {
     ts_onset_cor <- ts_full_cor[0,]
   }
   if(nrow(ts_decline) > 2){
     ts_decline_cor <- correlation(ts_decline, redundant = T) %>% 
-      mutate(ts = "decline")
+      mutate(ts = "decline") %>% 
+      left_join(rmse_wrap(ts_decline), by = c("Parameter1", "Parameter2"))
   } else {
     ts_decline_cor <- ts_full_cor[0,]
   }
@@ -323,6 +338,7 @@ cor_all <- function(df, df_event){
            CI_low = round(CI_low, 2),
            CI_high = round(CI_high, 2),
            t = round(t, 4),
+           rmse = round(rmse, 4),
            ts = factor(ts, levels = c("onset", "full", "decline")))
 }
 

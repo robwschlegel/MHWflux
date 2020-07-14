@@ -56,7 +56,8 @@ saveRDS(GLORYS_all_ts, "data/GLORYS_all_ts.Rda")
 # "msnlwrf"
 print(paste0("Began loading msnlwrf at ", Sys.time()))
 ERA5_lwr_files <- dir("../../oliver/data/ERA/ERA5/LWR", full.names = T, pattern = "ERA5")
-ERA5_lwr_ts <- plyr::ldply(ERA5_lwr_files, load_ERA5_region, .parallel = F, .progress = "text")
+ERA5_lwr_ts <- plyr::ldply(ERA5_lwr_files, load_ERA5_region, 
+                           .parallel = F, .progress = "text", time_shift = 43200) # 12 hour forward shift
 ERA5_lwr_ts$msnlwrf <- round(ERA5_lwr_ts$msnlwrf, 6)
 saveRDS(ERA5_lwr_ts, "data/ERA5_lwr_ts.Rda")
 
@@ -64,7 +65,8 @@ saveRDS(ERA5_lwr_ts, "data/ERA5_lwr_ts.Rda")
 # "msnswrf"
 print(paste0("Began loading msnswrf at ", Sys.time()))
 ERA5_swr_files <- dir("../../oliver/data/ERA/ERA5/SWR", full.names = T, pattern = "ERA5")
-ERA5_swr_ts <- plyr::ldply(ERA5_swr_files, load_ERA5_region, .parallel = F, .progress = "text")
+ERA5_swr_ts <- plyr::ldply(ERA5_swr_files, load_ERA5_region, 
+                           .parallel = F, .progress = "text", time_shift = 43200) # 12 hour forward shift
 ERA5_swr_ts$msnswrf <- round(ERA5_swr_ts$msnswrf, 6)
 saveRDS(ERA5_swr_ts, "data/ERA5_swr_ts.Rda")
 
@@ -72,7 +74,8 @@ saveRDS(ERA5_swr_ts, "data/ERA5_swr_ts.Rda")
 # "mslhf"
 print(paste0("Began loading mslhf at ", Sys.time()))
 ERA5_lhf_files <- dir("../../oliver/data/ERA/ERA5/SLHF", full.names = T, pattern = "ERA5")
-ERA5_lhf_ts <- plyr::ldply(ERA5_lhf_files, load_ERA5_region, .parallel = F, .progress = "text")
+ERA5_lhf_ts <- plyr::ldply(ERA5_lhf_files, load_ERA5_region, 
+                           .parallel = F, .progress = "text", time_shift = 43200) # 12 hour forward shift
 ERA5_lhf_ts$mslhf <- round(ERA5_lhf_ts$mslhf, 6)
 saveRDS(ERA5_lhf_ts, "data/ERA5_lhf_ts.Rda")
 
@@ -80,7 +83,8 @@ saveRDS(ERA5_lhf_ts, "data/ERA5_lhf_ts.Rda")
 # "msshf"
 print(paste0("Began loading msshf at ", Sys.time()))
 ERA5_shf_files <- dir("../../oliver/data/ERA/ERA5/SSHF", full.names = T, pattern = "ERA5")
-ERA5_shf_ts <- plyr::ldply(ERA5_shf_files, load_ERA5_region, .parallel = F, .progress = "text")
+ERA5_shf_ts <- plyr::ldply(ERA5_shf_files, load_ERA5_region, 
+                           .parallel = F, .progress = "text", time_shift = 43200) # 12 hour forward shift
 ERA5_shf_ts$msshf <- round(ERA5_shf_ts$msshf, 6)
 saveRDS(ERA5_shf_ts, "data/ERA5_shf_ts.Rda")
 
