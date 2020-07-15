@@ -307,7 +307,65 @@ ui <- dashboardPage(
     # App explanation ---------------------------------------------------------
 
             tabItem(tabName = "about", 
-                    h2("This is where the functioning of the app will be explained..."))
+                    fluidPage(
+                      column(12,
+                             h2(tags$b("About")),
+                             p("The purpose of this app is to provide interactive access to the results from the",
+                               a(target = '_blank', rel = 'noopener noreferrer',
+                                 href = "https://robwschlegel.github.io/MHWflux/", "MHW Flux project"), ". There are many ways to visualise
+                               the results and I have chosen three primary ways of doing so. These are outlined in the following sub-headers.
+                               For more information about this project and the data used in it please follow the link in this paragraph.
+                               The column on the left of the screen contains the names of the tabs that the user may click on to bring up
+                               different dashboards. As the tabs are clicked on the other controls in this column will change accordingly.
+                               The controls generated for each tab are explained in the specific headers below."),
+                             h2(tags$b("Map")),
+                             p("This tab shows the study area and the region polygons therein in the left panel. Underneath the colourful polygons
+                               are labels that show the count of MHWs per season against the total count of MHWs in that season. This number will change
+                               if the duration slider in the control column is moved. Note that this is a dual-ended slider and so one may chose to filter
+                               out MHWs from both short and long durations simultaneously. One may also choose to de-select any of the regions or
+                               seasons as desired. The panel to the right shows the MHWs detected in each region. The colours between the panels correspond
+                               to the regions. The MHW panel is a plotly figure so one may hover over the lolliplots for more information."),
+                             h2(tags$b("Event")),
+                             p("This tab allows users to generate visualisations for individual events. One must first click on an event in the table
+                               before the bottom three panels will show anything. Note that one may filter and search in the table to more quickly find
+                               a MHW of interest. The filtering options in the control column also work on the table. Once an event has been clicked it is
+                               recommended to minimise the table by clicking in the top right corner. Also note that the portion of the event may also be
+                               selected. This means one may visualise the stats for just the onset or decline portion of the MHWs, in addition to the full event.
+                               With an event selected one may now see in the left panel a correlation plot showing the relationship of SST with the other
+                               Qx terms. The colour of the lines shows the strength of the correlations, and the thickness shows the significance.
+                               With thicker lines having smaller p values. The variables being shown may be changed by clicking the red gear icon
+                               and then clicking in the variables selection box. The centre panel shows a scatterplot of SST against Qnet. Layered on top of this
+                               is a linear model that helps to demonstrate the strength of a correlation seen in the right panel. The red gear icon here allows
+                               user to change the variables seen in the X and Y axes. The right panel shows the RMSE between SST and Qnet. The red gear icon allows
+                               one to select a different Qx term. Note that the SST anomalies shown here are SST - threshold (90th percentile), and not SST - seasonal
+                               climatology, as seen throughout the rest of the project."),
+                             h2(tags$b("Summary")),
+                             p("The summary tab shows a higher level report on the correlations between variables and SST. The left panel shows the correlation results
+                               via histograms. The X-axes in the histogram show the strength of the correlations between SST and the given variable. These will range
+                               from -1 to 1. Each column of histograms belongs to one variable, as seen in the top header. Each row of histograms belongs to one
+                               portion of the time series. By default these are the onset and decline portions of the events. This can be changed in the control column
+                               to the left. Different variables may be chosen in the control column, and regions and seasons may be filtered out. Scrolling down, one
+                               will see that events may be filtered by duration, as well as the p-value of the correlation. It is also possible to chose to group the
+                               histograms by regions or seasons. The vertical red lines in the centre of the histograms serve as a visual aid/reminder that a correlation
+                               of 0 means no relationship. This red line relates directly to the horizontal red line in the right panel, which is showing the same data as
+                               the left panel but grouped into boxplots instead. The same groupings and filtering may be applied to these boxplots as to the histograms.
+                               Lastly, there is a third panel on the bottom that is minimised by default. This is a series of scatterplots with linear models fitted to them
+                               that show the relationship between the duration of a MHW (X-axis) and the correlation strength (Y-axis) of variables. It basically shows
+                               that there isn't much of a pattern. That longer MHWs tend to be more unique in their drivers so any relationship with the duration of an
+                               event and physical drivers tends to break down after 30 days or so."),
+                             h2(tags$b("Flavours")),
+                             p("Welcome to flavourtown! This was my failed attempt at creating some sort of visualisation that looked like ice-cream cones. The
+                               idea was that there appear to be different 'flavours' of MHWs. For example, events whose onset coincides with strong latent heatflux
+                               and low high cloud cover. What I was left with here is a sort of game in which the user may click on either of the three icons at the top
+                               of the panel to move sliders for Qx, atmosphere, or ocean variables to see if one can find a strong fingerprint of events the all share
+                               something in common. The balls themselves show the total number of events per region and season that meet the criteria in the sliders. The
+                               sliders go from -1 to 1 for each variable and show the acceptable range of correlations that the user will take. So if one wanted to filter
+                               out events that had a correlation of at least 0.7 with shortwave radiation,click on the red icon and slide the Qsw slider accordingly. To filter
+                               out events with mixed layer depth correlation less greater than -0.7, click on the dark blus icon and slide that little guy over to -0.7.
+                               It's actually quite a lot of fun to play around with. If you're into that sort of thing.")
+                             )
+                      )
+                    )
             )
         )
     )
