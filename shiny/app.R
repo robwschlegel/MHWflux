@@ -327,10 +327,13 @@ server <- function(input, output, session) {
                                  Flux = c("Qnet", "Qlw", "Qsw", "Qlh", "Qsh"),
                                  Air = c("Air_temp", "Cloud_cover_c", "Precip_Evap_c", "MSLP_c"),
                                  Sea = c("SST", "SSS", "MLD_c", "MLD_1_c", "SBT")
-                                 ), 
+                                 ),
                                multiple = TRUE,
                                options = list(size = 6),
-                               selected = c("Qlw", "Qsw", "Qlh", "Qsh", "Qnet"))
+                               selected = c("Qnet", "Qlw", "Qsw", "Qlh", "Qsh"))
+    # picker_vars <- selectInput(inputId = "vars", label = "Variables:",
+    #                            multiple = TRUE, 
+    #                            selected = c("Qnet", "Qlw", "Qsw", "Qlh", "Qsh"))
     
     # Select regions from a dropdown
     picker_regions <- pickerInput(inputId = "regions", label = "Regions:",
@@ -448,8 +451,7 @@ server <- function(input, output, session) {
                    season %in% input$seasons,
                    p <= input$p_val,
                    n_Obs >= input$duration[1],
-                   n_Obs <= input$duration[2]) %>%
-            na.omit()
+                   n_Obs <= input$duration[2])
         return(ALL_cor_sub)
     })
     
@@ -754,7 +756,7 @@ server <- function(input, output, session) {
 
     # Flavourplot
     output$flavourPlot <- renderPlotly({
-      req(input$ts_single)
+      req(input$ts_single); req(input$Qnet)
       
       flavour_data <- flavour_data()
       
