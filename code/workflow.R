@@ -34,30 +34,29 @@ source("code/functions.R")
 
 # Set number of cores
 # NB: This is very RAM heavy, be carfeul with core use
-doParallel::registerDoParallel(cores = 26)
-
-# Check the exact time frame of the daily GLORYS data
-GLORYS_info <- ncdump::NetCDF("../data/GLORYS/MHWflux_GLORYS_1993-1.nc")
-
-# Prep all GLORYS data in one go
-GLORYS_files <- dir("../data/GLORYS", full.names = T, pattern = "MHWflux")
-system.time(
-  GLORYS_all_ts <- load_all_GLORYS_region(GLORYS_files) %>%
-    dplyr::arrange(region, t)
-) # 187 seconds on 25 cores
-saveRDS(GLORYS_all_ts, "data/GLORYS_all_ts.Rda")
+# doParallel::registerDoParallel(cores = 26)
+# 
+# # Check the exact time frame of the daily GLORYS data
+# GLORYS_info <- ncdump::NetCDF("../data/GLORYS/MHWflux_GLORYS_1993-1.nc")
+# 
+# # Prep all GLORYS data in one go
+# GLORYS_files <- dir("../data/GLORYS", full.names = T, pattern = "MHWflux")
+# system.time(
+#   GLORYS_all_ts <- load_all_GLORYS_region(GLORYS_files) %>%
+#     dplyr::arrange(region, t)
+# ) # 187 seconds on 25 cores
+# saveRDS(GLORYS_all_ts, "data/GLORYS_all_ts.Rda")
 
 ### ERA5 data are saved in individual variables
-## NB: The machine refuses to run more than one chunk at a time
-## One must restart R after each go... dumb
-## Attempting to run them in serial
+## Nb: Be cautious with how massive these processes are
+doParallel::registerDoParallel(cores = 10)
 
 ## Long wave radiation
 # "msnlwrf"
 print(paste0("Began loading msnlwrf at ", Sys.time()))
 ERA5_lwr_files <- dir("../../oliver/data/ERA/ERA5/LWR", full.names = T, pattern = "ERA5")
 ERA5_lwr_ts <- plyr::ldply(ERA5_lwr_files, load_ERA5_region, 
-                           .parallel = F, .progress = "text", time_shift = 43200) # 12 hour forward shift
+                           .parallel = F, .progress = "text", time_shift = -43200) # 12 hour backward shift
 ERA5_lwr_ts$msnlwrf <- round(ERA5_lwr_ts$msnlwrf, 6)
 saveRDS(ERA5_lwr_ts, "data/ERA5_lwr_ts.Rda")
 
@@ -66,7 +65,7 @@ saveRDS(ERA5_lwr_ts, "data/ERA5_lwr_ts.Rda")
 print(paste0("Began loading msnswrf at ", Sys.time()))
 ERA5_swr_files <- dir("../../oliver/data/ERA/ERA5/SWR", full.names = T, pattern = "ERA5")
 ERA5_swr_ts <- plyr::ldply(ERA5_swr_files, load_ERA5_region, 
-                           .parallel = F, .progress = "text", time_shift = 43200) # 12 hour forward shift
+                           .parallel = F, .progress = "text", time_shift = -43200) # 12 hour backward shift
 ERA5_swr_ts$msnswrf <- round(ERA5_swr_ts$msnswrf, 6)
 saveRDS(ERA5_swr_ts, "data/ERA5_swr_ts.Rda")
 
@@ -75,7 +74,7 @@ saveRDS(ERA5_swr_ts, "data/ERA5_swr_ts.Rda")
 print(paste0("Began loading mslhf at ", Sys.time()))
 ERA5_lhf_files <- dir("../../oliver/data/ERA/ERA5/SLHF", full.names = T, pattern = "ERA5")
 ERA5_lhf_ts <- plyr::ldply(ERA5_lhf_files, load_ERA5_region, 
-                           .parallel = F, .progress = "text", time_shift = 43200) # 12 hour forward shift
+                           .parallel = F, .progress = "text", time_shift = -43200) # 12 hour backward shift
 ERA5_lhf_ts$mslhf <- round(ERA5_lhf_ts$mslhf, 6)
 saveRDS(ERA5_lhf_ts, "data/ERA5_lhf_ts.Rda")
 
@@ -84,7 +83,7 @@ saveRDS(ERA5_lhf_ts, "data/ERA5_lhf_ts.Rda")
 print(paste0("Began loading msshf at ", Sys.time()))
 ERA5_shf_files <- dir("../../oliver/data/ERA/ERA5/SSHF", full.names = T, pattern = "ERA5")
 ERA5_shf_ts <- plyr::ldply(ERA5_shf_files, load_ERA5_region, 
-                           .parallel = F, .progress = "text", time_shift = 43200) # 12 hour forward shift
+                           .parallel = F, .progress = "text", time_shift = -43200) # 12 hour backward shift
 ERA5_shf_ts$msshf <- round(ERA5_shf_ts$msshf, 6)
 saveRDS(ERA5_shf_ts, "data/ERA5_shf_ts.Rda")
 
