@@ -337,8 +337,9 @@ ui <- dashboardPage(
                                and then clicking in the variables selection box. The centre panel shows a scatterplot of SST against Qnet. Layered on top of this
                                is a linear model that helps to demonstrate the strength of a correlation seen in the right panel. The red gear icon here allows
                                user to change the variables seen in the X and Y axes. The right panel shows the RMSE between SST and Qnet. The red gear icon allows
-                               one to select a different Qx term. Note that the SST anomalies shown here are SST - threshold (90th percentile), and not SST - seasonal
-                               climatology, as seen throughout the rest of the project."),
+                               one to select a different Qx term. Note that the SST values shown here are the real SST, and not SST - seasonal
+                               climatology, as seen throughout the rest of the project. The blue line shows the SST value from day 1 of the time series, with the
+                               cumulative seasonal anomaly Qx term added to it for each time step."),
                              h2(tags$b("Summary")),
                              p("The summary tab shows a higher level report on the correlations between variables and SST. The left panel shows the correlation results
                                via histograms. The X-axes in the histogram show the strength of the correlations between SST and the given variable. These will range
@@ -718,9 +719,15 @@ server <- function(input, output, session) {
     output$rmsePlot <- renderPlot({
       # Prep ts data
       MHW_single <- MHW_single()
-      MHW_single <- left_join(MHW_single, MHW_clim[,c("region", "t", "temp", "thresh")],
-                              by = c("region", "t")) %>% 
-        mutate(SST_thresh = temp-thresh)
+      
+      # Get Q column
+      q_col <- c(0, MHW_single[[input$rmse_var]])[1:nrow(MHW_single)]
+      
+      # Add needed columns
+      MHW_temp <- left_join(MHW_single, MHW_clim[,c("region", "t", "temp")],
+                            by = c("region", "t")) %>% 
+        mutate(Qx = q_col + temp[1])
+      
       # Find RMSE value
       MHW_data <- MHW_data()
       event_sub <- MHW_data[input$eventTable_cell_clicked$row,]
@@ -731,20 +738,20 @@ server <- function(input, output, session) {
                Parameter2 == input$rmse_var) %>% 
         na.omit()
       # Find y for Qx
-      Qx_y <- as.numeric(MHW_single[1,input$rmse_var])
+      # Qx_y <- as.numeric(MHW_single[1,input$rmse_var])
       # The plot
-      rp <- ggplot(data = MHW_single, aes(x = t)) +
-        geom_point(aes(y = SST_thresh), colour = "red") +
-        geom_line(aes(y = SST_thresh), colour = "red") +
-        geom_point(aes_string(y = input$rmse_var), colour = "blue") +
-        geom_line(aes_string(y = input$rmse_var), colour = "blue") +
-        geom_label(aes(x = t[1], y = SST_thresh[1],
+      rp <- ggplot(data = MHW_temp, aes(x = t)) +
+        geom_point(aes(y = temp), colour = "red") +
+        geom_line(aes(y = temp), colour = "red") +
+        geom_point(aes(y = Qx), colour = "blue") +
+        geom_line(aes(y = Qx), colour = "blue") +
+        geom_label(aes(x = t[nrow(MHW_temp)], y = temp[nrow(MHW_temp)],
                        label = "SST"), colour = "red") +
-        geom_label(aes(x = t[1], y = Qx_y,
+        geom_label(aes(x = t[nrow(MHW_temp)], y = Qx[nrow(MHW_temp)],
                        label = input$rmse_var), colour = "blue") +
-        geom_label(aes(x = mean(t), y = quantile(SST_thresh, 0.1),
+        geom_label(aes(x = mean(t), y = quantile(temp, 0.1),
                        label = paste0("RMSE = ",MHW_rmse$rmse[1]))) +
-        labs(x = NULL, y = "SST-thresh (°C) | Qx/MLD (°C)")
+        labs(x = NULL, y = "SST (°C) | SST + Qx/MLD (°C)")
       rp
     })
     
