@@ -278,12 +278,17 @@ load_ERA5_region <- function(file_name, time_shift = 0){
 
 # Convenience wrapper for RMSE calculations
 rmse_wrap <- function(df_sub){
+  qnet_lag <- c(0, df_sub$qnet_mld_cum[1:nrow(df_sub)-1]) + df_sub$temp[1]
+  lhf_lag <- c(0, df_sub$lhf_mld_cum[1:nrow(df_sub)-1]) + df_sub$temp[1]
+  shf_lag <- c(0, df_sub$shf_mld_cum[1:nrow(df_sub)-1]) + df_sub$temp[1]
+  lwr_lag <- c(0, df_sub$lwr_mld_cum[1:nrow(df_sub)-1]) + df_sub$temp[1]
+  swr_lag <- c(0, df_sub$swr_mld_cum[1:nrow(df_sub)-1]) + df_sub$temp[1]
   df_res <- df_sub %>% 
-    summarise(qnet_mld_cum = rmse(sst_thresh, qnet_mld_cum),
-              lhf_mld_cum = rmse(sst_thresh, lhf_mld_cum),
-              shf_mld_cum = rmse(sst_thresh, shf_mld_cum),
-              lwr_mld_cum = rmse(sst_thresh, lwr_mld_cum),
-              swr_mld_cum = rmse(sst_thresh, swr_mld_cum)) %>% 
+    summarise(qnet_mld_cum = rmse(temp, qnet_lag),
+              lhf_mld_cum = rmse(temp, lhf_lag),
+              shf_mld_cum = rmse(temp, shf_lag),
+              lwr_mld_cum = rmse(temp, lwr_lag),
+              swr_mld_cum = rmse(temp, swr_lag)) %>% 
     pivot_longer(cols = everything(), names_to = "Parameter2", values_to = "rmse") %>% 
     mutate(Parameter1 = "sst")
 }
@@ -299,12 +304,12 @@ cor_all <- function(df, df_event){
   
   # Subset the time series for the onset and decline portions
   ts_full <- ALL_anom_full_wide %>% 
-    left_join(OISST_MHW_clim[,c("region", "t", "thresh", "temp")], by = c("region", "t")) %>% 
+    left_join(OISST_MHW_clim[,c("region", "t", "temp")], by = c("region", "t")) %>% 
     filter(t >= event_sub$date_start,
            t <= event_sub$date_end,
-           region == event_sub$region) %>% 
-    mutate(sst_thresh = temp - thresh) %>% 
-    select(-temp, -thresh)
+           region == event_sub$region) #%>% 
+    # mutate(sst_thresh = temp - thresh) %>% 
+    # select(-temp, -thresh)
   ts_onset <- ts_full %>% 
     filter(t >= event_sub$date_start,
            t <= event_sub$date_peak)
