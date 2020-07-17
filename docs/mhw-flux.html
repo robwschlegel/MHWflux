@@ -428,7 +428,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2020-07-14
+<strong>Last updated:</strong> 2020-07-17
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -476,7 +476,7 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 </div>
 <div id="strongSeedstrongcodesetseed20200117code" class="panel-collapse collapse">
 <div class="panel-body">
-<p>The command <code>set.seed(20200117)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+<p>The command <code>set.seed(20200117)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
 </div>
 </div>
 </div>
@@ -519,16 +519,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtree7158f52f78658a372241b8e4ee8145cba0f877aftargetblank7158f52a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/robwschlegel/MHWflux/tree/7158f52f78658a372241b8e4ee8145cba0f877af" target="_blank">7158f52</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtree6a591d5ad50ed70b24ecd6b02abe178dca216cf7targetblank6a591d5a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/robwschlegel/MHWflux/tree/6a591d5ad50ed70b24ecd6b02abe178dca216cf7" target="_blank">6a591d5</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtree7158f52f78658a372241b8e4ee8145cba0f877aftargetblank7158f52a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtree6a591d5ad50ed70b24ecd6b02abe178dca216cf7targetblank6a591d5a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/robwschlegel/MHWflux/tree/7158f52f78658a372241b8e4ee8145cba0f877af" target="_blank">7158f52</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/robwschlegel/MHWflux/tree/6a591d5ad50ed70b24ecd6b02abe178dca216cf7" target="_blank">6a591d5</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -537,6 +537,11 @@ Note that you need to be careful to ensure that all relevant files for the analy
 Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
+
+Unstaged changes:
+    Modified:   code/functions.R
+    Modified:   data/ALL_cor.Rda
+    Modified:   shiny/ALL_cor.Rda
 
 </code></pre>
 <p>
@@ -575,6 +580,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/6a591d5ad50ed70b24ecd6b02abe178dca216cf7/analysis/mhw-flux.Rmd" target="_blank">6a591d5</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-07-17
+</td>
+<td>
+Re-built site.
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/robwschlegel/MHWflux/ab06b9450f4ecad87d4e9f1510f82fc3cfc47869/docs/mhw-flux.html" target="_blank">ab06b94</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-07-14
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1408,7 +1447,7 @@ source(&quot;code/functions.R&quot;)</code></pre>
 <div id="correlations" class="section level2">
 <h2>Correlations</h2>
 <p>We know when the MHWs occurred, and our physical data are prepped, so what we need to do is run correlations between SST from the start to peak and peak to end of each event for the full suite of variables. This will show us for each event which values correlated the best for the onset AND decline of the events. We will run correlations on the full time series, too.</p>
-<p>Running correlations is useful to see how well certain variables change in relation to the SST anomalies, but these do not show how similar those proportions of change are. In order to do this we need to calculate the RMSE between the SST anomalies and the Qx terms. This may only be done with the Qx terms because they are in the same units as SST. One additional tweek we will need here is to subtract the SST anomaly from the dat before the onset of the MHW from day one of the event. THis is done so that we may see more closely how the developing Qx term matches to the development of the SST anomaly.</p>
+<p>Running correlations is useful to see how well certain variables change in relation to the SST anomalies, but these do not show how similar those proportions of change are. In order to do this we need to calculate the RMSE between the SST anomalies and the Qx terms. This may only be done with the Qx terms because they are in the same units as SST. One additional tweak we will need here is to subtract the SST anomaly from the dat before the onset of the MHW from day one of the event. THis is done so that we may see more closely how the developing Qx term matches to the development of the SST anomaly.</p>
 <pre class="r"><code># Extract just the event info
 OISST_MHW_event_index &lt;- OISST_MHW_event %&gt;% 
   select(event_no, region, season) %&gt;% 
@@ -1456,16 +1495,16 @@ ALL_cor_stack %&gt;%
 # Groups:   region, ts [18]
    region ts    Parameter2   q10_new q10_old q50_new q50_old q90_new q90_old
    &lt;chr&gt;  &lt;fct&gt; &lt;fct&gt;          &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
- 1 cbs    onset lhf_mld_cum    0.147   0.172   0.337   0.352   0.788   0.755
- 2 cbs    onset lwr_mld_cum    0.195   0.215   0.400   0.378   0.880   0.880
- 3 cbs    onset qnet_mld_cum   0.109   0.115   0.312   0.318   0.756   0.712
- 4 cbs    onset shf_mld_cum    0.154   0.163   0.405   0.4     0.883   0.876
- 5 cbs    onset swr_mld_cum    0.143   0.173   0.353   0.344   0.926   0.899
- 6 cbs    full  lhf_mld_cum    0.147   0.153   0.294   0.297   0.780   0.752
- 7 cbs    full  lwr_mld_cum    0.175   0.186   0.339   0.349   0.876   0.887
- 8 cbs    full  qnet_mld_cum   0.121   0.112   0.307   0.283   0.753   0.718
- 9 cbs    full  shf_mld_cum    0.137   0.150   0.327   0.326   0.784   0.780
-10 cbs    full  swr_mld_cum    0.183   0.182   0.367   0.356   0.887   0.825
+ 1 cbs    onset lhf_mld_cum   0.0524   0.172   0.265   0.352   1.00    0.755
+ 2 cbs    onset lwr_mld_cum   0.0499   0.215   0.282   0.378   1.01    0.880
+ 3 cbs    onset qnet_mld_cum  0.0623   0.115   0.312   0.318   1.00    0.712
+ 4 cbs    onset shf_mld_cum   0.0572   0.163   0.279   0.4     1.05    0.876
+ 5 cbs    onset swr_mld_cum   0.0629   0.173   0.289   0.344   0.834   0.899
+ 6 cbs    full  lhf_mld_cum   0.145    0.153   0.377   0.297   2.19    0.752
+ 7 cbs    full  lwr_mld_cum   0.165    0.186   0.352   0.349   2.14    0.887
+ 8 cbs    full  qnet_mld_cum  0.146    0.112   0.461   0.283   2.11    0.718
+ 9 cbs    full  shf_mld_cum   0.142    0.150   0.371   0.326   2.07    0.780
+10 cbs    full  swr_mld_cum   0.137    0.182   0.379   0.356   2.05    0.825
 # … with 80 more rows</code></pre>
 <pre class="r"><code># Plot difference
 ALL_cor_stack %&gt;% 
@@ -1474,6 +1513,43 @@ ALL_cor_stack %&gt;%
   geom_boxplot(aes(fill = run)) +
   facet_grid(Parameter2~region) #+</code></pre>
 <p><img src="figure/mhw-flux.Rmd/shift-compare-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-shift-compare-1">
+Past versions of shift-compare-1.png
+</button>
+</p>
+<div id="fig-shift-compare-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/ab06b9450f4ecad87d4e9f1510f82fc3cfc47869/docs/figure/mhw-flux.Rmd/shift-compare-1.png" target="_blank">ab06b94</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-07-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>  # scale_y_continuous(limits = c(0, 2))</code></pre>
 </div>
 </div>
@@ -1543,6 +1619,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/ab06b9450f4ecad87d4e9f1510f82fc3cfc47869/docs/figure/mhw-flux.Rmd/metrics_cor-1.png" target="_blank">ab06b94</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-07-14
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/robwschlegel/MHWflux/blob/0634d981eb9a55bd4cbd3e2d1e048403c8cfcb1f/docs/figure/mhw-flux.Rmd/metrics_cor-1.png" target="_blank">0634d98</a>
 </td>
 <td>
@@ -1607,6 +1694,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/ab06b9450f4ecad87d4e9f1510f82fc3cfc47869/docs/figure/mhw-flux.Rmd/metrics_cor-2.png" target="_blank">ab06b94</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-07-14
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/robwschlegel/MHWflux/blob/0634d981eb9a55bd4cbd3e2d1e048403c8cfcb1f/docs/figure/mhw-flux.Rmd/metrics_cor-2.png" target="_blank">0634d98</a>
@@ -1676,6 +1774,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/ab06b9450f4ecad87d4e9f1510f82fc3cfc47869/docs/figure/mhw-flux.Rmd/metrics_cor-3.png" target="_blank">ab06b94</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-07-14
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/robwschlegel/MHWflux/blob/0634d981eb9a55bd4cbd3e2d1e048403c8cfcb1f/docs/figure/mhw-flux.Rmd/metrics_cor-3.png" target="_blank">0634d98</a>
 </td>
 <td>
@@ -1741,6 +1850,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/ab06b9450f4ecad87d4e9f1510f82fc3cfc47869/docs/figure/mhw-flux.Rmd/metrics_cor-4.png" target="_blank">ab06b94</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-07-14
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/robwschlegel/MHWflux/blob/0634d981eb9a55bd4cbd3e2d1e048403c8cfcb1f/docs/figure/mhw-flux.Rmd/metrics_cor-4.png" target="_blank">0634d98</a>
@@ -1822,14 +1942,19 @@ events_cor_cat &lt;- events_cor_prep %&gt;%
 # Events with high Qlw correlations at onset
 events_cor_cat %&gt;% 
   filter(ts == &quot;onset&quot;, lwr_mld_cum &gt;= 0.7)</code></pre>
-<pre><code># A tibble: 5 x 26
-  region season event_no duration intensity_mean intensity_max intensity_cumul…
-  &lt;chr&gt;  &lt;fct&gt;     &lt;dbl&gt;    &lt;dbl&gt;          &lt;dbl&gt;         &lt;dbl&gt;            &lt;dbl&gt;
-1 gsl    Winter       20       69           1.49          2.45            103. 
-2 mab    Autumn       39       38           2.26          3.30             86.0
-3 nfs    Summer       40       33           2.17          3.63             71.7
-4 ss     Summer       16       26           2.38          3.13             62.0
-5 ss     Winter       39      101           2.04          3.32            206. 
+<pre><code># A tibble: 10 x 26
+   region season event_no duration intensity_mean intensity_max intensity_cumul…
+   &lt;chr&gt;  &lt;fct&gt;     &lt;dbl&gt;    &lt;dbl&gt;          &lt;dbl&gt;         &lt;dbl&gt;            &lt;dbl&gt;
+ 1 cbs    Autumn       48       21           2.07          3.16             43.5
+ 2 gm     Spring       15       35           2.10          2.92             73.4
+ 3 gsl    Winter       20       69           1.49          2.45            103. 
+ 4 gsl    Autumn       43       35           1.92          2.65             67.3
+ 5 mab    Autumn       39       38           2.26          3.30             86.0
+ 6 mab    Winter       41       32           2.04          2.90             65.3
+ 7 nfs    Summer       34       88           2.25          3.37            198. 
+ 8 nfs    Summer       40       33           2.17          3.63             71.7
+ 9 ss     Summer       16       26           2.38          3.13             62.0
+10 ss     Winter       39      101           2.04          3.32            206. 
 # … with 19 more variables: rate_onset &lt;dbl&gt;, rate_decline &lt;dbl&gt;, ts &lt;fct&gt;,
 #   n_Obs &lt;int&gt;, sst &lt;dbl&gt;, bottomT &lt;dbl&gt;, sss &lt;dbl&gt;, mld_cum &lt;dbl&gt;,
 #   mld_1_cum &lt;dbl&gt;, t2m &lt;dbl&gt;, tcc_cum &lt;dbl&gt;, p_e_cum &lt;dbl&gt;, mslp_cum &lt;dbl&gt;,
@@ -1884,6 +2009,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/ab06b9450f4ecad87d4e9f1510f82fc3cfc47869/docs/figure/mhw-flux.Rmd/choice-events-1.png" target="_blank">ab06b94</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-07-14
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/robwschlegel/MHWflux/blob/7574e3452830a0fda1d123608e9278680cee25c4/docs/figure/mhw-flux.Rmd/choice-events-1.png" target="_blank">7574e34</a>
@@ -1998,6 +2134,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/ab06b9450f4ecad87d4e9f1510f82fc3cfc47869/docs/figure/mhw-flux.Rmd/SOM-1.png" target="_blank">ab06b94</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-07-14
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/robwschlegel/MHWflux/blob/0634d981eb9a55bd4cbd3e2d1e048403c8cfcb1f/docs/figure/mhw-flux.Rmd/SOM-1.png" target="_blank">0634d98</a>
 </td>
 <td>
@@ -2062,6 +2209,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/ab06b9450f4ecad87d4e9f1510f82fc3cfc47869/docs/figure/mhw-flux.Rmd/SOM-2.png" target="_blank">ab06b94</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-07-14
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/robwschlegel/MHWflux/blob/0634d981eb9a55bd4cbd3e2d1e048403c8cfcb1f/docs/figure/mhw-flux.Rmd/SOM-2.png" target="_blank">0634d98</a>
