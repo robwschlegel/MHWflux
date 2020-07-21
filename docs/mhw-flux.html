@@ -428,7 +428,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2020-07-17
+<strong>Last updated:</strong> 2020-07-21
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -519,16 +519,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtree6a591d5ad50ed70b24ecd6b02abe178dca216cf7targetblank6a591d5a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/robwschlegel/MHWflux/tree/6a591d5ad50ed70b24ecd6b02abe178dca216cf7" target="_blank">6a591d5</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtree49fd7535ffb218f79747d4872b93478d089a3cb3targetblank49fd753a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/robwschlegel/MHWflux/tree/49fd7535ffb218f79747d4872b93478d089a3cb3" target="_blank">49fd753</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtree6a591d5ad50ed70b24ecd6b02abe178dca216cf7targetblank6a591d5a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtree49fd7535ffb218f79747d4872b93478d089a3cb3targetblank49fd753a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/robwschlegel/MHWflux/tree/6a591d5ad50ed70b24ecd6b02abe178dca216cf7" target="_blank">6a591d5</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/robwschlegel/MHWflux/tree/49fd7535ffb218f79747d4872b93478d089a3cb3" target="_blank">49fd753</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -541,6 +541,8 @@ Ignored files:
 Unstaged changes:
     Modified:   code/functions.R
     Modified:   data/ALL_cor.Rda
+    Modified:   data/events_cor_region.Rds
+    Modified:   data/events_cor_season.Rds
     Modified:   shiny/ALL_cor.Rda
 
 </code></pre>
@@ -580,6 +582,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/49fd7535ffb218f79747d4872b93478d089a3cb3/analysis/mhw-flux.Rmd" target="_blank">49fd753</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-07-21
+</td>
+<td>
+Re-built site.
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/robwschlegel/MHWflux/cf24288b882546ae3ed88dbd9260fdec86a16520/docs/mhw-flux.html" target="_blank">cf24288</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-07-17
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1439,7 +1475,7 @@ Adding the foundational content to the site
 </div>
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
-<p>This vignette will walk through the thinking and the process for how to link physical variables to their potential effect on driving or dissipating MHWs. The primary source that inspired this work was <span class="citation">Chen et al. (2016)</span>. In this paper the authors were able to illustrate which parts of the heat budget were most likely driving the anomalous heat content in the surface of the ocean. What this analysis seeks to do is to build on this methodology by applying the fundamental concept to ALL of the MHWs detected in the NW Atlantic. Fundamentally we are running thousands of correlations between SST anomalies and the co-occurrent anomalies for a range of physical variables. The stronger the correlation (both positive and negative) the more of an indication this is to us that these phenomena are related.</p>
+<p>This vignette will walk through the thinking and the process for how to link physical variables to their potential effect on driving or dissipating MHWs. The primary source that inspired this work was <span class="citation">Chen et al. (2016)</span>. In this paper the authors were able to illustrate which parts of the heat budget were most likely driving the anomalous heat content in the surface of the ocean. What this analysis seeks to do is to build on this methodology by applying the fundamental concept to ALL of the MHWs detected in the NW Atlantic. Fundamentally we are running thousands of correlations between SST anomalies and the co-occurring anomalies for a range of physical variables. The stronger the correlation (both positive and negative) the more of an indication this is to us that these phenomena are related.</p>
 <pre class="r"><code># All of the libraries and objects used in the project
 # Note that this also loads the data we will be using in this vignette
 source(&quot;code/functions.R&quot;)</code></pre>
@@ -1447,7 +1483,7 @@ source(&quot;code/functions.R&quot;)</code></pre>
 <div id="correlations" class="section level2">
 <h2>Correlations</h2>
 <p>We know when the MHWs occurred, and our physical data are prepped, so what we need to do is run correlations between SST from the start to peak and peak to end of each event for the full suite of variables. This will show us for each event which values correlated the best for the onset AND decline of the events. We will run correlations on the full time series, too.</p>
-<p>Running correlations is useful to see how well certain variables change in relation to the SST anomalies, but these do not show how similar those proportions of change are. In order to do this we need to calculate the RMSE between the SST anomalies and the Qx terms. This may only be done with the Qx terms because they are in the same units as SST. One additional tweak we will need here is to subtract the SST anomaly from the dat before the onset of the MHW from day one of the event. THis is done so that we may see more closely how the developing Qx term matches to the development of the SST anomaly.</p>
+<p>Running correlations is useful to see how well certain variables change in relation to the SST anomalies, but these do not show how similar those proportions of change are. In order to do this we need to calculate the RMSE between the SST anomalies and the Qx terms. This may only be done with the Qx terms because they are in the same units as SST. One additional tweak we will need here is to add the cumulative Qx term for the following day to the SST anomaly from the first day of the MHW. This is done so that we may see more closely how the developing Qx term matches to the development of the SST anomaly.</p>
 <pre class="r"><code># Extract just the event info
 OISST_MHW_event_index &lt;- OISST_MHW_event %&gt;% 
   select(event_no, region, season) %&gt;% 
@@ -1466,7 +1502,7 @@ ALL_cor &lt;- plyr::ddply(OISST_MHW_event_index, .parallel = T,
 # Save
 saveRDS(ALL_cor, &quot;data/ALL_cor.Rda&quot;)
 saveRDS(ALL_cor, &quot;shiny/ALL_cor.Rda&quot;)</code></pre>
-<p>Seeing as how we’re running correlations verything runs pretty quickly. With the method sorted for now we need to have a look at the results. What we have at the moment is a long dataframe containing the correlations of different variables with temperature anomalies. It must be pointed out that these are for the same day, there is no time lag introduced, which may be important. Below we are going to visualise the range of correlations for each variable to see how much each distribution is skewed. This skewness could probably be quantified in a meaningful way… but let’s look at the data first.</p>
+<p>Seeing as how we’re running correlations everything runs pretty quickly. With the method sorted for now we need to have a look at the results. What we have at the moment is a long dataframe containing the correlations of different variables with temperature anomalies. It must be pointed out that these are for the same day, there is no time lag introduced, which may be important. Below we are going to visualise the range of correlations for each variable to see how much each distribution is skewed. This skewness could probably be quantified in a meaningful way… but let’s look at the data first.</p>
 <p>We also want to filter by p-value to highlight the strong correlations.</p>
 <pre class="r"><code># source(&quot;shiny/app.R&quot;)
 # Or it is live here:
@@ -1475,7 +1511,7 @@ saveRDS(ALL_cor, &quot;shiny/ALL_cor.Rda&quot;)</code></pre>
 <p>In the shiny app it also comes out that the longer events tend not to correlate strongly with a single variable. This is to be expected and supports the argument that very persistent MHWs are supported by a confluence of variables. How to parse that out is an interesting challenge.</p>
 <div id="hour-offset" class="section level3">
 <h3>12 hour offset</h3>
-<p>While going through the data it was discovered that the OISST temperature values represent an average from midnight to midnight. This therefore puts them off set to the Qx terms, which were also being caluclated over the same time period. But to compare teh Qx terms to SST there should be a 12 hour offset. So 12 hours were added to the terms before re-running the pipeline and recalculating all of the correlations and RMSE. In the code chuk below we compare the stats pre-12 hour shift and afterwards.</p>
+<p>While going through the data it was discovered that the OISST temperature values represent an average from midnight to midnight. This therefore puts them off set to the Qx terms, which were also being calculated over the same time period. But to compare the Qx terms to SST there should be a 12 hour offset. So 12 hours were added to the terms before re-running the pipeline and recalculating all of the correlations and RMSE. In the code chunk below we compare the stats pre-12 hour shift and afterwards.</p>
 <pre class="r"><code># Load old and new data
 ALL_cor_old &lt;- readRDS(&quot;data/ALL_cor_old.Rda&quot;) %&gt;% 
   mutate(run = &quot;old&quot;)
@@ -1495,16 +1531,16 @@ ALL_cor_stack %&gt;%
 # Groups:   region, ts [18]
    region ts    Parameter2   q10_new q10_old q50_new q50_old q90_new q90_old
    &lt;chr&gt;  &lt;fct&gt; &lt;fct&gt;          &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
- 1 cbs    onset lhf_mld_cum   0.0524   0.172   0.265   0.352   1.00    0.755
- 2 cbs    onset lwr_mld_cum   0.0499   0.215   0.282   0.378   1.01    0.880
- 3 cbs    onset qnet_mld_cum  0.0623   0.115   0.312   0.318   1.00    0.712
- 4 cbs    onset shf_mld_cum   0.0572   0.163   0.279   0.4     1.05    0.876
- 5 cbs    onset swr_mld_cum   0.0629   0.173   0.289   0.344   0.834   0.899
- 6 cbs    full  lhf_mld_cum   0.145    0.153   0.377   0.297   2.19    0.752
- 7 cbs    full  lwr_mld_cum   0.165    0.186   0.352   0.349   2.14    0.887
- 8 cbs    full  qnet_mld_cum  0.146    0.112   0.461   0.283   2.11    0.718
- 9 cbs    full  shf_mld_cum   0.142    0.150   0.371   0.326   2.07    0.780
-10 cbs    full  swr_mld_cum   0.137    0.182   0.379   0.356   2.05    0.825
+ 1 cbs    onset lhf_mld_cum   0.0903   0.172   0.247   0.352   0.642   0.755
+ 2 cbs    onset lwr_mld_cum   0.133    0.215   0.294   0.378   0.668   0.880
+ 3 cbs    onset qnet_mld_cum  0.0900   0.115   0.243   0.318   0.664   0.712
+ 4 cbs    onset shf_mld_cum   0.0886   0.163   0.290   0.4     0.719   0.876
+ 5 cbs    onset swr_mld_cum   0.0818   0.173   0.280   0.344   0.718   0.899
+ 6 cbs    full  lhf_mld_cum   0.113    0.153   0.217   0.297   0.621   0.752
+ 7 cbs    full  lwr_mld_cum   0.110    0.186   0.256   0.349   0.700   0.887
+ 8 cbs    full  qnet_mld_cum  0.107    0.112   0.260   0.283   0.642   0.718
+ 9 cbs    full  shf_mld_cum   0.0958   0.150   0.240   0.326   0.617   0.780
+10 cbs    full  swr_mld_cum   0.129    0.182   0.289   0.356   0.823   0.825
 # … with 80 more rows</code></pre>
 <pre class="r"><code># Plot difference
 ALL_cor_stack %&gt;% 
@@ -1535,6 +1571,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/cf24288b882546ae3ed88dbd9260fdec86a16520/docs/figure/mhw-flux.Rmd/shift-compare-1.png" target="_blank">cf24288</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-07-17
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/robwschlegel/MHWflux/blob/ab06b9450f4ecad87d4e9f1510f82fc3cfc47869/docs/figure/mhw-flux.Rmd/shift-compare-1.png" target="_blank">ab06b94</a>
@@ -1619,6 +1666,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/cf24288b882546ae3ed88dbd9260fdec86a16520/docs/figure/mhw-flux.Rmd/metrics_cor-1.png" target="_blank">cf24288</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-07-17
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/robwschlegel/MHWflux/blob/ab06b9450f4ecad87d4e9f1510f82fc3cfc47869/docs/figure/mhw-flux.Rmd/metrics_cor-1.png" target="_blank">ab06b94</a>
 </td>
 <td>
@@ -1694,6 +1752,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/cf24288b882546ae3ed88dbd9260fdec86a16520/docs/figure/mhw-flux.Rmd/metrics_cor-2.png" target="_blank">cf24288</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-07-17
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/robwschlegel/MHWflux/blob/ab06b9450f4ecad87d4e9f1510f82fc3cfc47869/docs/figure/mhw-flux.Rmd/metrics_cor-2.png" target="_blank">ab06b94</a>
@@ -1774,6 +1843,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/cf24288b882546ae3ed88dbd9260fdec86a16520/docs/figure/mhw-flux.Rmd/metrics_cor-3.png" target="_blank">cf24288</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-07-17
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/robwschlegel/MHWflux/blob/ab06b9450f4ecad87d4e9f1510f82fc3cfc47869/docs/figure/mhw-flux.Rmd/metrics_cor-3.png" target="_blank">ab06b94</a>
 </td>
 <td>
@@ -1850,6 +1930,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/cf24288b882546ae3ed88dbd9260fdec86a16520/docs/figure/mhw-flux.Rmd/metrics_cor-4.png" target="_blank">cf24288</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-07-17
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/robwschlegel/MHWflux/blob/ab06b9450f4ecad87d4e9f1510f82fc3cfc47869/docs/figure/mhw-flux.Rmd/metrics_cor-4.png" target="_blank">ab06b94</a>
@@ -2011,6 +2102,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/cf24288b882546ae3ed88dbd9260fdec86a16520/docs/figure/mhw-flux.Rmd/choice-events-1.png" target="_blank">cf24288</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-07-17
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/robwschlegel/MHWflux/blob/ab06b9450f4ecad87d4e9f1510f82fc3cfc47869/docs/figure/mhw-flux.Rmd/choice-events-1.png" target="_blank">ab06b94</a>
 </td>
 <td>
@@ -2134,6 +2236,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/cf24288b882546ae3ed88dbd9260fdec86a16520/docs/figure/mhw-flux.Rmd/SOM-1.png" target="_blank">cf24288</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-07-17
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/robwschlegel/MHWflux/blob/ab06b9450f4ecad87d4e9f1510f82fc3cfc47869/docs/figure/mhw-flux.Rmd/SOM-1.png" target="_blank">ab06b94</a>
 </td>
 <td>
@@ -2209,6 +2322,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/cf24288b882546ae3ed88dbd9260fdec86a16520/docs/figure/mhw-flux.Rmd/SOM-2.png" target="_blank">cf24288</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-07-17
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/robwschlegel/MHWflux/blob/ab06b9450f4ecad87d4e9f1510f82fc3cfc47869/docs/figure/mhw-flux.Rmd/SOM-2.png" target="_blank">ab06b94</a>
@@ -2553,7 +2677,7 @@ robwschlegel
 <p>Look into relationship between decrease in SSS with decline and also decrease in latent heat flux/evaporation.</p>
 <div id="nwa-2012" class="section level3">
 <h3>NWA 2012</h3>
-<p>From Chen et al. 2016 (JGR) Such an extreme event in the MAB was attributed to the anomalous atmospheric forcing, which was linked to the northward shift in the jet stream position [Chen et al., 2014a, 2015]. The anomalously warm atmospheric conditions in the winter of 2011–2012 increased the ocean heat content (increased the ocean heat content anomaly) and facilitated the extreme warm ocean temperature in spring 2012 [Chen et al., 2014a, 2015]. On the other hand, the ocean advection played a secondary role, which partially damped the heat content anomaly created by the air-sea heat flux [Chen et al., 2015]. In both cases, initial temperature and ocean advection are not sufficient to describe the seasonal mean temperature. Additional cooling (warming) in addition to ocean advection is needed to further describe the winter (spring) temperature. In comparison, using the sum of the initial temperature and air-sea flux yields a much better description of seasonal mean temperatures (Figures 5c and 5f) While the overall role of ocean advection is smaller than that of air-sea flux in determining the winter and spring temperatures, the year-to-year changes in the relative importance is worth investigating. Normally, given anomalous initial temperature, air will act to damp the temperature anomaly, as in winter 2007 or 2011, or even 2005 to some extent. However, in winter 2012, the air continued to increase the temperature anomaly. Out of the 12 years 2003–2014, the air-sea flux normally dominated the temperature anomaly in the MAB during winter. In only 3 years was the winter time temperature anomaly primarily controlled by ocean advection. For spring, ocean advection has more control on the temperature anomalies than air-sea flux does, although the difference is smaller (Table 2). In both seasons, the relative importance of air-sea flux and ocean advection does not seem to be related to either the initial or seasonal mean thermal condition of the shelf water (fourth and fifth columns of Tables 1 and 2). The correlation coefficients increase from 0.66 in the first half of February to 0.91 in the second half of March. This suggests that estimation of spring temperature anomaly in the MAB based on the thermal condition 2 months before spring is statistically possible. This suggests that more northerly jet stream positions result in larger heatflux from the atmosphere into the ocean in the MAB. This is likely due to warmer and more humid air overlying the continental shelf, which reduces the heat loss from the ocean during the cooling seasons [Chenet al., 2014a]. In spring and summer, the air-sea flux may be less correlated with the air temperature due to the shallowness of the surface mixed layer, and thus may be disconnected from large-scale atmospheric circulation, i.e., jetstream variability.</p>
+<p>From Chen et al. 2016 (JGR) Such an extreme event in the MAB was attributed to the anomalous atmospheric forcing, which was linked to the northward shift in the jet stream position [Chen et al., 2014a, 2015]. The anomalously warm atmospheric conditions in the winter of 2011–2012 increased the ocean heat content (increased the ocean heat content anomaly) and facilitated the extreme warm ocean temperature in spring 2012 [Chen et al., 2014a, 2015]. On the other hand, the ocean advection played a secondary role, which partially damped the heat content anomaly created by the air-sea heat flux [Chen et al., 2015]. In both cases, initial temperature and ocean advection are not sufficient to describe the seasonal mean temperature. Additional cooling (warming) in addition to ocean advection is needed to further describe the winter (spring) temperature. In comparison, using the sum of the initial temperature and air-sea flux yields a much better description of seasonal mean temperatures (Figures 5c and 5f) While the overall role of ocean advection is smaller than that of air-sea flux in determining the winter and spring temperatures, the year-to-year changes in the relative importance is worth investigating. Normally, given anomalous initial temperature, air will act to damp the temperature anomaly, as in winter 2007 or 2011, or even 2005 to some extent. However, in winter 2012, the air continued to increase the temperature anomaly. Out of the 12 years 2003–2014, the air-sea flux normally dominated the temperature anomaly in the MAB during winter. In only 3 years was the winter time temperature anomaly primarily controlled by ocean advection. For spring, ocean advection has more control on the temperature anomalies than air-sea flux does, although the difference is smaller (Table 2). In both seasons, the relative importance of air-sea flux and ocean advection does not seem to be related to either the initial or seasonal mean thermal condition of the shelf water (fourth and fifth columns of Tables 1 and 2). The correlation coefficients increase from 0.66 in the first half of February to 0.91 in the second half of March. This suggests that estimation of spring temperature anomaly in the MAB based on the thermal condition 2 months before spring is statistically possible. This suggests that more northerly jet stream positions result in larger heatflux from the atmosphere into the ocean in the MAB. This is likely due to warmer and more humid air overlying the continental shelf, which reduces the heat loss from the ocean during the cooling seasons [Chenet al., 2014a]. In spring and summer, the air-sea flux may be less correlated with the air temperature due to the shallowness of the surface mixed layer, and thus may be disconnected from large-scale atmospheric circulation, i.e., jet stream variability.</p>
 </div>
 </div>
 <div id="references" class="section level2">

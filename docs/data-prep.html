@@ -428,7 +428,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2020-07-17
+<strong>Last updated:</strong> 2020-07-21
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -519,16 +519,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtree6a591d5ad50ed70b24ecd6b02abe178dca216cf7targetblank6a591d5a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/robwschlegel/MHWflux/tree/6a591d5ad50ed70b24ecd6b02abe178dca216cf7" target="_blank">6a591d5</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtree49fd7535ffb218f79747d4872b93478d089a3cb3targetblank49fd753a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/robwschlegel/MHWflux/tree/49fd7535ffb218f79747d4872b93478d089a3cb3" target="_blank">49fd753</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtree6a591d5ad50ed70b24ecd6b02abe178dca216cf7targetblank6a591d5a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtree49fd7535ffb218f79747d4872b93478d089a3cb3targetblank49fd753a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/robwschlegel/MHWflux/tree/6a591d5ad50ed70b24ecd6b02abe178dca216cf7" target="_blank">6a591d5</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/robwschlegel/MHWflux/tree/49fd7535ffb218f79747d4872b93478d089a3cb3" target="_blank">49fd753</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -541,6 +541,8 @@ Ignored files:
 Unstaged changes:
     Modified:   code/functions.R
     Modified:   data/ALL_cor.Rda
+    Modified:   data/events_cor_region.Rds
+    Modified:   data/events_cor_season.Rds
     Modified:   shiny/ALL_cor.Rda
 
 </code></pre>
@@ -580,6 +582,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/49fd7535ffb218f79747d4872b93478d089a3cb3/analysis/data-prep.Rmd" target="_blank">49fd753</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-07-21
+</td>
+<td>
+Re-built site.
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/robwschlegel/MHWflux/cf24288b882546ae3ed88dbd9260fdec86a16520/docs/data-prep.html" target="_blank">cf24288</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-07-17
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -2743,7 +2779,7 @@ saveRDS(ALL_anom, &quot;shiny/ALL_anom.Rda&quot;)</code></pre>
 </div>
 <div id="cumulative-heat-flux-terms" class="section level2">
 <h2>Cumulative heat flux terms</h2>
-<p>We also need to create cumulative heatflux terms as well as a few other choice variables. This is done by taking the first day during the MHW and adding the daily values together cummulatively until the end of the event. The daily values are first divided by the MLD on that day as seen above. The MLD value used to divide the daily variables accounts for the water density and specific heat constant: Q/(rho x Cp x hmld), where rho = 1042 and Cp ~= 4000. Th Qnet term calculated this way approximates the air-sea flux term.</p>
+<p>We also need to create cumulative heatflux terms as well as a few other choice variables. This is done by taking the first day during the MHW and adding the daily values together cumulatively until the end of the event. The daily values are first divided by the MLD on that day as seen above. The MLD value used to divide the daily variables accounts for the water density and specific heat constant: Q/(rho x Cp x hmld), where rho = 1042 and Cp ~= 4000. Th Qnet term calculated this way approximates the air-sea flux term.</p>
 <p>The movement terms aren’t very useful and may not be worth including as they don’t really show advection. So rather one can say that the parts of the heating that aren’t explained by anything else could be attributed to advection through the process of elimination. For the moment they are still left in here.</p>
 <pre class="r"><code># We&#39;re going to switch over to the NOAA OISST data for MHWs now
 ALL_anom_cum &lt;- ALL_anom %&gt;%
