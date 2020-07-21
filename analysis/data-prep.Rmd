@@ -387,7 +387,7 @@ saveRDS(ALL_anom, "shiny/ALL_anom.Rda")
 
 ## Cumulative heat flux terms
 
-We also need to create cumulative heatflux terms as well as a few other choice variables. This is done by taking the first day during the MHW and adding the daily values together cummulatively until the end of the event. The daily values are first divided by the MLD on that day as seen above. The MLD value used to divide the daily variables accounts for the water density and specific heat constant: Q/(rho x Cp x hmld), where rho = 1042 and Cp ~= 4000. Th Qnet term calculated this way approximates the air-sea flux term.
+We also need to create cumulative heatflux terms as well as a few other choice variables. This is done by taking the first day during the MHW and adding the daily values together cumulatively until the end of the event. The daily values are first divided by the MLD on that day as seen above. The MLD value used to divide the daily variables accounts for the water density and specific heat constant: Q/(rho x Cp x hmld), where rho = 1042 and Cp ~= 4000. Th Qnet term calculated this way approximates the air-sea flux term.
 
 The movement terms aren't very useful and may not be worth including as they don't really show advection. So rather one can say that the parts of the heating that aren't explained by anything else could be attributed to advection through the process of elimination. For the moment they are still left in here.
 
