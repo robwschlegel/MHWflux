@@ -720,13 +720,14 @@ server <- function(input, output, session) {
       # Prep ts data
       MHW_single <- MHW_single()
       
+      # Count of rows
+      rows <- nrow(MHW_single)
+      
       # Get Q column
-      q_col <- c(0, MHW_single[[input$rmse_var]])[1:nrow(MHW_single)]
+      q_col <- c(0, MHW_single[[input$rmse_var]])[1:rows]
       
       # Add needed columns
-      MHW_temp <- left_join(MHW_single, MHW_clim[,c("region", "t", "temp")],
-                            by = c("region", "t")) %>% 
-        mutate(Qx = q_col + temp[1])
+      MHW_single$Qx <- q_col + MHW_single$SST[1]
       
       # Find RMSE value
       MHW_data <- MHW_data()
@@ -737,21 +738,20 @@ server <- function(input, output, session) {
                ts == input$ts_single,
                Parameter2 == input$rmse_var) %>% 
         na.omit()
-      # Find y for Qx
-      # Qx_y <- as.numeric(MHW_single[1,input$rmse_var])
+      
       # The plot
-      rp <- ggplot(data = MHW_temp, aes(x = t)) +
-        geom_point(aes(y = temp), colour = "red") +
-        geom_line(aes(y = temp), colour = "red") +
+      rp <- ggplot(data = MHW_single, aes(x = t)) +
+        geom_point(aes(y = SST), colour = "red") +
+        geom_line(aes(y = SST), colour = "red") +
         geom_point(aes(y = Qx), colour = "blue") +
         geom_line(aes(y = Qx), colour = "blue") +
-        geom_label(aes(x = t[nrow(MHW_temp)], y = temp[nrow(MHW_temp)],
+        geom_label(aes(x = t[rows], y = SST[rows],
                        label = "SST"), colour = "red") +
-        geom_label(aes(x = t[nrow(MHW_temp)], y = Qx[nrow(MHW_temp)],
+        geom_label(aes(x = t[rows], y = Qx[rows],
                        label = input$rmse_var), colour = "blue") +
-        geom_label(aes(x = mean(t), y = quantile(temp, 0.1),
+        geom_label(aes(x = mean(t), y = quantile(SST, 0.1),
                        label = paste0("RMSE = ",MHW_rmse$rmse[1]))) +
-        labs(x = NULL, y = "SST (°C) | SST + Qx/MLD (°C)")
+        labs(x = NULL, y = "SSTa (°C) || SSTa[1] + Qx/MLD[cum] (°C)")
       rp
     })
     
