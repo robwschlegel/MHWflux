@@ -49,16 +49,14 @@ source("code/functions.R")
 
 ### ERA5 data are saved in individual variables
 ## Nb: Be cautious with how massive these processes are
-doParallel::registerDoParallel(cores = 10)
-
-## First need to make vertain that the correct direction of time lag is introduced for the Qx integrals
+# doParallel::registerDoParallel(cores = 10)
 
 ## Long wave radiation
 # "msnlwrf"
 print(paste0("Began loading msnlwrf at ", Sys.time()))
 ERA5_lwr_files <- dir("../../oliver/data/ERA/ERA5/LWR", full.names = T, pattern = "ERA5")
 ERA5_lwr_ts <- plyr::ldply(ERA5_lwr_files, load_ERA5_region, 
-                           .parallel = F, .progress = "text", time_shift = -43200) # 12 hour backward shift
+                           .parallel = F, .progress = "text", time_shift = 43200) # 12 hour backward shift
 ERA5_lwr_ts$msnlwrf <- round(ERA5_lwr_ts$msnlwrf, 6)
 saveRDS(ERA5_lwr_ts, "data/ERA5_lwr_ts.Rda")
 
@@ -67,7 +65,7 @@ saveRDS(ERA5_lwr_ts, "data/ERA5_lwr_ts.Rda")
 print(paste0("Began loading msnswrf at ", Sys.time()))
 ERA5_swr_files <- dir("../../oliver/data/ERA/ERA5/SWR", full.names = T, pattern = "ERA5")
 ERA5_swr_ts <- plyr::ldply(ERA5_swr_files, load_ERA5_region, 
-                           .parallel = F, .progress = "text", time_shift = -43200) # 12 hour backward shift
+                           .parallel = F, .progress = "text", time_shift = 43200) # 12 hour backward shift
 ERA5_swr_ts$msnswrf <- round(ERA5_swr_ts$msnswrf, 6)
 saveRDS(ERA5_swr_ts, "data/ERA5_swr_ts.Rda")
 
@@ -76,7 +74,7 @@ saveRDS(ERA5_swr_ts, "data/ERA5_swr_ts.Rda")
 print(paste0("Began loading mslhf at ", Sys.time()))
 ERA5_lhf_files <- dir("../../oliver/data/ERA/ERA5/SLHF", full.names = T, pattern = "ERA5")
 ERA5_lhf_ts <- plyr::ldply(ERA5_lhf_files, load_ERA5_region, 
-                           .parallel = F, .progress = "text", time_shift = -43200) # 12 hour backward shift
+                           .parallel = F, .progress = "text", time_shift = 43200) # 12 hour backward shift
 ERA5_lhf_ts$mslhf <- round(ERA5_lhf_ts$mslhf, 6)
 saveRDS(ERA5_lhf_ts, "data/ERA5_lhf_ts.Rda")
 
@@ -85,7 +83,7 @@ saveRDS(ERA5_lhf_ts, "data/ERA5_lhf_ts.Rda")
 print(paste0("Began loading msshf at ", Sys.time()))
 ERA5_shf_files <- dir("../../oliver/data/ERA/ERA5/SSHF", full.names = T, pattern = "ERA5")
 ERA5_shf_ts <- plyr::ldply(ERA5_shf_files, load_ERA5_region, 
-                           .parallel = F, .progress = "text", time_shift = -43200) # 12 hour backward shift
+                           .parallel = F, .progress = "text", time_shift = 43200) # 12 hour backward shift
 ERA5_shf_ts$msshf <- round(ERA5_shf_ts$msshf, 6)
 saveRDS(ERA5_shf_ts, "data/ERA5_shf_ts.Rda")
 
@@ -162,7 +160,6 @@ join_cols <- c("region", "t")
 ERA5_all_ts <- left_join(ERA5_lwr_ts, ERA5_swr_ts, by = join_cols) %>%
   left_join(ERA5_lhf_ts, by = join_cols) %>%
   left_join(ERA5_shf_ts, by = join_cols) %>%
-  filter(t > "1992-12-31") %>% 
   group_by(region, t) %>% 
   summarise_all("mean") %>% # Merge half days from time shift in loading step
   ungroup() %>% 

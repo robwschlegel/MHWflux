@@ -215,7 +215,6 @@ load_ERA5_region <- function(file_name, time_shift = 0){
     group_by(region, t) %>% 
     summarise_all("mean") %>% 
     ungroup()
-  while(year(res$t[1]) < year(res$t[2])) res <- res[-1, ]# Remove 12 hour stub date from front of ts
   gc() # Clear as much memory as possible
   return(res)
 }
