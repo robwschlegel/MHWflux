@@ -51,6 +51,8 @@ source("code/functions.R")
 ## Nb: Be cautious with how massive these processes are
 doParallel::registerDoParallel(cores = 10)
 
+## First need to make vertain that the correct direction of time lag is introduced for the Qx integrals
+
 ## Long wave radiation
 # "msnlwrf"
 print(paste0("Began loading msnlwrf at ", Sys.time()))
@@ -160,6 +162,10 @@ join_cols <- c("region", "t")
 ERA5_all_ts <- left_join(ERA5_lwr_ts, ERA5_swr_ts, by = join_cols) %>%
   left_join(ERA5_lhf_ts, by = join_cols) %>%
   left_join(ERA5_shf_ts, by = join_cols) %>%
+  filter(t > "1992-12-31") %>% 
+  group_by(region, t) %>% 
+  summarise_all("mean") %>% # Merge half days from time shift in loading step
+  ungroup() %>% 
   left_join(ERA5_tcc_ts, by = join_cols) %>%
   left_join(ERA5_u_ts, by = join_cols) %>%
   left_join(ERA5_v_ts, by = join_cols) %>%

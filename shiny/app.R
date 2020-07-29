@@ -61,21 +61,22 @@ MHW_cats <- region_MHW %>%
 # Event count by region 
 region_count <- MHW_event %>% 
     group_by(region) %>% 
-    summarise(count = n())
+    summarise(count = n(), .groups = "drop")
 
 # Event count by region 
 season_count <- MHW_event %>% 
     group_by(season) %>% 
-    summarise(count = n())
+    summarise(count = n(), .groups = "drop")
 
 # Event count by region 
 region_season_count <- MHW_event %>% 
     group_by(region, season) %>% 
-    summarise(count = n())
+    summarise(count = n(), .groups = "drop")
 
 # List of desired variables
 choose_vars <- c("sst", "bottomT", "sss", "mld_cum", "mld_1_cum", "t2m", "tcc_cum", "p_e_cum", "mslp_cum",
-                 "lwr_mld_cum", "swr_mld_cum", "lhf_mld_cum", "shf_mld_cum", "qnet_mld_cum", "sst_thresh")
+                 "lwr_mld_cum", "swr_mld_cum", "lhf_mld_cum", "shf_mld_cum", "qnet_mld_cum", 
+                 "lwr_budget", "swr_budget", "lhf_budget", "shf_budget", "qnet_budget", "sst_thresh")
 
 # Physical variable anomalies
 ALL_anom <- readRDS("ALL_anom.Rda")
@@ -102,7 +103,7 @@ ALL_anom_full <- rbind(ALL_anom[,c("region", "var", "t", "anom")],
                          var == "qnet_mld_cum" ~ "Qnet",
                          TRUE ~ var))
 ALL_anom_full_wide <- ALL_anom_full %>% 
-    pivot_wider(values_from = anom, names_from = var, values_fn = mean)
+    pivot_wider(values_from = anom, names_from = var)
 
 # The correlations
 ALL_cor <- readRDS("ALL_cor.Rda") %>% 
@@ -125,6 +126,11 @@ ALL_cor <- readRDS("ALL_cor.Rda") %>%
                                 Parameter1 == "lhf_mld_cum" ~ "Qlh",
                                 Parameter1 == "shf_mld_cum" ~ "Qsh",
                                 Parameter1 == "qnet_mld_cum" ~ "Qnet",
+                                Parameter1 == "lwr_budget" ~ "Qlw_budget",
+                                Parameter1 == "swr_budget" ~ "Qsw_budget",
+                                Parameter1 == "lhf_budget" ~ "Qlh_budget",
+                                Parameter1 == "shf_budget" ~ "Qsh_budget",
+                                Parameter1 == "qnet_budget" ~ "Qnet_budget",
                                 TRUE ~ Parameter1),
          Parameter2 = case_when(Parameter2 == "sst" ~ "SST",
                                 Parameter2 == "bottomT" ~ "SBT",
@@ -140,6 +146,11 @@ ALL_cor <- readRDS("ALL_cor.Rda") %>%
                                 Parameter2 == "lhf_mld_cum" ~ "Qlh",
                                 Parameter2 == "shf_mld_cum" ~ "Qsh",
                                 Parameter2 == "qnet_mld_cum" ~ "Qnet",
+                                Parameter2 == "lwr_budget" ~ "Qlw_budget",
+                                Parameter2 == "swr_budget" ~ "Qsw_budget",
+                                Parameter2 == "lhf_budget" ~ "Qlh_budget",
+                                Parameter2 == "shf_budget" ~ "Qsh_budget",
+                                Parameter2 == "qnet_budget" ~ "Qnet_budget",
                                 TRUE ~ Parameter2))
 
 # Corners of the study area
@@ -383,7 +394,8 @@ server <- function(input, output, session) {
     # Select variables from a dropdown
     picker_vars <- pickerInput(inputId = "vars", label = "Variables:",
                                choices = list(
-                                 Flux = c("Qnet", "Qlw", "Qsw", "Qlh", "Qsh"),
+                                 Flux = c("Qnet", "Qlw", "Qsw", "Qlh", "Qsh",
+                                          "Qnet_budget", "Qlw_budget", "Qsw_budget", "Qlh_budget", "Qsh_budget"),
                                  Air = c("Air_temp", "Cloud_cover_c", "Precip_Evap_c", "MSLP_c"),
                                  Sea = c("SST", "SSS", "MLD_c", "MLD_1_c", "SBT")
                                  ),
@@ -538,22 +550,27 @@ server <- function(input, output, session) {
         MHW_data <- MHW_data()
         event_sub <- MHW_data[input$eventTable_cell_clicked$row,]
 
+        ts_full <- ALL_anom_full_wide %>%
+          filter(t >= event_sub$start,
+                 t <= event_sub$end,
+                 region == event_sub$region) %>% 
+          mutate(Qnet_budget = c(0, Qnet[1:event_sub$duration-1]) + SST[1],
+                 Qlh_budget = c(0, Qlh[1:event_sub$duration-1]) + SST[1],
+                 Qsh_budget = c(0, Qsh[1:event_sub$duration-1]) + SST[1],
+                 Qlw_budget = c(0, Qlw[1:event_sub$duration-1]) + SST[1],
+                 Qsw_budget = c(0, Qsw[1:event_sub$duration-1]) + SST[1])
+        
         # Filter accordingly
         if(input$ts_single == "full"){
-            ts_wide <- ALL_anom_full_wide %>%
-                filter(t >= event_sub$start,
-                       t <= event_sub$end,
-                       region == event_sub$region)
+            ts_wide <- ts_full
         } else if(input$ts_single == "onset"){
-            ts_wide <- ALL_anom_full_wide %>%
+            ts_wide <- ts_full %>%
                 filter(t >= event_sub$start,
-                       t <= event_sub$peak,
-                       region == event_sub$region)
+                       t <= event_sub$peak)
         } else if(input$ts_single == "decline"){
-            ts_wide <- ALL_anom_full_wide %>%
+            ts_wide <- ts_full %>%
                 filter(t >= event_sub$peak,
-                       t <= event_sub$end,
-                       region == event_sub$region)
+                       t <= event_sub$end)
         }
         return(ts_wide)
     })
@@ -720,14 +737,12 @@ server <- function(input, output, session) {
       # Prep ts data
       MHW_single <- MHW_single()
       
-      # Count of rows
-      rows <- nrow(MHW_single)
-      
       # Get Q column
-      q_col <- c(0, MHW_single[[input$rmse_var]])[1:rows]
+      q_col <- c(0, MHW_single[[input$rmse_var]])[1:nrow(MHW_single)]
       
       # Add needed columns
-      MHW_single$Qx <- q_col + MHW_single$SST[1]
+      MHW_temp <- MHW_single %>% 
+        mutate(Qx = q_col + SST[1])
       
       # Find RMSE value
       MHW_data <- MHW_data()
@@ -736,18 +751,18 @@ server <- function(input, output, session) {
         filter(region == event_sub$region,
                event_no == event_sub$event,
                ts == input$ts_single,
-               Parameter2 == input$rmse_var) %>% 
+               Parameter2 == paste0(input$rmse_var,"_budget")) %>% 
         na.omit()
       
       # The plot
-      rp <- ggplot(data = MHW_single, aes(x = t)) +
+      rp <- ggplot(data = MHW_temp, aes(x = t)) +
         geom_point(aes(y = SST), colour = "red") +
         geom_line(aes(y = SST), colour = "red") +
         geom_point(aes(y = Qx), colour = "blue") +
         geom_line(aes(y = Qx), colour = "blue") +
-        geom_label(aes(x = t[rows], y = SST[rows],
+        geom_label(aes(x = t[nrow(MHW_temp)], y = SST[nrow(MHW_temp)],
                        label = "SST"), colour = "red") +
-        geom_label(aes(x = t[rows], y = Qx[rows],
+        geom_label(aes(x = t[nrow(MHW_temp)], y = Qx[nrow(MHW_temp)],
                        label = input$rmse_var), colour = "blue") +
         geom_label(aes(x = mean(t), y = quantile(SST, 0.1),
                        label = paste0("RMSE = ",MHW_rmse$rmse[1]))) +

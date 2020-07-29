@@ -118,7 +118,7 @@ The code for loading and processing the GLORYS data.
 
 ```{r GLORYS-prep, eval=FALSE}
 # Set number of cores
-  # NB: This is very RAM heavy, be carfeul with core use
+  # NB: This is very RAM heavy, be careful with core use
 doParallel::registerDoParallel(cores = 25)
 
 # The GLORYS file location
@@ -355,7 +355,8 @@ GLORYS_all_ts <- readRDS("data/GLORYS_all_ts.Rda")
 ERA5_all_ts <- readRDS("data/ERA5_all_ts.Rda")
 OISST_all_ts <- readRDS("../MHWNWA/data/OISST_region.Rda")
 ALL_ts <- left_join(ERA5_all_ts, GLORYS_all_ts, by = c("region", "t")) %>% 
-  left_join(OISST_all_ts, by = c("region", "t"))
+  left_join(OISST_all_ts, by = c("region", "t")) %>% 
+  filter(t <= "2018-12-31")
 
 # Calculate GLORYS clims and anoms
   # Also give better names to the variables
@@ -395,8 +396,7 @@ The movement terms aren't very useful and may not be worth including as they don
 # We're going to switch over to the NOAA OISST data for MHWs now
 ALL_anom_cum <- ALL_anom %>%
   dplyr::select(region, var, t, anom) %>% 
-  pivot_wider(id_cols = c("region", "var", "t"), names_from = var, 
-              values_from = anom, values_fn = mean) %>% 
+  pivot_wider(id_cols = c("region", "t"), names_from = var, values_from = anom) %>% 
   dplyr::select(region:tcc, mslp, qnet, p_e, mld, mld_1, qnet_mld:shf_mld) %>% 
   # Change this line depending on GLORYS or NOAA use
   left_join(OISST_MHW_clim[,c("region", "t", "event_no")], by = c("region", "t")) %>% 
