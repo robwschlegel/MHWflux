@@ -273,21 +273,29 @@ cor_all <- function(df, df_event){
   ts_decline <- ts_full %>% 
     filter(t >= event_sub$date_peak,
            t <= event_sub$date_end)
-  
   # Run the correlations
+  R2_full <- broom::glance(lm(sst ~ t, ts_full))
   ts_full_cor <- correlation(ts_full, redundant = T) %>% 
-    mutate(ts = "full") %>% 
+    mutate(ts = "full",
+           sst_R2 = round(R2_full$r.squared, 4),
+           sst_p = round(R2_full$p.value, 4)) %>% 
     left_join(rmse_wrap(ts_full), by = c("Parameter1", "Parameter2"))
   if(nrow(ts_onset) > 2){
+    R2_onset <- broom::glance(lm(sst ~ t, ts_onset))
     ts_onset_cor <- correlation(ts_onset, redundant = T) %>% 
-      mutate(ts = "onset") %>% 
+      mutate(ts = "onset",
+             sst_R2 = round(R2_onset$r.squared, 4),
+             sst_p = round(R2_onset$p.value, 4)) %>% 
       left_join(rmse_wrap(ts_onset), by = c("Parameter1", "Parameter2"))
   } else {
     ts_onset_cor <- ts_full_cor[0,]
   }
   if(nrow(ts_decline) > 2){
+    R2_decline <- broom::glance(lm(sst ~ t, ts_decline))
     ts_decline_cor <- correlation(ts_decline, redundant = T) %>% 
-      mutate(ts = "decline") %>% 
+      mutate(ts = "decline",
+             sst_R2 = round(R2_decline$r.squared, 4),
+             sst_p = round(R2_decline$p.value, 4)) %>% 
       left_join(rmse_wrap(ts_decline), by = c("Parameter1", "Parameter2"))
   } else {
     ts_decline_cor <- ts_full_cor[0,]

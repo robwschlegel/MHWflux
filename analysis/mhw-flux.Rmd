@@ -75,6 +75,7 @@ While going through the data it was discovered that the OISST temperature values
 ALL_cor_old <- readRDS("data/ALL_cor_old.Rda") %>% 
   mutate(run = "old")
 ALL_cor <- readRDS("data/ALL_cor.Rda") %>% 
+  dplyr::select(region:n_Obs, rmse) %>% 
   mutate(run = "new")
 ALL_cor_stack <- rbind(ALL_cor, ALL_cor_old)
 
@@ -243,6 +244,36 @@ events_cor_prep %>%
   geom_smooth(method = "lm", se = FALSE, colour = "black") +
   geom_point(aes(colour = season))
 ```
+
+## Linearity of events
+
+Another observation I made while going through the results in the app was how the onset and decline of events tend to have a better RMSE when the SSTa trend is more linear. My hypothesis is that this is because there is less advective pressure on the dispersion of the heat anomaly, therefore more of the heatflux is responsible for the temperature anomaly. THis is a pretty straight forward statement, but I think it is useful in that one may be able to take linearity of SSTa as a proxy for the proportion of heat flux that is responsible for it. So in the chunk below I use simple linear models to create an R2 value for each onset and decline portion of an event. Then I find how close to 1.0 that R2 value is (meaning more linear SSTa) and I see how RMSE changes as R2 improves. I hypothesised that more linear SSTa onset will provide better (lower) RMSE values. The same is likely true for decline but I'm not certain.
+
+```{r linearity}
+# The events and their RMSE scores
+ALL_cor_R2 <- readRDS("data/ALL_cor.Rda") %>% 
+  ungroup() %>% 
+  filter(Parameter1 == "sst",
+         rmse > 0) %>% 
+  dplyr::select(region:ts, Parameter2, r, n_Obs, rmse)
+
+# The SSTa data
+SST_R2 <- ALL_anom %>%
+  filter(var == "sst") %>% 
+  dplyr::select(region, t, anom) %>% 
+  left_join(OISST_MHW_clim[,c("region", "t", "event_no")], by = c("region", "t")) %>% 
+  filter(event_no > 0) %>% 
+  # group_by(region, event_no) %>% 
+  nest_by(region, event_no)
+  # mutate(event_index = 1:n())
+  # mutate_if(is.numeric, cumsum)
+
+# Function that calculates R2 and compares to RMSE
+
+# Results
+
+```
+
 
 ## Choice events
 
