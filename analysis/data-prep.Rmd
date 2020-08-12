@@ -145,7 +145,7 @@ The code for loading and processing the GLORYS data.
 ```{r GLORYS-prep, eval=FALSE}
 # Set number of cores
   # NB: This is very RAM heavy, be careful with core use
-doParallel::registerDoParallel(cores = 25)
+doParallel::registerDoParallel(cores = 26)
 
 # The GLORYS file location
 system.time(
@@ -153,7 +153,7 @@ GLORYS_all_ts <- plyr::ldply(GLORYS_files, load_GLORYS_region, .parallel = T) %>
   dplyr::arrange(region, t) %>% 
   mutate(cur_spd = round(sqrt(u^2 + v^2), 2),
          cur_dir = round((270-(atan2(v, u)*(180/pi)))%%360))
-) # 103 seconds on 25 cores
+) # 103 seconds on 26 cores
 saveRDS(GLORYS_all_ts, "data/GLORYS_all_ts.Rda")
 ```
 

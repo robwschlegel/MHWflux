@@ -39,32 +39,33 @@ source("code/functions.R")
 
 # Prep all GLORYS data in one go
 # system.time(
-#   GLORYS_all_ts <- load_all_GLORYS_region(GLORYS_files) %>% 
+#   GLORYS_all_ts <- plyr::ldply(GLORYS_files, load_GLORYS_region, .parallel = T) %>% 
 #     dplyr::arrange(region, t) %>% 
 #     mutate(cur_spd = round(sqrt(u^2 + v^2), 2),
 #            cur_dir = round((270-(atan2(v, u)*(180/pi)))%%360))
-# ) # 187 seconds on 25 cores
+# ) # 103 seconds on 26 cores
 # saveRDS(GLORYS_all_ts, "data/GLORYS_all_ts.Rda")
 
 ### ERA5 data are saved in individual variables
 ## NB: Be cautious with how massive these processes are
-registerDoParallel(cores = 10)
+registerDoParallel(cores = 26)
 
 ## Long wave radiation
 # "msnlwrf"
 print(paste0("Began loading msnlwrf at ", Sys.time()))
 ERA5_lwr_files <- dir("../../oliver/data/ERA/ERA5/LWR", full.names = T, pattern = "ERA5")
-ERA5_lwr_ts <- plyr::ldply(ERA5_lwr_files, load_ERA5_region, .parallel = T)
-ERA5_lwr_ts$msnlwrf <- round(ERA5_lwr_ts$msnlwrf, 6)
+system.time(
+ERA5_lwr_ts <- plyr::ldply(ERA5_lwr_files, load_ERA5_region, .parallel = T, time_shift = 43200) %>% 
+  mutate(msnlwrf = round(msnlwrf, 6))
+) # xxx seconds
 saveRDS(ERA5_lwr_ts, "data/ERA5_lwr_ts.Rda")
 
 ## Short wave radiation
 # "msnswrf"
 print(paste0("Began loading msnswrf at ", Sys.time()))
 ERA5_swr_files <- dir("../../oliver/data/ERA/ERA5/SWR", full.names = T, pattern = "ERA5")
-ERA5_swr_ts <- plyr::ldply(ERA5_swr_files, load_ERA5_region, 
-                           .parallel = F, .progress = "text", time_shift = 43200) # 12 hour backward shift
-ERA5_swr_ts$msnswrf <- round(ERA5_swr_ts$msnswrf, 6)
+ERA5_swr_ts <- plyr::ldply(ERA5_swr_files, load_ERA5_region, .parallel = T, time_shift = 43200) %>% 
+  mutate(msnswrf = round(msnswrf, 6))
 saveRDS(ERA5_swr_ts, "data/ERA5_swr_ts.Rda")
 
 ## Latent heat flux

@@ -215,23 +215,42 @@ load_GLORYS_region <- function(file_name){
 # testers...
 # file_name <- "../../oliver/data/ERA/ERA5/LWR/ERA5_LWR_1993.nc"
 # ncdump::NetCDF(file_name)$variable[1:6]
-load_ERA5_region <- function(file_name, time_shift = 43200){
+load_ERA5_region <- function(file_name, time_shift = 0){
+  
+  library(ncdf4)
+  library(ncdf4.helpers)
+  
+  nc_file <- nc_open(file_name)
+  lon <- ncvar_get(nc_file, varid = "longitude")
+  lat <- ncvar_get(nc_file, varid = "latitude")
+  time <- ncvar_get(nc_file, varid = "time")
+  
+  lon_index <- lon[1:10]
+  lat_index <- lat[1:10]
+  time_index <- time[1:10]
+  
+  tas <- nc.get.var.subset.by.axes(nc_file, "msnlwrf",
+                                   axis.indices = list(X = 1:10,
+                                                       Y = 1:10))
+  
+  # nc_val <- ncvar_get(nc = nc_file, varid = "msnlwrf")
+  
+  
   res <- tidync(file_name) %>%
     hyper_filter(latitude = dplyr::between(latitude, min(NWA_coords$lat), max(NWA_coords$lat)),
                  longitude = dplyr::between(longitude, min(NWA_coords$lon)+360, max(NWA_coords$lon)+360)) %>%
     hyper_tibble() %>%
     dplyr::rename(lon = longitude, lat = latitude, t = time) %>%
-    mutate(lon = if_else(lon > 180, lon -360, lon)) %>% # Shift to +- 180 scale
+    mutate(lon = if_else(lon > 180, lon-360, lon)) %>% # Shift to +- 180 scale
     mutate(lon = lon+0.125, lat = lat-0.125) %>%  # Regrid to match OISST coords
     right_join(ERA5_regions, by = c("lon", "lat")) %>%
     mutate(t = as.POSIXct(t * 3600, origin = '1900-01-01', tz = "GMT")) %>%
-    mutate(t = t + time_shift) %>% # Time shift
+    mutate(t = t+time_shift) %>% # Time shift
     mutate(t = as.Date(t)) %>%
     dplyr::select(-lon, -lat) %>% 
     group_by(region, t) %>% 
     summarise_all("mean") %>% 
     ungroup()
-  # gc() # Clear as much memory as possible
   return(res)
 }
 
@@ -240,7 +259,7 @@ registerDoParallel(cores = 26)
 # GLORYS_test <- plyr::ldply(GLORYS_files[1:8], load_GLORYS_region, .parallel = T)
 # ) # 10 seconds for two, 11 seconds for four, 11 seconds for 8
 system.time(
-ERA5_test <- plyr::ldply(ERA5_lwr_files[1:8], load_ERA5_region, .parallel = T)
+  ERA5_test <- plyr::ldply(ERA5_lwr_files[1:8], load_ERA5_region, .parallel = T)
 ) # 35 seconds for one, 38 seconds for two, 38 seconds for four, 60 seconds for 8
 
 # Test visuals
