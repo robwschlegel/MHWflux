@@ -215,27 +215,12 @@ load_GLORYS_region <- function(file_name){
 # testers...
 # file_name <- "../../oliver/data/ERA/ERA5/LWR/ERA5_LWR_1993.nc"
 # ncdump::NetCDF(file_name)$variable[1:6]
+load_ERA5 <- function(file_name, time_shift = 0){
+  
+}
+
+# The function for reducing the data
 load_ERA5_region <- function(file_name, time_shift = 0){
-  
-  library(ncdf4)
-  library(ncdf4.helpers)
-  
-  nc_file <- nc_open(file_name)
-  lon <- ncvar_get(nc_file, varid = "longitude")
-  lat <- ncvar_get(nc_file, varid = "latitude")
-  time <- ncvar_get(nc_file, varid = "time")
-  
-  lon_index <- lon[1:10]
-  lat_index <- lat[1:10]
-  time_index <- time[1:10]
-  
-  tas <- nc.get.var.subset.by.axes(nc_file, "msnlwrf",
-                                   axis.indices = list(X = 1:10,
-                                                       Y = 1:10))
-  
-  # nc_val <- ncvar_get(nc = nc_file, varid = "msnlwrf")
-  
-  
   res <- tidync(file_name) %>%
     hyper_filter(latitude = dplyr::between(latitude, min(NWA_coords$lat), max(NWA_coords$lat)),
                  longitude = dplyr::between(longitude, min(NWA_coords$lon)+360, max(NWA_coords$lon)+360)) %>%
@@ -254,13 +239,13 @@ load_ERA5_region <- function(file_name, time_shift = 0){
   return(res)
 }
 
-registerDoParallel(cores = 26)
+# registerDoParallel(cores = 26)
 # system.time(
 # GLORYS_test <- plyr::ldply(GLORYS_files[1:8], load_GLORYS_region, .parallel = T)
 # ) # 10 seconds for two, 11 seconds for four, 11 seconds for 8
-system.time(
-  ERA5_test <- plyr::ldply(ERA5_lwr_files[1:8], load_ERA5_region, .parallel = T)
-) # 35 seconds for one, 38 seconds for two, 38 seconds for four, 60 seconds for 8
+# system.time(
+#   ERA5_test <- plyr::ldply(ERA5_lwr_files[1:8], load_ERA5_region, .parallel = T)
+# ) # 35 seconds for one, 38 seconds for two, 38 seconds for four, 60 seconds for 8
 
 # Test visuals
 # res_mean %>%

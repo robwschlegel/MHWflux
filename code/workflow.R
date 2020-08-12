@@ -9,15 +9,15 @@
 # dir("analysis", pattern = ".Rmd", full.names = T)
 
 # Run this to re-compile the entire project
-system.time(
-workflowr::wflow_publish(files = c("analysis/index.Rmd", 
-                                   "analysis/polygon-prep.Rmd",
-                                   "analysis/data-prep.Rmd",
-                                   "analysis/mhw-flux.Rmd"#, 
-                                   # "analysis/k-means-flux.Rmd"
-                                   ),
-                         message = "Re-built site.")
-) # 85 seconds
+# system.time(
+# workflowr::wflow_publish(files = c("analysis/index.Rmd", 
+#                                    "analysis/polygon-prep.Rmd",
+#                                    "analysis/data-prep.Rmd",
+#                                    "analysis/mhw-flux.Rmd"#, 
+#                                    # "analysis/k-means-flux.Rmd"
+#                                    ),
+#                          message = "Re-built site.")
+# ) # 85 seconds
 
 
 # Startup -----------------------------------------------------------------
@@ -47,31 +47,31 @@ source("code/functions.R")
 # saveRDS(GLORYS_all_ts, "data/GLORYS_all_ts.Rda")
 
 ### ERA5 data are saved in individual variables
-## NB: Be cautious with how massive these processes are
-registerDoParallel(cores = 26)
+## For some reason these files will not allow themselves to be processed in parallel
+## I suspect it is due to the size of the NetCDF files
 
 ## Long wave radiation
 # "msnlwrf"
 print(paste0("Began loading msnlwrf at ", Sys.time()))
-ERA5_lwr_files <- dir("../../oliver/data/ERA/ERA5/LWR", full.names = T, pattern = "ERA5")
-system.time(
-ERA5_lwr_ts <- plyr::ldply(ERA5_lwr_files, load_ERA5_region, .parallel = T, time_shift = 43200) %>% 
-  mutate(msnlwrf = round(msnlwrf, 6))
-) # xxx seconds
+ERA5_lwr_files <- dir("../../oliver/data/ERA/ERA5/LWR", full.names = T, pattern = "ERA5")[1:26]
+ERA5_lwr_ts <- plyr::ldply(ERA5_lwr_files, load_ERA5_region, 
+                           .parallel = F, .progress = "text", time_shift = 43200)
+ERA5_lwr_ts$msnlwrf <- round(ERA5_lwr_ts$msnlwrf, 6)
 saveRDS(ERA5_lwr_ts, "data/ERA5_lwr_ts.Rda")
 
 ## Short wave radiation
 # "msnswrf"
 print(paste0("Began loading msnswrf at ", Sys.time()))
-ERA5_swr_files <- dir("../../oliver/data/ERA/ERA5/SWR", full.names = T, pattern = "ERA5")
-ERA5_swr_ts <- plyr::ldply(ERA5_swr_files, load_ERA5_region, .parallel = T, time_shift = 43200) %>% 
-  mutate(msnswrf = round(msnswrf, 6))
+ERA5_swr_files <- dir("../../oliver/data/ERA/ERA5/SWR", full.names = T, pattern = "ERA5")[1:26]
+ERA5_swr_ts <- plyr::ldply(ERA5_swr_files, load_ERA5_region, 
+                           .parallel = F, .progress = "text", time_shift = 43200)
+ERA5_swr_ts$msnswrf <- round(ERA5_swr_ts$msnswrf, 6)
 saveRDS(ERA5_swr_ts, "data/ERA5_swr_ts.Rda")
 
 ## Latent heat flux
 # "mslhf"
 print(paste0("Began loading mslhf at ", Sys.time()))
-ERA5_lhf_files <- dir("../../oliver/data/ERA/ERA5/SLHF", full.names = T, pattern = "ERA5")
+ERA5_lhf_files <- dir("../../oliver/data/ERA/ERA5/SLHF", full.names = T, pattern = "ERA5")[1:26]
 ERA5_lhf_ts <- plyr::ldply(ERA5_lhf_files, load_ERA5_region, 
                            .parallel = F, .progress = "text", time_shift = 43200) # 12 hour backward shift
 ERA5_lhf_ts$mslhf <- round(ERA5_lhf_ts$mslhf, 6)
@@ -80,7 +80,7 @@ saveRDS(ERA5_lhf_ts, "data/ERA5_lhf_ts.Rda")
 ## Sensible heat flux
 # "msshf"
 print(paste0("Began loading msshf at ", Sys.time()))
-ERA5_shf_files <- dir("../../oliver/data/ERA/ERA5/SSHF", full.names = T, pattern = "ERA5")
+ERA5_shf_files <- dir("../../oliver/data/ERA/ERA5/SSHF", full.names = T, pattern = "ERA5")[1:26]
 ERA5_shf_ts <- plyr::ldply(ERA5_shf_files, load_ERA5_region, 
                            .parallel = F, .progress = "text", time_shift = 43200) # 12 hour backward shift
 ERA5_shf_ts$msshf <- round(ERA5_shf_ts$msshf, 6)
@@ -89,7 +89,7 @@ saveRDS(ERA5_shf_ts, "data/ERA5_shf_ts.Rda")
 ## Cloud cover
 # "tcc"
 print(paste0("Began loading e at ", Sys.time()))
-ERA5_tcc_files <- dir("../../oliver/data/ERA/ERA5/CLOUD/", full.names = T, pattern = "ERA5")
+ERA5_tcc_files <- dir("../../oliver/data/ERA/ERA5/CLOUD/", full.names = T, pattern = "ERA5")[1:26]
 ERA5_tcc_ts <- plyr::ldply(ERA5_tcc_files, load_ERA5_region, .parallel = F, .progress = "text")
 ERA5_tcc_ts$tcc <- round(ERA5_tcc_ts$tcc, 4)
 saveRDS(ERA5_tcc_ts, "data/ERA5_tcc_ts.Rda")
@@ -186,11 +186,6 @@ saveRDS(ERA5_all_ts, "data/ERA5_all_ts.Rda")
 # Heat flux vs. MHW -------------------------------------------------------
 
 # See the "Heat flux vs. MHW" vignette
-
-
-# K-means MHW -------------------------------------------------------------
-
-# See the "K-means MHW" vignette
 
 
 # Visuals -----------------------------------------------------------------
