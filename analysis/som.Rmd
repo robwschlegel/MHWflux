@@ -1,0 +1,77 @@
+---
+title: "Self-organising map (SOM) analysis"
+author: "Robert Schlegel"
+date: "2019-06-04"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+csl: FMars.csl
+bibliography: MHWflux.bib
+---
+
+```{r global_options, include = FALSE}
+knitr::opts_chunk$set(fig.width = 8, fig.align = 'center',
+                      echo = TRUE, warning = FALSE, message = FALSE, 
+                      eval = TRUE, tidy = FALSE)
+```
+
+## Introduction
+
+This vignette contains the code used to perform the self-organising map (SOM) analysis on the mean synoptic states created in the [Variable preparation](https://robwschlegel.github.io/MHWNWA/var-prep.html) vignette. We'll start by creating custom packets that meet certain experimental criteria before feeding them into a SOM. The full summary of the results may be seen in the [Node summary vignette](https://robwschlegel.github.io/MHWNWA/node-summary.html).
+
+```{r libraries}
+# Load functions and objects to be used below
+source("code/functions.R")
+```
+
+## Data packet
+
+In this last stage before running our SOM analysis we will create a data packet that can be fed directly into the SOM algorithm. This means that it must be converted into a super-wide matrix format. In the first run of this analysis on the NAPA model data it was found that the inclusion of the Labrador Sea complicated the results quite a bit. It was also unclear whether or not the Gulf of St Lawrence (gsl) region should be included in the analysis. So in the second run of this analysis multiple different SOM variations were employed and it was decided that the gsl region should be included.
+
+### Prep synoptic state packets
+
+Up first we must create the synoptic state packets from all of the variables we prepared in the previous vignette.
+
+```{r unnest-packets, eval=FALSE}
+## Create one big anomaly packet
+system.time(synoptic_states <- plyr::ddply(OISST_MHW_event, c("region", "event_no"),
+                                           data_packet_func, .parallel = T)) # 204 seconds
+# Save
+saveRDS(synoptic_states, "data/SOM/synoptic_states.Rda")
+
+## Create other synoptic states per MHW per variable
+doMC::registerDoMC(cores = 10) # NB: Be careful here...
+system.time(synoptic_states_other <- plyr::ddply(OISST_MHW_event, c("region", "event_no"),
+                                                 data_packet_func, .parallel = T, df = ALL_other)) # 122 seconds
+# Save
+saveRDS(synoptic_states_other, "data/SOM/synoptic_states_other.Rda")
+```
+
+### Create SOM packet
+
+With all of our data ready we may now prepare and save them for the SOM.
+
+```{r create-SOM-packet, eval=FALSE}
+## Create wide data packet that is fed to SOM
+system.time(packet <- readRDS("data/SOM/synoptic_states.Rda") %>%
+              select(region, event_no, synoptic) %>%
+              unnest() %>%
+              wide_packet_func()) # 122 seconds
+# Save
+saveRDS(packet, "data/SOM/packet.Rda")
+```
+
+## Run SOM models
+
+Now we feed the SOM with a function that ingests the data packet and produces results for us. The function below has been greatly expanded on from the previous version of this project and now performs all of the SOM related work in one go. This allowed me to remove a couple hundreds lines of code and text from this vignette.
+
+```{r som-run, eval=FALSE}
+# The SOM on the entire study area
+packet <- readRDS("data/SOM/packet.Rda")
+system.time(som <- som_model_PCI(packet)) # 83 seconds
+saveRDS(som, file = "data/SOM/som.Rda")
+```
+
+And there we have our SOM results. Up next in the [Node summary vignette](https://robwschlegel.github.io/MHWflux/node-summary.html) we will show the results with a range of visuals.
+
+## References

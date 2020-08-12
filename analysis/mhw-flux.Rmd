@@ -77,7 +77,20 @@ ALL_cor_old <- readRDS("data/ALL_cor_old.Rda") %>%
 ALL_cor <- readRDS("data/ALL_cor.Rda") %>% 
   dplyr::select(region:n_Obs, rmse) %>% 
   mutate(run = "new")
-ALL_cor_stack <- rbind(ALL_cor, ALL_cor_old)
+ALL_cor_stack <- rbind(ALL_cor, ALL_cor_old) %>% 
+  filter(rmse > 0) %>% 
+  mutate(Parameter2 = as.character(Parameter2),
+         Parameter2 = case_when(Parameter2 == "qnet_budget" ~ "qnet",
+                                Parameter2 == "lhf_budget" ~ "lhf",
+                                Parameter2 == "shf_budget" ~ "shf",
+                                Parameter2 == "lwr_budget" ~ "lwr",
+                                Parameter2 == "swr_budget" ~ "swr",
+                                Parameter2 == "qnet_mld_cum" ~ "qnet",
+                                Parameter2 == "lhf_mld_cum" ~ "lhf",
+                                Parameter2 == "shf_mld_cum" ~ "shf",
+                                Parameter2 == "lwr_mld_cum" ~ "lwr",
+                                Parameter2 == "swr_mld_cum" ~ "swr",
+                                TRUE ~ Parameter2))
 
 # Compare RMSE quantiles
 ALL_cor_stack %>% 
@@ -96,6 +109,8 @@ ALL_cor_stack %>%
   facet_grid(Parameter2~region) #+
   # scale_y_continuous(limits = c(0, 2))
 ```
+
+The new an improved method that correctly integrates Qx into SSTa creates much lower RMSE values for almost every variable and region. A smashing success.
 
 ## Regions + Seasons
 
@@ -250,30 +265,34 @@ events_cor_prep %>%
 Another observation I made while going through the results in the app was how the onset and decline of events tend to have a better RMSE when the SSTa trend is more linear. My hypothesis is that this is because there is less advective pressure on the dispersion of the heat anomaly, therefore more of the heatflux is responsible for the temperature anomaly. THis is a pretty straight forward statement, but I think it is useful in that one may be able to take linearity of SSTa as a proxy for the proportion of heat flux that is responsible for it. So in the chunk below I use simple linear models to create an R2 value for each onset and decline portion of an event. Then I find how close to 1.0 that R2 value is (meaning more linear SSTa) and I see how RMSE changes as R2 improves. I hypothesised that more linear SSTa onset will provide better (lower) RMSE values. The same is likely true for decline but I'm not certain.
 
 ```{r linearity}
-# The events and their RMSE scores
+# R2 for RMSE vs R2
 ALL_cor_R2 <- readRDS("data/ALL_cor.Rda") %>% 
   ungroup() %>% 
-  filter(Parameter1 == "sst",
-         rmse > 0) %>% 
-  dplyr::select(region:ts, Parameter2, r, n_Obs, rmse)
+  filter(Parameter1 == "sst", rmse > 0) %>% 
+  nest_by(region, season, ts) %>% 
+  summarise(broom::glance(lm(rmse ~ sst_R2, data = data)))
 
-# The SSTa data
-SST_R2 <- ALL_anom %>%
-  filter(var == "sst") %>% 
-  dplyr::select(region, t, anom) %>% 
-  left_join(OISST_MHW_clim[,c("region", "t", "event_no")], by = c("region", "t")) %>% 
-  filter(event_no > 0) %>% 
-  # group_by(region, event_no) %>% 
-  nest_by(region, event_no)
-  # mutate(event_index = 1:n())
-  # mutate_if(is.numeric, cumsum)
+# Scatterplots
+readRDS("data/ALL_cor.Rda") %>% 
+  ungroup() %>% 
+  filter(Parameter1 == "sst", rmse > 0) %>% 
+  ggplot(aes(x = sst_R2, y = rmse)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  facet_grid(region ~ Parameter2)
 
-# Function that calculates R2 and compares to RMSE
-
-# Results
-
+# Boxplots
+readRDS("data/ALL_cor.Rda") %>% 
+  ungroup() %>% 
+  filter(Parameter1 == "sst", rmse > 0) %>% 
+  mutate(sst_R2_cut = cut(sst_R2, breaks = c(0, 0.25, 0.5, 0.75,1.0))) %>% 
+  na.omit() %>% 
+  ggplot(aes(x = sst_R2_cut, y = rmse)) +
+  geom_boxplot() +
+  facet_grid(region ~ Parameter2)
 ```
 
+Nope. If there is any relationship it is incredibly noisey. I'll not be pursuing this further for this project, but I'm not entirely dissuaded from pursuing this avenue of research in the future with a deeper learning approach.
 
 ## Choice events
 

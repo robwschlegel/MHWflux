@@ -15,23 +15,17 @@ knitr::opts_chunk$set(fig.width = 8, fig.align = 'center',
                       eval = TRUE, tidy = FALSE)
 ```
 
-<!-- Look at the NOAA SST instead of GLORYS -->
-<!-- Compare the GORYS and OISST MHW results -->
-
 ## Introduction
 
-Much of the code in this vignette is taken entirely or partially from the [study area prep](https://robwschlegel.github.io/MHWNWA/polygon-prep.html), the [MHW prep](https://robwschlegel.github.io/MHWNWA/sst-prep.html), and the [gridded data prep](https://robwschlegel.github.io/MHWNWA/var-prep.html) vignettes from the drivers of MHWs in the [NW Atlantic project](https://robwschlegel.github.io/MHWNWA/index.html). Because this process has already been established we are going to put it all together in this one vignette in a more streamlined manner.
+The purpose of this vignette is to walk through the steps taken to prepare the data from the NOAA OISST, ERA5, and GLORYS products for the following analyses. The statistical analyses may be found in the [MHWs vs. heat flux]() vignette, and the SOM analysis may be found in the [SOM]() vignette. 
 
-All of the libraries and functions used in this vignette, and the project more broadly may be found [here](https://github.com/robwschlegel/MHWflux/blob/master/code/functions.R).
+All of the libraries and functions used in this vignette, and the project more broadly, may be found [here](https://github.com/robwschlegel/MHWflux/blob/master/code/functions.R).
 
 ```{r satrtup}
 # get everything up and running in one go
 source("code/functions.R")
 library(ggpubr)
 library(gridExtra)
-  # NB: This package was removed from CRAN :(
-  # It may be downloaded manually at: https://cran.r-project.org/src/contrib/Archive/SDMTools/
-# library(SDMTools) # For finding points within polygons
 ```
 
 ## Study area
@@ -50,8 +44,12 @@ frame_base +
 In this study it was decided to use the higher resolution 1/12th degree GLORYS data. This means we will need to re-calculate which pixels fall within which region so we can later determine how to create our average SST time series per region as well as the other averaged heat flux term time series.
 
 ```{r grid-points, eval=FALSE}
+# Load one OISST file to extract the lon/lat coords
+OISST_grid <- readRDS("../data/OISST/daily/1982/daily.1982-01-01.Rda") %>% 
+  dplyr::select(lon, lat) %>% 
+  unique()
+
 # Load one GLORYS file to extract the lon/lat coords
-GLORYS_files <- dir("../data/GLORYS", full.names = T, pattern = "MHWflux")
 GLORYS_grid <- tidync(GLORYS_files[1]) %>% 
   hyper_tibble() %>% 
   dplyr::rename(lon = longitude, lat = latitude) %>% 
@@ -59,7 +57,6 @@ GLORYS_grid <- tidync(GLORYS_files[1]) %>%
   unique()
 
 # Load one ERA5 file to get the lon/lat coords
-ERA5_files <- dir("../../oliver/data/ERA/ERA5/LWR", full.names = T, pattern = "ERA5")
 ERA5_grid <- tidync(ERA5_files[1]) %>% 
   hyper_filter(latitude = dplyr::between(latitude, min(NWA_coords$lat), max(NWA_coords$lat)),
                longitude = dplyr::between(longitude, min(NWA_coords$lon)+360, max(NWA_coords$lon)+360),
@@ -68,41 +65,48 @@ ERA5_grid <- tidync(ERA5_files[1]) %>%
   dplyr::rename(lon = longitude, lat = latitude) %>% 
   dplyr::select(lon, lat) %>% 
   unique() %>% 
-  mutate(lon = lon-360)
-
+  mutate(lon = lon-360) %>%  # Change back to +-180 scale
+  mutate(lon = lon+0.125, lat = lat-0.125) # Regrid to match OISST coords
+  
 # Function for finding and cleaning up points within a given region polygon
-pnts_in_region <- function(region_in, product_grid){
+points_in_region <- function(region_in, product_grid){
   region_sub <- NWA_coords %>% 
     filter(region == region_in)
-  coords_in <- pnt.in.poly(pnts = product_grid[,c("lon", "lat")], poly.pnts = region_sub[,c("lon", "lat")]) %>% 
-    filter(pip == 1) %>% 
-    dplyr::select(-pip) %>% 
+  coords_in <- product_grid %>% 
+    mutate(in_grid = sp::point.in.polygon(point.x = product_grid[["lon"]], point.y = product_grid[["lat"]], 
+                                          pol.x = region_sub[["lon"]], pol.y = region_sub[["lat"]])) %>% 
+    filter(in_grid >= 1) %>% 
+    dplyr::select(-in_grid) %>% 
     mutate(region = region_in)
   return(coords_in)
 }
 
 # Run the function
-GLORYS_regions <- plyr::ldply(unique(NWA_coords$region), pnts_in_region, 
+OISST_regions <- plyr::ldply(unique(NWA_coords$region), points_in_region, 
+                              .parallel = T, product_grid = OISST_grid)
+saveRDS(OISST_regions, "data/OISST_regions.Rda")
+GLORYS_regions <- plyr::ldply(unique(NWA_coords$region), points_in_region, 
                               .parallel = T, product_grid = GLORYS_grid)
 saveRDS(GLORYS_regions, "data/GLORYS_regions.Rda")
-ERA5_regions <- plyr::ldply(unique(NWA_coords$region), pnts_in_region, 
+ERA5_regions <- plyr::ldply(unique(NWA_coords$region), points_in_region, 
                             .parallel = T, product_grid = ERA5_grid)
 saveRDS(ERA5_regions, "data/ERA5_regions.Rda")
 ```
 
 ```{r grid-points-visual}
+OISST_regions <- readRDS("data/OISST_regions.Rda")
 GLORYS_regions <- readRDS("data/GLORYS_regions.Rda")
 ERA5_regions <- readRDS("data/ERA5_regions.Rda")
 
 # Combine for visual
-both_regions <- rbind(GLORYS_regions, ERA5_regions) %>% 
-  mutate(product = c(rep("GLORYS", nrow(GLORYS_regions)),
+ALL_regions <- rbind(OISST_regions, GLORYS_regions, ERA5_regions) %>% 
+  mutate(product = c(rep("OISST", nrow(OISST_regions)),
+                     rep("GLORYS", nrow(GLORYS_regions)),
                      rep("ERA5", nrow(ERA5_regions))))
 
 # Visualise to ensure success
 ggplot(NWA_coords, aes(x = lon, y = lat)) +
-  # geom_polygon(aes(fill = region), alpha = 0.2) +
-  geom_point(data = both_regions, aes(colour = region)) +
+  geom_point(data = ALL_regions, aes(colour = region)) +
   geom_polygon(data = map_base, aes(group = group), show.legend = F) +
     coord_cartesian(xlim = NWA_corners[1:2],
                   ylim = NWA_corners[3:4]) +
@@ -112,7 +116,29 @@ ggplot(NWA_coords, aes(x = lon, y = lat)) +
 
 ## Average time series per region
 
-With our pixels per region sorted we may now go about creating the average time series for each region from the GLORYS and ERA5 data. First we will load a brick of the data constrained roughly to the study area into memory before assigning the correct pixels to their regions. Once the pixels are assigned we will summarise them into one mean time series per variable per region. These mean time series are what the rest of the analyses will depend on.
+With our pixels per region sorted we may now go about creating the average time series for each region from the OISST, GLORYS, and ERA5 data. First we will load a brick of the data constrained roughly to the study area into memory before assigning the correct pixels to their regions. Once the pixels are assigned we will summarise them into one mean time series per variable per region. These mean time series are what the rest of the analyses will depend on.
+
+The code for prepping the OISST data.
+
+```{r OISST_prep, eval=FALSE}
+# The files with data in the study area
+OISST_files_sub <- data.frame(files = OISST_files,
+                              lon = c(seq(0.125, 179.875, by = 0.25), 
+                                      seq(-179.875, -0.125, by = 0.25))) %>% 
+  filter(lon >= min(NWA_coords$lon), lon <= max(NWA_coords$lon)) %>% 
+  mutate(files = as.character(files))
+
+# Put it all together
+system.time(
+OISST_all_ts <- plyr::ldply(OISST_files_sub$files, .fun = load_OISST_sub, .parallel = TRUE) %>% 
+  group_by(region, t) %>% 
+  summarise(temp = mean(temp, na.rm = T)) %>% 
+  ungroup()
+) # 14 seconds
+
+# Save
+saveRDS(OISST_all_ts, "data/OISST_all_ts.Rda")
+```
 
 The code for loading and processing the GLORYS data.
 
@@ -122,21 +148,20 @@ The code for loading and processing the GLORYS data.
 doParallel::registerDoParallel(cores = 25)
 
 # The GLORYS file location
-GLORYS_files <- dir("../data/GLORYS", full.names = T, pattern = "MHWflux")
 system.time(
-GLORYS_all_ts <- load_all_GLORYS_region(GLORYS_files) %>% 
+GLORYS_all_ts <- plyr::ldply(GLORYS_files, load_GLORYS_region, .parallel = T) %>% 
   dplyr::arrange(region, t) %>% 
   mutate(cur_spd = round(sqrt(u^2 + v^2), 2),
          cur_dir = round((270-(atan2(v, u)*(180/pi)))%%360))
-) # 187 seconds on 25 cores
+) # 103 seconds on 25 cores
 saveRDS(GLORYS_all_ts, "data/GLORYS_all_ts.Rda")
 ```
 
-The code for the ERA5 data. NB: The ERA5 data are on an hourly 0.25 degree spatiotemporal grid. This loading process constrains them to a daily 0.25 degree grid.
+The code for the ERA5 data. Note that the ERA5 data are on an hourly 0.25 degree spatiotemporal grid. This loading process constrains them to a daily 0.25 degree grid that matches the OISST data before finally converting them to a single time series per region.
 
 ```{r ERA5-prep, eval=FALSE}
 # See the code/workflow script for the code used for ERA5 data prep
-# There is too much code to run from an RMarkdown document
+# There is too much code to run from an RMarkdown document as each variable must loaded individually
 ```
 
 ## MHWs per region
@@ -344,7 +369,6 @@ MHW_annual_count <- OISST_MHW_event %>%
   summarise(count = n())
 ```
 
-
 ## Clims + anoms per variable
 
 The analyses to come are going to be performed on anomaly values, not the original time series. In order to calculate the anomalies we are first going to need the climatologies for each variable. We will use the Hobday definition of climatology creation and then subtract the expected climatology from the observed values. We are again using the 1993-01-01 to 2018-12-25 base period for these calculations to ensure consistency throughout the project.
@@ -414,7 +438,7 @@ saveRDS(ALL_anom_cum, "data/ALL_anom_cum.Rda")
 saveRDS(ALL_anom_cum, "shiny/ALL_anom_cum.Rda")
 ```
 
-In the next vignette we will take the periods of time over which MHWs occurred per region and pair those up with the GLORYS and ERA5 data. This will be used to investigate which drivers are best related to the onset and decline of MHWs.
+In the [MHWs vs. heat flux](https://robwschlegel.github.io/MHWflux/mhw-flux.html) vignette we will take the periods of time over which MHWs occurred per region and pair those up with the GLORYS and ERA5 data. This will be used to investigate which drivers are best related to the onset and decline of MHWs. In the [SOM](https://robwschlegel.github.io/MHWNWA/som.html) vignette we will look for how 
 
 ## References
 
