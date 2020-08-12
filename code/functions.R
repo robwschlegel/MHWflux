@@ -30,21 +30,26 @@ library(heatwaveR)
 library(tidync)
 library(correlation)
 library(ggraph)
-library(Metrics) # For RMSE calcs
+library(Metrics) # For RMSE calculations
 
 # Set number of cores
-doParallel::registerDoParallel(cores = 50)
+library(doParallel); registerDoParallel(cores = 50)
 
 # Disable scientific notation for numeric values
 # I just find it annoying
 options(scipen = 999)
 
+# File locations
+OISST_files <- dir("../data/OISST", full.names = T, pattern = "avhrr")
+GLORYS_files <- dir("../data/GLORYS", full.names = T, pattern = "MHWflux")
+ERA5_files <- dir("../../oliver/data/ERA/ERA5/LWR", full.names = T, pattern = "ERA5")
+
 # Corners of the study area
-  # Created in 'MHWNWA/analysis/polygon-prep.Rmd'
+  # Created in 'analysis/polygon-prep.Rmd'
 NWA_corners <- readRDS("data/NWA_corners.Rda")
 
 # Individual regions
-  # Created in 'MHWNWA/analysis/polygon-prep.Rmd'
+  # Created in 'analysis/polygon-prep.Rmd'
 NWA_coords <- readRDS("data/NWA_coords.Rda")
 
 # The pixels in each region
@@ -92,7 +97,7 @@ ALL_anom_full_wide <- ALL_anom_full %>%
   pivot_wider(values_from = anom, names_from = var)
 
 # The base land polygon
-  # Created in 'MHWNWA/analysis/polygon-prep.Rmd'
+  # Created in 'analysis/polygon-prep.Rmd'
 map_base <- readRDS("data/map_base.Rda")
 
 # The base map frame used for all figures
@@ -139,6 +144,24 @@ bathy <- readRDS("data/NWA_bathy_lowres.Rda")
 #          lat >= NWA_corners[3], lat <= NWA_corners[4])
 
 
+# Extract data from OISST NetCDF ------------------------------------------
+
+# Function for loading the individual OISST NetCDF files and subsetting SST accordingly
+load_OISST_sub <- function(file_name){
+  res <- tidync(file_name) %>%
+    hyper_filter(lat = dplyr::between(lat, min(OISST_regions$lat), max(OISST_regions$lat)),
+                 time = dplyr::between(time, as.integer(as.Date("1993-01-01")),
+                                       as.integer(as.Date("2018-12-31")))) %>%
+    hyper_tibble() %>% 
+    mutate(time = as.Date(time, origin = "1970-01-01")) %>% 
+    dplyr::rename(temp = sst, t = time) %>% 
+    select(lon, lat, t, temp) %>% 
+    left_join(OISST_regions, by = c("lon", "lat")) %>% 
+    filter(!is.na(region))
+  return(res)
+}
+
+
 # Extract data from GLORYS NetCDF -----------------------------------------
 
 # testers...
@@ -155,7 +178,7 @@ load_GLORYS_region <- function(file_name){
                   lon = longitude, lat = latitude, t = time)
   # MLD, bottomT, SSH
   res_2 <- tidync(file_name) %>%
-    activate("D2,D1,D0") %>% # Need to explicitly grab the other data ad they don't use the depth dimension
+    activate("D2,D1,D0") %>% # Need to explicitly grab the other data as they don't use the depth dimension
     hyper_tibble() %>%
     mutate(time = as.Date(as.POSIXct(time * 3600, origin = '1950-01-01', tz = "GMT"))) %>% 
     dplyr::select(-siconc, -usi, -sithick, -vsi) %>% 
@@ -172,12 +195,6 @@ load_GLORYS_region <- function(file_name){
            mld = round(mld, 4), ssh = round(ssh, 4),
            u = round(u, 6), v = round(v, 6))
   return(res_mean)
-}
-
-load_all_GLORYS_region <- function(file_names){
-  # system.time(
-  res_all <- plyr::ldply(file_names, load_GLORYS_region, .parallel = T)
-  # ) # 11 seconds for one slice, 11 for two
 }
 
 # Test visuals
@@ -198,34 +215,33 @@ load_all_GLORYS_region <- function(file_names){
 # testers...
 # file_name <- "../../oliver/data/ERA/ERA5/LWR/ERA5_LWR_1993.nc"
 # ncdump::NetCDF(file_name)$variable[1:6]
-load_ERA5_region <- function(file_name, time_shift = 0){
+load_ERA5_region <- function(file_name, time_shift = 43200){
   res <- tidync(file_name) %>%
     hyper_filter(latitude = dplyr::between(latitude, min(NWA_coords$lat), max(NWA_coords$lat)),
                  longitude = dplyr::between(longitude, min(NWA_coords$lon)+360, max(NWA_coords$lon)+360)) %>%
     hyper_tibble() %>%
-    dplyr::rename(lon = longitude, lat = latitude, t = time) %>% 
-    mutate(lon = if_else(lon > 180, lon -360, lon)) %>% 
-    right_join(ERA5_regions, by = c("lon", "lat")) %>% 
+    dplyr::rename(lon = longitude, lat = latitude, t = time) %>%
+    mutate(lon = if_else(lon > 180, lon -360, lon)) %>% # Shift to +- 180 scale
+    mutate(lon = lon+0.125, lat = lat-0.125) %>%  # Regrid to match OISST coords
+    right_join(ERA5_regions, by = c("lon", "lat")) %>%
     mutate(t = as.POSIXct(t * 3600, origin = '1900-01-01', tz = "GMT")) %>%
-    # 12 hour shift 
-    mutate(t = t + time_shift) %>% 
-    #
-    mutate(t = as.Date(t)) %>% 
+    mutate(t = t + time_shift) %>% # Time shift
+    mutate(t = as.Date(t)) %>%
     dplyr::select(-lon, -lat) %>% 
     group_by(region, t) %>% 
     summarise_all("mean") %>% 
     ungroup()
-  gc() # Clear as much memory as possible
+  # gc() # Clear as much memory as possible
   return(res)
 }
 
-# Function to load all of the NetCDF files for one ERA 5 variable
-# NB: for some reason this doesn't want to run in parallel
-# load_all_ERA5_region <- function(file_names){
-#   # system.time(
-#   res_all <- plyr::ldply(file_names, load_ERA5_region, .parallel = T)
-#   # ) # 35 seconds for one year, 52 seconds for two
-# }
+registerDoParallel(cores = 26)
+# system.time(
+# GLORYS_test <- plyr::ldply(GLORYS_files[1:8], load_GLORYS_region, .parallel = T)
+# ) # 10 seconds for two, 11 seconds for four, 11 seconds for 8
+system.time(
+ERA5_test <- plyr::ldply(ERA5_lwr_files[1:8], load_ERA5_region, .parallel = T)
+) # 35 seconds for one, 38 seconds for two, 38 seconds for four, 60 seconds for 8
 
 # Test visuals
 # res_mean %>%

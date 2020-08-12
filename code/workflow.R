@@ -11,6 +11,7 @@
 # Run this to re-compile the entire project
 system.time(
 workflowr::wflow_publish(files = c("analysis/index.Rmd", 
+                                   "analysis/polygon-prep.Rmd",
                                    "analysis/data-prep.Rmd",
                                    "analysis/mhw-flux.Rmd"#, 
                                    # "analysis/k-means-flux.Rmd"
@@ -33,30 +34,27 @@ source("code/functions.R")
 # Data prep ---------------------------------------------------------------
 
 # Set number of cores
-# NB: This is very RAM heavy, be carfeul with core use
-# doParallel::registerDoParallel(cores = 26)
-# 
-# # Check the exact time frame of the daily GLORYS data
-# GLORYS_info <- ncdump::NetCDF("../data/GLORYS/MHWflux_GLORYS_1993-1.nc")
-# 
-# # Prep all GLORYS data in one go
-# GLORYS_files <- dir("../data/GLORYS", full.names = T, pattern = "MHWflux")
+# NB: This is very RAM heavy, be careful with core use
+# registerDoParallel(cores = 26)
+
+# Prep all GLORYS data in one go
 # system.time(
-#   GLORYS_all_ts <- load_all_GLORYS_region(GLORYS_files) %>%
-#     dplyr::arrange(region, t)
+#   GLORYS_all_ts <- load_all_GLORYS_region(GLORYS_files) %>% 
+#     dplyr::arrange(region, t) %>% 
+#     mutate(cur_spd = round(sqrt(u^2 + v^2), 2),
+#            cur_dir = round((270-(atan2(v, u)*(180/pi)))%%360))
 # ) # 187 seconds on 25 cores
 # saveRDS(GLORYS_all_ts, "data/GLORYS_all_ts.Rda")
 
 ### ERA5 data are saved in individual variables
-## Nb: Be cautious with how massive these processes are
-# doParallel::registerDoParallel(cores = 10)
+## NB: Be cautious with how massive these processes are
+registerDoParallel(cores = 10)
 
 ## Long wave radiation
 # "msnlwrf"
 print(paste0("Began loading msnlwrf at ", Sys.time()))
 ERA5_lwr_files <- dir("../../oliver/data/ERA/ERA5/LWR", full.names = T, pattern = "ERA5")
-ERA5_lwr_ts <- plyr::ldply(ERA5_lwr_files, load_ERA5_region, 
-                           .parallel = F, .progress = "text", time_shift = 43200) # 12 hour backward shift
+ERA5_lwr_ts <- plyr::ldply(ERA5_lwr_files, load_ERA5_region, .parallel = T)
 ERA5_lwr_ts$msnlwrf <- round(ERA5_lwr_ts$msnlwrf, 6)
 saveRDS(ERA5_lwr_ts, "data/ERA5_lwr_ts.Rda")
 
