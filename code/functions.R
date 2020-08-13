@@ -24,6 +24,7 @@
 
 # Packages used in this script
 library(tidyverse) # Base suite of functions
+library(data.table)
 library(lubridate) # For convenient date manipulation
 library(heatwaveR)
 # cat(paste0("heatwaveR version = ", packageDescription("heatwaveR")$Version))
@@ -241,40 +242,25 @@ load_GLORYS <- function(file_name, region = F){
 # testers...
 # file_name <- "../../oliver/data/ERA/ERA5/LWR/ERA5_LWR_1993.nc"
 # ncdump::NetCDF(file_name)$variable[1:6]
-load_ERA5 <- function(file_name, time_shift = 0, region = F){
-  # The base data
+load_ERA5 <- function(file_name, time_shift = 0){
   res <- tidync(file_name) %>%
     hyper_filter(longitude = dplyr::between(longitude, NWA_corners[1]-0.5+360, NWA_corners[2]+0.5+360),
                  latitude = dplyr::between(latitude, NWA_corners[3]-0.5, NWA_corners[4]+0.5)) %>%
     hyper_tibble() %>%
     dplyr::rename(lon = longitude, lat = latitude, t = time) %>%
     mutate(lon = if_else(lon > 180, lon-360, lon)) %>% # Shift to +- 180 scale
-    mutate(lon = lon+0.125, lat = lat-0.125) # Regrid to match OISST coords
-  # Means based on region pixels
-  if(region){
-    res_mean <- res %>% 
-      right_join(OISST_regions, by = c("lon", "lat")) %>%
-      na.omit() %>% 
-      mutate(t = as.POSIXct(t * 3600, origin = '1900-01-01', tz = "GMT")) %>%
-      mutate(t = t+time_shift) %>% # Time shift
-      mutate(t = as.Date(t)) %>%
-      dplyr::select(-lon, -lat) %>% 
-      group_by(region, t) %>% 
-      summarise_all("mean") %>% 
-      ungroup()
-  # Means based on study area pixels
-  } else{
-    res_mean <- res %>% 
-      right_join(OISST_grid, by = c("lon", "lat")) %>%
-      na.omit() %>% 
-      mutate(t = as.POSIXct(t * 3600, origin = '1900-01-01', tz = "GMT")) %>%
-      mutate(t = t+time_shift) %>% # Time shift
-      mutate(t = as.Date(t)) %>%
-      group_by(lon, lat, t) %>% 
-      summarise_all("mean") %>% 
-      ungroup()
-  }
+    mutate(lon = lon+0.125, lat = lat-0.125) %>% # Regrid to match OISST coords
+    right_join(OISST_grid, by = c("lon", "lat")) %>%
+    na.omit() %>% 
+    mutate(t = as.POSIXct(t * 3600, origin = '1900-01-01', tz = "GMT")) %>%
+    mutate(t = t+time_shift) %>% # Time shift
+    mutate(t = as.Date(t))
+  # Switch to data.table for faster means
+  res_dt <- data.table(res)
+  setkey(res_dt, lon, lat, t)
+  res_mean <- res_dt[, lapply(.SD, mean), by = list(lon, lat, t)]
   return(res_mean)
+  # return(res)
 }
 
 # Test visuals
@@ -282,6 +268,47 @@ load_ERA5 <- function(file_name, time_shift = 0, region = F){
 #   filter(t == "1993-01-31") %>%
 #   ggplot(aes(x = lon, y = lat, fill = msnlwrf )) +
 #   geom_raster()
+
+# Function for processing ERA5 data
+process_ERA5 <- function(file_df){
+  
+  # Find the necessary time shift
+  if(file_df$var_name %in% c("lhf", "shf", "lwr", "swr")){
+    var_shift = 43200
+  } else{
+    var_shift = 0
+  }
+  
+  
+  # The base data
+  print(paste0("Began loading ",file_df$var_name[1]," at ", Sys.time()))
+  # system.time(
+  res_base <- plyr::ldply(file_df$files, load_ERA5, .parallel = F, .progress = "text", time_shift = var_shift)
+  # ) # 66 seconds for one, 378 seconds for 4
+  
+  # The clims+anoms
+  print(paste0("Began anoms on ",file_df$var_name[1]," at ", Sys.time()))
+  # system.time(
+  res_anom <- res_base %>% 
+    pivot_longer(cols = c(-lon, -lat, -t), names_to = "var", values_to = "val") %>% 
+    plyr::ddply(., c("lon", "lat", "var"), calc_clim_anom, .parallel = T, point_accuracy = 8)
+  # ) # 53 seconds for four
+  saveRDS(res_anom, paste0("data/ERA5_",file_df$var_name[1],"_anom.Rda"))
+  
+  # The time series
+  print(paste0("Began ts for ",file_df$var_name[1]," at ", Sys.time()))
+  # system.time(
+  res_ts <- res_base %>% 
+    right_join(OISST_regions, by = c("lon", "lat")) %>%
+    na.omit() %>% 
+    dplyr::select(-lon, -lat) %>% 
+    group_by(region, t) %>% 
+    summarise_all("mean") %>% 
+    ungroup()
+  # ) # 1 second for one, 2 seconds for four
+  saveRDS(res_ts, paste0("data/ERA5_",file_df$var_name[1],"_ts.Rda"))
+  rm(res_base, res_anom, res_ts); gc()
+}
 
 
 # Calculate clims and anoms in gridded data -------------------------------

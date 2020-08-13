@@ -51,14 +51,24 @@ registerDoParallel(cores = 26)
 ### ERA5 time series data are saved in individual variables
 ## For some reason these files will not allow themselves to be processed in parallel
 ## I suspect it is due to the size of the NetCDF files
+## So we are taking a more roundabout approacj
+
+# The full list of file names
+ERA5_files <- data.frame(files = c(ERA5_lhf_files, ERA5_shf_files, ERA5_lwr_files, ERA5_swr_files,
+                                   ERA5_u_files, ERA5_v_files, ERA5_mslp_files, ERA5_t2m_files,
+                                   ERA5_tcc_files, ERA5_pcp_files, ERA5_evp_files),
+                         var_name = rep(c("lhf", "shf", "lwr", "swr", "u", "v", "mslp", 
+                                          "t2m", "tcc", "pcp", "evp"), each = 26),
+                         var_group = rep(c("lhf", "shf", "lwr", "swr", "u", "v", "mslp",
+                                           "t2m", "tcc", "pcp", "evp"), each = 26))
+
+# Run everything in one go
+plyr::ddply(ERA5_files, c("var_group"), process_ERA5, .parallel = F)
 
 ## Long wave radiation
 # "msnlwrf"
 print(paste0("Began processing lwrf at ", Sys.time()))
-
-process_ERA5(ERA5_lwr_files)
-
-
+# process_ERA5(ERA5_lwr_files)
 ERA5_lwr_ts <- plyr::ldply(ERA5_lwr_files, load_ERA5_region, .parallel = F, .progress = "text", time_shift = 43200)
 ERA5_lwr_ts$msnlwrf <- round(ERA5_lwr_ts$msnlwrf, 6)
 saveRDS(ERA5_lwr_ts, "data/ERA5_lwr_ts.Rda")
@@ -83,7 +93,6 @@ print(paste0("Began loading msshf at ", Sys.time()))
 ERA5_shf_ts <- plyr::ldply(ERA5_shf_files, load_ERA5_region, .parallel = F, .progress = "text", time_shift = 43200)
 ERA5_shf_ts$msshf <- round(ERA5_shf_ts$msshf, 6)
 saveRDS(ERA5_shf_ts, "data/ERA5_shf_ts.Rda")
-
 
 ## Surface winds U component
 # "u10"
@@ -133,7 +142,12 @@ ERA5_evp_ts <- plyr::ldply(ERA5_evp_files, load_ERA5_region, .parallel = F, .pro
 ERA5_evp_ts$e <- round(ERA5_evp_ts$e, 8)
 saveRDS(ERA5_evp_ts, "data/ERA5_evp_ts.Rda")
 
-# Reload the data as necessary
+# Load the heat flux layers
+
+# Combine to make Qnet
+
+
+# Load the ts data
 ERA5_lwr_ts <- readRDS("data/ERA5_lwr_ts.Rda")
 ERA5_swr_ts <- readRDS("data/ERA5_swr_ts.Rda")
 ERA5_lhf_ts <- readRDS("data/ERA5_lhf_ts.Rda")
@@ -168,8 +182,6 @@ ERA5_all_ts <- left_join(ERA5_lwr_ts, ERA5_swr_ts, by = join_cols) %>%
 saveRDS(ERA5_all_ts, "data/ERA5_all_ts.Rda")
 
 # See the "Preparing the data" vignette for the code used to create the clims and anomalies
-
-### Begin loading the study area data for the SOM
 
 
 # MHW detection -----------------------------------------------------------
