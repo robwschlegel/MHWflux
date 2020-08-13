@@ -42,7 +42,17 @@ options(scipen = 999)
 # File locations
 OISST_files <- dir("../data/OISST", full.names = T, pattern = "avhrr")
 GLORYS_files <- dir("../data/GLORYS", full.names = T, pattern = "MHWflux")
-ERA5_files <- dir("../../oliver/data/ERA/ERA5/LWR", full.names = T, pattern = "ERA5")
+ERA5_lwr_files <- dir("../../oliver/data/ERA/ERA5/LWR", full.names = T, pattern = "ERA5")[1:26]
+ERA5_swr_files <- dir("../../oliver/data/ERA/ERA5/SWR", full.names = T, pattern = "ERA5")[1:26]
+ERA5_lhf_files <- dir("../../oliver/data/ERA/ERA5/SLHF", full.names = T, pattern = "ERA5")[1:26]
+ERA5_shf_files <- dir("../../oliver/data/ERA/ERA5/SSHF", full.names = T, pattern = "ERA5")[1:26]
+ERA5_u_files <- dir("../../oliver/data/ERA/ERA5/U10", full.names = T, pattern = "ERA5")[15:40]
+ERA5_v_files <- dir("../../oliver/data/ERA/ERA5/V10", full.names = T, pattern = "ERA5")[15:40]
+ERA5_mslp_files <- dir("../../oliver/data/ERA/ERA5/MSLP", full.names = T, pattern = "ERA5")[15:40]
+ERA5_t2m_files <- dir("../../oliver/data/ERA/ERA5/T2M", full.names = T, pattern = "ERA5")[15:40]
+ERA5_tcc_files <- dir("../../oliver/data/ERA/ERA5/CLOUD/", full.names = T, pattern = "ERA5")[1:26]
+ERA5_pcp_files <- dir("../../oliver/data/ERA/ERA5/PRCP", full.names = T, pattern = "ERA5")[15:40]
+ERA5_evp_files <- dir("../../oliver/data/ERA/ERA5/EVAP", full.names = T, pattern = "ERA5")[15:40]
 
 # Corners of the study area
   # Created in 'analysis/polygon-prep.Rmd'
@@ -231,52 +241,46 @@ load_GLORYS <- function(file_name, region = F){
 # testers...
 # file_name <- "../../oliver/data/ERA/ERA5/LWR/ERA5_LWR_1993.nc"
 # ncdump::NetCDF(file_name)$variable[1:6]
-load_ERA5 <- function(file_name){
+load_ERA5 <- function(file_name, time_shift = 0, region = F){
+  # The base data
   res <- tidync(file_name) %>%
-    hyper_filter(latitude = dplyr::between(latitude, 31.5, 52.5),
-                 longitude = dplyr::between(longitude, -80.5+360, -40.5+360)) %>%
-    hyper_tibble() %>%
-    mutate(time = as.Date(as.POSIXct(time * 3600, origin = '1900-01-01', tz = "GMT"))) %>%
-    dplyr::rename(lon = longitude, lat = latitude, t = time)
-  # Switch to data.table for faster means
-  res_dt <- data.table(res)
-  setkey(res_dt, lon, lat, t)
-  res_mean <- res_dt[, lapply(.SD, mean), by = list(lon, lat, t)]
-  return(res_mean)
-}
-
-# The function for reducing the data
-load_ERA5_region <- function(file_name, time_shift = 0){
-  res <- tidync(file_name) %>%
-    hyper_filter(latitude = dplyr::between(latitude, min(NWA_coords$lat), max(NWA_coords$lat)),
-                 longitude = dplyr::between(longitude, min(NWA_coords$lon)+360, max(NWA_coords$lon)+360)) %>%
+    hyper_filter(longitude = dplyr::between(longitude, NWA_corners[1]-0.5+360, NWA_corners[2]+0.5+360),
+                 latitude = dplyr::between(latitude, NWA_corners[3]-0.5, NWA_corners[4]+0.5)) %>%
     hyper_tibble() %>%
     dplyr::rename(lon = longitude, lat = latitude, t = time) %>%
     mutate(lon = if_else(lon > 180, lon-360, lon)) %>% # Shift to +- 180 scale
-    mutate(lon = lon+0.125, lat = lat-0.125) %>%  # Regrid to match OISST coords
-    right_join(ERA5_regions, by = c("lon", "lat")) %>%
-    mutate(t = as.POSIXct(t * 3600, origin = '1900-01-01', tz = "GMT")) %>%
-    mutate(t = t+time_shift) %>% # Time shift
-    mutate(t = as.Date(t)) %>%
-    dplyr::select(-lon, -lat) %>% 
-    group_by(region, t) %>% 
-    summarise_all("mean") %>% 
-    ungroup()
-  return(res)
+    mutate(lon = lon+0.125, lat = lat-0.125) # Regrid to match OISST coords
+  # Means based on region pixels
+  if(region){
+    res_mean <- res %>% 
+      right_join(OISST_regions, by = c("lon", "lat")) %>%
+      na.omit() %>% 
+      mutate(t = as.POSIXct(t * 3600, origin = '1900-01-01', tz = "GMT")) %>%
+      mutate(t = t+time_shift) %>% # Time shift
+      mutate(t = as.Date(t)) %>%
+      dplyr::select(-lon, -lat) %>% 
+      group_by(region, t) %>% 
+      summarise_all("mean") %>% 
+      ungroup()
+  # Means based on study area pixels
+  } else{
+    res_mean <- res %>% 
+      right_join(OISST_grid, by = c("lon", "lat")) %>%
+      na.omit() %>% 
+      mutate(t = as.POSIXct(t * 3600, origin = '1900-01-01', tz = "GMT")) %>%
+      mutate(t = t+time_shift) %>% # Time shift
+      mutate(t = as.Date(t)) %>%
+      group_by(lon, lat, t) %>% 
+      summarise_all("mean") %>% 
+      ungroup()
+  }
+  return(res_mean)
 }
-
-# registerDoParallel(cores = 26)
-# system.time(
-# GLORYS_test <- plyr::ldply(GLORYS_files[1:8], load_GLORYS_region, .parallel = T)
-# ) # 10 seconds for two, 11 seconds for four, 11 seconds for 8
-# system.time(
-#   ERA5_test <- plyr::ldply(ERA5_lwr_files[1:8], load_ERA5_region, .parallel = T)
-# ) # 35 seconds for one, 38 seconds for two, 38 seconds for four, 60 seconds for 8
 
 # Test visuals
 # res_mean %>%
 #   filter(t == "1993-01-31") %>%
-#   ggplot(aes(x = lon, y = lat, fill = t2m)) +
+#   ggplot(aes(x = lon, y = lat, fill = msnlwrf )) +
 #   geom_raster()
 
 
