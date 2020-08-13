@@ -26,6 +26,7 @@ All of the libraries and functions used in this vignette, and the project more b
 source("code/functions.R")
 library(ggpubr)
 library(gridExtra)
+library(FNN)
 ```
 
 ## Study area
@@ -43,30 +44,33 @@ frame_base +
 
 In this study it was decided to use the higher resolution 1/12th degree GLORYS data. This means we will need to re-calculate which pixels fall within which region so we can later determine how to create our average SST time series per region as well as the other averaged heat flux term time series.
 
+For the SOM we will want to have everything on the same 1/4 degree grid. For the ERA5 data this is an easy shift to make, but for the GLORYS 1/12 degree data we want to ensure that these smaller pixels are being matched correctly to the nearest centre of an OISST pixels. To do this we will create an index of pairings using a fastest nearest neighbour search.
+
 ```{r grid-points, eval=FALSE}
 # Load one OISST file to extract the lon/lat coords
 OISST_grid <- readRDS("../data/OISST/daily/1982/daily.1982-01-01.Rda") %>% 
   dplyr::select(lon, lat) %>% 
-  unique()
+  filter(lon >= NWA_corners[1], lon <= NWA_corners[2],
+         lat >= NWA_corners[3], lat <= NWA_corners[4]) %>% 
+  unique() %>% 
+  mutate(OISST_index = 1:n()) # For merging to GLORYS grid
+saveRDS(OISST_grid[,1:2], "metadata/OISST_grid.Rds")
 
 # Load one high-res GLORYS file to extract the lon/lat coords
-GLORYS_grid <- tidync(GLORYS_files[1]) %>% 
+GLORYS_grid_base <- tidync(GLORYS_files[1]) %>% 
   hyper_tibble() %>% 
   dplyr::rename(lon = longitude, lat = latitude) %>% 
   dplyr::select(lon, lat) %>% 
   unique()
 
-# Load one ERA5 file to get the lon/lat coords
-ERA5_grid <- tidync(ERA5_files[1]) %>%
-  hyper_filter(latitude = dplyr::between(latitude, min(NWA_coords$lat), max(NWA_coords$lat)),
-               longitude = dplyr::between(longitude, min(NWA_coords$lon)+360, max(NWA_coords$lon)+360),
-               time = index == 1) %>%
-  hyper_tibble() %>%
-  dplyr::rename(lon = longitude, lat = latitude) %>%
-  dplyr::select(lon, lat) %>%
-  unique() %>%
-  mutate(lon = lon-360) %>%  # Change back to +-180 scale
-  mutate(lon = lon+0.125, lat = lat-0.125) # Regrid to match OISST coords
+# Add on the nearest OISST coords
+GLORYS_grid <- GLORYS_grid_base %>% 
+  mutate(OISST_index = as.vector(knnx.index(as.matrix(OISST_grid[,c("lon", "lat")]),
+                                            as.matrix(GLORYS_grid[,c("lon", "lat")]), k = 1))) %>%
+  left_join(OISST_grid, by = "OISST_index") %>% 
+  dplyr::select(-OISST_index) %>% 
+  dplyr::rename(lon = lon.x, lat = lat.x, lon_OISST = lon.y, lat_OISST = lat.y)
+saveRDS(GLORYS_grid, "metadata/GLORYS_grid.Rds")
   
 # Function for finding and cleaning up points within a given region polygon
 points_in_region <- function(region_in, product_grid){
@@ -76,8 +80,8 @@ points_in_region <- function(region_in, product_grid){
     mutate(in_grid = sp::point.in.polygon(point.x = product_grid[["lon"]], point.y = product_grid[["lat"]], 
                                           pol.x = region_sub[["lon"]], pol.y = region_sub[["lat"]])) %>% 
     filter(in_grid >= 1) %>% 
-    dplyr::select(-in_grid) %>% 
-    mutate(region = region_in)
+    mutate(region = region_in) %>% 
+    dplyr::select(lon, lat, region)
   return(coords_in)
 }
 
@@ -88,21 +92,16 @@ saveRDS(OISST_regions, "data/OISST_regions.Rda")
 GLORYS_regions <- plyr::ldply(unique(NWA_coords$region), points_in_region, 
                               .parallel = T, product_grid = GLORYS_grid)
 saveRDS(GLORYS_regions, "data/GLORYS_regions.Rda")
-ERA5_regions <- plyr::ldply(unique(NWA_coords$region), points_in_region, 
-                            .parallel = T, product_grid = ERA5_grid)
-saveRDS(ERA5_regions, "data/ERA5_regions.Rda")
 ```
 
 ```{r grid-points-visual}
 OISST_regions <- readRDS("data/OISST_regions.Rda")
 GLORYS_regions <- readRDS("data/GLORYS_regions.Rda")
-# ERA5_regions <- readRDS("data/ERA5_regions.Rda")
 
 # Combine for visual
-ALL_regions <- rbind(OISST_regions, GLORYS_regions) %>% #, ERA5_regions) %>% 
+ALL_regions <- rbind(OISST_regions, GLORYS_regions) %>%
   mutate(product = c(rep("OISST", nrow(OISST_regions)),
-                     rep("GLORYS", nrow(GLORYS_regions))))#,
-                     # rep("ERA5", nrow(ERA5_regions))))
+                     rep("GLORYS", nrow(GLORYS_regions))))
 
 # Visualise to ensure success
 ggplot(NWA_coords, aes(x = lon, y = lat)) +
@@ -114,11 +113,11 @@ ggplot(NWA_coords, aes(x = lon, y = lat)) +
   facet_wrap(~product)
 ```
 
-## Average time series per region
+With our pixels per region determined we may now go about creating the average time series for each region from the OISST, GLORYS, and ERA5 data.
 
-With our pixels per region sorted we may now go about creating the average time series for each region from the OISST, GLORYS, and ERA5 data. First we will load a brick of the data constrained roughly to the study area into memory before assigning the correct pixels to their regions. Once the pixels are assigned we will summarise them into one mean time series per variable per region. These mean time series are what the rest of the analyses will depend on.
+## OISST data processing
 
-The code for prepping the OISST data.
+Up first for processing are the OISST data. The full brick of data within the study area will be loaded first. Then the pixels within the regions are pulled out and individual time series are made from each and saved. Finally the climatologies and anomalies for each pixel in the study area are calculated and saved. The region clims+anoms are calculated for all of the data at the same time near the end of this vignette.
 
 ```{r OISST_prep, eval=FALSE}
 # The files with data in the study area
@@ -133,6 +132,12 @@ system.time(
 OISST_all <- plyr::ldply(OISST_files_sub$files, .fun = load_OISST, .parallel = TRUE)
 ) # 16 seconds
 
+# test visual
+OISST_all %>% 
+  filter(t == "1993-01-01") %>%
+  ggplot(aes(x = lon, y = lat)) + 
+  geom_raster(aes(fill = temp))
+
 # Create the region time series and save
 system.time(
 OISST_all_ts <- OISST_all %>%
@@ -141,26 +146,67 @@ OISST_all_ts <- OISST_all %>%
   summarise(temp = mean(temp, na.rm = T), .groups = "drop")
 ) # 14 seconds
 saveRDS(OISST_all_ts, "data/OISST_all_ts.Rda")
+
+# test visual
+OISST_all_ts %>% 
+  ggplot(aes(x = t, y = temp)) + 
+  geom_line(aes(colour = region)) +
+  facet_wrap(~region)
+
+# Calculate the clims and anoms for each pixel
+system.time(
+OISST_all_anom <- OISST_all %>% 
+  pivot_longer(cols = c(-lon, -lat, -t), names_to = "var", values_to = "val") %>% 
+  plyr::ddply(., c("lon", "lat", "var"), calc_clim_anom, .parallel = T, point_accuracy = 2)
+) # 214 seconds
+saveRDS(OISST_all_anom, "data/OISST_all_anom.Rda")
 ```
 
-The code for loading and processing the GLORYS data.
+## GLORYS data processing
+
+We are using the 1/12 degree GLORYS product for the calculations of the region time series in order to better capture the sub-mesoscale processes that may be associated with the driving of MHWs. For the broad synoptic scale data given to the SOM we will be using the 1/4 degree GLORYS product as it needs to be the same resolution as the other products being used.
 
 ```{r GLORYS-prep, eval=FALSE}
 # Set number of cores
   # NB: This is very RAM heavy, be careful with core use
-doParallel::registerDoParallel(cores = 26)
+doParallel::registerDoParallel(cores = 10)
 
-# The GLORYS file location
+# Process and save the region time series
 system.time(
-GLORYS_all_ts <- plyr::ldply(GLORYS_files, load_GLORYS_region, .parallel = T) %>% 
+GLORYS_all_ts <- plyr::ldply(GLORYS_files_hires[1:5], load_GLORYS, .parallel = T, region = T) %>%
   dplyr::arrange(region, t) %>% 
-  mutate(cur_spd = round(sqrt(u^2 + v^2), 2),
+  mutate(cur_spd = round(sqrt(u^2 + v^2), 4),
          cur_dir = round((270-(atan2(v, u)*(180/pi)))%%360))
-) # 103 seconds on 26 cores
+) # 284 seconds on 10 cores
 saveRDS(GLORYS_all_ts, "data/GLORYS_all_ts.Rda")
+
+# Set number of cores
+  # NB: This is very RAM heavy, be careful with core use
+doParallel::registerDoParallel(cores = 25)
+
+# Load and prep the GLORYS low-res data
+system.time(
+GLORYS_all <- plyr::ldply(GLORYS_files, load_GLORYS, .parallel = T) %>% 
+  dplyr::rename(mld = mlp) %>% 
+  mutate(lon = lon+0.125, lat = lat-0.125,
+         mld = round(mld, 4), u = round(u, 6), v = round(v, 6)) %>% 
+  right_join(OISST_grid, by = c("lon", "lat")) %>% 
+  dplyr::select(lon, lat, t, u, v, mld) %>% 
+  na.omit()
+) # 159 seconds on 25 cores
+
+# Calculates clims+anoms and save
+system.time(
+GLORYS_all_anom <- GLORYS_all %>% 
+  pivot_longer(cols = c(-lon, -lat, -t), names_to = "var", values_to = "val") %>% 
+  plyr::ddply(., c("lon", "lat", "var"), calc_clim_anom, .parallel = T, point_accuracy = 6)
+) # xxx seconds on 25 cores
+saveRDS(GLORYS_all_anom, "data/GLORYS_all_anom.Rda")
 ```
 
-The code for the ERA5 data. Note that the ERA5 data are on an hourly 0.25 degree spatiotemporal grid. This loading process constrains them to a daily 0.25 degree grid that matches the OISST data before finally converting them to a single time series per region.
+## ERA5 data processing
+
+Note that the ERA5 data are on an hourly 0.25 degree spatiotemporal grid. This loading process constrains them to a daily 0.25 degree grid that matches the OISST data before finally converting them to a single time series per region.
 
 ```{r ERA5-prep, eval=FALSE}
 # See the code/workflow script for the code used for ERA5 data prep
@@ -177,7 +223,6 @@ OISST_all_ts <- readRDS("data/OISST_all_ts.Rda")
 
 # Calculate the MHWs
 OISST_region_MHW <- GLORYS_all_ts %>%
-  dplyr::select(region:temp) %>% 
   group_by(region) %>%
   nest() %>%
   mutate(clims = map(data, ts2clm,
@@ -187,8 +232,8 @@ OISST_region_MHW <- GLORYS_all_ts %>%
   select(-data, -clims)
 
 # Save
-saveRDS(GLORYS_region_MHW, "data/GLORYS_region_MHW.Rda")
-saveRDS(GLORYS_region_MHW, "shiny/GLORYS_region_MHW.Rda")
+saveRDS(OISST_region_MHW, "data/OISST_region_MHW.Rda")
+saveRDS(OISST_region_MHW, "shiny/OISST_region_MHW.Rda")
 ```
 
 ### MHW results
@@ -202,7 +247,7 @@ MHW_annual_count <- OISST_MHW_event %>%
   summarise(count = n())
 ```
 
-## Clims + anoms per variable
+## Region clims + anoms per variable
 
 The analyses to come are going to be performed on anomaly values, not the original time series. In order to calculate the anomalies we are first going to need the climatologies for each variable. We will use the Hobday definition of climatology creation and then subtract the expected climatology from the observed values. We are again using the 1993-01-01 to 2018-12-25 base period for these calculations to ensure consistency throughout the project.
 
@@ -255,7 +300,6 @@ ALL_anom_cum <- ALL_anom %>%
   dplyr::select(region, var, t, anom) %>% 
   pivot_wider(id_cols = c("region", "t"), names_from = var, values_from = anom) %>% 
   dplyr::select(region:tcc, mslp, qnet, p_e, mld, mld_1, qnet_mld:shf_mld) %>% 
-  # Change this line depending on GLORYS or NOAA use
   left_join(OISST_MHW_clim[,c("region", "t", "event_no")], by = c("region", "t")) %>% 
   filter(event_no > 0) %>% 
   group_by(region, event_no) %>% 
