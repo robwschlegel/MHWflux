@@ -54,7 +54,7 @@ OISST_grid <- readRDS("../data/OISST/daily/1982/daily.1982-01-01.Rda") %>%
          lat >= NWA_corners[3], lat <= NWA_corners[4]) %>% 
   unique() %>% 
   mutate(OISST_index = 1:n()) # For merging to GLORYS grid
-saveRDS(OISST_grid[,1:2], "metadata/OISST_grid.Rds")
+saveRDS(OISST_grid[,1:2], "metadata/OISST_grid.Rda")
 
 # Load one high-res GLORYS file to extract the lon/lat coords
 GLORYS_grid_base <- tidync(GLORYS_files[1]) %>% 
@@ -66,11 +66,11 @@ GLORYS_grid_base <- tidync(GLORYS_files[1]) %>%
 # Add on the nearest OISST coords
 GLORYS_grid <- GLORYS_grid_base %>% 
   mutate(OISST_index = as.vector(knnx.index(as.matrix(OISST_grid[,c("lon", "lat")]),
-                                            as.matrix(GLORYS_grid[,c("lon", "lat")]), k = 1))) %>%
+                                            as.matrix(GLORYS_grid_base[,c("lon", "lat")]), k = 1))) %>%
   left_join(OISST_grid, by = "OISST_index") %>% 
   dplyr::select(-OISST_index) %>% 
   dplyr::rename(lon = lon.x, lat = lat.x, lon_OISST = lon.y, lat_OISST = lat.y)
-saveRDS(GLORYS_grid, "metadata/GLORYS_grid.Rds")
+saveRDS(GLORYS_grid, "metadata/GLORYS_grid.Rda")
   
 # Function for finding and cleaning up points within a given region polygon
 points_in_region <- function(region_in, product_grid){
@@ -88,15 +88,15 @@ points_in_region <- function(region_in, product_grid){
 # Run the function
 OISST_regions <- plyr::ldply(unique(NWA_coords$region), points_in_region, 
                               .parallel = T, product_grid = OISST_grid)
-saveRDS(OISST_regions, "data/OISST_regions.Rda")
+saveRDS(OISST_regions, "metadata/OISST_regions.Rda")
 GLORYS_regions <- plyr::ldply(unique(NWA_coords$region), points_in_region, 
                               .parallel = T, product_grid = GLORYS_grid)
-saveRDS(GLORYS_regions, "data/GLORYS_regions.Rda")
+saveRDS(GLORYS_regions, "metadata/GLORYS_regions.Rda")
 ```
 
 ```{r grid-points-visual}
-OISST_regions <- readRDS("data/OISST_regions.Rda")
-GLORYS_regions <- readRDS("data/GLORYS_regions.Rda")
+OISST_regions <- readRDS("metadata/OISST_regions.Rda")
+GLORYS_regions <- readRDS("metadata/GLORYS_regions.Rda")
 
 # Combine for visual
 ALL_regions <- rbind(OISST_regions, GLORYS_regions) %>%
@@ -169,38 +169,31 @@ We are using the 1/12 degree GLORYS product for the calculations of the region t
 ```{r GLORYS-prep, eval=FALSE}
 # Set number of cores
   # NB: This is very RAM heavy, be careful with core use
-doParallel::registerDoParallel(cores = 10)
+registerDoParallel(cores = 50)
 
 # Process and save the region time series
 system.time(
-GLORYS_all_ts <- plyr::ldply(GLORYS_files_hires[1:5], load_GLORYS, .parallel = T, region = T) %>%
+GLORYS_all_ts <- plyr::ldply(GLORYS_files, load_GLORYS, .parallel = T, region = T) %>%
   dplyr::arrange(region, t) %>% 
   mutate(cur_spd = round(sqrt(u^2 + v^2), 4),
          cur_dir = round((270-(atan2(v, u)*(180/pi)))%%360))
-) # 284 seconds on 10 cores
+) # 137 seconds on 25 cores
 saveRDS(GLORYS_all_ts, "data/GLORYS_all_ts.Rda")
 
-# Set number of cores
-  # NB: This is very RAM heavy, be careful with core use
-doParallel::registerDoParallel(cores = 25)
-
-# Load and prep the GLORYS low-res data
+# Load and prep the GLORYS data for the entire study area
 system.time(
-GLORYS_all <- plyr::ldply(GLORYS_files, load_GLORYS, .parallel = T) %>% 
-  dplyr::rename(mld = mlp) %>% 
-  mutate(lon = lon+0.125, lat = lat-0.125,
-         mld = round(mld, 4), u = round(u, 6), v = round(v, 6)) %>% 
-  right_join(OISST_grid, by = c("lon", "lat")) %>% 
-  dplyr::select(lon, lat, t, u, v, mld) %>% 
-  na.omit()
-) # 159 seconds on 25 cores
+GLORYS_all <- plyr::ldply(GLORYS_files, load_GLORYS, 
+                          .parallel = T, .paropts = c(.inorder = FALSE))
+) # 200 seconds on 50 cores
+gc()
 
 # Calculates clims+anoms and save
 system.time(
 GLORYS_all_anom <- GLORYS_all %>% 
   pivot_longer(cols = c(-lon, -lat, -t), names_to = "var", values_to = "val") %>% 
-  plyr::ddply(., c("lon", "lat", "var"), calc_clim_anom, .parallel = T, point_accuracy = 6)
-) # xxx seconds on 25 cores
+  plyr::ddply(., c("lon", "lat", "var"), calc_clim_anom, .parallel = T, 
+              point_accuracy = 6, .paropts = c(.inorder = FALSE))
+) # 694 seconds on 50 cores
 saveRDS(GLORYS_all_anom, "data/GLORYS_all_anom.Rda")
 ```
 

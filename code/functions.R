@@ -46,19 +46,23 @@ ERA5_files <- dir("../../oliver/data/ERA/ERA5/LWR", full.names = T, pattern = "E
 
 # Corners of the study area
   # Created in 'analysis/polygon-prep.Rmd'
-NWA_corners <- readRDS("data/NWA_corners.Rda")
+NWA_corners <- readRDS("metadata/NWA_corners.Rda")
 
 # Individual regions
   # Created in 'analysis/polygon-prep.Rmd'
-NWA_coords <- readRDS("data/NWA_coords.Rda")
+NWA_coords <- readRDS("metadata/NWA_coords.Rda")
+
+# The different product grids
+OISST_grid <- readRDS("metadata/OISST_grid.Rda")
+GLORYS_grid <- readRDS("metadata/GLORYS_grid.Rda")
 
 # The pixels in each region
   # Created in 'analysis/data-prep.Rmd'
-GLORYS_regions <- readRDS("data/GLORYS_regions.Rda")
-ERA5_regions <- readRDS("data/ERA5_regions.Rda")
+OISST_regions <- readRDS("metadata/OISST_regions.Rda")
+GLORYS_regions <- readRDS("metadata/GLORYS_regions.Rda")
 
 # OISST MHW results
-OISST_region_MHW <- readRDS("../MHWNWA/data/OISST_region_MHW.Rda")
+OISST_region_MHW <- readRDS("data/OISST_region_MHW.Rda")
 
 # OISST MHW Clims
 OISST_MHW_clim <- OISST_region_MHW %>%
@@ -98,7 +102,7 @@ ALL_anom_full_wide <- ALL_anom_full %>%
 
 # The base land polygon
   # Created in 'analysis/polygon-prep.Rmd'
-map_base <- readRDS("data/map_base.Rda")
+map_base <- readRDS("metadata/map_base.Rda")
 
 # The base map frame used for all figures
 frame_base <- ggplot(map_base, aes(x = lon, y = lat)) +
@@ -133,7 +137,7 @@ lat_sub <- seq(NWA_corners[3], NWA_corners[4], by = 1)
 
 # Bathymetry data
   # Created in MHWNWA/analysis/polygon-prep.Rmd
-bathy <- readRDS("data/NWA_bathy_lowres.Rda")
+bathy <- readRDS("metadata/NWA_bathy_lowres.Rda")
 
 # The OISST land mask
 # land_mask_OISST <- readRDS("data/land_mask_OISST.Rda")
@@ -146,18 +150,15 @@ bathy <- readRDS("data/NWA_bathy_lowres.Rda")
 
 # Extract data from OISST NetCDF ------------------------------------------
 
-# Function for loading the individual OISST NetCDF files and subsetting SST accordingly
-load_OISST_sub <- function(file_name){
+load_OISST <- function(file_name){
   res <- tidync(file_name) %>%
-    hyper_filter(lat = dplyr::between(lat, min(OISST_regions$lat), max(OISST_regions$lat)),
+    hyper_filter(lat = dplyr::between(lat, NWA_corners[3], NWA_corners[4]),
                  time = dplyr::between(time, as.integer(as.Date("1993-01-01")),
                                        as.integer(as.Date("2018-12-31")))) %>%
-    hyper_tibble() %>% 
-    mutate(time = as.Date(time, origin = "1970-01-01")) %>% 
-    dplyr::rename(temp = sst, t = time) %>% 
-    select(lon, lat, t, temp) %>% 
-    left_join(OISST_regions, by = c("lon", "lat")) %>% 
-    filter(!is.na(region))
+    hyper_tibble() %>%
+    mutate(time = as.Date(time, origin = "1970-01-01")) %>%
+    dplyr::rename(temp = sst, t = time) %>%
+    select(lon, lat, t, temp)
   return(res)
 }
 
@@ -168,32 +169,47 @@ load_OISST_sub <- function(file_name){
 # file_name <- "../data/GLORYS/MHWflux_GLORYS_1993-1.nc"
 # tidync(file_name)
 # ncdump::NetCDF(file_name)$variable[,1:6]
-load_GLORYS_region <- function(file_name){
+load_GLORYS <- function(file_name, region = F){
   # SST, U, V, SSS
-  res_1 <- tidync(file_name) %>% 
+  res1 <- tidync(file_name) %>% 
     hyper_tibble() %>%
     mutate(time = as.Date(as.POSIXct(time * 3600, origin = '1950-01-01', tz = "GMT"))) %>%
-    dplyr::select(-depth) %>% 
-    dplyr::rename(temp = thetao, sss = so, u = uo, v = vo,
-                  lon = longitude, lat = latitude, t = time)
+    dplyr::select(-depth)
   # MLD, bottomT, SSH
-  res_2 <- tidync(file_name) %>%
+  res2 <- tidync(file_name) %>%
     activate("D2,D1,D0") %>% # Need to explicitly grab the other data as they don't use the depth dimension
     hyper_tibble() %>%
-    mutate(time = as.Date(as.POSIXct(time * 3600, origin = '1950-01-01', tz = "GMT"))) %>% 
-    dplyr::select(-siconc, -usi, -sithick, -vsi) %>% 
-    dplyr::rename(mld = mlotst, ssh = zos,
-                  lon = longitude, lat = latitude, t = time)
+    mutate(time = as.Date(as.POSIXct(time*3600, origin = '1950-01-01', tz = "GMT"))) %>% 
+    dplyr::select(-siconc, -usi, -sithick, -vsi)
   # Combine, filter by region, and create means
-  res_mean <- left_join(res_1, res_2, by = c("lon", "lat", "t")) %>% 
-    right_join(GLORYS_regions, by = c("lon", "lat")) %>% 
-    dplyr::select(-lon, -lat) %>% 
-    group_by(region, t) %>% 
-    summarise_all("mean") %>% 
-    ungroup() %>% 
-    mutate(temp = round(temp, 4),  bottomT = round(bottomT, 4),
+  res <- left_join(res1, res2, by = c("longitude", "latitude", "time")) %>% 
+    dplyr::rename(lon = longitude, lat = latitude, t = time,
+                  temp = thetao, sss = so, u = uo, v = vo,
+                  mld = mlotst, ssh = zos) %>% 
+    mutate(temp = round(temp, 4), bottomT = round(bottomT, 4),
            mld = round(mld, 4), ssh = round(ssh, 4),
-           u = round(u, 6), v = round(v, 6))
+           u = round(u, 6), v = round(v, 6)) %>% 
+    dplyr::select(lon, lat, t, temp, bottomT, mld, sss, ssh, u, v)
+  rm(res1, res2); gc()
+  if(region){
+    res_mean <- res %>% 
+      right_join(GLORYS_regions, by = c("lon", "lat")) %>%
+      na.omit() %>% 
+      group_by(region, t) %>%
+      dplyr::select(-lon, -lat) %>% 
+      summarise_all("mean") %>%
+      ungroup()
+  } else{
+    res_mean <- res %>% 
+      right_join(GLORYS_grid, by = c("lon", "lat")) %>%
+      na.omit() %>% 
+      dplyr::select(lon_OISST, lat_OISST, t, mld, u, v) %>% 
+      group_by(lon_OISST, lat_OISST, t) %>%
+      summarise_all("mean") %>%
+      ungroup() %>% 
+      rename(lon = lon_OISST, lat = lat_OISST)
+  }
+  rm(res); gc()
   return(res_mean)
 }
 
@@ -215,8 +231,18 @@ load_GLORYS_region <- function(file_name){
 # testers...
 # file_name <- "../../oliver/data/ERA/ERA5/LWR/ERA5_LWR_1993.nc"
 # ncdump::NetCDF(file_name)$variable[1:6]
-load_ERA5 <- function(file_name, time_shift = 0){
-  
+load_ERA5 <- function(file_name){
+  res <- tidync(file_name) %>%
+    hyper_filter(latitude = dplyr::between(latitude, 31.5, 52.5),
+                 longitude = dplyr::between(longitude, -80.5+360, -40.5+360)) %>%
+    hyper_tibble() %>%
+    mutate(time = as.Date(as.POSIXct(time * 3600, origin = '1900-01-01', tz = "GMT"))) %>%
+    dplyr::rename(lon = longitude, lat = latitude, t = time)
+  # Switch to data.table for faster means
+  res_dt <- data.table(res)
+  setkey(res_dt, lon, lat, t)
+  res_mean <- res_dt[, lapply(.SD, mean), by = list(lon, lat, t)]
+  return(res_mean)
 }
 
 # The function for reducing the data
@@ -252,6 +278,17 @@ load_ERA5_region <- function(file_name, time_shift = 0){
 #   filter(t == "1993-01-31") %>%
 #   ggplot(aes(x = lon, y = lat, fill = t2m)) +
 #   geom_raster()
+
+
+# Calculate clims and anoms in gridded data -------------------------------
+
+# This function expects to be given only one pixel/ts at a time
+calc_clim_anom <- function(df, point_accuracy){
+  res <- ts2clm(df, y = val, roundClm = point_accuracy,
+                climatologyPeriod = c("1993-01-01", "2018-12-25"))
+  res$anom <- round(res$val-res$seas, point_accuracy)
+  return(res)
+}
 
 
 # Correlation functions ---------------------------------------------------

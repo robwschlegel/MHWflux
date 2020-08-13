@@ -33,18 +33,13 @@ source("code/functions.R")
 
 # Data prep ---------------------------------------------------------------
 
+# See the "Preparing the data" vignette for OISST prep
+
+# See the "Preparing the data" vignette for GLORYS prep
+
 # Set number of cores
 # NB: This is very RAM heavy, be careful with core use
-# registerDoParallel(cores = 26)
-
-# Prep all GLORYS data in one go
-# system.time(
-#   GLORYS_all_ts <- plyr::ldply(GLORYS_files, load_GLORYS_region, .parallel = T) %>% 
-#     dplyr::arrange(region, t) %>% 
-#     mutate(cur_spd = round(sqrt(u^2 + v^2), 2),
-#            cur_dir = round((270-(atan2(v, u)*(180/pi)))%%360))
-# ) # 103 seconds on 26 cores
-# saveRDS(GLORYS_all_ts, "data/GLORYS_all_ts.Rda")
+registerDoParallel(cores = 26)
 
 ### ERA5 data are saved in individual variables
 ## For some reason these files will not allow themselves to be processed in parallel
@@ -54,6 +49,11 @@ source("code/functions.R")
 # "msnlwrf"
 print(paste0("Began loading msnlwrf at ", Sys.time()))
 ERA5_lwr_files <- dir("../../oliver/data/ERA/ERA5/LWR", full.names = T, pattern = "ERA5")[1:26]
+ERA5_lwr_ts <- plyr::ldply(ERA5_lwr_files[1], load_ERA5_region, .parallel = t, time_shift = 43200)
+
+ERA5_lwr_ts$msnlwrf <- round(ERA5_lwr_ts$msnlwrf, 6)
+
+
 ERA5_lwr_ts <- plyr::ldply(ERA5_lwr_files, load_ERA5_region, 
                            .parallel = F, .progress = "text", time_shift = 43200)
 ERA5_lwr_ts$msnlwrf <- round(ERA5_lwr_ts$msnlwrf, 6)
