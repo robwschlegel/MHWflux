@@ -273,15 +273,14 @@ load_ERA5 <- function(file_name, time_shift = 0){
 process_ERA5 <- function(file_df){
   
   # Find the necessary time shift
-  if(file_df$var_name %in% c("lhf", "shf", "lwr", "swr")){
+  if(file_df$var_name[1] %in% c("lhf", "shf", "lwr", "swr")){
     var_shift = 43200
   } else{
     var_shift = 0
   }
   
-  
   # The base data
-  print(paste0("Began loading ",file_df$var_name[1]," at ", Sys.time()))
+  print(paste0("Began loading ",file_df$var_name[1]," at ", Sys.time()," with a ",var_shift," time shift"))
   # system.time(
   res_base <- plyr::ldply(file_df$files, load_ERA5, .parallel = F, .progress = "text", time_shift = var_shift)
   # ) # 66 seconds for one, 378 seconds for 4
