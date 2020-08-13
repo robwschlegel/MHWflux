@@ -2,4 +2,5 @@
 .Rhistory
 .RData
 .Ruserdata
+data/OISST_all_anom.Rda
 data/GLORYS_all_anom.Rda
