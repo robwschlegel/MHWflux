@@ -79,12 +79,12 @@ choose_vars <- c("sst", "bottomT", "sss", "mld_cum", "mld_1_cum", "t2m", "tcc_cu
                  "lwr_budget", "swr_budget", "lhf_budget", "shf_budget", "qnet_budget", "sst_thresh")
 
 # Physical variable anomalies
-ALL_anom <- readRDS("ALL_anom.Rda")
-ALL_anom_cum <- readRDS("ALL_anom_cum.Rda")
+ALL_ts_anom <- readRDS("ALL_ts_anom.Rda")
+ALL_ts_anom_cum <- readRDS("ALL_ts_anom_cum.Rda")
 
 # Combine the anomaly dataframes into one
-ALL_anom_full <- rbind(ALL_anom[,c("region", "var", "t", "anom")], 
-                       ALL_anom_cum[,c("region", "var", "t", "anom")]) %>%
+ALL_ts_anom_full <- rbind(ALL_ts_anom[,c("region", "var", "t", "anom")], 
+                       ALL_ts_anom_cum[,c("region", "var", "t", "anom")]) %>%
   filter(var %in% choose_vars) %>% 
   mutate(region = factor(region, levels = c("mab", "gm", "ss", "cbs", "gsl", "nfs")),
          var = case_when(var == "sst" ~ "SST",
@@ -102,7 +102,7 @@ ALL_anom_full <- rbind(ALL_anom[,c("region", "var", "t", "anom")],
                          var == "shf_mld_cum" ~ "Qsh",
                          var == "qnet_mld_cum" ~ "Qnet",
                          TRUE ~ var))
-ALL_anom_full_wide <- ALL_anom_full %>% 
+ALL_ts_anom_full_wide <- ALL_ts_anom_full %>% 
     pivot_wider(values_from = anom, names_from = var)
 
 # The correlations
@@ -247,10 +247,10 @@ ui <- dashboardPage(
                                      h4("Scatter controls:"),
                                      # These inputs need to be ordered by category
                                      selectInput(inputId = "scat_x", label = "X axis:",
-                                                 choices = unique(ALL_anom_full$var),
+                                                 choices = unique(ALL_ts_anom_full$var),
                                                  selected = "Qnet"),
                                      selectInput(inputId = "scat_y", label = "Y axis:",
-                                                 choices = unique(ALL_anom_full$var),
+                                                 choices = unique(ALL_ts_anom_full$var),
                                                  selected = "SST"),
                                      circle = TRUE, status = "danger", icon = icon("gear")),
                                  plotOutput("scatterPlot")),
@@ -550,7 +550,7 @@ server <- function(input, output, session) {
         MHW_data <- MHW_data()
         event_sub <- MHW_data[input$eventTable_cell_clicked$row,]
 
-        ts_full <- ALL_anom_full_wide %>%
+        ts_full <- ALL_ts_anom_full_wide %>%
           filter(t >= event_sub$start,
                  t <= event_sub$end,
                  region == event_sub$region) %>% 

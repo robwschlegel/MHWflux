@@ -66,6 +66,7 @@ NWA_coords <- readRDS("metadata/NWA_coords.Rda")
 # The different product grids
 OISST_grid <- readRDS("metadata/OISST_grid.Rda")
 GLORYS_grid <- readRDS("metadata/GLORYS_grid.Rda")
+ERA5_grid <- readRDS("metadata/ERA5_grid.Rda")
 
 # The pixels in each region
   # Created in 'analysis/data-prep.Rmd'
@@ -102,13 +103,13 @@ OISST_MHW_cats <- OISST_region_MHW %>%
   unnest(cats)
 
 # Physical variable anomalies
-ALL_anom <- readRDS("data/ALL_anom.Rda")
-ALL_anom_cum <- readRDS("data/ALL_anom_cum.Rda")
+ALL_ts_anom <- readRDS("data/ALL_ts_anom.Rda")
+ALL_ts_anom_cum <- readRDS("data/ALL_ts_anom_cum.Rda")
 
 # Combine the anomaly dataframes into one
-ALL_anom_full <- rbind(ALL_anom[,c("region", "var", "t", "anom")], 
-                       ALL_anom_cum[,c("region", "var", "t", "anom")])
-ALL_anom_full_wide <- ALL_anom_full %>% 
+ALL_ts_anom_full <- rbind(ALL_ts_anom[,c("region", "var", "t", "anom")], 
+                          ALL_ts_anom_cum[,c("region", "var", "t", "anom")])
+ALL_ts_anom_full_wide <- ALL_ts_anom_full %>% 
   pivot_wider(values_from = anom, names_from = var)
 
 # The base land polygon
@@ -250,7 +251,7 @@ load_ERA5 <- function(file_name, time_shift = 0){
     dplyr::rename(lon = longitude, lat = latitude, t = time) %>%
     mutate(lon = if_else(lon > 180, lon-360, lon)) %>% # Shift to +- 180 scale
     mutate(lon = lon+0.125, lat = lat-0.125) %>% # Regrid to match OISST coords
-    right_join(OISST_grid, by = c("lon", "lat")) %>%
+    right_join(ERA5_grid, by = c("lon", "lat")) %>%
     na.omit() %>% 
     mutate(t = as.POSIXct(t * 3600, origin = '1900-01-01', tz = "GMT")) %>%
     mutate(t = t+time_shift) %>% # Time shift
@@ -260,12 +261,11 @@ load_ERA5 <- function(file_name, time_shift = 0){
   setkey(res_dt, lon, lat, t)
   res_mean <- res_dt[, lapply(.SD, mean), by = list(lon, lat, t)]
   return(res_mean)
-  # return(res)
 }
 
 # Test visuals
 # res_mean %>%
-#   filter(t == "1993-01-31") %>%
+#   filter(t == "1993-02-01") %>%
 #   ggplot(aes(x = lon, y = lat, fill = msnlwrf )) +
 #   geom_raster()
 
@@ -285,10 +285,16 @@ process_ERA5 <- function(file_df){
   res_base <- plyr::ldply(file_df$files, load_ERA5, .parallel = F, .progress = "text", time_shift = var_shift)
   # ) # 66 seconds for one, 378 seconds for 4
   
+  # Combine the little half days
+  print(paste0("Began meaning ",file_df$var_name[1]," at ", Sys.time()))
+  res_dt <- data.table(res_base)
+  setkey(res_dt, lon, lat, t)
+  res_mean <- res_dt[, lapply(.SD, mean), by = list(lon, lat, t)]
+  
   # The clims+anoms
   print(paste0("Began anoms on ",file_df$var_name[1]," at ", Sys.time()))
   # system.time(
-  res_anom <- res_base %>% 
+  res_anom <- res_mean %>% 
     pivot_longer(cols = c(-lon, -lat, -t), names_to = "var", values_to = "val") %>% 
     plyr::ddply(., c("lon", "lat", "var"), calc_clim_anom, .parallel = T, point_accuracy = 8)
   # ) # 53 seconds for four
@@ -297,7 +303,7 @@ process_ERA5 <- function(file_df){
   # The time series
   print(paste0("Began ts for ",file_df$var_name[1]," at ", Sys.time()))
   # system.time(
-  res_ts <- res_base %>% 
+  res_ts <- res_mean %>% 
     right_join(OISST_regions, by = c("lon", "lat")) %>%
     na.omit() %>% 
     dplyr::select(-lon, -lat) %>% 
@@ -307,7 +313,14 @@ process_ERA5 <- function(file_df){
   # ) # 1 second for one, 2 seconds for four
   saveRDS(res_ts, paste0("data/ERA5_",file_df$var_name[1],"_ts.Rda"))
   rm(res_base, res_anom, res_ts); gc()
+  return()
 }
+
+# test visuals
+# ggplot(data = filter(res_anom, t == "1993-01-01"), aes(x = lon, y = lat)) + 
+  # geom_tile(aes(fill = anom))
+# ggplot(data = res_ts, aes(x = t, y = mslhf)) +
+  # geom_line()
 
 
 # Calculate clims and anoms in gridded data -------------------------------
@@ -318,6 +331,29 @@ calc_clim_anom <- function(df, point_accuracy){
                 climatologyPeriod = c("1993-01-01", "2018-12-25"))
   res$anom <- round(res$val-res$seas, point_accuracy)
   return(res)
+}
+
+
+# Load anomaly data -------------------------------------------------------
+
+# This function loads anomaly data and converts it to a data.table for combining with others
+load_anom <- function(file_name, GLORYS = F){
+  res <- readRDS(file_name)
+  if(GLORYS){
+    res_sub <- res %>% 
+      dplyr::select(lon, lat, t, var, anom) %>% 
+      filter(var %in% c("u", "v", "mld")) %>% 
+      pivot_wider(id_cols = c(lon, lat, t), values_from = anom, 
+                  names_from = var, names_prefix = "anom_")
+  } else {
+    val_col <- res$var[1]
+    res_sub <- res %>% 
+      dplyr::select(lon, lat, t, anom) %>% 
+      `colnames<-`(c("lon", "lat", "t", paste0("anom_", val_col)))
+  }
+  res_dt <- setkey(data.table(res_sub, key = c("lon", "lat", "t")))
+  rm(res, res_sub); gc()
+  return(res_dt)
 }
 
 

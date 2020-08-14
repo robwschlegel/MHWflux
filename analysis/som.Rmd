@@ -72,6 +72,101 @@ system.time(som <- som_model_PCI(packet)) # 83 seconds
 saveRDS(som, file = "data/SOM/som.Rda")
 ```
 
+## Correlations
+
+The code used for the MHWNWA project was also used on the GLORYS MHW results to create a SOM for the GLORYS data. I had a look at them and they were fine, but after further thinking we have decided to use the OISST. These SOM nodes are used below to cluster the correlation results to see how the differ based on the SOM. For reference to the results below let's see what the SOM results for the regions + seasons and Air temperature + MSLP look like.
+
+```{r SOM}
+# Load the SOM from the MHWNWA
+SOM <- readRDS("../MHWNWA/data/SOM/som.Rda")
+
+# Grab only the node info
+SOM_info <- SOM$info
+
+# Join to the GLORYS MHW correlation results
+events_cor_SOM <- left_join(events_cor_prep, SOM_info, by = c("region", "event_no"))
+
+# Plotting function
+plot_func <- function(df, name) {
+  ggplot(data = df, aes(x = node, y = ts)) +
+    geom_tile(aes(fill = value)) +
+    # facet_wrap(~name, scales = "free") +
+    scale_fill_gradient2(low = "blue", high = "red", name = name) +
+    coord_cartesian(expand = F)
+}
+
+# Summary stats per node shown as heatmap
+nested_SOM <- events_cor_SOM %>% 
+  dplyr::select(-event_no) %>% 
+  mutate(node = as.factor(node)) %>% 
+  group_by(node, ts) %>% 
+  summarise_if(is.numeric, mean) %>% 
+  pivot_longer(cols = duration:count) %>%
+  filter(name != "temp",
+         ts != "full") %>%
+  group_by(name) %>% 
+  nest() %>% 
+  mutate(plots = map2(data, name, plot_func)) 
+# gridExtra::grid.arrange(grobs = nested_SOM$plots) # NB: The legends are too large for HTML
+
+# Summary heatmap for correlation values only
+events_cor_SOM %>% 
+  dplyr::select(node, ts, bottomT:qnet_mld_cum, -mld_1_cum) %>% 
+  group_by(node, ts) %>% 
+  summarise_if(is.numeric, mean) %>% 
+  pivot_longer(cols = bottomT:qnet_mld_cum) %>%
+  filter(name != "temp",
+         ts != "full") %>%
+  ungroup() %>% 
+  mutate(node = as.factor(node),
+         ts = factor(ts, levels = c("decline", "full", "onset")),
+         name = case_when(name == "sst" ~ "SST",
+                         name == "bottomT" ~ "Bottom",
+                         name == "sss" ~ "SSS",
+                         name == "mld_cum" ~ "MLD",
+                         name == "mld_1_cum" ~ "MLD_1_c",
+                         name == "t2m" ~ "Air",
+                         name == "tcc_cum" ~ "Cloud",
+                         name == "p_e_cum" ~ "P_E",
+                         name == "mslp_cum" ~ "MSLP",
+                         name == "lwr_mld_cum" ~ "Qlw",
+                         name == "swr_mld_cum" ~ "Qsw",
+                         name == "lhf_mld_cum" ~ "Qlh",
+                         name == "shf_mld_cum" ~ "Qsh",
+                         name == "qnet_mld_cum" ~ "Qnet",
+                         TRUE ~ name),
+         name = factor(name, levels = c("Qnet", "Qlw", "Qsw", "Qlh", "Qsh", "Cloud", 
+                                        "P_E", "Air", "MSLP", "MLD", "SSS", "Bottom"))) %>% 
+  ggplot(aes(x = name, y = ts)) +
+  geom_tile(aes(fill = value)) +
+  facet_wrap(~node, scales = "free") +
+  scale_fill_gradient2(low = "blue", high = "red") +
+  coord_cartesian(expand = F) +
+  labs(y = NULL, fill = "r (mean)") +
+  theme(legend.position = "bottom",
+        axis.text.x = element_text(angle = 30))
+
+# Boxplots for correlation values only
+events_cor_SOM %>% 
+  dplyr::select(node, ts, bottomT:qnet_mld_cum, -mld_1_cum) %>% 
+  mutate(node = as.factor(node)) %>% 
+  group_by(node, ts) %>%
+  # summarise_if(is.numeric, mean) %>% 
+  # dplyr::select(duration) %>% 
+  pivot_longer(cols = bottomT:qnet_mld_cum) %>%
+  filter(name != "temp",
+         ts != "full") %>%
+  ggplot(aes(x = name, y = value)) +
+  geom_boxplot(aes(fill = ts)) +
+  facet_wrap(~node, scales = "free") +
+  coord_cartesian(expand = F) +
+  labs(y = "correlation (r)", fill = "time series\nsection") +
+  theme(legend.position = "bottom",
+        axis.text.x = element_text(angle = 30))
+```
+
+Some important patterns come through when we look at the summary correlation and MHW metric results when grouped into their SOM nodes. This is as far as the numeric results will go. From here out it is necessary for a human to look at these summary results with the SOM node results to discern the meaning of the combined results.
+
 And there we have our SOM results. Up next in the [Node summary vignette](https://robwschlegel.github.io/MHWflux/node-summary.html) we will show the results with a range of visuals.
 
 ## References
