@@ -124,7 +124,8 @@ boxplot_var <-  function(var_choices, y_label){
     geom_hline(aes(yintercept = 0), colour = "red", size = 1) +
     geom_boxplot(aes(fill = season), notch = F) +
     facet_wrap(~Parameter2, nrow = 1) +
-    scale_fill_manual(values = c("chartreuse", "gold", "orangered", "slateblue")) +
+    scale_fill_manual(values = c("#a99a35", "#8baa43", "#e89c3c", "#9a9997")) + # muted
+    # scale_fill_manual(values = c("#d6cf36", "#a5bfe4", "#efbe83", "#b6b6b4")) + # larger spread
     # scale_y_continuous(expand = c(0, 0)) +
     # scale_x_continuous(expand = c(0, 0)) +
     # facet_grid(ts ~ Parameter2) +
