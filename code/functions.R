@@ -242,6 +242,7 @@ load_GLORYS <- function(file_name, region = F){
 # The ERA5 data are saved as annual single variables
 # testers...
 # file_name <- "../../oliver/data/ERA/ERA5/LWR/ERA5_LWR_1993.nc"
+# file_name <- "../../oliver/data/ERA/ERA5/EVAP/ERA5_EVAP_1993.nc"
 # ncdump::NetCDF(file_name)$variable[1:6]
 load_ERA5 <- function(file_name, time_shift = 0){
   res <- tidync(file_name) %>%
@@ -270,6 +271,7 @@ load_ERA5 <- function(file_name, time_shift = 0){
 #   geom_raster()
 
 # Function for processing ERA5 data
+# file_df <- filter(ERA5_files, var_group == "evp")
 process_ERA5 <- function(file_df){
   
   # Find the necessary time shift

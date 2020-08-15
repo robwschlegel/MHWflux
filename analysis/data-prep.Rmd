@@ -87,7 +87,7 @@ ERA5_grid <- tidync(ERA5_lhf_files[1]) %>%
   filter(lon >= NWA_corners[1], lon <= NWA_corners[2],
          lat >= NWA_corners[3], lat <= NWA_corners[4]) %>% 
   unique()
-saveRDS(GLORYS_grid, "metadata/ERA5_grid.Rda")
+saveRDS(ERA5_grid, "metadata/ERA5_grid.Rda")
   
 # Function for finding and cleaning up points within a given region polygon
 points_in_region <- function(region_in, product_grid){

@@ -177,23 +177,24 @@ rm(GLORYS_all_anom); gc()
 ## OISST
 system.time(OISST_all_anom <- load_anom("data/OISST_all_anom.Rda")) # xxx seconds
 colnames(OISST_all_anom)[4] <- "anom_sst"
-system.time(ALL_anom <- merge(ALL_anom, OISST_sst_anom,
-                              by = c("lon", "lat", "t"), all.x = T)) # xxx seconds
+system.time(ALL_anom <- merge(ALL_anom, OISST_all_anom,
+                              by = c("lon", "lat", "t"), all.x = T)) # 9 seconds
 rm(OISST_all_anom); gc()
 
 ## Save
 # NB: This causes RStudio server to hang, but it still works
 print(paste0("Began saving all anoms at ", Sys.time()))
-system.time(saveRDS(ALL_anom, "data/ALL_anom.Rda")) # xxx seconds
+system.time(saveRDS(ALL_anom, "data/ALL_anom.Rda")) # 282 seconds
 
 ## Test visuals
 # Load
-# system.time(ALL_anom <- readRDS("data/ALL_anom.Rda")) # xxx seconds
+# system.time(ALL_anom <- readRDS("data/ALL_anom.Rda")) # 43 seconds
 # Plot
 # ALL_anom %>%
 #   filter(t == "2000-01-01") %>%
 #   ggplot(aes(x = lon, y = lat)) +
-#   geom_raster(aes(fill = sst_anom))
+#   geom_raster(aes(fill = anom_v))
+# rm(ALL_anom); gc()
 
 
 # Other dataframe ---------------------------------------------------------
@@ -265,12 +266,12 @@ system.time(saveRDS(ALL_anom, "data/ALL_anom.Rda")) # xxx seconds
 # Data packets ------------------------------------------------------------
 
 # # Set number of cores
-# # NB: 50 cores requires too much RAM
-# doParallel::registerDoParallel(cores = 25)
+# # NB: 50 cores uses too much RAM
+# registerDoParallel(cores = 25)
 # 
 # ## Create one big anomaly packet from OISST data
 # # print(paste0("Began creating data packets at ", Sys.time()))
-# system.time(synoptic_states <- plyr::ddply(OISST_MHW_event, c("region", "event_no"),
+# system.time(synoptic_states <- plyr::ddply(OISST_region_MHW, c("region", "event_no"),
 #                                            data_packet_func, .parallel = T)) # 204 seconds
 # # Save
 # saveRDS(synoptic_states, "data/SOM/synoptic_states.Rda")
@@ -289,6 +290,7 @@ system.time(saveRDS(ALL_anom, "data/ALL_anom.Rda")) # xxx seconds
 #               wide_packet_func()) # 122 seconds
 # # Save
 # saveRDS(packet, "data/SOM/packet.Rda")
+
 
 # Visualise data packets --------------------------------------------------
 
