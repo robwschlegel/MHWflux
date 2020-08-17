@@ -237,7 +237,7 @@ We will be using the SST values from GLORYS for calculating the MHWs and will us
 OISST_all_ts <- readRDS("data/OISST_all_ts.Rda")
 
 # Calculate the MHWs
-OISST_region_MHW <- GLORYS_all_ts %>%
+OISST_region_MHW <- OISST_all_ts %>%
   group_by(region) %>%
   nest() %>%
   mutate(clims = map(data, ts2clm,
