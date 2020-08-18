@@ -268,8 +268,13 @@ load_ERA5 <- function(file_name, time_shift = 0){
 # Test visuals
 # res_mean %>%
 #   filter(t == "1993-02-01") %>%
-#   ggplot(aes(x = lon, y = lat, fill = msnlwrf )) +
-#   geom_raster()
+#   ggplot(aes(x = lon, y = lat, fill = msnlwrf)) +
+#   geom_raster() +
+#   labs(x = NULL, y = NULL) +
+#   coord_quickmap(xlim = NWA_corners[1:2], ylim = NWA_corners[3:4], expand = F) 
+
+# Test coord ranges
+# NWA_corners; range(res_mean$lon); range(res_mean$lat)
 
 # Function for processing ERA5 data
 # file_df <- filter(ERA5_files, var_group == "evp")
@@ -319,11 +324,23 @@ process_ERA5 <- function(file_df){
   return()
 }
 
-# test visuals
-# ggplot(data = filter(res_anom, t == "1993-01-01"), aes(x = lon, y = lat)) + 
-  # geom_tile(aes(fill = anom))
-# ggplot(data = res_ts, aes(x = t, y = mslhf)) +
-  # geom_line()
+# Test coord ranges
+# NWA_corners; range(res_mean$lon); range(res_mean$lat)
+
+# test map visuals
+# res_mean %>%
+# res_anom %>% 
+  # filter(t == "1993-01-01") %>% 
+  # ggplot(aes(x = lon, y = lat)) +
+  # geom_raster(aes(fill = e)) +
+  # scale_x_continuous(breaks = seq(-80, -40, 2)) +
+  # scale_y_continuous(breaks = seq(32, 52, 2)) +
+  # labs(x = NULL, y = NULL) +
+  # coord_quickmap(xlim = NWA_corners[1:2], ylim = NWA_corners[3:4], expand = T)
+
+# test ts visuals
+# ggplot(data = res_ts, aes(x = t, y = e)) +
+#   geom_line()
 
 
 # Calculate clims and anoms in gridded data -------------------------------
@@ -580,11 +597,11 @@ fig_data_packet <- function(event_region, event_num){
     geom_line(aes(y = thresh), col = "navy") +
     geom_segment(data = OISST_segments, colour = "limegreen",
                  size = 2, lineend = "round",
-                 aes(x = date_start-1, xend = date_start-1,
+                 aes(x = date_start, xend = date_start,
                      y = temp_start-0.5, yend = temp_start+0.5)) +
     geom_segment(data = OISST_segments, colour = "limegreen",
                  size = 2, lineend = "round",
-                 aes(x = date_end+1, xend = date_end+1,
+                 aes(x = date_end, xend = date_end,
                      y = temp_end-0.5, yend = temp_end+0.5)) +
     # geom_segment(data = OISST_segments, colour = "deeppink3",
     #              size = 2, lineend = "round",
@@ -778,7 +795,7 @@ som_model_PCI <- function(data_packet, other_states, xdim = 4, ydim = 3){
 
 # Figure data processing --------------------------------------------------
 
-fig_data_prep <- function(data_packet, region_MHW){
+fig_data_prep <- function(data_packet, region_MHW = OISST_region_MHW){
   
   # Prep MHW event data
   region_MHW_event <- region_MHW %>%
@@ -880,17 +897,7 @@ fig_data_prep <- function(data_packet, region_MHW){
               median_dur = median(duration, na.rm = T),
               .groups = "drop") %>%
     mutate_all(round, digits = 2)
-  
-  # Find the eddy tracks present during each MHW
-  # eddy_data <- data_packet$info %>%
-  #   left_join(region_MHW_event, by = c("region", "event_no")) %>%
-  #   group_by(node, region, event_no) %>%
-  #   nest() %>%
-  #   mutate(res = map(data, eddy_track_extract)) %>%
-  #   select(-data) %>%
-  #   unnest(cols = "res") %>%
-  #   mutate(cyclonic_type = factor(cyclonic_type, labels = c("Cyclonic", "Anticyclonic")))
-  
+
   # Combine and exit
   res <- list(som_data_wide = som_data_wide,
               som_data_sub = som_data_sub,
@@ -901,8 +908,7 @@ fig_data_prep <- function(data_packet, region_MHW){
               node_season_info = node_season_info,
               node_region_info = node_region_info,
               region_prop_label = region_prop_label,
-              node_h_lines = node_h_lines)#,
-              # eddy_data = eddy_data)
+              node_h_lines = node_h_lines)
   return(res)
 }
 
@@ -921,38 +927,37 @@ fig_all_som <- function(som_packet,
                         fig_width = 13){
   
   # Base data for all figures
-  base_data <- fig_data_prep(data_packet = som_packet, region_MHW = OISST_region_MHW)
+  base_data <- fig_data_prep(data_packet = som_packet)
   
   # Events per region and season per node
-  region_season <- fig_region_season(base_data, col_num, fig_height, fig_width)
+  fig_map_func("region_season", base_data, col_num, fig_height, fig_width)
   
   # SST + U + V (anom)
-  sst_u_v_anom <- fig_sst_u_v_anom(base_data, col_num, fig_height, fig_width)
+  fig_map_func("sst_u_v_anom", base_data, col_num, fig_height, fig_width)
   
   # Air Temp + U + V (anom)
-  air_u_v_mslp_anom <- fig_air_u_v_mslp_anom(base_data, col_num, fig_height, fig_width)
+  fig_map_func("air_u_v_mslp_anom", base_data, col_num, fig_height, fig_width)
   
   # Net downward heat flux and MLD (anom)
-  qnet_mld_anom <- fig_qnet_mld_anom(base_data, col_num, fig_height, fig_width)
+  fig_map_func("qnet_mld_anom", base_data, col_num, fig_height, fig_width)
   
   # SST + U + V (real)
-  sst_u_v_real <- fig_sst_u_v_real(base_data, col_num, fig_height, fig_width)
+  fig_map_func("sst_u_v_real", base_data, col_num, fig_height, fig_width)
   
   # Air Temp + U + V (real)
-  air_u_v_mslp_real <- fig_air_u_v_mslp_real(base_data, col_num, fig_height, fig_width)
+  fig_map_func("air_u_v_mslp_real", base_data, col_num, fig_height, fig_width)
   
   # Lollis showing cum. int. + season
-  cum_int_season <- fig_cum_int_season(base_data, col_num, fig_height, fig_width)
+  fig_cum_int_season(base_data, col_num, fig_height, fig_width)
   
   # Lollis showing max. int. + region
-  max_int_region <- fig_max_int_region(base_data, col_num, fig_height, fig_width)
+  fig_max_int_region(base_data, col_num, fig_height, fig_width)
   
   # Lollis showing duration + rate onset
-  duration_rate_onset <- fig_duration_rate_onset(base_data, col_num, fig_height, fig_width)
+  fig_duration_rate_onset(base_data, col_num, fig_height, fig_width)
   
   # Create SD per pixel plots for env. variables
-  sd_col_names <- c(colnames(base_data$som_data_wide),
-                    colnames(base_data$other_data_wide))
+  sd_col_names <- c(colnames(base_data$som_data_wide), colnames(base_data$other_data_wide))
   sd_col_names <- sd_col_names[-which(sd_col_names %in% c("node", "lon", "lat"))]
   plyr::l_ply(sd_col_names, .fun = fig_sd, .parallel = T,
               fig_data = base_data, col_num = col_num, fig_height = fig_height, fig_width = fig_width)
@@ -984,7 +989,6 @@ fig_single_node <- function(node_number, fig_packet, fig_height, fig_width){
   fig_packet$node_region_info <- filter(fig_packet$node_region_info, node == node_number)
   fig_packet$region_prop_label <- filter(fig_packet$region_prop_label, node == node_number)
   fig_packet$node_h_lines <- filter(fig_packet$node_h_lines, node == node_number)
-  fig_packet$eddy_data <- filter(fig_packet$eddy_data, node == node_number)
   
   # Events per region and season per node
   region_season_sub <- fig_region_season(fig_packet, 1, fig_height, fig_width)
@@ -1035,221 +1039,156 @@ fig_single_node <- function(node_number, fig_packet, fig_height, fig_width){
 }
 
 
-# Counts per region and season figure -------------------------------------
 
+# Map figure function -----------------------------------------------------
+
+# This function makes any of the maps for the desired variables
 # testers...
-# fig_data <- fig_data_prep(readRDS("data/SOM/som.Rda"))
+# map_var = "region_season"
+# fig_data <- fig_data_prep(readRDS("data/som.Rda"))
 # col_num = 4
-fig_region_season <- function(fig_data, col_num, fig_height, fig_width){
-  # The figure
-  region_season <- frame_base +
-    # The regions
-    geom_polygon(data = fig_data$region_prop_label,
-                 aes(group = region, fill = node_region_prop), colour = "black") +
-    # Eddy tracks
-    # NB: This looks aweful. I turned it off for some figures for a talk
-    # geom_point(data = fig_data$eddy_data, aes(x = lon, y = lat),
-    # colour = "darkorange", alpha = 0.3, size = 0.1) +
-    # The base map
-    geom_polygon(data = map_base, aes(group = group), show.legend = F) +
-    # Count per region
-    geom_label(data = fig_data$region_prop_label,
-               aes(x = lon_center, y = lat_center, label = node_region_count)) +
-    # Overall node count
-    geom_label(data = fig_data$region_prop_label,
-               aes(x = -68, y = 36, label = paste0("n = ",count))) +
-    # Winter count
-    geom_label(data = filter(fig_data$node_season_info, season_peak == "Winter"),
-               aes(x = -58, y = 38, fill = node_season_prop,
-                   label = paste0("Winter\n n = ",node_season_count))) +
-    # Spring count
-    geom_label(data = filter(fig_data$node_season_info, season_peak == "Spring"),
-               aes(x = -48, y = 38, fill = node_season_prop,
-                   label = paste0("Spring\n n = ",node_season_count))) +
-    # Summer count
-    geom_label(data = filter(fig_data$node_season_info, season_peak == "Summer"),
-               aes(x = -58, y = 34, fill = node_season_prop,
-                   label = paste0("Summer\n n = ",node_season_count))) +
-    # Autumn count
-    geom_label(data = filter(fig_data$node_season_info, season_peak == "Autumn"),
-               aes(x = -48, y = 34, fill = node_season_prop,
-                   label = paste0("Autumn\n n = ",node_season_count))) +
-    # Colour scale
-    scale_fill_distiller("Proportion\nof events",
-                         palette = "BuPu", direction = 1) +
-    theme(legend.position = "bottom")
-  if(col_num != 1){
-    region_season <- region_season +
-      facet_wrap(~node, ncol = col_num)
-    ggsave(paste0("output/SOM/region_season.pdf"), region_season, height = fig_height, width = fig_width)
-    ggsave(paste0("output/SOM/region_season.png"), region_season, height = fig_height, width = fig_width)
+fig_map_func <- function(map_var, fig_data, col_num, fig_height, fig_width){
+  # Find which figure to make
+  if(map_var == "region_season"){
+    fig_res <- frame_base +
+      # The regions
+      geom_polygon(data = fig_data$region_prop_label,
+                   aes(group = region, fill = node_region_prop), colour = "black") +
+      # The base map
+      geom_polygon(data = map_base, aes(group = group), show.legend = F) +
+      # Count per region
+      geom_label(data = fig_data$region_prop_label,
+                 aes(x = lon_center, y = lat_center, label = node_region_count)) +
+      # Overall node count
+      geom_label(data = fig_data$region_prop_label,
+                 aes(x = -68, y = 36, label = paste0("n = ",count))) +
+      # Winter count
+      geom_label(data = filter(fig_data$node_season_info, season_peak == "Winter"),
+                 aes(x = -58, y = 38, fill = node_season_prop,
+                     label = paste0("Winter\n n = ",node_season_count))) +
+      # Spring count
+      geom_label(data = filter(fig_data$node_season_info, season_peak == "Spring"),
+                 aes(x = -48, y = 38, fill = node_season_prop,
+                     label = paste0("Spring\n n = ",node_season_count))) +
+      # Summer count
+      geom_label(data = filter(fig_data$node_season_info, season_peak == "Summer"),
+                 aes(x = -58, y = 34, fill = node_season_prop,
+                     label = paste0("Summer\n n = ",node_season_count))) +
+      # Autumn count
+      geom_label(data = filter(fig_data$node_season_info, season_peak == "Autumn"),
+                 aes(x = -48, y = 34, fill = node_season_prop,
+                     label = paste0("Autumn\n n = ",node_season_count))) +
+      # Colour scale
+      scale_fill_distiller("Proportion\nof events",
+                           palette = "BuPu", direction = 1) +
+      theme(legend.position = "bottom")
+  } else if(map_var == "sst_u_v_anom"){
+    fig_res <- frame_base +
+      # The ocean temperature
+      geom_raster(data = fig_data$som_data_wide, aes(fill = anom_sst)) +
+      # The region polygons
+      geom_polygon(data = NWA_coords, aes(group = region),
+                   fill = NA, colour = "black", size = 1, alpha = 0.2) +
+      # The bathymetry
+      stat_contour(data = bathy[bathy$depth > -2000,],
+                   aes(x = lon, y = lat, z = depth), alpha = 0.5,
+                   colour = "black", size = 0.5, binwidth = 200, na.rm = TRUE, show.legend = FALSE) +
+      # The current vectors
+      geom_segment(data = fig_data$som_data_sub,
+                   aes(xend = lon + anom_u * current_uv_scalar,
+                       yend = lat + anom_v * current_uv_scalar),
+                   arrow = arrow(angle = 40, length = unit(0.1, "cm"), type = "open"),
+                   linejoin = "mitre", size = 0.4, alpha = 0.8) +
+      # The land mass
+      geom_polygon(data = map_base, aes(group = group), alpha = 1,
+                   fill = "grey70", colour = "black", size = 0.5, show.legend = FALSE) +
+      # Diverging gradient
+      scale_fill_gradient2(name = "SST\nanom. (°C)", low = "blue", high = "red") +
+      theme(legend.position = "bottom")
+  } else if(map_var == "air_u_v_mslp_anom"){
+    fig_res <- frame_base +
+      # The air temperature
+      geom_raster(data = fig_data$som_data_wide, aes(fill = anom_t2m)) +
+      # The land mass
+      geom_polygon(data = map_base, aes(group = group), alpha = 1,
+                   fill = NA, colour = "black", size = 0.5, show.legend = FALSE) +
+      # The mean sea level pressure contours
+      geom_contour(data = fig_data$other_data_wide,
+                   aes(z = anom_mslp, colour = stat(level)), size = 1) +
+      # The wind vectors
+      geom_segment(data = fig_data$som_data_sub,
+                   aes(xend = lon + anom_u10 * wind_uv_scalar,
+                       yend = lat + anom_v10 * wind_uv_scalar),
+                   arrow = arrow(angle = 40, length = unit(0.1, "cm"), type = "open"),
+                   linejoin = "mitre", size = 0.4, alpha = 0.4) +
+      # Colour scale
+      scale_fill_gradient2(name = "Air temp.\nanom. (°C)", low = "blue", high = "red") +
+      scale_colour_gradient2("MSLP anom.\n(hPa)",# guide = "legend",
+                             low = "green", mid = "grey", high = "yellow") +
+      theme(legend.position = "bottom")#, legend.box = "vertical")
+  } else if(map_var == "qnet_mld_anom"){
+    fig_res <- frame_base +
+      # The MLD
+      geom_raster(data = fig_data$som_data_wide, aes(fill = anom_mld)) +
+      # The land mass
+      geom_polygon(data = map_base, aes(group = group), alpha = 1,
+                   fill = "grey80", colour = "black", size = 0.5, show.legend = FALSE) +
+      # The net downward heat flux contours
+      geom_contour(data = fig_data$som_data_wide, binwidth = 50,
+                   aes(z = anom_qnet, colour = stat(level)), size = 1) +
+      # Colour scale
+      scale_fill_gradient2("MLD\nanom. (m)",low = "blue", high = "red") +
+      scale_colour_gradient2("Qnet anom.\n(W/m2)", #guide = "legend",
+                             low = "green", mid = "grey", high = "yellow") +
+      theme(legend.position = "bottom")
+  } else if(map_var == "sst_u_v_real"){
+    fig_res <- frame_base +
+      # The ocean temperature
+      geom_raster(data = fig_data$other_data_wide, aes(fill = temp)) +
+      # The current vectors
+      geom_segment(data = fig_data$other_data_wide,
+                   aes(xend = lon + u * current_uv_scalar,
+                       yend = lat + v * current_uv_scalar),
+                   arrow = arrow(angle = 40, length = unit(0.1, "cm"), type = "open"),
+                   linejoin = "mitre", size = 0.4, alpha = 0.8) +
+      # The land mass
+      geom_polygon(data = map_base, aes(group = group), alpha = 1,
+                   fill = "grey70", colour = "black", size = 0.5, show.legend = FALSE) +
+      # Diverging gradient
+      scale_fill_viridis_c(name = "SST (°C)", option = "D") +
+      theme(legend.position = "bottom")
+  } else if(map_var == "air_u_v_mslp_real"){
+    fig_res <- frame_base +
+      # The air temperature
+      geom_raster(data = fig_data$other_data_wide, aes(fill = t2m)) +
+      # The land mass
+      geom_polygon(data = map_base, aes(group = group), alpha = 1,
+                   fill = NA, colour = "black", size = 0.5, show.legend = FALSE) +
+      # The mean sea level pressure contours
+      geom_contour(data = fig_data$other_data_wide,
+                   aes(z = mslp, colour = stat(level)), size = 1) +
+      # The wind vectors
+      geom_segment(data = fig_data$other_data_wide,
+                   aes(xend = lon + u10 * wind_uv_scalar,
+                       yend = lat + v10 * wind_uv_scalar),
+                   arrow = arrow(angle = 40, length = unit(0.1, "cm"), type = "open"),
+                   linejoin = "mitre", size = 0.4, alpha = 0.4) +
+      # Colour scale
+      scale_fill_viridis_c(name = "Air temp. (°C)", option = "A") +
+      scale_colour_gradient("MSLP (hPa)", #guide = "legend",
+                            low = "white", high =  "black") +
+      theme(legend.position = "bottom")
   }
-  return(region_season)
-}
-
-
-# SST + U + V (anom) figure -----------------------------------------------
-
-fig_sst_u_v_anom <- function(fig_data, col_num, fig_height, fig_width){
-  # The figure
-  sst_u_v_anom <- frame_base +
-    # The ocean temperature
-    geom_raster(data = fig_data$som_data_wide, aes(fill = anom_sst)) +
-    # The region polygons
-    geom_polygon(data = NWA_coords, aes(group = region),
-                 fill = NA, colour = "black", size = 1, alpha = 0.2) +
-    # The bathymetry
-    stat_contour(data = bathy[bathy$depth > -2000,],
-                 aes(x = lon, y = lat, z = depth), alpha = 0.5,
-                 colour = "black", size = 0.5, binwidth = 200, na.rm = TRUE, show.legend = FALSE) +
-    # The current vectors
-    geom_segment(data = fig_data$som_data_sub,
-                 aes(xend = lon + anom_u * current_uv_scalar,
-                     yend = lat + anom_v * current_uv_scalar),
-                 arrow = arrow(angle = 40, length = unit(0.1, "cm"), type = "open"),
-                 linejoin = "mitre", size = 0.4, alpha = 0.8) +
-    # The land mass
-    geom_polygon(data = map_base, aes(group = group), alpha = 1,
-                 fill = "grey70", colour = "black", size = 0.5, show.legend = FALSE) +
-    # Diverging gradient
-    scale_fill_gradient2(name = "SST\nanom. (°C)", low = "blue", high = "red") +
-    theme(legend.position = "bottom")
+  
+  # Save or return
   if(col_num != 1){
-    sst_u_v_anom <- sst_u_v_anom +
+    fig_res <- fig_res +
       facet_wrap(~node, ncol = col_num)
-    ggsave(paste0("output/SOM/sst_u_v_anom_.pdf"), sst_u_v_anom, height = fig_height, width = fig_width)
-    ggsave(paste0("output/SOM/sst_u_v_anom_.png"), sst_u_v_anom, height = fig_height, width = fig_width)
+    ggsave(paste0("output/SOM/",map_var,".pdf"), fig_res, height = fig_height, width = fig_width)
+    ggsave(paste0("output/SOM/",map_var,".png"), fig_res, height = fig_height, width = fig_width)
+  } else{
+    return(fig_res)
   }
-  return(sst_u_v_anom)
-}
-
-
-# Air temp + U + V + MSLP (anom) figure -----------------------------------
-
-fig_air_u_v_mslp_anom <- function(fig_data, col_num, fig_height, fig_width){
-  # The figure
-  air_u_v_mslp_anom <- frame_base +
-    # The air temperature
-    geom_raster(data = fig_data$som_data_wide, aes(fill = anom_t2m)) +
-    # The land mass
-    geom_polygon(data = map_base, aes(group = group), alpha = 1,
-                 fill = NA, colour = "black", size = 0.5, show.legend = FALSE) +
-    # The mean sea level pressure contours
-    geom_contour(data = fig_data$other_data_wide,
-                 aes(z = anom_mslp, colour = stat(level)), size = 1) +
-    # The wind vectors
-    geom_segment(data = fig_data$som_data_sub,
-                 aes(xend = lon + anom_u10 * wind_uv_scalar,
-                     yend = lat + anom_v10 * wind_uv_scalar),
-                 arrow = arrow(angle = 40, length = unit(0.1, "cm"), type = "open"),
-                 linejoin = "mitre", size = 0.4, alpha = 0.4) +
-    # Colour scale
-    scale_fill_gradient2(name = "Air temp.\nanom. (°C)", low = "blue", high = "red") +
-    scale_colour_gradient2("MSLP anom.\n(hPa)",# guide = "legend",
-                           low = "green", mid = "grey", high = "yellow") +
-    theme(legend.position = "bottom")#, legend.box = "vertical")
-  if(col_num != 1){
-    air_u_v_mslp_anom <- air_u_v_mslp_anom +
-      facet_wrap(~node, ncol = col_num)
-    ggsave(paste0("output/SOM/air_u_v_mslp_anom_.pdf"), air_u_v_mslp_anom, height = fig_height, width = fig_width)
-    ggsave(paste0("output/SOM/air_u_v_mslp_anom_.png"), air_u_v_mslp_anom, height = fig_height, width = fig_width)
-  }
-  return(air_u_v_mslp_anom)
-}
-
-
-# QNET + MLD (anom) figure ------------------------------------------------
-
-fig_qnet_mld_anom <- function(fig_data, col_num, fig_height, fig_width){
-  # The figure
-  qnet_mld_anom <- frame_base +
-    # The MLD
-    geom_raster(data = fig_data$som_data_wide, aes(fill = anom_mld)) +
-    # The land mass
-    geom_polygon(data = map_base, aes(group = group), alpha = 1,
-                 fill = "grey80", colour = "black", size = 0.5, show.legend = FALSE) +
-    # The net downward heat flux contours
-    geom_contour(data = fig_data$som_data_wide, binwidth = 50,
-                 aes(z = anom_qnet, colour = stat(level)), size = 1) +
-    # Colour scale
-    scale_fill_gradient2("MLD\nanom. (m)",low = "blue", high = "red") +
-    scale_colour_gradient2("Qnet anom.\n(W/m2)", #guide = "legend",
-                           low = "green", mid = "grey", high = "yellow") +
-    theme(legend.position = "bottom")
-  if(col_num != 1){
-    qnet_mld_anom <- qnet_mld_anom +
-      facet_wrap(~node, ncol = col_num)
-    ggsave(paste0("output/SOM/qnet_mld_anom_.pdf"), qnet_mld_anom, height = fig_height, width = fig_width)
-    ggsave(paste0("output/SOM/qnet_mld_anom_.png"), qnet_mld_anom, height = fig_height, width = fig_width)
-  }
-  return(qnet_mld_anom)
-}
-
-
-# SST + U + V (real) figure -----------------------------------------------
-
-fig_sst_u_v_real <- function(fig_data, col_num, fig_height, fig_width){
-  # The figure
-  sst_u_v_real <- frame_base +
-    # The ocean temperature
-    geom_raster(data = fig_data$other_data_wide, aes(fill = sst)) +
-    # The bathymetry
-    # stat_contour(data = bathy[bathy$depth < -100 & bathy$depth > -300,],
-    # aes(x = lon, y = lat, z = depth), alpha = 0.5,
-    # colour = "ivory", size = 0.5, binwidth = 200, na.rm = TRUE, show.legend = FALSE) +
-    # The current vectors
-    geom_segment(data = fig_data$other_data_wide,
-                 aes(xend = lon + u * current_uv_scalar,
-                     yend = lat + v * current_uv_scalar),
-                 arrow = arrow(angle = 40, length = unit(0.1, "cm"), type = "open"),
-                 linejoin = "mitre", size = 0.4, alpha = 0.8) +
-    # The land mass
-    geom_polygon(data = map_base, aes(group = group), alpha = 1,
-                 fill = "grey70", colour = "black", size = 0.5, show.legend = FALSE) +
-    # Diverging gradient
-    scale_fill_viridis_c(name = "SST (°C)", option = "D") +
-    theme(legend.position = "bottom")
-  if(col_num != 1){
-    sst_u_v_real <- sst_u_v_real +
-      facet_wrap(~node, ncol = col_num)
-    ggsave(paste0("output/SOM/sst_u_v_real_.pdf"), sst_u_v_real, height = fig_height, width = fig_width)
-    ggsave(paste0("output/SOM/sst_u_v_real_.png"), sst_u_v_real, height = fig_height, width = fig_width)
-  }
-  return(sst_u_v_real)
-}
-
-
-# Air temp + U + V + MSLP (real) figure -----------------------------------
-
-fig_air_u_v_mslp_real <- function(fig_data, col_num, fig_height, fig_width){
-  # The figure
-  air_u_v_mslp_real <- frame_base +
-    # The air temperature
-    geom_raster(data = fig_data$other_data_wide, aes(fill = t2m)) +
-    # The land mass
-    geom_polygon(data = map_base, aes(group = group), alpha = 1,
-                 fill = NA, colour = "black", size = 0.5, show.legend = FALSE) +
-    # The mean sea level pressure contours
-    geom_contour(data = fig_data$other_data_wide,
-                 aes(z = msl, colour = stat(level)), size = 1) +
-    # The wind vectors
-    geom_segment(data = fig_data$other_data_wide,
-                 aes(xend = lon + u10 * wind_uv_scalar,
-                     yend = lat + v10 * wind_uv_scalar),
-                 arrow = arrow(angle = 40, length = unit(0.1, "cm"), type = "open"),
-                 linejoin = "mitre", size = 0.4, alpha = 0.4) +
-    # Colour scale
-    scale_fill_viridis_c(name = "Air temp. (°C)", option = "A") +
-    scale_colour_gradient("MSLP (hPa)", #guide = "legend",
-                          low = "white", high =  "black") +
-    theme(legend.position = "bottom")
-  if(col_num != 1){
-    air_u_v_mslp_real <- air_u_v_mslp_real +
-      facet_wrap(~node, ncol = col_num)
-    ggsave(paste0("output/SOM/air_u_v_mslp_real_.pdf"), air_u_v_mslp_real, height = fig_height, width = fig_width)
-    ggsave(paste0("output/SOM/air_u_v_mslp_real_.png"), air_u_v_mslp_real, height = fig_height, width = fig_width)
-  }
-  return(air_u_v_mslp_real)
 }
 
 
@@ -1266,7 +1205,7 @@ fig_sd <- function(col_name, fig_data, col_num, fig_height, fig_width){
   
   # The figure
   sd_heat_map <- frame_base +
-    # The MLD
+    # The rasters
     geom_raster(data = sub_data, aes_string(fill = {{col_name}})) +
     # The land mass
     geom_polygon(data = map_base, aes(group = group), alpha = 1,
@@ -1285,45 +1224,35 @@ fig_sd <- function(col_name, fig_data, col_num, fig_height, fig_width){
 }
 
 
-# Cum. int. + season lolli ------------------------------------------------
 
-fig_cum_int_season <- function(fig_data, col_num, fig_height, fig_width){
-  # The figure
-  cum_int_seas <- ggplot(data = fig_data$region_MHW_meta,
-                         aes(x = date_peak, y = intensity_cumulative)) +
-    # Count label
-    # geom_label(aes(x = mean(range(date_peak)),
-    #                y = max(intensity_cumulative),
-    #                label = paste0("n = ", count))) +
-    # Mean stat label
-    # geom_label(data = fig_data$node_h_lines,
-    #            aes(x = mean(range(fig_data$OISST_MHW_meta$date_peak)),
-    #                y = max(fig_data$OISST_MHW_meta$intensity_cumulative)*0.9,
-    #                label = paste0("mean = ", mean_int_cum))) +
-    # Median stat label
-    # geom_label(data = fig_data$node_h_lines,
-  #            aes(x = mean(range(fig_data$OISST_MHW_meta$date_peak)),
-  #                y = max(fig_data$OISST_MHW_meta$intensity_cumulative)*0.8,
-  #                label = paste0("median = ", median_int_cum))) +
-  geom_lolli(aes(colour = season_peak), size = 2) +
-    # geom_point(aes(colour = season_peak), size = 2) +
-    geom_smooth(method = "lm", se = F, aes(colour = season_peak), size = 2) +
-    geom_hline(data = fig_data$node_h_lines, aes(yintercept = mean_int_cum), linetype = "dashed") +
-    geom_hline(data = fig_data$node_h_lines, aes(yintercept = median_int_cum), linetype = "dotted") +
-    scale_colour_brewer(palette = "Set1") +
-    scale_x_date(labels = scales::date_format("%Y"),
-                 date_breaks = "2 years", date_minor_breaks = "1 year") +
-    labs(x = "", y = "Cum. intensity (°C x days)", colour = "Season") +
-    theme(legend.position = "bottom",
-          axis.text.x = element_text(angle = 30))
+# Lolli figure function ---------------------------------------------------
+
+fig_lolli_func <- function(lolli_var, fig_data, col_num, fig_height, fig_width){
+  if(lolli_var == "cum_int_season"){
+    # The figure
+    fig_res <- ggplot(data = fig_data$region_MHW_meta,
+                      aes(x = date_peak, y = intensity_cumulative)) +
+      geom_lolli(aes(colour = season_peak), size = 2) +
+      geom_smooth(method = "lm", se = F, aes(colour = season_peak), size = 2) +
+      geom_hline(data = fig_data$node_h_lines, aes(yintercept = mean_int_cum), linetype = "dashed") +
+      geom_hline(data = fig_data$node_h_lines, aes(yintercept = median_int_cum), linetype = "dotted") +
+      scale_colour_brewer(palette = "Set1") +
+      scale_x_date(labels = scales::date_format("%Y"),
+                   date_breaks = "2 years", date_minor_breaks = "1 year") +
+      labs(x = "", y = "Cum. intensity (°C x days)", colour = "Season") +
+      theme(legend.position = "bottom",
+            axis.text.x = element_text(angle = 30))
+  }
+
   if(col_num != 1){
-    cum_int_seas <- cum_int_seas +
+    fig_res <- fig_res +
       facet_wrap(~node, ncol = col_num)
-    ggsave(paste0("output/SOM/cum_int_season.pdf"), cum_int_seas, height = fig_height, width = fig_width)
-    ggsave(paste0("output/SOM/cum_int_season.png"), cum_int_seas, height = fig_height, width = fig_width)
+    ggsave(paste0("output/SOM/",lolli_var,".pdf"), cum_int_seas, height = fig_height, width = fig_width)
+    ggsave(paste0("output/SOM/",lolli_var,".png"), cum_int_seas, height = fig_height, width = fig_width)
   }
   return(cum_int_seas)
 }
+
 
 
 # Max. int. + region lolli ------------------------------------------------

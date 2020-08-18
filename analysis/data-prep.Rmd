@@ -76,8 +76,8 @@ saveRDS(GLORYS_grid, "metadata/GLORYS_grid.Rda")
 
 # Load one ERA5 file to get the lon/lat coords
 ERA5_grid <- tidync(ERA5_lhf_files[1]) %>%
-  hyper_filter(latitude = dplyr::between(latitude, min(NWA_coords$lat), max(NWA_coords$lat)),
-               longitude = dplyr::between(longitude, min(NWA_coords$lon)+360, max(NWA_coords$lon)+360),
+  hyper_filter(latitude = dplyr::between(latitude, NWA_corners[3], NWA_corners[4]),
+               longitude = dplyr::between(longitude, NWA_corners[1]+360, NWA_corners[2]+360),
                time = index == 1) %>%
   hyper_tibble() %>%
   dplyr::rename(lon = longitude, lat = latitude) %>%
@@ -88,6 +88,15 @@ ERA5_grid <- tidync(ERA5_lhf_files[1]) %>%
          lat >= NWA_corners[3], lat <= NWA_corners[4]) %>% 
   unique()
 saveRDS(ERA5_grid, "metadata/ERA5_grid.Rda")
+
+# Test visuals
+  # Choose one
+# OISST_grid %>%
+# GLORYS_grid %>%
+ERA5_grid %>%
+  ggplot(aes(x = lon, y = lat)) +
+  geom_raster() +
+  coord_quickmap(xlim = NWA_corners[1:2], ylim = NWA_corners[3:4], expand = F)
   
 # Function for finding and cleaning up points within a given region polygon
 points_in_region <- function(region_in, product_grid){
@@ -103,6 +112,7 @@ points_in_region <- function(region_in, product_grid){
 }
 
 # Run the function
+registerDoParallel(cores = 10)
 OISST_regions <- plyr::ldply(unique(NWA_coords$region), points_in_region, 
                               .parallel = T, product_grid = OISST_grid)
 saveRDS(OISST_regions, "metadata/OISST_regions.Rda")
@@ -110,8 +120,19 @@ GLORYS_regions <- plyr::ldply(unique(NWA_coords$region), points_in_region,
                               .parallel = T, product_grid = GLORYS_grid)
 saveRDS(GLORYS_regions, "metadata/GLORYS_regions.Rda")
 ERA5_regions <- plyr::ldply(unique(NWA_coords$region), points_in_region, 
-                            .parallel = T, product_grid = ERA5_grid)
+                            .parallel = T, product_grid = OISST_grid) # We only want ocean pixels
 saveRDS(ERA5_regions, "metadata/ERA5_regions.Rda")
+
+# Test visuals
+  # Choose one
+# OISST_regions %>%
+# GLORYS_regions %>%
+ERA5_regions %>%
+  ggplot(aes(x = lon, y = lat)) +
+  geom_raster(aes(fill = region)) +
+  scale_x_continuous(breaks = seq(-80, -40, 2)) +
+  scale_y_continuous(breaks = seq(32, 52, 2)) +
+  coord_quickmap(xlim = NWA_corners[1:2], ylim = NWA_corners[3:4], expand = T)
 ```
 
 ```{r grid-points-visual}
@@ -129,9 +150,10 @@ ALL_regions <- rbind(OISST_regions, GLORYS_regions, ERA5_regions) %>%
 ggplot(NWA_coords, aes(x = lon, y = lat)) +
   geom_polygon(data = map_base, aes(group = group), show.legend = F) +
   geom_point(data = ALL_regions, aes(colour = region), size = 0.1) +
-  coord_cartesian(xlim = NWA_corners[1:2], ylim = NWA_corners[3:4]) +
-  labs(x = NULL, y = NULL) +
-  facet_wrap(~product)
+  coord_quickmap(xlim = NWA_corners[1:2], ylim = NWA_corners[3:4], expand = F) +
+  labs(x = NULL, y = NULL, colour = "Region") +
+  facet_wrap(~product) +
+  guides(colour = guide_legend(override.aes = list(shape = 15, size = 5)))
 ggsave(filename = "output/NWA_product_regions.pdf", height = 5, width = 18)
 ```
 
@@ -146,7 +168,7 @@ Up first for processing are the OISST data. The full brick of data within the st
 OISST_files_sub <- data.frame(files = OISST_files,
                               lon = c(seq(0.125, 179.875, by = 0.25), 
                                       seq(-179.875, -0.125, by = 0.25))) %>% 
-  filter(lon >= min(NWA_coords$lon), lon <= max(NWA_coords$lon)) %>% 
+  filter(lon >= NWA_corners[1], lon <= NWA_corners[2]) %>% 
   mutate(files = as.character(files))
 
 # Load the full grid for the study area
@@ -154,11 +176,19 @@ system.time(
 OISST_all <- plyr::ldply(OISST_files_sub$files, .fun = load_OISST, .parallel = TRUE)
 ) # 16 seconds
 
+# Check that the coords were subsetted correctly
+NWA_corners
+min(OISST_all$lon); max(OISST_all$lon)
+min(OISST_all$lat); max(OISST_all$lat)
+
 # test visual
-OISST_all %>% 
+OISST_all %>%
   filter(t == "1993-01-01") %>%
-  ggplot(aes(x = lon, y = lat)) + 
-  geom_raster(aes(fill = temp))
+  ggplot(aes(x = lon, y = lat)) +
+  geom_raster(aes(fill = temp)) +
+  scale_x_continuous(breaks = seq(-80, -40, 2)) +
+  scale_y_continuous(breaks = seq(32, 52, 2)) +
+  coord_quickmap(xlim = NWA_corners[1:2], ylim = NWA_corners[3:4], expand = T)
 
 # Create the region time series and save
 system.time(
@@ -173,15 +203,30 @@ saveRDS(OISST_all_ts, "data/OISST_all_ts.Rda")
 OISST_all_ts %>% 
   ggplot(aes(x = t, y = temp)) + 
   geom_line(aes(colour = region)) +
-  facet_wrap(~region)
+  facet_wrap(~region) +
+  labs(x = NULL, y = "Temp. (C)")
 
 # Calculate the clims and anoms for each pixel
+registerDoParallel(cores = 25)
 system.time(
 OISST_all_anom <- OISST_all %>% 
-  pivot_longer(cols = c(-lon, -lat, -t), names_to = "var", values_to = "val") %>% 
+  mutate(var = "temp") %>% 
+  dplyr::rename(val = temp) %>% 
   plyr::ddply(., c("lon", "lat", "var"), calc_clim_anom, .parallel = T, point_accuracy = 2)
 ) # 214 seconds
 saveRDS(OISST_all_anom, "data/OISST_all_anom.Rda")
+
+# test visual
+OISST_all_anom %>%
+  filter(t == "1998-06-18") %>% 
+  ggplot(aes(x = lon, y = lat)) + 
+  geom_polygon(data = map_base, aes(group = group), show.legend = F) +
+  geom_tile(aes(fill = anom)) +
+  scale_x_continuous(breaks = seq(-80, -40, 2)) +
+  scale_y_continuous(breaks = seq(32, 52, 2)) +
+  scale_fill_gradient2(low = "blue", high = "red") +
+  labs(x = NULL, y = NULL) +
+  coord_quickmap(xlim = NWA_corners[1:2], ylim = NWA_corners[3:4], expand = T) 
 ```
 
 ## GLORYS data processing
@@ -189,34 +234,63 @@ saveRDS(OISST_all_anom, "data/OISST_all_anom.Rda")
 We are using the 1/12 degree GLORYS product for the calculations of the region time series in order to better capture the sub-mesoscale processes that may be associated with the driving of MHWs. For the broad synoptic scale data given to the SOM we will be using the 1/4 degree GLORYS product as it needs to be the same resolution as the other products being used.
 
 ```{r GLORYS-prep, eval=FALSE}
-# Set number of cores
-  # NB: This is very RAM heavy, be careful with core use
-registerDoParallel(cores = 50)
+# NB: This is very RAM heavy, be careful with core use
 
 # Process and save the region time series
+registerDoParallel(cores = 25)
 system.time(
 GLORYS_all_ts <- plyr::ldply(GLORYS_files, load_GLORYS, .parallel = T, region = T) %>%
   dplyr::arrange(region, t) %>% 
   mutate(cur_spd = round(sqrt(u^2 + v^2), 4),
          cur_dir = round((270-(atan2(v, u)*(180/pi)))%%360))
-) # 137 seconds on 25 cores
+) # 202 seconds on 25 cores
 saveRDS(GLORYS_all_ts, "data/GLORYS_all_ts.Rda")
 
+# test visual
+GLORYS_all_ts %>% 
+  ggplot(aes(x = t, y = mld)) + 
+  geom_line(aes(colour = region)) +
+  facet_wrap(~region) +
+  labs(x = NULL, y = "MLD (m)")
+
 # Load and prep the GLORYS data for the entire study area
+registerDoParallel(cores = 25)
 system.time(
 GLORYS_all <- plyr::ldply(GLORYS_files, load_GLORYS, 
                           .parallel = T, .paropts = c(.inorder = FALSE))
-) # 200 seconds on 50 cores
-gc()
+) # 293 seconds on 25 cores
+
+# test visual
+GLORYS_all %>%
+  filter(t == "1993-01-01") %>%
+  ggplot(aes(x = lon, y = lat)) +
+  geom_raster(aes(fill = mld)) +
+  scale_x_continuous(breaks = seq(-80, -40, 2)) +
+  scale_y_continuous(breaks = seq(32, 52, 2)) +
+  coord_quickmap(xlim = NWA_corners[1:2], ylim = NWA_corners[3:4], expand = T)
 
 # Calculates clims+anoms and save
+registerDoParallel(cores = 25)
 system.time(
 GLORYS_all_anom <- GLORYS_all %>% 
   pivot_longer(cols = c(-lon, -lat, -t), names_to = "var", values_to = "val") %>% 
   plyr::ddply(., c("lon", "lat", "var"), calc_clim_anom, .parallel = T, 
               point_accuracy = 6, .paropts = c(.inorder = FALSE))
-) # 694 seconds on 50 cores
+) # 732 seconds on 25 cores
 saveRDS(GLORYS_all_anom, "data/GLORYS_all_anom.Rda")
+
+# test visual
+GLORYS_all_anom %>%
+  filter(t == "1993-06-18",
+         var == "mld") %>% 
+  ggplot(aes(x = lon, y = lat)) + 
+  geom_polygon(data = map_base, aes(group = group), show.legend = F) +
+  geom_tile(aes(fill = anom)) +
+  scale_x_continuous(breaks = seq(-80, -40, 2)) +
+  scale_y_continuous(breaks = seq(32, 52, 2)) +
+  scale_fill_gradient2(low = "blue", high = "red") +
+  labs(x = NULL, y = NULL) +
+  coord_quickmap(xlim = NWA_corners[1:2], ylim = NWA_corners[3:4], expand = T) 
 ```
 
 ## ERA5 data processing
@@ -253,7 +327,47 @@ saveRDS(OISST_region_MHW, "shiny/OISST_region_MHW.Rda")
 
 ### MHW results
 
-As this is not really the focus of the paper, I will quickly go over the MHW results here. Specifically we are looking at the summary stats for MHWs per region and season, and how they may differ between those classifying groups. The stats created here are used in the results section of the manuscript and some of the musings will be used for the discussion.
+There were some minor changes between the OISST grid used for the original SOM work and this version of the project. So first we want to compare the results of both to see by how much they differ. It should be very little.
+
+```{r}
+# New and old MHW results
+OISST_MHW_new <- readRDS("data/OISST_region_MHW.Rda") %>% 
+  select(-cats) %>%
+  unnest(events) %>%
+  filter(row_number() %% 2 == 0) %>%
+  unnest(events)
+OISST_MHW_old <- readRDS("../MHWNWA/data/OISST_region_MHW.Rda")  %>% 
+  select(-cats) %>%
+  unnest(events) %>%
+  filter(row_number() %% 2 == 0) %>%
+  unnest(events)
+
+## Max count of events per region
+# New
+OISST_MHW_new %>% 
+  group_by(region) %>% 
+  summarise(count = max(event_no))
+# Old
+OISST_MHW_old %>% 
+  group_by(region) %>% 
+  summarise(count = max(event_no))
+
+## Average metrics
+# New
+OISST_MHW_new %>% 
+  dplyr::select(region, duration, intensity_mean, intensity_max, intensity_cumulative, rate_onset, rate_decline) %>% 
+  group_by(region) %>% 
+  summarise_all("mean", na.rm = T)
+# Old
+OISST_MHW_old %>% 
+  dplyr::select(region, duration, intensity_mean, intensity_max, intensity_cumulative, rate_onset, rate_decline) %>% 
+  group_by(region) %>% 
+  summarise_all("mean", na.rm = T)
+```
+
+We can see from the results above that there are some minor differences between the results when using the different grids. This is regrettable as it will almost certainly have some sort of impact on the SOM results. But I think it is necessary that we press forward with results based on the OISST grid as it makes the most sense w.r.t. picking pixels that fall within the region polygons. This will also allow for better subsetting of pixels within the chosen study area.
+
+Because the MHW results themselves are not really the focus of the paper, I will quickly go over them here. Specifically we are looking at the summary stats for MHWs per region and season, and how they may differ between those classifying groups. The stats created here are used in the results section of the manuscript and some of the musings will be used for the discussion.
 
 ```{r MHW-results}
 MHW_annual_count <- OISST_MHW_event %>%

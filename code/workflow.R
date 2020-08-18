@@ -1,6 +1,12 @@
 # code/workflow.R
-# This script may be run with source() in order to calculate the
-# climatologies for all of the variables used in the study
+# This script may be run with source() in order to process the ERA5 data
+# It will also create the data packets for the SOM and run that analysis
+
+
+# Startup -----------------------------------------------------------------
+
+# Base libraries etc.
+source("code/functions.R")
 
 
 # Workflowr code ----------------------------------------------------------
@@ -18,12 +24,6 @@
 #                                    ),
 #                          message = "Re-built site.")
 # ) # 85 seconds
-
-
-# Startup -----------------------------------------------------------------
-
-# Base libraries etc.
-source("code/functions.R")
 
 
 # Study area --------------------------------------------------------------
@@ -53,12 +53,27 @@ ERA5_files <- data.frame(files = c(ERA5_lhf_files, ERA5_shf_files, ERA5_lwr_file
                                    ERA5_u_files, ERA5_v_files, ERA5_mslp_files, ERA5_t2m_files,
                                    ERA5_tcc_files, ERA5_pcp_files, ERA5_evp_files),
                          var_name = rep(c("lhf", "shf", "lwr", "swr", "u", "v", "mslp", 
-                                          "t2m", "tcc", "pcp", "evp"), each = 26),
-                         var_group = rep(c("lhf", "shf", "lwr", "swr", "u", "v", "mslp",
-                                           "t2m", "tcc", "pcp", "evp"), each = 26))
+                                          "t2m", "tcc", "pcp", "evp"), each = 26))
+ERA5_files$var_group <- ERA5_files$var_name
 
 # Run everything in one go
-plyr::ddply(ERA5_files, c("var_group"), process_ERA5, .parallel = F) # Can't run in parallel
+plyr::ddply(ERA5_files, c("var_group"), process_ERA5, .parallel = F) # Won't run in parallel
+
+# Test that this ran correctly
+# ERA5_evp_anom <- readRDS("data/ERA5_evp_anom.Rda")
+# ERA5_evp_anom %>%
+#   filter(t == "1993-12-25") %>%
+#   ggplot(aes(x = lon, y = lat, fill = anom)) +
+#   geom_raster() + 
+#   scale_x_continuous(breaks = seq(-80, -40, 2)) +
+#   scale_y_continuous(breaks = seq(32, 52, 2)) +
+#   scale_fill_gradient2(high = "red", low = "blue") +
+#   labs(x = NULL, y = NULL) +
+#   coord_quickmap(xlim = NWA_corners[1:2], ylim = NWA_corners[3:4], expand = T)
+# ERA5_evp_ts <- readRDS("data/ERA5_evp_ts.Rda")
+# ggplot(data = ERA5_evp_ts, aes(x = t, y = e)) +
+#   geom_line() +
+#   facet_wrap(~region)
 
 # Load the heat flux layers
 system.time(ERA5_lhf_anom <- readRDS("data/ERA5_lhf_anom.Rda")) # 40 seconds
@@ -188,13 +203,13 @@ system.time(saveRDS(ALL_anom, "data/ALL_anom.Rda")) # 282 seconds
 
 ## Test visuals
 # Load
-system.time(ALL_anom <- readRDS("data/ALL_anom.Rda")) # 43 seconds
+# system.time(ALL_anom <- readRDS("data/ALL_anom.Rda")) # 43 seconds
 # Plot
-ALL_anom %>%
-  filter(t == "2000-01-01") %>%
-  ggplot(aes(x = lon, y = lat)) +
-  geom_raster(aes(fill = anom_v))
-rm(ALL_anom); gc()
+# ALL_anom %>%
+#   filter(t == "2000-01-01") %>%
+#   ggplot(aes(x = lon, y = lat)) +
+#   geom_raster(aes(fill = anom_v))
+# rm(ALL_anom); gc()
 
 
 # Other dataframe ---------------------------------------------------------
@@ -215,10 +230,10 @@ system.time(GLORYS_uv_sub <- GLORYS_all_anom %>%
 rm(GLORYS_all_anom); gc()
 
 # Test visual
-GLORYS_uv_sub %>% 
-  filter(t == "1993-01-09") %>% 
-  ggplot(aes(x = lon, y = lat)) +
-  geom_tile(aes(fill = v))
+# GLORYS_uv_sub %>% 
+#   filter(t == "1993-01-09") %>% 
+#   ggplot(aes(x = lon, y = lat)) +
+#   geom_tile(aes(fill = v))
 
 ## Load ERA 5 U and V data
 system.time(ERA5_u_sub <- readRDS("data/ERA5_u_anom.Rda") %>%
@@ -265,17 +280,17 @@ system.time(saveRDS(ALL_other, "data/ALL_other.Rda")) # xxx seconds
 
 ## Test visuals
 # Load
-system.time(ALL_other <- readRDS("data/ALL_other.Rda")) # xxx seconds
+# system.time(ALL_other <- readRDS("data/ALL_other.Rda")) # xxx seconds
 # Plot
-ALL_other %>%
-  filter(t == "2000-01-01") %>%
-  ggplot(aes(x = lon, y = lat)) +
-  geom_raster(aes(fill = temp)) +
-  geom_segment(aes(xend = lon + u10 * wind_uv_scalar,
-                   yend = lat + v10 * wind_uv_scalar),
-               arrow = arrow(angle = 40, length = unit(0.1, "cm"), type = "open"),
-               linejoin = "mitre", size = 0.4, alpha = 0.4) +
-  geom_contour(aes(z = mslp, colour = stat(level)), size = 1)
+# ALL_other %>%
+#   filter(t == "2000-01-01") %>%
+#   ggplot(aes(x = lon, y = lat)) +
+#   geom_raster(aes(fill = temp)) +
+#   geom_segment(aes(xend = lon + u10 * wind_uv_scalar,
+#                    yend = lat + v10 * wind_uv_scalar),
+#                arrow = arrow(angle = 40, length = unit(0.1, "cm"), type = "open"),
+#                linejoin = "mitre", size = 0.4, alpha = 0.4) +
+#   geom_contour(aes(z = mslp, colour = stat(level)), size = 1)
 
 
  # Data packets ------------------------------------------------------------
@@ -317,8 +332,8 @@ saveRDS(packet, "data/packet.Rda")
 # NB: Just pick a region and event number to save a synoptic summary of it
 
 # # The 2012 lobster MHW
-# fig_data_packet("gm",	14)
-# fig_data_packet("gsl",	39)
+# fig_data_packet("gm",	15)
+# fig_data_packet("gsl",	38)
 
 # Smol MHWs
 # fig_data_packet("cbs",	14)
@@ -339,6 +354,6 @@ saveRDS(som, file = "data/som.Rda")
 
 # Visuals -----------------------------------------------------------------
 
-som <- readRDS("data/som.Rda")
-fig_all_som(som)
+# som <- readRDS("data/som.Rda")
+# fig_all_som(som)
 
