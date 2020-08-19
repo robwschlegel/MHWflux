@@ -246,7 +246,7 @@ system.time(ERA5_v_sub <- readRDS("data/ERA5_v_anom.Rda") %>%
                      lat %in% lat_sub)) # 45 seconds
 system.time(ERA5_uv_sub <- rbind(ERA5_u_sub, ERA5_v_sub) %>% 
               pivot_wider(values_from = val, names_from = var)) # 7 seconds
-rm(ERA5_u_anom, ERA5_v_anom); gc()
+rm(ERA5_u_sub, ERA5_v_sub); gc()
 
 ## Combine all
 system.time(ALL_uv_sub <- left_join(ERA5_uv_sub, GLORYS_uv_sub,
@@ -333,7 +333,7 @@ saveRDS(packet, "data/packet.Rda")
 
 # # The 2012 lobster MHW
 # fig_data_packet("gm",	15)
-# fig_data_packet("gsl",	38)
+# fig_data_packet("gsl", 38)
 
 # Smol MHWs
 # fig_data_packet("cbs",	14)
@@ -354,6 +354,6 @@ saveRDS(som, file = "data/som.Rda")
 
 # Visuals -----------------------------------------------------------------
 
-# som <- readRDS("data/som.Rda")
-# fig_all_som(som)
+som <- readRDS("data/som.Rda")
+fig_all_som(som)
 

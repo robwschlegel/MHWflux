@@ -378,7 +378,7 @@ cor_all <- function(df, df_event){
            region == df$region[1])
   
   # Subset the time series for the onset and decline portions
-  ts_full <- ALL_anom_full_wide %>% 
+  ts_full <- ALL_ts_anom_full_wide %>% 
     filter(t >= event_sub$date_start,
            t <= event_sub$date_end,
            region == event_sub$region) %>% 

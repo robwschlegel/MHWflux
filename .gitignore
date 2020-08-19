@@ -5,3 +5,8 @@
 data/OISST_all_anom.Rda
 data/GLORYS_all_anom.Rda
 data/*_anom.Rda
+data/ALL_other.Rda
+data/packet.Rda
+data/som.Rda
+data/synoptic_states.Rda
+data/synoptic_states_other.Rda
