@@ -113,6 +113,9 @@ ALL_ts_anom_full <- rbind(ALL_ts_anom[,c("region", "var", "t", "anom")],
 ALL_ts_anom_full_wide <- ALL_ts_anom_full %>% 
   pivot_wider(values_from = anom, names_from = var)
 
+# The corerelation/RMSE results
+ALL_cor <- readRDS("data/ALL_cor.Rda")
+
 # The base land polygon
   # Created in 'analysis/polygon-prep.Rmd'
 map_base <- readRDS("metadata/map_base.Rda")
@@ -948,13 +951,13 @@ fig_all_som <- function(som_packet,
   fig_map_func("air_u_v_mslp_real", base_data, col_num, fig_height, fig_width)
   
   # Lollis showing cum. int. + season
-  fig_cum_int_season(base_data, col_num, fig_height, fig_width)
+  fig_lolli_func("cum_int_season", base_data, col_num, fig_height, fig_width)
   
   # Lollis showing max. int. + region
-  fig_max_int_region(base_data, col_num, fig_height, fig_width)
+  fig_lolli_func("max_int_region", base_data, col_num, fig_height, fig_width)
   
   # Lollis showing duration + rate onset
-  fig_duration_rate_onset(base_data, col_num, fig_height, fig_width)
+  fig_lolli_func("duration_rate_onset", base_data, col_num, fig_height, fig_width)
   
   # Create SD per pixel plots for env. variables
   sd_col_names <- c(colnames(base_data$som_data_wide), colnames(base_data$other_data_wide))
@@ -973,7 +976,7 @@ fig_all_som <- function(som_packet,
 ## NB: This function contains objects created in "IMBeR_2019_figures.R"
 
 # testers...
-# fig_packet <- fig_data_prep(readRDS("data/SOM/som.Rda"))
+# fig_packet <- fig_data_prep(readRDS("data/som.Rda"))
 # fig_packet <- base_data
 # node_number = 8
 # fig_height = 9
@@ -991,31 +994,31 @@ fig_single_node <- function(node_number, fig_packet, fig_height, fig_width){
   fig_packet$node_h_lines <- filter(fig_packet$node_h_lines, node == node_number)
   
   # Events per region and season per node
-  region_season_sub <- fig_region_season(fig_packet, 1, fig_height, fig_width)
+  region_season_sub <- fig_map_func("region_season", fig_packet, 1, fig_height, fig_width)
   
   # SST + U + V (anom)
-  sst_u_v_anom_sub <- fig_sst_u_v_anom(fig_packet, 1, fig_height, fig_width)
+  sst_u_v_anom_sub <- fig_map_func("sst_u_v_anom", fig_packet, 1, fig_height, fig_width)
   
   # Air Temp + U + V (anom)
-  air_u_v_mslp_anom_sub <- fig_air_u_v_mslp_anom(fig_packet, 1, fig_height, fig_width)
+  air_u_v_mslp_anom_sub <- fig_map_func("air_u_v_mslp_anom", fig_packet, 1, fig_height, fig_width)
   
   # Net downward heat flux and MLD (anom)
-  qnet_mld_anom_sub <- fig_qnet_mld_anom(fig_packet, 1, fig_height, fig_width)
+  qnet_mld_anom_sub <- fig_map_func("qnet_mld_anom", fig_packet, 1, fig_height, fig_width)
   
   # SST + U + V (real)
-  sst_u_v_real_sub <- fig_sst_u_v_real(fig_packet, 1, fig_height, fig_width)
+  sst_u_v_real_sub <- fig_map_func("sst_u_v_real", fig_packet, 1, fig_height, fig_width)
   
   # Air Temp + U + V (real)
-  air_u_v_mslp_real_sub <- fig_air_u_v_mslp_real(fig_packet, 1, fig_height, fig_width)
+  air_u_v_mslp_real_sub <- fig_map_func("air_u_v_mslp_real", fig_packet, 1, fig_height, fig_width)
   
   # Lollis showing cum.int. + season
-  cum_int_season_sub <- fig_cum_int_season(fig_packet, 1, fig_height, fig_width)
+  cum_int_season_sub <- fig_lolli_func("cum_int_season", fig_packet, 1, fig_height, fig_width)
   
   # Lollis showing max.int + region
-  max_int_region_sub <- fig_max_int_region(fig_packet, 1, fig_height, fig_width)
+  max_int_region_sub <- fig_lolli_func("max_int_region", fig_packet, 1, fig_height, fig_width)
   
   # Lollis showing duration + rate onset
-  duration_rate_onset_sub <- fig_duration_rate_onset(fig_packet, 1, fig_height, fig_width)
+  duration_rate_onset_sub <- fig_lolli_func("duration_rate_onset", fig_packet, 1, fig_height, fig_width)
   
   # Create title
   title <- cowplot::ggdraw() + cowplot::draw_label(paste0("Node: ",node_number), fontface = 'bold')
@@ -1032,12 +1035,11 @@ fig_single_node <- function(node_number, fig_packet, fig_height, fig_width){
   fig_all_title <- cowplot::plot_grid(title, fig_all_sub, ncol = 1, rel_heights = c(0.05, 1))
   # fig_all_title
   # ggsave(fig_all_title, filename = paste0("output/node_",node_number,"_panels.png"), height = 12, width = 16)
-  ggsave(fig_all_title, filename = paste0("output/SOM/node_",node_number,"_panels_",product,".pdf"),
-         height = fig_height+5, width = fig_width+3)
-  ggsave(fig_all_title, filename = paste0("output/SOM/node_",node_number,"_panels_",product,".png"),
+  # ggsave(fig_all_title, filename = paste0("output/SOM/node_",node_number,"_panel.pdf"),
+  #        height = fig_height+5, width = fig_width+3)
+  ggsave(fig_all_title, filename = paste0("output/SOM/node_",node_number,"_panels.png"),
          height = fig_height+5, width = fig_width+3)
 }
-
 
 
 # Map figure function -----------------------------------------------------
@@ -1184,7 +1186,7 @@ fig_map_func <- function(map_var, fig_data, col_num, fig_height, fig_width){
   if(col_num != 1){
     fig_res <- fig_res +
       facet_wrap(~node, ncol = col_num)
-    ggsave(paste0("output/SOM/",map_var,".pdf"), fig_res, height = fig_height, width = fig_width)
+    # ggsave(paste0("output/SOM/",map_var,".pdf"), fig_res, height = fig_height, width = fig_width)
     ggsave(paste0("output/SOM/",map_var,".png"), fig_res, height = fig_height, width = fig_width)
   } else{
     return(fig_res)
@@ -1217,7 +1219,7 @@ fig_sd <- function(col_name, fig_data, col_num, fig_height, fig_width){
     # Etc.
     theme(legend.position = "bottom")
   if(col_num != 1){
-    ggsave(paste0("output/SOM/",col_name,"_sd.pdf"), sd_heat_map, height = fig_height, width = fig_width)
+    # ggsave(paste0("output/SOM/",col_name,"_sd.pdf"), sd_heat_map, height = fig_height, width = fig_width)
     ggsave(paste0("output/SOM/",col_name,"_sd.png"), sd_heat_map, height = fig_height, width = fig_width)
   }
   # return(sd_heat_map)
@@ -1229,7 +1231,6 @@ fig_sd <- function(col_name, fig_data, col_num, fig_height, fig_width){
 
 fig_lolli_func <- function(lolli_var, fig_data, col_num, fig_height, fig_width){
   if(lolli_var == "cum_int_season"){
-    # The figure
     fig_res <- ggplot(data = fig_data$region_MHW_meta,
                       aes(x = date_peak, y = intensity_cumulative)) +
       geom_lolli(aes(colour = season_peak), size = 2) +
@@ -1242,98 +1243,43 @@ fig_lolli_func <- function(lolli_var, fig_data, col_num, fig_height, fig_width){
       labs(x = "", y = "Cum. intensity (°C x days)", colour = "Season") +
       theme(legend.position = "bottom",
             axis.text.x = element_text(angle = 30))
+  } else if(lolli_var == "max_int_region"){
+    fig_res <- ggplot(data = fig_data$region_MHW_meta,
+                      aes(x = date_peak, y = intensity_max)) +
+      geom_lolli(aes(colour = region), size = 2) +
+      geom_smooth(method = "lm", se = F, aes(colour = region), size = 2) +
+      geom_hline(data = fig_data$node_h_lines, aes(yintercept = mean_int_max), linetype = "dashed") +
+      geom_hline(data = fig_data$node_h_lines, aes(yintercept = median_int_max), linetype = "dotted") +
+      scale_colour_manual(values = RColorBrewer::brewer.pal(n = 6, name = 'Dark2')[c(1,2,4,5,3,6)]) +
+      scale_x_date(labels = scales::date_format("%Y"),
+                   date_breaks = "2 years", date_minor_breaks = "1 year") +
+      labs(x = "", y = "Max. intensity (°C)", colour = "Region") +
+      theme(legend.position = "bottom",
+            axis.text.x = element_text(angle = 30))
+  } else if(lolli_var == "duration_rate_onset"){
+    fig_res <- ggplot(data = fig_data$region_MHW_meta,
+                                  aes(x = date_peak, y = duration)) +
+      geom_lolli(aes(colour = rate_onset), size = 2) +
+      # geom_point() +
+      geom_hline(data = fig_data$node_h_lines, aes(yintercept = mean_dur), linetype = "dashed") +
+      geom_hline(data = fig_data$node_h_lines, aes(yintercept = median_dur), linetype = "dotted") +
+      scale_x_date(labels = scales::date_format("%Y"),
+                   date_breaks = "2 years", date_minor_breaks = "1 year") +
+      scale_colour_gradient(low = "white", high = "darkorange") +
+      labs(x = "", y = "Duration (days)", colour = "Rate onset (°C x days)") +
+      theme(legend.position = "bottom",
+            axis.text.x = element_text(angle = 30))
   }
 
+  # Save or return
   if(col_num != 1){
     fig_res <- fig_res +
       facet_wrap(~node, ncol = col_num)
-    ggsave(paste0("output/SOM/",lolli_var,".pdf"), cum_int_seas, height = fig_height, width = fig_width)
-    ggsave(paste0("output/SOM/",lolli_var,".png"), cum_int_seas, height = fig_height, width = fig_width)
+    # ggsave(paste0("output/SOM/",lolli_var,".pdf"), fig_res, height = fig_height, width = fig_width)
+    ggsave(paste0("output/SOM/",lolli_var,".png"), fig_res, height = fig_height, width = fig_width)
+  } else{
+    return(fig_res)
   }
-  return(cum_int_seas)
-}
-
-
-
-# Max. int. + region lolli ------------------------------------------------
-
-fig_max_int_region <- function(fig_data, col_num, fig_height, fig_width){
-  # The figure
-  max_int_region <- ggplot(data = fig_data$region_MHW_meta,
-                           aes(x = date_peak, y = intensity_max)) +
-    # Count label
-    # geom_label(aes(x = mean(range(date_peak)),
-    #                y = max(intensity_max),
-    #                label = paste0("n = ", count))) +
-    # Mean stat label
-    # geom_label(data = fig_data$node_h_lines,
-    #            aes(x = mean(range(fig_data$OISST_MHW_meta$date_peak)),
-    #                y = max(fig_data$OISST_MHW_meta$intensity_max)*0.9,
-    #                label = paste0("mean = ", mean_int_max))) +
-    # Median stat label
-    # geom_label(data = fig_data$node_h_lines,
-  #            aes(x = mean(range(fig_data$OISST_MHW_meta$date_peak)),
-  #                y = max(fig_data$OISST_MHW_meta$intensity_max)*0.8,
-  #                label = paste0("median = ", median_int_max))) +
-  geom_lolli(aes(colour = region), size = 2) +
-    # geom_point(aes(colour = region), size = 2) +
-    geom_smooth(method = "lm", se = F, aes(colour = region), size = 2) +
-    geom_hline(data = fig_data$node_h_lines, aes(yintercept = mean_int_max), linetype = "dashed") +
-    geom_hline(data = fig_data$node_h_lines, aes(yintercept = median_int_max), linetype = "dotted") +
-    scale_colour_manual(values = RColorBrewer::brewer.pal(n = 6, name = 'Dark2')[c(1,2,4,5,3,6)]) +
-    scale_x_date(labels = scales::date_format("%Y"),
-                 date_breaks = "2 years", date_minor_breaks = "1 year") +
-    labs(x = "", y = "Max. intensity (°C)", colour = "Region") +
-    theme(legend.position = "bottom",
-          axis.text.x = element_text(angle = 30))
-  if(col_num != 1){
-    max_int_region <- max_int_region +
-      facet_wrap(~node, ncol = col_num)
-    ggsave(paste0("output/SOM/max_int_region_.pdf"), max_int_region, height = fig_height, width = fig_width)
-    ggsave(paste0("output/SOM/max_int_region_.png"), max_int_region, height = fig_height, width = fig_width)
-  }
-  return(max_int_region)
-}
-
-
-# Rate onset + duration lolli ---------------------------------------------
-
-fig_duration_rate_onset <- function(fig_data, col_num, fig_height, fig_width){
-  # The figure
-  duration_rate_onset <- ggplot(data = fig_data$region_MHW_meta,
-                                aes(x = date_peak, y = duration)) +
-    # geom_smooth(method = "lm", se = F, aes(colour = region)) +
-    # Count label
-    # geom_label(aes(x = mean(range(date_peak)),
-    #                y = max(duration),
-    #                label = paste0("n = ", count))) +
-    # Mean stat label
-    # geom_label(data = fig_data$node_h_lines,
-    #            aes(x = mean(range(fig_data$OISST_MHW_meta$date_peak)),
-    #                y = max(fig_data$OISST_MHW_meta$duration)*0.9,
-    #                label = paste0("mean = ", mean_dur))) +
-    # Median stat label
-  # geom_label(data = fig_data$node_h_lines,
-  #            aes(x = mean(range(fig_data$OISST_MHW_meta$date_peak)),
-  #                y = max(fig_data$OISST_MHW_meta$duration)*0.8,
-  #                label = paste0("median = ", median_dur))) +
-  geom_lolli() +
-    geom_point(aes(colour = rate_onset)) +
-    geom_hline(data = fig_data$node_h_lines, aes(yintercept = mean_dur), linetype = "dashed") +
-    geom_hline(data = fig_data$node_h_lines, aes(yintercept = median_dur), linetype = "dotted") +
-    scale_x_date(labels = scales::date_format("%Y"),
-                 date_breaks = "2 years", date_minor_breaks = "1 year") +
-    scale_colour_gradient(low = "white", high = "darkorange") +
-    labs(x = "", y = "Duration (days)", colour = "Rate onset (°C x days)") +
-    theme(legend.position = "bottom",
-          axis.text.x = element_text(angle = 30))
-  if(col_num != 1){
-    duration_rate_onset <- duration_rate_onset +
-      facet_wrap(~node, ncol = col_num)
-    ggsave(paste0("output/SOM/duration_rate_onset.pdf"), duration_rate_onset, height = fig_height, width = fig_width)
-    ggsave(paste0("output/SOM/duration_rate_onset.png"), duration_rate_onset, height = fig_height, width = fig_width)
-  }
-  return(duration_rate_onset)
 }
 
 

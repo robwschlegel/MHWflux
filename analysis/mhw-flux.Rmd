@@ -66,6 +66,8 @@ There are some really clear patterns coming through in the data. In particular S
 
 In the shiny app it also comes out that the longer events tend not to correlate strongly with a single variable. This is to be expected and supports the argument that very persistent MHWs are supported by a confluence of variables. How to parse that out is an interesting challenge.
 
+## Results
+
 ### 12 hour offset
 
 While going through the data it was discovered that the OISST temperature values represent an average from midnight to midnight. This therefore puts them off set to the Qx terms, which were also being calculated over the same time period. But to compare the Qx terms to SST there should be a 12 hour offset. So 12 hours were added to the terms before re-running the pipeline and recalculating all of the correlations and RMSE. In the code chunk below we compare the stats pre-12 hour shift and afterwards.
@@ -112,11 +114,46 @@ ALL_cor_stack %>%
 
 The new an improved method that correctly integrates Qx into SSTa creates much lower RMSE values for almost every variable and region. A smashing success.
 
-## Regions + Seasons
+### Summary, Regions, Seasons
 
-With the correlations calculated for the onset, decline, and full extent of each MHW, we also want to know if any signals emerge from the regions and/or seasons of occurrence of these events. Is the relationship between SSS and MHW onset stronger in the winter? Stronger in certain region? Having manually looked through the Shiny app it does look like there are some patterns. These will be written down in the results table below.
+With the correlations calculated for the onset, decline, and full extent of each MHW, we want to know if any signals emerge from the regions and/or seasons of occurrence of these events. Is the relationship between SSS and MHW onset stronger in the winter? Stronger in certain region? Having manually looked through the Shiny app it does look like there are some patterns. Below is the code used to determine the stats referred to in the paper.
 
-## Relationships
+```{r}
+# Overall correlation results
+cor_summary_all <- ALL_cor %>% 
+  filter(Parameter1 == "sst",
+         Parameter2 != "SST") %>% 
+  group_by(ts, Parameter2) %>% 
+  summarise(q10_r = quantile(r, 0.1),
+            mean_r = mean(r, na.rm = T),
+            q90_r = quantile(r, 0.9),
+            mean_rmse = mean(rmse, na.rm = T))
+
+# Overall positive only results
+cor_positive_all <- ALL_cor %>% 
+  filter(Parameter1 == "sst",
+         Parameter2 != "sst",
+         r > 0) %>% 
+  group_by(ts, Parameter2) %>% 
+  summarise(q10_r = quantile(r, 0.1),
+            mean_r = mean(r, na.rm = T),
+            q90_r = quantile(r, 0.9),
+            mean_rmse = mean(rmse, na.rm = T))
+
+# Overall negative only results
+cor_negative_all <- ALL_cor %>% 
+  filter(Parameter1 == "sst",
+         Parameter2 != "sst",
+         r < 0) %>% 
+  group_by(ts, Parameter2) %>% 
+  summarise(q10_r = quantile(r, 0.1),
+            mean_r = mean(r, na.rm = T),
+            q90_r = quantile(r, 0.9),
+            mean_rmse = mean(rmse, na.rm = T))
+```
+
+
+### Relationships
 
 With patterns pulled out by region and season, we want to see if there are any relationships between MHWs that show strong correlations at onset with a particular variables and strong correlations at decline with another. We will look for this within regions and seasons as well. For example, do MHWs that correlate well with an increase in SSS also correlate well with a decrease in long-wave radiation during the decline of the event? I'm not sure how best to go about this in a clean manner.
 
@@ -260,7 +297,7 @@ events_cor_prep %>%
   geom_point(aes(colour = season))
 ```
 
-## Linearity of events
+### Linearity of events
 
 Another observation I made while going through the results in the app was how the onset and decline of events tend to have a better RMSE when the SSTa trend is more linear. My hypothesis is that this is because there is less advective pressure on the dispersion of the heat anomaly, therefore more of the heatflux is responsible for the temperature anomaly. THis is a pretty straight forward statement, but I think it is useful in that one may be able to take linearity of SSTa as a proxy for the proportion of heat flux that is responsible for it. So in the chunk below I use simple linear models to create an R2 value for each onset and decline portion of an event. Then I find how close to 1.0 that R2 value is (meaning more linear SSTa) and I see how RMSE changes as R2 improves. I hypothesised that more linear SSTa onset will provide better (lower) RMSE values. The same is likely true for decline but I'm not certain.
 
@@ -294,7 +331,7 @@ readRDS("data/ALL_cor.Rda") %>%
 
 Nope. If there is any relationship it is incredibly noisey. I'll not be pursuing this further for this project, but I'm not entirely dissuaded from pursuing this avenue of research in the future with a deeper learning approach.
 
-## Choice events
+### Choice events
 
 There are a lot of results to wade through and though it is clear there are important signals in the results, it is proving difficult to distill them. One thought is that we don't need to look at all of the events, just the longest/most intense events with strong r values. This is first done by cutting out all Cat. I events. We then find strong correlations with long events. There should just be a few.
 
@@ -338,7 +375,7 @@ events_lhf_p_onset <- events_q_onset %>%
 events_lhf_p_onset
 ```
 
-## Results
+### Table
 
 In the following table a more concise summary of the results is presented.
 

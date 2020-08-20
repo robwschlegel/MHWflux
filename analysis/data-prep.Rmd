@@ -370,10 +370,29 @@ We can see from the results above that there are some minor differences between 
 Because the MHW results themselves are not really the focus of the paper, I will quickly go over them here. Specifically we are looking at the summary stats for MHWs per region and season, and how they may differ between those classifying groups. The stats created here are used in the results section of the manuscript and some of the musings will be used for the discussion.
 
 ```{r MHW-results}
-MHW_annual_count <- OISST_MHW_event %>%
+# Annual count of MHWs - first MHW
+OISST_MHW_event %>%
   mutate(year = year(date_peak)) %>% 
   group_by(year) %>% 
-  summarise(count = n())
+  summarise(count = n()) %>% 
+  data.frame()
+
+# Differences between regions
+OISST_MHW_event %>% 
+  dplyr::select(region, duration, intensity_mean, intensity_max, 
+                intensity_cumulative, rate_onset, rate_decline) %>% 
+  group_by(region) %>% 
+  mutate(count = n()) %>% 
+  summarise_all("mean", na.rm = T)
+
+# Differences between regions
+OISST_MHW_event %>% 
+  ungroup() %>% 
+  dplyr::select(season, duration, intensity_mean, intensity_max, 
+                intensity_cumulative, rate_onset, rate_decline) %>% 
+  group_by(season) %>% 
+  mutate(count = n()) %>% 
+  summarise_all("mean", na.rm = T)
 ```
 
 ## Region clims + anoms per variable
