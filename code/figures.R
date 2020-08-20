@@ -18,35 +18,73 @@ NWA_coords$region <- toupper(NWA_coords$region)
 # Reorder site labels
 NWA_coords$region <- factor(NWA_coords$region, levels = c("MAB", "GM", "SS", "GSL", "CBS", "NFS"))
 
+# Event count by region 
+season_count <- OISST_MHW_event %>% 
+  group_by(season) %>% 
+  summarise(count = n(), .groups = "drop")
+
+# Event count by region 
+region_count <- OISST_MHW_event %>% 
+  group_by(region) %>% 
+  summarise(count = n(), .groups = "drop") %>% 
+  mutate(region = toupper(region))
+
+# Create labels for number of MHWs per region
+region_prop_label <- NWA_coords %>%
+  left_join(region_count, by = "region") %>%
+  group_by(region) %>%
+  mutate(lon_center = mean(lon), lat_center = mean(lat)) %>%
+  na.omit() %>% 
+  mutate(lon_center = case_when(region == "GSL" ~ lon_center+2,
+                                region == "SS" ~ lon_center+1,
+                                region == "GM" ~ lon_center-1,
+                                region == "MAB" ~ lon_center+1.8,
+                                TRUE ~ lon_center),
+         lat_center = case_when(region == "GM" ~ lat_center-1.5,
+                                region == "MAB" ~ lat_center+0.8,
+                                TRUE ~ lat_center)) %>%
+  ungroup()
+
 # Study area
 NWA_study_area <- ggplot(data = NWA_coords, aes(x = lon, y = lat)) +
   geom_polygon(aes(colour = region, fill = region), size = 1.5, alpha = 0.2) +
   geom_polygon(data = map_base, aes(group = group), show.legend = F) +
-  coord_cartesian(xlim = c(min(NWA_coords$lon)-2, max(NWA_coords$lon)+2),
-                  ylim = c(min(NWA_coords$lat)-2, max(NWA_coords$lat)+0.5),
-                  expand = FALSE) +
+  geom_label(data = region_prop_label, label.size = 1.5, show.legend = F,
+             aes(x = lon_center, y = lat_center, label = count, colour = region)) +
+  geom_label(data = filter(season_count, season == "Spring"), 
+             aes(x = -55, y = 41, label = paste0(season,": ",count))) +
+  geom_label(data = filter(season_count, season == "Summer"), 
+             aes(x = -55, y = 40, label = paste0(season,": ",count))) +
+  geom_label(data = filter(season_count, season == "Autumn"), 
+             aes(x = -55, y = 39, label = paste0(season,": ",count))) +
+  geom_label(data = filter(season_count, season == "Winter"), 
+             aes(x = -55, y = 38, label = paste0(season,": ",count))) +
+  coord_cartesian(xlim = NWA_corners[1:2], ylim = NWA_corners[3:4], expand = F) +
   scale_x_continuous(breaks = seq(-70, -50, 10),
                      labels = c("70°W", "60°W", "50°W"),
                      position = "top") +
   scale_y_continuous(breaks = c(40, 50),
                      labels = scales::unit_format(suffix = "°N", sep = "")) +
-  scale_colour_manual(values = RColorBrewer::brewer.pal(n = 6, name = 'Dark2')[c(1,2,5,4,3,6)], aesthetics = c("colour", "fill")) +
+  scale_colour_manual(values = RColorBrewer::brewer.pal(n = 6, name = 'Dark2')[c(1,2,5,4,3,6)], 
+                      aesthetics = c("colour", "fill")) +
   labs(x = NULL, y = NULL, colour = "Region", fill = "Region") +
-  theme_bw() +
-  theme(legend.position = c(0.6, 0.2),
+  # theme_bw() +
+  theme(legend.position = c(0.7, 0.1),
         legend.background = element_rect(colour = "black"),
-        legend.direction = "horizontal")
+        legend.direction = "horizontal",
+        panel.background = element_rect(colour = "black"))
 # NWA_study_area
 
 # Lollis
 MHW_lolli_plot <- ggplot(data = OISST_MHW_event , aes(x = date_peak, y = intensity_cumulative)) +
   geom_lolli(aes(colour = region), colour_n = "red", n = 0, size = 1.0, show.legend = F) +
-  labs(x = "Peak Date", y = "Cum. Intensity (°C x days)") +
+  labs(x = "Peak Date", y = "Cumulative Intensity (°C x days)") +
   scale_colour_manual(values = RColorBrewer::brewer.pal(n = 6, name = 'Dark2')[c(1,2,5,4,3,6)]) +
   scale_y_continuous(limits = c(0, 250), breaks = seq(50, 200, 50), expand = c(0,0)) +
   facet_wrap(~region, ncol = 2) +
   theme(strip.background = element_blank(),
-        strip.text.x = element_blank())
+        strip.text.x = element_blank(),
+        panel.background = element_rect(colour = "black"))
 # MHW_lolli_plot
 
 # Combine
@@ -61,7 +99,8 @@ ggsave("figures/fig_1.png", fig_1, height = 5, width = 10)
 
 # The correlations
 ALL_cor <- readRDS("data/ALL_cor.Rda") %>% 
-  mutate(region = factor(region, levels = c("mab", "gm", "ss", "cbs", "gsl", "nfs")),
+  mutate(region = toupper(region)) %>% 
+  mutate(region = factor(region, levels = c("MAB", "GM", "SS", "CBS", "GSL", "NFS")),
          season = factor(season, levels = c("Spring", "Summer", "Autumn", "Winter")),
          Parameter2 = as.character(Parameter2)) %>% 
   filter(Parameter1 == "sst",
@@ -75,11 +114,11 @@ ALL_cor <- readRDS("data/ALL_cor.Rda") %>%
                                 Parameter2 == "tcc_cum" ~ "Cloud",
                                 Parameter2 == "p_e_cum" ~ "P-E",
                                 Parameter2 == "mslp_cum" ~ "MSLP",
-                                Parameter2 == "lwr_mld_cum" ~ "Qlw",
-                                Parameter2 == "swr_mld_cum" ~ "Qsw",
-                                Parameter2 == "lhf_mld_cum" ~ "Qlh",
-                                Parameter2 == "shf_mld_cum" ~ "Qsh",
-                                Parameter2 == "qnet_mld_cum" ~ "Qnet",
+                                Parameter2 == "lwr_budget" ~ "Qlw",
+                                Parameter2 == "swr_budget" ~ "Qsw",
+                                Parameter2 == "lhf_budget" ~ "Qlh",
+                                Parameter2 == "shf_budget" ~ "Qsh",
+                                Parameter2 == "qnet_budget" ~ "Qnet",
                                 TRUE ~ Parameter2),
          Parameter2 = factor(Parameter2, levels = c("Qnet", "Qlh", "Qsh", "Qlw", "Qsw",
                                                     "Air", "Cloud", "P-E", "MSLP",
@@ -95,9 +134,10 @@ hist_var <- function(var_choices, y_label){
     scale_y_continuous(expand = c(0, 0)) +
     scale_x_continuous(expand = c(0, 0), breaks = c(-0.9, -0.5, 0, 0.5, 0.9)) +
     facet_grid(ts ~ Parameter2) +
+    coord_fixed(ratio = 0.01) +
     labs(x = NULL, y = y_label) +
-    theme(axis.title.y = element_text(size = 16)) +
-    coord_fixed(ratio = 0.01)
+    theme(axis.title.y = element_text(size = 16),
+          panel.background = element_rect(colour = "black"))
 }
 
 # The three figures
@@ -129,9 +169,10 @@ boxplot_var <-  function(var_choices, y_label){
     # scale_y_continuous(expand = c(0, 0)) +
     # scale_x_continuous(expand = c(0, 0)) +
     # facet_grid(ts ~ Parameter2) +
+    coord_equal() +
     labs(x = NULL, y = y_label, fill = "Region") +
-    theme(axis.title.y = element_text(size = 16)) +
-    coord_equal()
+    theme(axis.title.y = element_text(size = 16),
+          panel.background = element_rect(colour = "black"))
 }
 
 box_Q <- boxplot_var(c("Qnet", "Qlh", "Qsh", "Qlw", "Qsw"), "Heat flux")
@@ -181,7 +222,7 @@ events_cor_prep <- OISST_MHW_event %>%
 
 
 # Load the SOM from the MHWNWA
-SOM <- readRDS("../MHWNWA/data/SOM/som.Rda")
+SOM <- readRDS("data/som.Rda")
 
 # Grab only the node info
 SOM_info <- SOM$info
@@ -224,7 +265,8 @@ fig_6 <- events_cor_SOM %>%
   labs(x = NULL, y = NULL, fill = "r (mean)") +
   theme(legend.position = "bottom",
         axis.text.y = element_text(angle = 90, hjust = 0.5),
-        axis.text.x = element_text(angle = 30, hjust = 1.0))
+        axis.text.x = element_text(angle = 30, hjust = 1.0),
+        panel.background = element_rect(colour = "black"))
 # fig_6
 ggsave("figures/fig_6.png", fig_6, height = 7, width = 14)
 
