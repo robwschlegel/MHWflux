@@ -25,11 +25,11 @@ This vignette will walk through the thinking and the process for how to link phy
 source("code/functions.R")
 ```
 
-## Correlations
+## Relating SSTa to physical variables
 
-We know when the MHWs occurred, and our physical data are prepped, so what we need to do is run correlations between SST from the start to peak and peak to end of each event for the full suite of variables. This will show us for each event which values correlated the best for the onset AND decline of the events. We will run correlations on the full time series, too.
+We know when MHWs occurred, and our physical data are prepped, so what we need to do is run RMSE and correlations between SSTa from the start to peak and peak to end of each event for the full suite of variables. This will show us for each event which values related the best for the onset AND decline of the events. We will run RMSE and correlations on the full time series, too.
 
-Running correlations is useful to see how well certain variables change in relation to the SST anomalies, but these do not show how similar those proportions of change are. In order to do this we need to calculate the RMSE between the SST anomalies and the Qx terms. This may only be done with the Qx terms because they are in the same units as SST. One additional tweak we will need here is to add the cumulative Qx term for the following day to the SST anomaly from the first day of the MHW. This is done so that we may see more closely how the developing Qx term matches to the development of the SST anomaly.
+Running correlations is useful to see how well certain variables change in relation to SSTa, but these do not show how similar those proportions of change are. In order to do this we need to calculate the RMSE between the SST anomalies and the Qx terms. This may only be done with the Qx terms because they are in the same units as SST. One additional tweak we will need here is to add the cumulative Qx term for the following day to the SST anomaly from the first day of the MHW. This is done so that we may see more closely how the developing Qx term matches to the development of the SST anomaly. Effectively this tells us how much the Qx term may be driving SSTa.
 
 ```{r MHW-var-cor, eval=FALSE}
 # Extract just the event info
@@ -52,9 +52,7 @@ saveRDS(ALL_cor, "data/ALL_cor.Rda")
 saveRDS(ALL_cor, "shiny/ALL_cor.Rda")
 ```
 
-Seeing as how we're running correlations everything runs pretty quickly. With the method sorted for now we need to have a look at the results. What we have at the moment is a long dataframe containing the correlations of different variables with temperature anomalies. It must be pointed out that these are for the same day, there is no time lag introduced, which may be important. Below we are going to visualise the range of correlations for each variable to see how much each distribution is skewed. This skewness could probably be quantified in a meaningful way... but let's look at the data first.
-
-We also want to filter by p-value to highlight the strong correlations.
+What we have now is a long dataframe containing the RMSE and correlations of different variables with SSTa. It must be pointed out that the correlations for the non-Qx terms are for the same day, there is no time lag introduced, which may be important. Below we are going to visualise the range of correlations for each variable to see how much each distribution is skewed. This skewness could probably be quantified in a meaningful way... but let's look at the data first.
 
 ```{r shiny-histo}
 # source("shiny/app.R")
@@ -114,7 +112,59 @@ ALL_cor_stack %>%
 
 The new an improved method that correctly integrates Qx into SSTa creates much lower RMSE values for almost every variable and region. A smashing success.
 
-### Summary, Regions, Seasons
+### RMSE summary
+
+Here we will go about summarising the RMSE results. We will also create some boxplots to help with the process.
+
+```{r}
+# The base RMSE results
+ALL_RMSE <- ALL_cor %>% 
+  filter(rmse > 0 ) %>% 
+  dplyr::select(region:ts, Parameter2, n_Obs, rmse) %>% 
+    mutate(Parameter2 = as.character(Parameter2),
+           Parameter2 = case_when(Parameter2 == "lwr_budget" ~ "Qlw",
+                                  Parameter2 == "swr_budget" ~ "Qsw",
+                                  Parameter2 == "lhf_budget" ~ "Qlh",
+                                  Parameter2 == "shf_budget" ~ "Qsh",
+                                  Parameter2 == "qnet_budget" ~ "Qnet",
+                                  TRUE ~ Parameter2),
+           Parameter2 = factor(Parameter2, levels = c("Qnet", "Qlh", "Qsh", "Qlw", "Qsw")))
+
+# Summaries by region
+ALL_RMSE_region <- ALL_RMSE %>% 
+  dplyr::select(-season, -event_no, -n_Obs) %>% 
+  group_by(region, ts, Parameter2) %>% 
+  summarise(rmse_min = min(rmse),
+           rmse_mean = mean(rmse),
+           rmse_max = max(rmse), .groups = "drop")
+
+# Boxplot of region summaries
+ALL_RMSE %>% 
+  dplyr::select(-season, -event_no, -n_Obs) %>% 
+  mutate(region = toupper(region)) %>% 
+  ggplot(aes(x = Parameter2, y = rmse)) +
+  geom_boxplot(aes(fill = ts)) +
+  facet_wrap(~region) #+
+  # theme(axis.text.x = element_text(angle = 45))
+
+# Summaries by season
+ALL_RMSE_season <- ALL_RMSE %>% 
+  dplyr::select(-region, -event_no, -n_Obs) %>% 
+  group_by(season, ts, Parameter2) %>% 
+  summarise(rmse_min = min(rmse),
+           rmse_mean = mean(rmse),
+           rmse_max = max(rmse), .groups = "drop")
+
+# Boxplot of season results
+ALL_RMSE %>% 
+  dplyr::select(-region, -event_no, -n_Obs) %>% 
+  # mutate(region = toupper(region)) %>% 
+  ggplot(aes(x = Parameter2, y = rmse)) +
+  geom_boxplot(aes(fill = ts)) +
+  facet_wrap(~season)
+```
+
+### Correlations: summary, regions, seasons
 
 With the correlations calculated for the onset, decline, and full extent of each MHW, we want to know if any signals emerge from the regions and/or seasons of occurrence of these events. Is the relationship between SSS and MHW onset stronger in the winter? Stronger in certain region? Having manually looked through the Shiny app it does look like there are some patterns. Below is the code used to determine the stats referred to in the paper.
 
@@ -122,7 +172,7 @@ With the correlations calculated for the onset, decline, and full extent of each
 # Overall correlation results
 cor_summary_all <- ALL_cor %>% 
   filter(Parameter1 == "sst",
-         Parameter2 != "SST") %>% 
+         Parameter2 != "sst") %>% 
   group_by(ts, Parameter2) %>% 
   summarise(q10_r = quantile(r, 0.1),
             mean_r = mean(r, na.rm = T),
@@ -151,7 +201,6 @@ cor_negative_all <- ALL_cor %>%
             q90_r = quantile(r, 0.9),
             mean_rmse = mean(rmse, na.rm = T))
 ```
-
 
 ### Relationships
 
