@@ -135,7 +135,8 @@ fig_2a <- ALL_RMSE_fig %>%
   geom_boxplot(aes(fill = ts)) +
   scale_fill_brewer(palette = "Set2") +
   facet_wrap(~region) +
-  labs(x = NULL, y = "RMSE", fill = "Time series")
+  labs(x = NULL, y = "RMSE", fill = "Time series") +
+  theme(panel.background = element_rect(colour = "black"))
 # fig_2a
 
 # Season boxplot
@@ -144,7 +145,8 @@ fig_2b <- ALL_RMSE_fig %>%
   geom_boxplot(aes(fill = ts)) +
   scale_fill_brewer(palette = "Set2") +
   facet_wrap(~season) +
-  labs(x = NULL, y = "RMSE", fill = "Time series")
+  labs(x = NULL, y = "RMSE", fill = "Time series") +
+  theme(panel.background = element_rect(colour = "black"))
 # fig_2b
 
 # Combine and save
@@ -228,6 +230,7 @@ ggsave("figures/fig_4.png", fig_4, height = 5, width = 10)
 # SOM region + season panels.
 # Created in the MHWNWA project.
 
+# I'm thinking of combining these two figures: 5 + 6
 
 # Figure 6 ----------------------------------------------------------------
 
