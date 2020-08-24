@@ -120,11 +120,45 @@ fig_1 <- cowplot::plot_grid(NWA_study_area, MHW_lolli_plot, labels = c('A)', 'B)
 ggsave("figures/fig_1.png", fig_1, height = 5, width = 10)
 
 
+# Table 1 -----------------------------------------------------------------
+
+# The top count of Qx terms by RMSE per region
+
+# Get the top RMSE results (i.e. the lowest RMSE scores)
+ALL_RMSE_top <- ALL_cor_fig %>% 
+  filter(rmse > 0 ) %>% 
+  dplyr::select(region:ts, Parameter2, rmse) %>% 
+  group_by(region, season, event_no, ts) %>% 
+  filter(rmse == min(rmse))
+
+# The top count by region
+ALL_RMSE_top_region <- ALL_RMSE_top %>% 
+  group_by(region, ts, Parameter2) %>% 
+  summarise(count = n(), .groups = "drop") %>% 
+  pivot_wider(names_from = Parameter2, values_from = count) %>% 
+  mutate(Qlw = replace_na(Qlw, 0)) # Never most important for MAB onset
+tab_1 <- knitr::kable(ALL_RMSE_top_region)#, format = "latex")
+tab_1
+
+
+# Table 2 -----------------------------------------------------------------
+
+# The top count of Qx terms by RMSE per season
+
+# The top count by season
+ALL_RMSE_top_season <- ALL_RMSE_top %>% 
+  group_by(season, ts, Parameter2) %>% 
+  summarise(count = n(), .groups = "drop") %>% 
+  pivot_wider(names_from = Parameter2, values_from = count)
+tab_2 <- knitr::kable(ALL_RMSE_top_season)#, format = "latex")
+tab_2
+
+
 # Figure 2 ----------------------------------------------------------------
 
 # Boxplots showing range of RMSE results per region and season
 
-# Prep data
+# Prep the RMSE data
 ALL_RMSE_fig <- ALL_cor_fig %>% 
   filter(rmse > 0 ) %>% 
   dplyr::select(region, season, ts, Parameter2, rmse)

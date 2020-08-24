@@ -116,7 +116,7 @@ The new an improved method that correctly integrates Qx into SSTa creates much l
 
 Here we will go about summarising the RMSE results. We will also create some boxplots to help with the process.
 
-```{r}
+```{r RMSE-boxplot}
 # The base RMSE results
 ALL_RMSE <- ALL_cor %>% 
   filter(rmse > 0 ) %>% 
@@ -128,7 +128,8 @@ ALL_RMSE <- ALL_cor %>%
                                   Parameter2 == "shf_budget" ~ "Qsh",
                                   Parameter2 == "qnet_budget" ~ "Qnet",
                                   TRUE ~ Parameter2),
-           Parameter2 = factor(Parameter2, levels = c("Qnet", "Qlh", "Qsh", "Qlw", "Qsw")))
+           Parameter2 = factor(Parameter2, levels = c("Qnet", "Qlh", "Qsh", "Qlw", "Qsw")),
+           region = toupper(region))
 
 # Summaries by region
 ALL_RMSE_region <- ALL_RMSE %>% 
@@ -141,7 +142,6 @@ ALL_RMSE_region <- ALL_RMSE %>%
 # Boxplot of region summaries
 ALL_RMSE %>% 
   dplyr::select(-season, -event_no, -n_Obs) %>% 
-  mutate(region = toupper(region)) %>% 
   ggplot(aes(x = Parameter2, y = rmse)) +
   geom_boxplot(aes(fill = ts)) +
   facet_wrap(~region) #+
@@ -158,11 +158,47 @@ ALL_RMSE_season <- ALL_RMSE %>%
 # Boxplot of season results
 ALL_RMSE %>% 
   dplyr::select(-region, -event_no, -n_Obs) %>% 
-  # mutate(region = toupper(region)) %>% 
   ggplot(aes(x = Parameter2, y = rmse)) +
   geom_boxplot(aes(fill = ts)) +
   facet_wrap(~season)
 ```
+
+These boxplots help to tell a high level story about the importance of the Qx terms with SSTa, but I want a slightly more fine-grain level of results. To do this I am going to count which of the Qx terms has the lowest RMSE per MHW. These will then be grouped by region and season to provide an understanding for how this may vary.
+
+```{r RMSE-table}
+# Get the top RMSE results (i.e. the lowest RMSE scores)
+ALL_RMSE_top <- ALL_RMSE %>% 
+  # dplyr::select(-n_Obs) %>% 
+  group_by(region, season, event_no, ts) %>% 
+  filter(rmse == min(rmse))
+
+# The top count by region
+ALL_RMSE_top_region <- ALL_RMSE_top %>% 
+  group_by(region, ts, Parameter2) %>% 
+  summarise(count = n(), .groups = "drop") %>% 
+  dplyr::rename(group = region)
+
+# The top count by season
+ALL_RMSE_top_season <- ALL_RMSE_top %>% 
+  group_by(season, ts, Parameter2) %>% 
+  summarise(count = n(), .groups = "drop") %>% 
+  dplyr::rename(group = season)
+
+# Combine and pivot wide
+ALL_RMSE_top_wide <- rbind(ALL_RMSE_top_region, ALL_RMSE_top_season) %>% 
+  pivot_wider(names_from = Parameter2, values_from = count) %>% 
+  mutate(Qlw = replace_na(Qlw, 0))  # Never most important for one MAB onset row
+  # pivot_wider(names_from = c(Parameter2, ts), values_from = count) %>% 
+  # mutate(Qlw_onset = replace_na(Qlw_onset, 0))  # Never most important for MAB onset
+knitr::kable(ALL_RMSE_top_wide)
+```
+
+I'm pretty happy with how these results are displayed. But I think it would be better to show the regions and seasons in separate tables just to keep them more manageable. In the last chunk in this sub-section we will grab some specific summary stats that are used in the publication.
+
+```{r RMSE-stats}
+
+```
+
 
 ### Correlations: summary, regions, seasons
 
