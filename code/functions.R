@@ -485,11 +485,11 @@ data_packet_func <- function(event_sub, df = ALL_anom){
   packet_res <- cbind(event_sub, packet_mean)
   
   # Test visuals
-  ggplot(packet_mean, aes(x = lon, y = lat)) +
-    geom_tile(aes(fill = anom_sst)) +
-    scale_fill_gradient2(low = "blue", high = "red") +
-    coord_cartesian(xlim = NWA_corners[1:2],
-                    ylim = NWA_corners[3:4], expand = F)
+  # ggplot(packet_mean, aes(x = lon, y = lat)) +
+  #   geom_tile(aes(fill = anom_sst)) +
+  #   scale_fill_gradient2(low = "blue", high = "red") +
+  #   coord_cartesian(xlim = NWA_corners[1:2],
+  #                   ylim = NWA_corners[3:4], expand = F)
   
   # Exit
   return(packet_res)
@@ -1115,8 +1115,9 @@ fig_map_func <- function(map_var, fig_data, col_num, fig_height, fig_width){
       geom_polygon(data = map_base, aes(group = group), alpha = 1,
                    fill = NA, colour = "black", size = 0.5, show.legend = FALSE) +
       # The mean sea level pressure contours
-      geom_contour(data = fig_data$other_data_wide,
-                   aes(z = anom_mslp, colour = stat(level)), size = 1) +
+      geom_contour(data = fig_data$other_data_wide, binwidth = 100,
+                   # breaks = c(-2000, -1500, -1000, -500, 0, 500, 1000),
+                   aes(z = anom_mslp, colour = stat(level)), size = 2) +
       # The wind vectors
       geom_segment(data = fig_data$som_data_sub,
                    aes(xend = lon + anom_u10 * wind_uv_scalar,
@@ -1127,6 +1128,10 @@ fig_map_func <- function(map_var, fig_data, col_num, fig_height, fig_width){
       scale_fill_gradient2(name = "Air temp.\nanom. (°C)", low = "blue", high = "red") +
       scale_colour_gradient2("MSLP anom.\n(hPa)",# guide = "legend",
                              low = "green", mid = "grey", high = "yellow") +
+      # scale_colour_gradientn("MSLP anom.\n(hPa)",# guide = "legend",
+      #                        colours = c("green1", "green2", "green3", "green4", #"grey", 
+      #                                    "yellow4", "yellow3", "yellow2", "yellow1"), 
+      #                        values = c(0, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 1.0)) +
       theme(legend.position = "bottom")#, legend.box = "vertical")
   } else if(map_var == "qnet_mld_anom"){
     fig_res <- frame_base +

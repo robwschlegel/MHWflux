@@ -261,18 +261,32 @@ ggsave("figures/fig_4.png", fig_4, height = 5, width = 10)
 
 # Figure 5 ----------------------------------------------------------------
 
-# SOM region + season panels.
-# Created in the MHWNWA project.
+# Load the SOM data
+SOM <- readRDS("data/som.Rda")
 
-# I'm thinking of combining these two figures: 5 + 6
+# Base data for SOM figures
+base_data <- fig_data_prep(SOM)
+
+# SOM region + season panels
+fig_5a <- fig_map_func("region_season", base_data, 1, 9, 13) +
+  facet_wrap(~node) +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank())
+fig_5a
+
+# SOM atmosphere panels
+fig_5b <- fig_map_func("air_u_v_mslp_anom", base_data, 1, 9, 13) +
+  facet_wrap(~node) +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank())
+fig_5b
+
+# Combine and save
+fig_5 <- ggpubr::ggarrange(fig_5a, fig_5b, ncol = 1, nrow = 2, align = "hv", labels = c("A)", "B)"))
+ggsave("figures/fig_5.png", fig_5, height = 18, width = 13)
+
 
 # Figure 6 ----------------------------------------------------------------
-
-# SOM atmosphere panels.
-# Created in the MHWNWA project.
-
-
-# Figure 7 ----------------------------------------------------------------
 
 # The correlation results clustered by SOM node
 
@@ -292,17 +306,13 @@ events_cor_prep <- OISST_MHW_event %>%
   dplyr::select(region:n_Obs, sst, bottomT, sss, mld_cum, mld_1_cum, t2m, tcc_cum, p_e_cum, mslp_cum,
                 lwr_budget, swr_budget, lhf_budget, shf_budget, qnet_budget)
 
-
-# Load the SOM from the MHWNWA
-SOM <- readRDS("data/som.Rda")
-
 # Grab only the node info
 SOM_info <- SOM$info
 
 # Join to the GLORYS MHW correlation results
 events_cor_SOM <- left_join(events_cor_prep, SOM_info, by = c("region", "event_no"))
 
-fig_7 <- events_cor_SOM %>% 
+fig_6 <- events_cor_SOM %>% 
   dplyr::select(node, ts, bottomT:qnet_budget, -mld_1_cum) %>% 
   group_by(node, ts) %>% 
   summarise_if(is.numeric, mean) %>% 
@@ -319,7 +329,7 @@ fig_7 <- events_cor_SOM %>%
                           name == "mld_1_cum" ~ "MLD_1_c",
                           name == "t2m" ~ "Air",
                           name == "tcc_cum" ~ "Cloud",
-                          name == "p_e_cum" ~ "P_E",
+                          name == "p_e_cum" ~ "P-E",
                           name == "mslp_cum" ~ "MSLP",
                           name == "lwr_budget" ~ "Qlw",
                           name == "swr_budget" ~ "Qsw",
@@ -328,7 +338,7 @@ fig_7 <- events_cor_SOM %>%
                           name == "qnet_budget" ~ "Qnet",
                           TRUE ~ name),
          name = factor(name, levels = c("Qnet", "Qlw", "Qsw", "Qlh", "Qsh", "Cloud", 
-                                        "P_E", "Air", "MSLP", "MLD", "SSS", "Bottom"))) %>% 
+                                        "P-E", "Air", "MSLP", "MLD", "SSS", "Bottom"))) %>% 
   ggplot(aes(x = name, y = ts)) +
   geom_tile(aes(fill = value)) +
   facet_wrap(~node, scales = "free") +
@@ -339,6 +349,6 @@ fig_7 <- events_cor_SOM %>%
         axis.text.y = element_text(angle = 90, hjust = 0.5),
         axis.text.x = element_text(angle = 30, hjust = 1.0),
         panel.background = element_rect(colour = "black"))
-# fig_7
-ggsave("figures/fig_7.png", fig_7, height = 7, width = 14)
+fig_6
+ggsave("figures/fig_6.png", fig_6, height = 7, width = 14)
 

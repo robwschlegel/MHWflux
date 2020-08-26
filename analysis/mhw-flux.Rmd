@@ -240,7 +240,7 @@ cor_negative_all <- ALL_cor %>%
 
 ### Relationships
 
-With patterns pulled out by region and season, we want to see if there are any relationships between MHWs that show strong correlations at onset with a particular variables and strong correlations at decline with another. We will look for this within regions and seasons as well. For example, do MHWs that correlate well with an increase in SSS also correlate well with a decrease in long-wave radiation during the decline of the event? I'm not sure how best to go about this in a clean manner.
+With patterns pulled out by region and season, we want to see if there are any relationships between MHWs that show strong correlations at onset/decline with a particular QX term and strong correlations at onset/decline with an air/sea variable. We will look for this within regions and seasons as well. For example, do MHWs that correlate well with an increase in SSS also correlate well with a decrease in long-wave radiation during the decline of the event? I'm not sure how best to go about this in a clean manner.
 
 Another thing to consider would be if fast onset slow decline (and vice versa) events have different characteristics to slower evolving events. The same question could be posed to long vs short events and those with high intensities vs low. In order to begin this investigation we must join the MHW results to the correlation results. We will visualise these patterns with heatmaps.
 
@@ -334,52 +334,6 @@ events_cor_prep %>%
   coord_cartesian(expand = F) +
   labs(y = NULL, x = "Rate of decline (°C; 0.1° steps)", fill = "r (mean)") +
   theme(legend.position = "bottom")
-```
-
-In the code chunk below we look at the correlations of the correlation results. This isn't terribly useful...
-
-```{r metrics_cor_cor, eval=FALSE}
-# All correlations by region
-events_cor_region <- events_cor_prep %>% 
-  group_by(region, ts) %>% 
-  correlation(redundant = TRUE) %>% 
-  mutate_if(is.numeric, round, 4) %>% 
-  filter(Parameter1 %in% c("duration", "intensity_mean", "intensity_max", 
-                           "intensity_cumulative", "rate_onset", "rate_decline"),
-         !Parameter2 %in% c("duration", "intensity_mean", "intensity_max",
-                           "intensity_cumulative", "rate_onset", "rate_decline"))
-saveRDS(events_cor_region, "data/events_cor_region.Rds")
-
-# All correlations by season
-events_cor_season <- events_cor_prep %>% 
-  group_by(season, ts) %>% 
-  correlation(redundant = TRUE) %>% 
-  mutate_if(is.numeric, round, 4) %>% 
-  filter(Parameter1 %in% c("duration", "intensity_mean", "intensity_max", 
-                           "intensity_cumulative", "rate_onset", "rate_decline"),
-         !Parameter2 %in% c("duration", "intensity_mean", "intensity_max",
-                           "intensity_cumulative", "rate_onset", "rate_decline"))
-saveRDS(events_cor_season, "data/events_cor_season.Rds")
-
-# All correlations by region+season
-# Some groupings don't have enough observations
-# This throws an error but it still runs
-# events_cor_region_season <- events_cor_prep %>%
-#   group_by(region, season, ts) %>%
-#   correlation(redundant = TRUE) %>%
-#   mutate_if(is.numeric, round, 4) %>%
-#   filter(Parameter1 %in% c("duration", "intensity_mean", "intensity_max",
-#                            "intensity_cumulative", "rate_onset", "rate_decline"),
-#          !Parameter2 %in% c("duration", "intensity_mean", "intensity_max",
-#                            "intensity_cumulative", "rate_onset", "rate_decline"))
-# saveRDS(events_cor_region_season, "data/events_cor_region_season.Rds")
-
-# test visuals
-events_cor_prep %>%
-  filter(region == "nfs", ts == "onset") %>%
-  ggplot(aes(x = intensity_mean, y = shf_mld_cum)) +
-  geom_smooth(method = "lm", se = FALSE, colour = "black") +
-  geom_point(aes(colour = season))
 ```
 
 ### Linearity of events

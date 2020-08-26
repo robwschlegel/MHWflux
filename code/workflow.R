@@ -295,33 +295,7 @@ system.time(saveRDS(ALL_other, "data/ALL_other.Rda")) # xxx seconds
 
  # Data packets ------------------------------------------------------------
 
-# Set number of cores
-# NB: 50 cores uses too much RAM
-registerDoParallel(cores = 25)
-
-ALL_anom <- readRDS("data/ALL_anom.Rda")
-
-## Create one big anomaly packet from OISST data
-# print(paste0("Began creating data packets at ", Sys.time()))
-system.time(synoptic_states <- plyr::ddply(OISST_MHW_event, c("region", "event_no"),
-                                           data_packet_func, .parallel = T)) # 111 seconds
-# Save
-saveRDS(synoptic_states, "data/synoptic_states.Rda")
-
-## Create other synoptic states per MHW per variable
-doParallel::registerDoParallel(cores = 10) # NB: Be careful here...
-system.time(synoptic_states_other <- plyr::ddply(OISST_MHW_event, c("region", "event_no"),
-                                                 data_packet_func, .parallel = T, df = ALL_other)) # 122 seconds
-# Save
-saveRDS(synoptic_states_other, "data/synoptic_states_other.Rda")
-
-## Create wide data packet that is fed to SOM
-system.time(packet <- readRDS("data/synoptic_states.Rda") %>%
-              select(region, event_no, synoptic) %>%
-              unnest(cols = "synoptic") %>%
-              wide_packet_func()) # 154 seconds
-# Save
-saveRDS(packet, "data/packet.Rda")
+# See the "SOM" vignette for the code used to create the data packets
 
 
 # Visualise data packets --------------------------------------------------
@@ -345,15 +319,10 @@ saveRDS(packet, "data/packet.Rda")
 
 # SOM analysis ------------------------------------------------------------
 
-# # OISST SOM analysis
-packet <- readRDS("data/packet.Rda")
-synoptic_states_other <- readRDS("data/synoptic_states_other.Rda")
-system.time(som <- som_model_PCI(packet, synoptic_states_other)) # 83 seconds
-saveRDS(som, file = "data/som.Rda")
+# See the "SOM" vignette for the code used to run the SOM
 
 
 # Visuals -----------------------------------------------------------------
 
-som <- readRDS("data/som.Rda")
-fig_all_som(som)
+
 

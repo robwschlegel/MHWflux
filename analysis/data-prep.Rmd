@@ -463,7 +463,7 @@ saveRDS(ALL_ts_anom_cum, "data/ALL_ts_anom_cum.Rda")
 saveRDS(ALL_ts_anom_cum, "shiny/ALL_ts_anom_cum.Rda")
 ```
 
-In the [MHWs vs. heat flux](https://robwschlegel.github.io/MHWflux/mhw-flux.html) vignette we will take the periods of time over which MHWs occurred per region and pair those up with the GLORYS and ERA5 data. This will be used to investigate which drivers are best related to the onset and decline of MHWs. In the [SOM](https://robwschlegel.github.io/MHWNWA/som.html) vignette we will look for how 
+In the [MHWs vs. heat flux](https://robwschlegel.github.io/MHWflux/mhw-flux.html) vignette we will take the periods of time over which MHWs occurred per region and pair those up with the GLORYS and ERA5 data. This will be used to investigate which drivers are best related to the onset and decline of MHWs. In the [SOM](https://robwschlegel.github.io/MHWNWA/som.html) vignette we will look for how the mean synoptic states during MHWs can best be clustered together.
 
 ## References
 
