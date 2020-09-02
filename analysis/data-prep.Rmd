@@ -378,21 +378,46 @@ OISST_MHW_event %>%
   data.frame()
 
 # Differences between regions
-OISST_MHW_event %>% 
+summary_region <- OISST_MHW_event %>% 
   dplyr::select(region, duration, intensity_mean, intensity_max, 
                 intensity_cumulative, rate_onset, rate_decline) %>% 
-  group_by(region) %>% 
-  mutate(count = n()) %>% 
-  summarise_all("mean", na.rm = T)
+  mutate(region = toupper(region)) %>% 
+  dplyr::rename(group = region) %>% 
+  group_by(group) %>% 
+  # mutate(count = n()) %>%
+  ungroup() %>%
+  pivot_longer(duration:rate_decline) %>% 
+  group_by(group, name) %>% 
+  summarise(value_mean = round(mean(value), 2),
+            value_sd = round(sd(value), 2), .groups = "drop") %>% 
+  unite("value_summary", value_mean:value_sd, sep = "±") %>% 
+  pivot_wider(names_from = name, values_from = value_summary) %>% 
+  dplyr::rename(i_cum = intensity_cumulative, i_max = intensity_max, 
+                i_mean = intensity_mean, r_decline = rate_decline, r_onset = rate_onset) %>% 
+  dplyr::select(group, duration, i_mean, i_max, i_cum, r_onset, r_decline)
 
-# Differences between regions
-OISST_MHW_event %>% 
+# Differences between seasons
+summary_season <- OISST_MHW_event %>% 
   ungroup() %>% 
   dplyr::select(season, duration, intensity_mean, intensity_max, 
                 intensity_cumulative, rate_onset, rate_decline) %>% 
-  group_by(season) %>% 
-  mutate(count = n()) %>% 
-  summarise_all("mean", na.rm = T)
+  dplyr::rename(group = season) %>% 
+  group_by(group) %>% 
+  # mutate(count = n()) %>%
+  ungroup() %>%
+  pivot_longer(duration:rate_decline) %>% 
+  group_by(group, name) %>% 
+  summarise(value_mean = round(mean(value), 2),
+            value_sd = round(sd(value), 2), .groups = "drop") %>% 
+  unite("value_summary", value_mean:value_sd, sep = "±") %>% 
+  pivot_wider(names_from = name, values_from = value_summary) %>% 
+  dplyr::rename(i_cum = intensity_cumulative, i_max = intensity_max, 
+                i_mean = intensity_mean, r_decline = rate_decline, r_onset = rate_onset) %>% 
+  dplyr::select(group, duration, i_mean, i_max, i_cum, r_onset, r_decline)
+
+# Table showing the mean +- SD per region and season
+summary_region_season <- rbind(summary_region, summary_season)
+knitr::kable(summary_region_season)
 ```
 
 ## Region clims + anoms per variable

@@ -196,7 +196,27 @@ knitr::kable(ALL_RMSE_top_wide)
 I'm pretty happy with how these results are displayed. But I think it would be better to show the regions and seasons in separate tables just to keep them more manageable. In the last chunk in this sub-section we will grab some specific summary stats that are used in the publication.
 
 ```{r RMSE-stats}
+# Short event index
+short_event_index <- ALL_RMSE %>% 
+  filter(n_Obs <= 10, ts == "full") %>% 
+  dplyr::select(region, season, event_no, n_Obs) %>% 
+  unique()
 
+# The top Qx for events of 10 days or less
+ALL_RMSE_short_top_region <- ALL_RMSE %>%
+  right_join(short_event_index, by = c("region", "season", "event_no", "n_Obs")) %>% 
+  group_by(region, ts, Parameter2) %>%
+  filter(rmse == min(rmse)) %>% 
+  summarise(count = n(), .groups = "drop") %>% 
+  dplyr::rename(group = region)
+ALL_RMSE_short_top_season <- ALL_RMSE %>% 
+  right_join(short_event_index, by = c("region", "season", "event_no", "n_Obs")) %>% 
+  group_by(season, ts, Parameter2) %>% 
+  summarise(count = n(), .groups = "drop") %>% 
+  dplyr::rename(group = season)
+ALL_RMSE_short_top_wide <- rbind(ALL_RMSE_short_top_region, ALL_RMSE_short_top_season) %>% 
+  pivot_wider(names_from = Parameter2, values_from = count)
+knitr::kable(ALL_RMSE_short_top_wide)
 ```
 
 
