@@ -166,57 +166,165 @@ ALL_RMSE %>%
 These boxplots help to tell a high level story about the importance of the Qx terms with SSTa, but I want a slightly more fine-grain level of results. To do this I am going to count which of the Qx terms has the lowest RMSE per MHW. These will then be grouped by region and season to provide an understanding for how this may vary.
 
 ```{r RMSE-table}
+# Need a column showing total count of events and a column showing count of Qnet apart from the other variables.
+RMSE_region_count <- ALL_RMSE %>% 
+  dplyr::select(region:ts, n_Obs) %>% 
+  unique() %>% 
+  group_by(region, ts) %>% 
+  summarise(count = n())
+RMSE_season_count <- ALL_RMSE %>% 
+  dplyr::select(region:ts, n_Obs) %>% 
+  unique() %>% 
+  group_by(season, ts) %>% 
+  summarise(count = n())
+
 # Get the top RMSE results (i.e. the lowest RMSE scores)
-ALL_RMSE_top <- ALL_RMSE %>% 
-  # dplyr::select(-n_Obs) %>% 
+ALL_RMSE_Qnet <- ALL_RMSE %>% 
+  group_by(region, season, event_no, ts) %>% 
+  filter(rmse == min(rmse))
+
+# Get the top results other than Qnet
+ALL_RMSE_other <- ALL_RMSE %>% 
+  filter(Parameter2 != "Qnet") %>% # Remove Qnet
   group_by(region, season, event_no, ts) %>% 
   filter(rmse == min(rmse))
 
 # The top count by region
-ALL_RMSE_top_region <- ALL_RMSE_top %>% 
+ALL_RMSE_Qnet_region <- ALL_RMSE_Qnet %>% 
   group_by(region, ts, Parameter2) %>% 
   summarise(count = n(), .groups = "drop") %>% 
-  dplyr::rename(group = region)
+  filter(Parameter2 == "Qnet")
+ALL_RMSE_region <- ALL_RMSE_other %>% 
+  group_by(region, ts, Parameter2) %>% 
+  summarise(count = n(), .groups = "drop") %>% 
+  rbind(ALL_RMSE_Qnet_region) %>% 
+  pivot_wider(names_from = Parameter2, values_from = count) %>% 
+  mutate(Qlw = replace_na(Qlw, 0)) %>% 
+  left_join(RMSE_region_count, by = c("region", "ts")) %>% 
+  dplyr::select(region, ts, count, Qnet, Qlh:Qsw) %>% 
+  mutate(Qnet = paste0(Qnet, " (",round((Qnet/count)*100),"%)"),
+         Qlh = paste0(Qlh, " (",round((Qlh/count)*100),"%)"),
+         Qsh = paste0(Qsh, " (",round((Qsh/count)*100),"%)"),
+         Qlw = paste0(Qlw, " (",round((Qlw/count)*100),"%)"),
+         Qsw = paste0(Qsw, " (",round((Qsw/count)*100),"%)"))
+knitr::kable(ALL_RMSE_region)
 
 # The top count by season
-ALL_RMSE_top_season <- ALL_RMSE_top %>% 
+ALL_RMSE_Qnet_season <- ALL_RMSE_Qnet %>% 
   group_by(season, ts, Parameter2) %>% 
   summarise(count = n(), .groups = "drop") %>% 
-  dplyr::rename(group = season)
-
-# Combine and pivot wide
-ALL_RMSE_top_wide <- rbind(ALL_RMSE_top_region, ALL_RMSE_top_season) %>% 
+  filter(Parameter2 == "Qnet")
+ALL_RMSE_season <- ALL_RMSE_other %>% 
+  group_by(season, ts, Parameter2) %>% 
+  summarise(count = n(), .groups = "drop") %>% 
+  rbind(ALL_RMSE_Qnet_season) %>% 
   pivot_wider(names_from = Parameter2, values_from = count) %>% 
-  mutate(Qlw = replace_na(Qlw, 0))  # Never most important for one MAB onset row
-  # pivot_wider(names_from = c(Parameter2, ts), values_from = count) %>% 
-  # mutate(Qlw_onset = replace_na(Qlw_onset, 0))  # Never most important for MAB onset
-knitr::kable(ALL_RMSE_top_wide)
+  # mutate(Qlw = replace_na(Qlw, 0)) %>% 
+  left_join(RMSE_season_count, by = c("season", "ts")) %>% 
+  dplyr::select(season, ts, count, Qnet, Qlh:Qsw) %>% 
+    mutate(Qnet = paste0(Qnet, " (",round((Qnet/count)*100),"%)"),
+         Qlh = paste0(Qlh, " (",round((Qlh/count)*100),"%)"),
+         Qsh = paste0(Qsh, " (",round((Qsh/count)*100),"%)"),
+         Qlw = paste0(Qlw, " (",round((Qlw/count)*100),"%)"),
+         Qsw = paste0(Qsw, " (",round((Qsw/count)*100),"%)"))
+knitr::kable(ALL_RMSE_season)
 ```
 
 I'm pretty happy with how these results are displayed. But I think it would be better to show the regions and seasons in separate tables just to keep them more manageable. In the last chunk in this sub-section we will grab some specific summary stats that are used in the publication.
 
 ```{r RMSE-stats}
-# Short event index
-short_event_index <- ALL_RMSE %>% 
-  filter(n_Obs <= 10, ts == "full") %>% 
-  dplyr::select(region, season, event_no, n_Obs) %>% 
-  unique()
+# Short event best fits
+ALL_RMSE_short <- ALL_RMSE %>% 
+  filter(n_Obs <= 14, Parameter2 != "Qnet") %>% 
+  group_by(region, season, event_no, ts) %>% 
+  filter(rmse == min(rmse))
 
-# The top Qx for events of 10 days or less
-ALL_RMSE_short_top_region <- ALL_RMSE %>%
-  right_join(short_event_index, by = c("region", "season", "event_no", "n_Obs")) %>% 
-  group_by(region, ts, Parameter2) %>%
-  filter(rmse == min(rmse)) %>% 
-  summarise(count = n(), .groups = "drop") %>% 
-  dplyr::rename(group = region)
-ALL_RMSE_short_top_season <- ALL_RMSE %>% 
-  right_join(short_event_index, by = c("region", "season", "event_no", "n_Obs")) %>% 
-  group_by(season, ts, Parameter2) %>% 
-  summarise(count = n(), .groups = "drop") %>% 
-  dplyr::rename(group = season)
-ALL_RMSE_short_top_wide <- rbind(ALL_RMSE_short_top_region, ALL_RMSE_short_top_season) %>% 
-  pivot_wider(names_from = Parameter2, values_from = count)
-knitr::kable(ALL_RMSE_short_top_wide)
+# Short event index
+ALL_RMSE_long <- ALL_RMSE %>% 
+  filter(n_Obs > 14, Parameter2 != "Qnet") %>% 
+  group_by(region, season, event_no, ts) %>% 
+  filter(rmse == min(rmse))
+
+# The top Qx for events of 14 days or less by region
+ALL_RMSE_short_region <- ALL_RMSE_short %>%
+  group_by(region, ts) %>% 
+  mutate(count = n()) %>% 
+  group_by(region, ts, count, Parameter2) %>% 
+  summarise(count_Q = n(), .groups = "drop") %>% 
+  pivot_wider(names_from = Parameter2, values_from = count_Q) %>% 
+  mutate(Qlw = replace_na(Qlw, 0)) %>%
+  dplyr::select(region, ts, count, Qlh:Qsw) %>% 
+  mutate(Qlh = paste0(Qlh, " (",round((Qlh/count)*100),"%)"),
+         Qsh = paste0(Qsh, " (",round((Qsh/count)*100),"%)"),
+         Qlw = paste0(Qlw, " (",round((Qlw/count)*100),"%)"),
+         Qsw = paste0(Qsw, " (",round((Qsw/count)*100),"%)"))
+knitr::kable(ALL_RMSE_short_region)
+
+# The top Qx for events of more than 14 days by region
+ALL_RMSE_long_region <- ALL_RMSE_long %>%
+  group_by(region, ts) %>% 
+  mutate(count = n()) %>% 
+  group_by(region, ts, count, Parameter2) %>% 
+  summarise(count_Q = n(), .groups = "drop") %>% 
+  pivot_wider(names_from = Parameter2, values_from = count_Q) %>% 
+  mutate(Qsh = replace_na(Qsh, 0),
+         Qsw = replace_na(Qsw, 0),
+         Qlw = replace_na(Qlw, 0)) %>%
+  dplyr::select(region, ts, count, Qlh:Qsw) %>% 
+  mutate(Qlh = paste0(Qlh, " (",round((Qlh/count)*100),"%)"),
+         Qsh = paste0(Qsh, " (",round((Qsh/count)*100),"%)"),
+         Qlw = paste0(Qlw, " (",round((Qlw/count)*100),"%)"),
+         Qsw = paste0(Qsw, " (",round((Qsw/count)*100),"%)"))
+knitr::kable(ALL_RMSE_long_region)
+
+# The top Qx for events of 14 days or less by season
+ALL_RMSE_short_season <- ALL_RMSE_short %>%
+  group_by(season, ts) %>% 
+  mutate(count = n()) %>% 
+  group_by(season, ts, count, Parameter2) %>% 
+  summarise(count_Q = n(), .groups = "drop") %>% 
+  pivot_wider(names_from = Parameter2, values_from = count_Q) %>% 
+  mutate(Qlw = replace_na(Qlw, 0)) %>%
+  dplyr::select(season, ts, count, Qlh:Qsw) %>% 
+  mutate(Qlh = paste0(Qlh, " (",round((Qlh/count)*100),"%)"),
+         Qsh = paste0(Qsh, " (",round((Qsh/count)*100),"%)"),
+         Qlw = paste0(Qlw, " (",round((Qlw/count)*100),"%)"),
+         Qsw = paste0(Qsw, " (",round((Qsw/count)*100),"%)"))
+knitr::kable(ALL_RMSE_short_season)
+
+# The top Qx for events of more than 14 days by season
+ALL_RMSE_long_season <- ALL_RMSE_long %>%
+  group_by(season, ts) %>% 
+  mutate(count = n()) %>% 
+  group_by(season, ts, count, Parameter2) %>% 
+  summarise(count_Q = n(), .groups = "drop") %>% 
+  pivot_wider(names_from = Parameter2, values_from = count_Q) %>% 
+  mutate(Qsh = replace_na(Qsh, 0),
+         Qsw = replace_na(Qsw, 0),
+         Qlw = replace_na(Qlw, 0),
+         Qlh = replace_na(Qlh, 0)) %>%
+  dplyr::select(season, ts, count, Qlh:Qsw) %>% 
+  mutate(Qlh = paste0(Qlh, " (",round((Qlh/count)*100),"%)"),
+         Qsh = paste0(Qsh, " (",round((Qsh/count)*100),"%)"),
+         # Qlw = paste0(Qlw, " (",round((Qlw/count)*100),"%)"), # Qlw is never the most important for any of the seasons
+         Qsw = paste0(Qsw, " (",round((Qsw/count)*100),"%)"))
+knitr::kable(ALL_RMSE_long_season)
+```
+
+We also want to see how RMSE scores change the shorter the time series portion of the MHW is.
+
+```{r RMSE-short-change}
+# Faceted scatter plot showing how RMSE changes based on ts length
+ggplot(ALL_RMSE, aes(x = n_Obs, y = rmse)) +
+  geom_point(aes(colour = ts)) +
+  geom_smooth(aes(colour = ts), method = "lm") +
+  facet_wrap(~region)
+
+# Faceted scatter plot showing how RMSE changes based on ts length
+ggplot(ALL_RMSE, aes(x = n_Obs, y = rmse)) +
+  geom_point(aes(colour = ts)) +
+  geom_smooth(aes(colour = ts), method = "lm") +
+  facet_wrap(~season)
 ```
 
 
