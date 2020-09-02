@@ -1,0 +1,73 @@
+---
+title: '**Marine heatwave drivers: physical processes of onset and decline**'
+author: "Robert W. Schlegel, Ke Chen, Eric C. J. Oliver"
+date: "September 4th, 2020"
+output:
+  html_document:
+    # code_folding: show
+    # css: acid.css
+    fig_caption: yes
+    # fig_width: 2 
+    # fig_height: 2 
+    highlight: default
+    number_sections: yes
+    theme: yeti
+    toc: yes
+    toc_float: yes
+# fontsize: 10pt
+language: Australian
+css: acid.css
+# mainfont: PT Serif
+# monofont: PT Mono
+csl: frontiers.csl
+# sansfont: PT Sans
+bibliography: Presentations.bib
+# papersize: A4
+---
+
+***
+
+***
+
+<br>
+
+# Acknowledgements
+
+<br>
+
+<center>  
+  
+![](graph/ofi_logo.jpg){ width=50% }
+
+<br>
+
+![](graph/WHOI_logo.png){ width=40% }
+
+<br>
+
+![](graph/dal_science.png){ width=50% }
+  
+</center>
+
+<br>
+
+***
+
+<br>
+
+# Questions {.tabset}
+
+## Thank you {-}
+
+<center>
+![](graph/thanks_for_all_the_fish.gif){ width=100% }
+</center>
+
+<br>
+
+
+***
+
+<br>
+
+# References
