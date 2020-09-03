@@ -558,14 +558,6 @@ With a table organised by each variable, it makes sense to also create a table o
 
 ```
 
-## Notes
-
-The deepening of the MLD with MHW onset may be due to wind mixing into the deeper warmer water during winter.
-
-Look into the relationship between MSLP and MHW onset. It is odd.
-
-Look into relationship between decrease in SSS with decline and also decrease in latent heat flux/evaporation.
-
 ### NWA 2012
 
 From Chen et al. 2016 (JGR)

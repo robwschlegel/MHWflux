@@ -170,24 +170,6 @@ events_cor_SOM %>%
   labs(y = NULL, fill = "r (mean)") +
   theme(legend.position = "bottom",
         axis.text.x = element_text(angle = 30))
-
-# Boxplots for correlation values only
-# events_cor_SOM %>% 
-#   dplyr::select(node, ts, bottomT:qnet_budget, -mld_1_cum) %>% 
-#   mutate(node = as.factor(node)) %>% 
-#   group_by(node, ts) %>%
-#   # summarise_if(is.numeric, mean) %>% 
-#   # dplyr::select(duration) %>% 
-#   pivot_longer(cols = bottomT:qnet_budget) %>%
-#   filter(name != "temp",
-#          ts != "full") %>%
-#   ggplot(aes(x = name, y = value)) +
-#   geom_boxplot(aes(fill = ts)) +
-#   facet_wrap(~node, scales = "free") +
-#   coord_cartesian(expand = F) +
-#   labs(y = "correlation (r)", fill = "time series\nsection") +
-#   theme(legend.position = "bottom",
-#         axis.text.x = element_text(angle = 30))
 ```
 
 Some important patterns come through when we look at the summary correlation and MHW metric results when grouped into their SOM nodes. This is as far as the numeric results will go. From here out it is necessary for a human to look at these summary results with the SOM node results to discern the meaning of the combined results.
@@ -195,3 +177,4 @@ Some important patterns come through when we look at the summary correlation and
 And there we have our SOM results. Up next in the [Node summary vignette](https://robwschlegel.github.io/MHWflux/node-summary.html) we will show the results with a range of visuals.
 
 ## References
+
