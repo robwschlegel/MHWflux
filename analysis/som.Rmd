@@ -79,6 +79,7 @@ packet <- readRDS("data/packet.Rda")
 synoptic_states_other <- readRDS("data/synoptic_states_other.Rda")
 system.time(som <- som_model_PCI(packet, synoptic_states_other)) # 176 seconds
 saveRDS(som, file = "data/som.Rda")
+saveRDS(som, file = "shiny/som.Rda")
 ```
 
 ## Correlations

@@ -153,6 +153,13 @@ ALL_cor <- readRDS("ALL_cor.Rda") %>%
                                 Parameter2 == "qnet_budget" ~ "Qnet_budget",
                                 TRUE ~ Parameter2))
 
+# Create RMSE data.frame
+ALL_RMSE <- ALL_cor %>% 
+  filter(rmse > 0)
+
+# Load SOM results
+som <- readRDS("som.Rda")
+
 # Corners of the study area
     # Created in 'MHWNWA/analysis/polygon-prep.Rmd'
 NWA_corners <- readRDS("NWA_corners.Rda")
@@ -196,12 +203,17 @@ ui <- dashboardPage(
     # The primary options
     dashboardSidebar(
         sidebarMenu(id = "mainMenu",
+                    
+                    # The various menus
                     menuItem("Map", tabName = "map", icon = icon("map"), selected = TRUE),
-                    menuItem("Event", tabName = "event", icon = icon("chart-pie")),
-                    menuItem("Summary", tabName = "summary", icon = icon("chart-bar")),
-                    menuItem("Flavours", tabName = "flavours", icon = icon("adjust")),
+                    menuItem("Events", tabName = "event", icon = icon("chart-pie")),
+                    menuItem("RMSE", tabName = "rmse", icon = icon("chart-bar")),
+                    menuItem("Correlations", tabName = "correlations", icon = icon("chart-bar")),
+                    menuItem("SOM", tabName = "som", icon = icon("table")),
+                    # menuItem("Flavours", tabName = "flavours", icon = icon("adjust")),
                     # menuItem("Tables", tabname = "tables", icon = icon("table")),
                     menuItem("About", tabName = "about", icon = icon("question")),
+                    
                     # The reactive controls based on the primary option chosen
                     uiOutput(outputId = "sidebar_controls"))
     ),
@@ -273,7 +285,7 @@ ui <- dashboardPage(
 
     # Correlations figures ----------------------------------------------------
 
-            tabItem(tabName = "summary", 
+            tabItem(tabName = "correlations", 
                     fluidRow(
                         # Histogram box
                         box(width = 6, title = "Histogram", status = "primary", solidHeader = TRUE, collapsible = TRUE,
@@ -313,10 +325,10 @@ ui <- dashboardPage(
     # Each representing a region or season. Within each ball would be the count of events.
     # These would be arranged to look like an ice cream cone.
     
-            tabItem(tabName = "flavours",
-                    fluidRow(box(width = 6, title = "Flavourtown", status = "primary", solidHeader = TRUE, collapsible = TRUE,
-                                 uiOutput("flux", inline = T), uiOutput("air", inline = T), uiOutput("sea", inline = T),
-                                 plotlyOutput("flavourPlot")))),  
+            # tabItem(tabName = "flavours",
+            #         fluidRow(box(width = 6, title = "Flavourtown", status = "primary", solidHeader = TRUE, collapsible = TRUE,
+            #                      uiOutput("flux", inline = T), uiOutput("air", inline = T), uiOutput("sea", inline = T),
+            #                      plotlyOutput("flavourPlot")))),  
     
 
     # Tables ------------------------------------------------------------------
