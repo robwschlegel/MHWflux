@@ -292,13 +292,16 @@ $(document).ready(function () {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
+      <a href="polygon-prep.html">Study area preparation</a>
+    </li>
+    <li>
       <a href="data-prep.html">Data preparation</a>
     </li>
     <li>
       <a href="mhw-flux.html">MHWs vs. heat flux</a>
     </li>
     <li>
-      <a href="k-means-flux.html">Heat flux K-means</a>
+      <a href="som.html">SOM analysis</a>
     </li>
   </ul>
 </li>
@@ -348,7 +351,7 @@ $(document).ready(function () {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2020-07-21
+<strong>Last updated:</strong> 2020-09-03
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 2 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -379,16 +382,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtree49fd7535ffb218f79747d4872b93478d089a3cb3targetblank49fd753a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/robwschlegel/MHWflux/tree/49fd7535ffb218f79747d4872b93478d089a3cb3" target="_blank">49fd753</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtreed1c9bad99578db1209cfc5bac4d417abfca33f85targetblankd1c9bada"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/robwschlegel/MHWflux/tree/d1c9bad99578db1209cfc5bac4d417abfca33f85" target="_blank">d1c9bad</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtree49fd7535ffb218f79747d4872b93478d089a3cb3targetblank49fd753a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtreed1c9bad99578db1209cfc5bac4d417abfca33f85targetblankd1c9bada" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/robwschlegel/MHWflux/tree/49fd7535ffb218f79747d4872b93478d089a3cb3" target="_blank">49fd753</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/robwschlegel/MHWflux/tree/d1c9bad99578db1209cfc5bac4d417abfca33f85" target="_blank">d1c9bad</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -397,13 +400,33 @@ Note that you need to be careful to ensure that all relevant files for the analy
 Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
+    Ignored:    data/ALL_anom.Rda
+    Ignored:    data/ALL_other.Rda
+    Ignored:    data/ALL_ts_anom.Rda
+    Ignored:    data/ERA5_evp_anom.Rda
+    Ignored:    data/ERA5_lhf_anom.Rda
+    Ignored:    data/ERA5_lwr_anom.Rda
+    Ignored:    data/ERA5_mslp_anom.Rda
+    Ignored:    data/ERA5_pcp_anom.Rda
+    Ignored:    data/ERA5_qnet_anom.Rda
+    Ignored:    data/ERA5_shf_anom.Rda
+    Ignored:    data/ERA5_swr_anom.Rda
+    Ignored:    data/ERA5_t2m_anom.Rda
+    Ignored:    data/ERA5_tcc_anom.Rda
+    Ignored:    data/ERA5_u_anom.Rda
+    Ignored:    data/ERA5_v_anom.Rda
+    Ignored:    data/GLORYS_all_anom.Rda
+    Ignored:    data/OISST_all_anom.Rda
+    Ignored:    data/packet.Rda
+    Ignored:    data/som.Rda
+    Ignored:    data/synoptic_states.Rda
+    Ignored:    data/synoptic_states_other.Rda
 
 Unstaged changes:
-    Modified:   code/functions.R
-    Modified:   data/ALL_cor.Rda
-    Modified:   data/events_cor_region.Rds
-    Modified:   data/events_cor_season.Rds
-    Modified:   shiny/ALL_cor.Rda
+    Modified:   analysis/_site.yml
+    Modified:   analysis/node-summary.Rmd
+    Modified:   code/workflow.R
+    Modified:   talk/WHOI_talk.Rmd
 
 </code></pre>
 <p>
@@ -442,6 +465,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/c0c599d0bc557985d1fe84ca87d9df2d6b56b2a2/analysis/index.Rmd" target="_blank">c0c599d</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-08-12
+</td>
+<td>
+Combining the MHWNWA and MHWflux code bases
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/robwschlegel/MHWflux/9304ba024770f98f060c655036c671d542ca05f6/docs/index.html" target="_blank">9304ba0</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-07-21
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -739,7 +796,7 @@ Start workflowr project.
 </div>
 </div>
 <p>This website contains the version controlled analyses used to determine the relationship between heat flux terms and marine heatwaves (MHWs) in the Northwest Atlantic Ocean.</p>
-<p>Please use the tabs above to navigate the site. The “Analyses” tabs contains discrete steps in the workflow. To see the raw code used for the workflow/pipeline of this project please follow the link in the top right of this page to the <code>source code</code> for this project. Once there the raw workflow code may be found in the <code>code/workflow.R</code> script. The functions etc. that this script relies on may be found in the <code>code/functions.R</code> script.</p>
+<p>Please use the tabs above to navigate the site. The “Analyses” tabs contains discrete steps in the workflow. To see the raw code used for the workflow/pipeline of this project please follow the link in the top right of this page to the <code>source code</code> for this project. Once there the raw workflow code may be found in the <code>code/workflow.R</code> script. The functions etc. may be found in the <code>code/functions.R</code> script. Please note that note all of the objects used in these scripts are saved in the GitHub repo for this project as many of them are far too large. All necessary objects can be created by following the steps as laid out in the analyses.</p>
 
 
 <!-- Adjust MathJax settings so that all math formulae are shown using
