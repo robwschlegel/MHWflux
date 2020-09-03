@@ -364,6 +364,34 @@ cor_negative_all <- ALL_cor %>%
             mean_r = mean(r, na.rm = T),
             q90_r = quantile(r, 0.9),
             mean_rmse = mean(rmse, na.rm = T))
+
+# region correlation results
+cor_summary_region <- ALL_cor %>% 
+  filter(Parameter1 == "sst",
+         Parameter2 != "sst") %>% 
+  group_by(ts, region, Parameter2) %>% 
+  summarise(q10_r = quantile(r, 0.1),
+            mean_r = mean(r, na.rm = T),
+            q90_r = quantile(r, 0.9),
+            mean_rmse = mean(rmse, na.rm = T))
+
+# Look at specific results
+cor_summary_region %>% 
+  filter(Parameter2 == "mld_cum")
+
+# region correlation results
+cor_summary_season <- ALL_cor %>% 
+  filter(Parameter1 == "sst",
+         Parameter2 != "sst") %>% 
+  group_by(ts, season, Parameter2) %>% 
+  summarise(q10_r = quantile(r, 0.1),
+            mean_r = mean(r, na.rm = T),
+            q90_r = quantile(r, 0.9),
+            mean_rmse = mean(rmse, na.rm = T))
+
+# Look at specific results
+cor_summary_season %>% 
+  filter(Parameter2 == "mld")
 ```
 
 ### Relationships
@@ -373,20 +401,38 @@ With patterns pulled out by region and season, we want to see if there are any r
 Another thing to consider would be if fast onset slow decline (and vice versa) events have different characteristics to slower evolving events. The same question could be posed to long vs short events and those with high intensities vs low. In order to begin this investigation we must join the MHW results to the correlation results. We will visualise these patterns with heatmaps.
 
 ```{r metrics_cor}
+# Strong positive correlation at onset and strong positive and decline
+# Vice versa
+
 ALL_cor_wide <- readRDS("data/ALL_cor.Rda") %>% 
   ungroup() %>% 
   filter(Parameter1 == "sst") %>% 
   dplyr::select(region:ts, Parameter2, r, n_Obs) %>% 
+  mutate(Parameter2 = as.character(Parameter2)) %>% 
+  mutate(Parameter2 = case_when(Parameter2 == "sst" ~ "SST",
+                         Parameter2 == "bottomT" ~ "SBT",
+                         Parameter2 == "sss" ~ "SSS",
+                         Parameter2 == "mld_cum" ~ "MLD_c",
+                         Parameter2 == "mld_1_cum" ~ "MLD_1_c",
+                         Parameter2 == "t2m" ~ "Air_temp",
+                         Parameter2 == "tcc_cum" ~ "Cloud_cover_c",
+                         Parameter2 == "p_e_cum" ~ "Precip_Evap_c",
+                         Parameter2 == "mslp_cum" ~ "MSLP_c",
+                         Parameter2 == "lwr_budget" ~ "Qlw",
+                         Parameter2 == "swr_budget" ~ "Qsw",
+                         Parameter2 == "lhf_budget" ~ "Qlh",
+                         Parameter2 == "shf_budget" ~ "Qsh",
+                         Parameter2 == "qnet_budget" ~ "Qnet",
+                         TRUE ~ Parameter2)) %>% 
+  filter(Parameter2 %in% c("SST", "SSS", "SBT", "MLD_c", "MLD_1_c", "Air_temp", "Cloud_cover_c",
+                           "Precip_Evap_c", "MSLP_c", "Qlw", "Qsw", "Qlh", "Qsh", "Qnet")) %>% 
   pivot_wider(values_from = r, names_from = Parameter2)
 
 # Combine MHW metrics and correlation results
 events_cor_prep <- OISST_MHW_event %>% 
   dplyr::select(region, season, event_no, duration, intensity_mean, intensity_max, 
                 intensity_cumulative, rate_onset, rate_decline) %>% 
-  left_join(ALL_cor_wide, by = c("region", "season", "event_no")) %>% 
-  # ungroup() %>% 
-  dplyr::select(region:n_Obs, sst, bottomT, sss, mld_cum, mld_1_cum, t2m, tcc_cum, p_e_cum, mslp_cum,
-                 lwr_mld_cum, swr_mld_cum, lhf_mld_cum, shf_mld_cum, qnet_mld_cum)
+  left_join(ALL_cor_wide, by = c("region", "season", "event_no"))
 
 # Heatmap showing average correlations by MHW duration
 events_cor_prep %>% 
@@ -394,7 +440,7 @@ events_cor_prep %>%
   group_by(ts, duration) %>% 
   mutate(count = n()) %>% 
   summarise_if(is.numeric, mean) %>% 
-  pivot_longer(cols = sst:qnet_mld_cum) %>% 
+  pivot_longer(cols = Air_temp:Qsw) %>% 
   filter(name != "sst",
          ts != "full",
          duration <= 50) %>% # Only 1 event is longer than this 
@@ -413,7 +459,7 @@ events_cor_prep %>%
   group_by(ts, intensity_max) %>%
   mutate(count = n()) %>% 
   summarise_if(is.numeric, mean) %>% 
-  pivot_longer(cols = sst:qnet_mld_cum) %>% 
+  pivot_longer(cols = Air_temp:Qsw) %>% 
   filter(name != "sst",
          ts != "full") %>% 
   ggplot(aes(x = intensity_max, y = name)) +

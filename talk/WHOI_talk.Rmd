@@ -170,9 +170,7 @@ Let's head over to the shiny app for an interactive tour of the results: https:/
 
 <br>
 
-# Questions {.tabset}
-
-## Thank you {-}
+# Questions
 
 <center>
 ![](graph/thanks_for_all_the_fish.gif){ width=100% }

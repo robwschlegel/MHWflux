@@ -210,7 +210,7 @@ ui <- dashboardPage(
                     menuItem("RMSE", tabName = "rmse", icon = icon("chart-bar")),
                     menuItem("Correlations", tabName = "correlations", icon = icon("chart-bar")),
                     menuItem("SOM", tabName = "som", icon = icon("table")),
-                    # menuItem("Flavours", tabName = "flavours", icon = icon("adjust")),
+                    menuItem("Flavours", tabName = "flavours", icon = icon("adjust")),
                     # menuItem("Tables", tabname = "tables", icon = icon("table")),
                     menuItem("About", tabName = "about", icon = icon("question")),
                     
@@ -280,7 +280,31 @@ ui <- dashboardPage(
 
     # RMSE figures ------------------------------------------------------------
 
-    # Allow a way to filter by length so that the importance of Qlh over Qsw can emerge
+    tabItem(tabName = "rmse", 
+            fluidRow(
+              # Histogram box
+              box(width = 6, title = "Histogram", status = "primary", solidHeader = TRUE, collapsible = TRUE,
+                  dropdownButton(
+                    h4("Histogram controls:"),
+                    radioButtons(inputId = "position", label = "Position:", 
+                                 choices = c("stack", "dodge"),
+                                 selected = "stack", inline = T),
+                    sliderInput(inputId = "bins", label = "Number of bins:",
+                                min = 1, max = 20, value = 10),
+                    circle = TRUE, status = "danger", icon = icon("gear")),
+                  plotOutput("histPlotRMSE")),
+              # Boxplot box
+              box(width = 6, title = "Boxplot", status = "primary", solidHeader = TRUE, collapsible = TRUE,
+                  dropdownButton(
+                    h4("Boxplot controls:"),
+                    radioButtons(inputId = "notch", label = "Notches:", 
+                                 choices = c(TRUE, FALSE),
+                                 selected = TRUE, inline = T),
+                    circle = TRUE, status = "danger", icon = icon("gear")),
+                  plotOutput("boxPlotRMSE"))),
+            # Lineplot box
+            fluidRow(box(plotOutput("linePlotRMSE"), width = 12, title = "Lineplot", status = "primary", 
+                         solidHeader = TRUE, collapsible = TRUE, collapsed = TRUE))),
     
 
     # Correlations figures ----------------------------------------------------
@@ -297,7 +321,7 @@ ui <- dashboardPage(
                                 sliderInput(inputId = "bins", label = "Number of bins:",
                                             min = 1, max = 20, value = 10),
                                 circle = TRUE, status = "danger", icon = icon("gear")),
-                            plotOutput("histPlot")),
+                            plotOutput("histPlotCor")),
                         # Boxplot box
                         box(width = 6, title = "Boxplot", status = "primary", solidHeader = TRUE, collapsible = TRUE,
                             dropdownButton(
@@ -306,15 +330,16 @@ ui <- dashboardPage(
                                              choices = c(TRUE, FALSE),
                                              selected = TRUE, inline = T),
                                 circle = TRUE, status = "danger", icon = icon("gear")),
-                            plotOutput("boxPlot"))),
+                            plotOutput("boxPlotCor"))),
                     # Lineplot box
-                    fluidRow(box(plotOutput("linePlot"), width = 12, title = "Lineplot", status = "primary", 
+                    fluidRow(box(plotOutput("linePlotCor"), width = 12, title = "Lineplot", status = "primary", 
                                  solidHeader = TRUE, collapsible = TRUE, collapsed = TRUE))),
             
 
     # SOM figures -------------------------------------------------------------
 
-
+    tabItem(tabName = "som",
+            fluidRow(box(width = 12, height = "800px", title = "Nodes", status = "primary", solidHeader = TRUE, collapsible = TRUE))),
     
     
     # Flavour figures ---------------------------------------------------------
@@ -325,10 +350,10 @@ ui <- dashboardPage(
     # Each representing a region or season. Within each ball would be the count of events.
     # These would be arranged to look like an ice cream cone.
     
-            # tabItem(tabName = "flavours",
-            #         fluidRow(box(width = 6, title = "Flavourtown", status = "primary", solidHeader = TRUE, collapsible = TRUE,
-            #                      uiOutput("flux", inline = T), uiOutput("air", inline = T), uiOutput("sea", inline = T),
-            #                      plotlyOutput("flavourPlot")))),  
+            tabItem(tabName = "flavours",
+                    fluidRow(box(width = 6, title = "Flavourtown", status = "primary", solidHeader = TRUE, collapsible = TRUE,
+                                 uiOutput("flux", inline = T), uiOutput("air", inline = T), uiOutput("sea", inline = T),
+                                 plotlyOutput("flavourPlot")))),
     
 
     # Tables ------------------------------------------------------------------
@@ -374,7 +399,9 @@ ui <- dashboardPage(
                                one to select a different Qx term. Note that the SST values shown here are the real SST, and not SST - seasonal
                                climatology, as seen throughout the rest of the project. The blue line shows the SST value from day 1 of the time series, with the
                                cumulative seasonal anomaly Qx term added to it for each time step."),
-                             h2(tags$b("Summary")),
+                             h2(tags$b("RMSE")),
+                             p("T"),
+                             h2(tags$b("Correlations")),
                              p("The summary tab shows a higher level report on the correlations between variables and SST. The left panel shows the correlation results
                                via histograms. The X-axes in the histogram show the strength of the correlations between SST and the given variable. These will range
                                from -1 to 1. Each column of histograms belongs to one variable, as seen in the top header. Each row of histograms belongs to one
@@ -388,6 +415,8 @@ ui <- dashboardPage(
                                that show the relationship between the duration of a MHW (X-axis) and the correlation strength (Y-axis) of variables. It basically shows
                                that there isn't much of a pattern. That longer MHWs tend to be more unique in their drivers so any relationship with the duration of an
                                event and physical drivers tends to break down after 30 days or so."),
+                             h2(tags$b("SOM")),
+                             p("T"),
                              h2(tags$b("Flavours")),
                              p("Welcome to flavourtown! This was my failed attempt at creating some sort of visualisation that looked like ice-cream cones. The
                                idea was that there appear to be different 'flavours' of MHWs. For example, events whose onset coincides with strong latent heatflux
@@ -424,10 +453,19 @@ server <- function(input, output, session) {
                                  ),
                                multiple = TRUE,
                                options = list(size = 6),
-                               selected = c("Qnet", "Qlw", "Qsw", "Qlh", "Qsh"))
-    # picker_vars <- selectInput(inputId = "vars", label = "Variables:",
-    #                            multiple = TRUE, 
-    #                            selected = c("Qnet", "Qlw", "Qsw", "Qlh", "Qsh"))
+                               selected = c("Qnet_budget", "Qlw_budget", "Qsw_budget", "Qlh_budget", "Qsh_budget"))
+    # Select variables from a dropdown for RMSE only
+    picker_vars_rmse <- pickerInput(inputId = "vars_rmse", label = "Variables:",
+                                    choices = list(
+                                      Flux = c("Qnet_budget", "Qlw_budget", "Qsw_budget", "Qlh_budget", "Qsh_budget")
+                                      ),
+                                    multiple = TRUE,
+                                    options = list(size = 5),
+                                    selected = c("Qnet_budget", "Qlw_budget", "Qsw_budget", "Qlh_budget", "Qsh_budget"))
+    # picker_vars_rmse <- selectInput(inputId = "vars_rmse", label = "Variables:",
+    #                                 multiple = TRUE,
+    #                                 choices = c("Qnet_budget", "Qlw_budget", "Qsw_budget", "Qlh_budget", "Qsh_budget"),
+    #                                 selected = c("Qnet_budget", "Qlw_budget", "Qsw_budget", "Qlh_budget", "Qsh_budget"))
     
     # Select regions from a dropdown
     picker_regions <- pickerInput(inputId = "regions", label = "Regions:",
@@ -517,18 +555,21 @@ server <- function(input, output, session) {
     
     # The chosen controls per tab
     output$sidebar_controls <- renderUI({
-        if(input$mainMenu == "summary"){
-            sidebarMenu(picker_vars, picker_regions, picker_seasons, picker_ts_multiple, 
-                        radio_fill, slider_duration_min, slider_p_val)
-        } else if(input$mainMenu == "event"){
-            sidebarMenu(picker_regions, picker_seasons, picker_ts_single, slider_duration)
-        } else if(input$mainMenu == "map"){
-            sidebarMenu(picker_regions, picker_seasons, slider_duration)
-        } else if(input$mainMenu == "flavours"){
-          sidebarMenu(picker_ts_single, slider_duration)
-        } else {
-          # Intentionally empty
-        }
+      if(input$mainMenu == "correlations"){
+        sidebarMenu(picker_vars, picker_regions, picker_seasons, picker_ts_multiple, 
+                    radio_fill, slider_duration, slider_p_val)
+      } else if(input$mainMenu == "rmse"){
+        sidebarMenu(picker_vars_rmse, picker_regions, picker_seasons,
+                    picker_ts_multiple, radio_fill, slider_duration)
+      } else if(input$mainMenu == "event"){
+        sidebarMenu(picker_regions, picker_seasons, picker_ts_single, slider_duration)
+      } else if(input$mainMenu == "map"){
+        sidebarMenu(picker_regions, picker_seasons, slider_duration)
+      } else if(input$mainMenu == "flavours"){
+        sidebarMenu(picker_ts_single, slider_duration)
+      } else {
+        # Intentionally empty
+      }
     })
 
     
@@ -547,6 +588,21 @@ server <- function(input, output, session) {
                    n_Obs >= input$duration[1],
                    n_Obs <= input$duration[2])
         return(ALL_cor_sub)
+    })
+    
+    # The RMSE results
+    rmse_data <- reactive({
+      req(input$vars_rmse)#; req(input$p_val)
+      ALL_cor_sub <- ALL_cor %>% 
+        filter(Parameter1 == "SST",
+               Parameter2 %in% input$vars_rmse,
+               region %in% input$regions,
+               ts %in% input$ts_multiple,
+               season %in% input$seasons,
+               # p <= input$p_val,
+               n_Obs >= input$duration[1],
+               n_Obs <= input$duration[2])
+      return(ALL_cor_sub)
     })
     
     # The OISST MHW metrics
@@ -626,6 +682,7 @@ server <- function(input, output, session) {
                MLD_1_c >= input$MLD_1[1], MLD_1_c <= input$MLD_1[2])
       return(flavour_data)
     })
+    
     
     # Map figures -------------------------------------------------------------
 
@@ -721,6 +778,7 @@ server <- function(input, output, session) {
             layout(showlegend = FALSE)
     })
 
+    
     # Event figures -----------------------------------------------------------
     
     # Table showing filtered events from sidebar controls
@@ -760,6 +818,8 @@ server <- function(input, output, session) {
       # Prep ts data
       MHW_single <- MHW_single()
       
+      # Get the full time series back out in order to get the correct second half
+      
       # Get Q column
       q_col <- c(0, MHW_single[[input$rmse_var]])[1:nrow(MHW_single)]
       
@@ -794,17 +854,71 @@ server <- function(input, output, session) {
     })
     
     # Test text output for table interaction
-    output$devel <- renderPrint({
-        req(length(input$eventTable_cell_clicked) > 0)
-        # input$eventTable_cell_clicked
-        MHW_single()
+    # output$devel <- renderPrint({
+    #     req(length(input$eventTable_cell_clicked) > 0)
+    #     # input$eventTable_cell_clicked
+    #     MHW_single()
+    # })
+    
+
+    # RMSE figures ------------------------------------------------------------
+
+    # Histogram
+    output$histPlotRMSE <- renderPlot({
+      req(input$vars_rmse); req(input$ts_multiple)#; req(input$p_val)
+      if(input$fill != "none"){
+        ggplot(rmse_data(), aes(x = rmse)) +
+          # geom_vline(aes(xintercept = 0), colour = "red", size = 1) +
+          geom_histogram(aes_string(fill = input$fill), bins = input$bins, position = input$position) +
+          facet_grid(ts ~ Parameter2)
+      } else {
+        ggplot(rmse_data(), aes(x = rmse)) +
+          # geom_vline(aes(xintercept = 0), colour = "red", size = 1) +
+          geom_histogram(bins = input$bins, position = input$position) +
+          facet_grid(ts ~ Parameter2)
+      }
+    })
+    
+    # Boxplot
+    output$boxPlotRMSE <- renderPlot({
+      req(input$vars_rmse); req(input$ts_multiple)#; req(input$p_val)
+      
+      rmse_data <- rmse_data()
+      
+      if(input$fill != "none"){
+        ggplot(data = rmse_data, aes(x = ts, y = rmse)) +
+          # geom_hline(aes(yintercept = 0), colour = "red", size = 1) +
+          geom_boxplot(aes_string(fill = input$fill), notch = input$notch) +
+          facet_wrap(~Parameter2)
+      } else {
+        ggplot(data = rmse_data, aes(x = ts, y = rmse)) +
+          # geom_hline(aes(yintercept = 0), colour = "red", size = 1) +
+          geom_boxplot(notch = input$notch) +
+          facet_wrap(~Parameter2)
+      }
+    })
+    
+    # Lineplot
+    output$linePlotRMSE <- renderPlot({
+      req(input$vars_rmse); req(input$ts_multiple)#; req(input$p_val)
+      if(input$fill != "none"){
+        ggplot(rmse_data(), aes(x = n_Obs, y = rmse)) +
+          geom_point(aes_string(colour = input$fill)) +
+          geom_smooth(aes_string(colour = input$fill, linetype = "ts"), method = "lm", se = F) +
+          facet_wrap(~Parameter2)
+      } else {
+        ggplot(rmse_data(), aes(x = n_Obs, y = rmse)) +
+          geom_point() +
+          geom_smooth(aes(linetype = ts), method = "lm", se = F) +
+          facet_wrap(~Parameter2)
+      }
     })
     
 
-    # Summary figures ---------------------------------------------------------
-    
+    # Correlation figures -----------------------------------------------------
+
     # Histogram
-    output$histPlot <- renderPlot({
+    output$histPlotCor <- renderPlot({
       req(input$vars); req(input$p_val); req(input$ts_multiple)
       if(input$fill != "none"){
         ggplot(cor_data(), aes(x = r)) +
@@ -820,7 +934,7 @@ server <- function(input, output, session) {
       })
     
     # Boxplot
-    output$boxPlot <- renderPlot({
+    output$boxPlotCor <- renderPlot({
       req(input$vars); req(input$p_val); req(input$ts_multiple)
       
       cor_data <- cor_data()
@@ -839,7 +953,7 @@ server <- function(input, output, session) {
       })
     
     # Lineplot
-    output$linePlot <- renderPlot({
+    output$linePlotCor <- renderPlot({
         req(input$vars); req(input$p_val); req(input$ts_multiple)
         if(input$fill != "none"){
             ggplot(cor_data(), aes(x = n_Obs, y = r)) +
@@ -855,6 +969,14 @@ server <- function(input, output, session) {
     })
     
 
+    # SOM figures -------------------------------------------------------------
+
+    # Nothing here yet
+    # On the fence about whether to include static figures or allow users to generate
+    # their own figures based on variable preference.
+    # e.g. They could choose which values are shown as fill, contours, and vectors
+    
+    
     # Flavour figures ---------------------------------------------------------
 
     # Flavourplot
