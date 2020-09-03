@@ -154,7 +154,7 @@ ggplot(NWA_coords, aes(x = lon, y = lat)) +
   labs(x = NULL, y = NULL, colour = "Region") +
   facet_wrap(~product) +
   guides(colour = guide_legend(override.aes = list(shape = 15, size = 5)))
-ggsave(filename = "output/NWA_product_regions.pdf", height = 5, width = 18)
+# ggsave(filename = "output/NWA_product_regions.pdf", height = 5, width = 18)
 ```
 
 With our pixels per region determined we may now go about creating the average time series for each region from the OISST, GLORYS, and ERA5 data.

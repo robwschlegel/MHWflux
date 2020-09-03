@@ -16,14 +16,15 @@ source("code/functions.R")
 
 # Run this to re-compile the entire project
 # system.time(
-# workflowr::wflow_publish(files = c("analysis/index.Rmd", 
+# workflowr::wflow_publish(files = c("analysis/index.Rmd",
 #                                    "analysis/polygon-prep.Rmd",
 #                                    "analysis/data-prep.Rmd",
-#                                    "analysis/mhw-flux.Rmd"#, 
+#                                    "analysis/mhw-flux.Rmd",
+#                                    "analysis/som.Rmd"#,
 #                                    # "analysis/k-means-flux.Rmd"
 #                                    ),
 #                          message = "Re-built site.")
-# ) # 85 seconds
+# ) # 102 seconds
 
 
 # Study area --------------------------------------------------------------

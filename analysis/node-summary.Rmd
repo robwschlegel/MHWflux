@@ -441,3 +441,4 @@ knitr::include_graphics("assets/SOM/node_12_panels.png")
 <!-- So basically I have no firm conclusion on which way to go. But having to argue for why we used only 14+ day long MHWs will be a pain, so maybe it's just easiest to go for the 4x3 grid. The season pattern comes through best on that grid anyway. -->
 
 ## References
+

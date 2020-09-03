@@ -13,6 +13,8 @@ navbar:
       href: data-prep.html
     - text: "MHWs vs. heat flux"
       href: mhw-flux.html
+    - text: "SOM analysis"
+      href: som.html
     # - text: "Heat flux K-means"
       # href: k-means-flux.html
   - text: License
