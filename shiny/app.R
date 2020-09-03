@@ -264,9 +264,15 @@ ui <- dashboardPage(
                                  plotOutput("rmsePlot")))),
             # Test box
             # fluidRow(box(verbatimTextOutput("devel")))),
-            
-    # Summary figures ---------------------------------------------------------
-            
+    
+
+    # RMSE figures ------------------------------------------------------------
+
+    # Allow a way to filter by length so that the importance of Qlh over Qsw can emerge
+    
+
+    # Correlations figures ----------------------------------------------------
+
             tabItem(tabName = "summary", 
                     fluidRow(
                         # Histogram box
@@ -294,6 +300,11 @@ ui <- dashboardPage(
                                  solidHeader = TRUE, collapsible = TRUE, collapsed = TRUE))),
             
 
+    # SOM figures -------------------------------------------------------------
+
+
+    
+    
     # Flavour figures ---------------------------------------------------------
 
     # Show ow the proportion of the mix of seasons and regions changes when selecting for
