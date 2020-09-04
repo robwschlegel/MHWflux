@@ -110,6 +110,11 @@ ALL_ts_anom_full <- rbind(ALL_ts_anom[,c("region", "var", "t", "anom")],
                          var == "lhf_mld_cum" ~ "Qlh",
                          var == "shf_mld_cum" ~ "Qsh",
                          var == "qnet_mld_cum" ~ "Qnet",
+                         # var == "lwr_budget" ~ "Qlw",
+                         # var == "swr_budget" ~ "Qsw",
+                         # var == "lhf_budget" ~ "Qlh",
+                         # var == "shf_budget" ~ "Qsh",
+                         # var == "qnet_budget" ~ "Qnet",
                          TRUE ~ var))
 ALL_ts_anom_full_wide <- ALL_ts_anom_full %>% 
     pivot_wider(values_from = anom, names_from = var)
@@ -155,17 +160,17 @@ ALL_cor <- readRDS("ALL_cor.Rda") %>%
                                 # Parameter2 == "lhf_mld_cum" ~ "Qlh",
                                 # Parameter2 == "shf_mld_cum" ~ "Qsh",
                                 # Parameter2 == "qnet_mld_cum" ~ "Qnet",
-                                Parameter2 == "lwr_budget" ~ "Qlw_budget",
-                                Parameter2 == "swr_budget" ~ "Qsw_budget",
-                                Parameter2 == "lhf_budget" ~ "Qlh_budget",
-                                Parameter2 == "shf_budget" ~ "Qsh_budget",
-                                Parameter2 == "qnet_budget" ~ "Qnet_budget",
+                                Parameter2 == "lwr_budget" ~ "Qlw",
+                                Parameter2 == "swr_budget" ~ "Qsw",
+                                Parameter2 == "lhf_budget" ~ "Qlh",
+                                Parameter2 == "shf_budget" ~ "Qsh",
+                                Parameter2 == "qnet_budget" ~ "Qnet",
                                 TRUE ~ Parameter2))
 
 ALL_cor_wide <- ALL_cor %>% 
   filter(Parameter1 == "SST",
          Parameter2 %in% c("SST", "SSS", "SBT", "MLD_c", "MLD_1_c", "Air_temp", "Cloud_cover_c", "Precip_Evap_c", 
-                           "MSLP_c", "Qlw_budget", "Qsw_budget", "Qlh_budget", "Qsh_budget", "Qnet_budget")) %>% 
+                           "MSLP_c", "Qlw", "Qsw", "Qlh", "Qsh", "Qnet")) %>% 
   dplyr::select(region:ts, Parameter2, r, rmse) %>% 
   pivot_wider(values_from = c(r, rmse), names_from = c(Parameter2, ts)) %>% 
   select_if(~sum(!is.na(.)) > 0) %>% 
@@ -478,22 +483,18 @@ server <- function(input, output, session) {
     # Select variables from a dropdown
     picker_vars <- pickerInput(inputId = "vars", label = "Variables:",
                                choices = list(
-                                 Flux = c("Qnet", "Qlw", "Qsw", "Qlh", "Qsh",
-                                          "Qnet_budget", "Qlw_budget", "Qsw_budget", "Qlh_budget", "Qsh_budget"),
+                                 Flux = c("Qnet", "Qlw", "Qsw", "Qlh", "Qsh"),
                                  Air = c("Air_temp", "Cloud_cover_c", "Precip_Evap_c", "MSLP_c"),
                                  Sea = c("SST", "SSS", "MLD_c", "MLD_1_c", "SBT")
                                  ),
                                multiple = TRUE,
                                options = list(size = 6),
-                               selected = c("Qnet_budget", "Qlw_budget", "Qsw_budget", "Qlh_budget", "Qsh_budget"))
+                               selected = c("Qnet", "Qlw", "Qsw", "Qlh", "Qsh"))
     # Select variables from a dropdown for RMSE only
     picker_vars_rmse <- pickerInput(inputId = "vars_rmse", label = "Variables:",
-                                    choices = list(
-                                      Flux = c("Qnet_budget", "Qlw_budget", "Qsw_budget", "Qlh_budget", "Qsh_budget")
-                                      ),
-                                    multiple = TRUE,
-                                    options = list(size = 5),
-                                    selected = c("Qnet_budget", "Qlw_budget", "Qsw_budget", "Qlh_budget", "Qsh_budget"))
+                                    choices = c("Qnet", "Qlw", "Qsw", "Qlh", "Qsh"), multiple = TRUE,
+                                    options = list(`actions-box` = TRUE, size = 6),
+                                    selected = c("Qnet", "Qlw", "Qsw", "Qlh", "Qsh"))
     # picker_vars_rmse <- selectInput(inputId = "vars_rmse", label = "Variables:",
     #                                 multiple = TRUE,
     #                                 choices = c("Qnet_budget", "Qlw_budget", "Qsw_budget", "Qlh_budget", "Qsh_budget"),
@@ -508,11 +509,13 @@ server <- function(input, output, session) {
     # Select seasons from a dropdown
     picker_seasons <- pickerInput(inputId = "seasons", label = "Seasons:",
                                   choices = levels(ALL_cor$season), multiple = TRUE,
+                                  options = list(`actions-box` = TRUE, size = 4),
                                   selected = levels(ALL_cor$season))
     
     # Select parts of a time series
     picker_ts_multiple <- pickerInput(inputId = "ts_multiple", label = "MHW sections:",
                                       choices = levels(ALL_cor$ts), multiple = TRUE,
+                                      options = list(`actions-box` = TRUE, size = 3),
                                       selected = c("onset", "decline"))
     picker_ts_single <- pickerInput(inputId = "ts_single", label = "MHW section:",
                                     choices = levels(ALL_cor$ts), multiple = FALSE,
@@ -665,11 +668,11 @@ server <- function(input, output, session) {
           filter(t >= event_sub$start,
                  t <= event_sub$end,
                  region == event_sub$region) %>% 
-          mutate(Qnet_budget = c(0, Qnet[1:event_sub$duration-1]) + SST[1],
-                 Qlh_budget = c(0, Qlh[1:event_sub$duration-1]) + SST[1],
-                 Qsh_budget = c(0, Qsh[1:event_sub$duration-1]) + SST[1],
-                 Qlw_budget = c(0, Qlw[1:event_sub$duration-1]) + SST[1],
-                 Qsw_budget = c(0, Qsw[1:event_sub$duration-1]) + SST[1])
+          mutate(Qnet = c(0, Qnet[1:event_sub$duration-1]) + SST[1],
+                 Qlh = c(0, Qlh[1:event_sub$duration-1]) + SST[1],
+                 Qsh = c(0, Qsh[1:event_sub$duration-1]) + SST[1],
+                 Qlw = c(0, Qlw[1:event_sub$duration-1]) + SST[1],
+                 Qsw = c(0, Qsw[1:event_sub$duration-1]) + SST[1])
         
         # Filter accordingly
         if(input$ts_single == "full"){
@@ -854,11 +857,11 @@ server <- function(input, output, session) {
       # Get the full time series back out in order to get the correct second half
       
       # Get Q column
-      q_col <- c(0, MHW_single[[input$rmse_var]])[1:nrow(MHW_single)]
+      # q_col <- c(0, MHW_single[[input$rmse_var]])[1:nrow(MHW_single)]
       
       # Add needed columns
-      MHW_temp <- MHW_single %>% 
-        mutate(Qx = q_col + SST[1])
+      MHW_temp <- MHW_single #%>%
+        # mutate(Qx = q_col + SST[1])
       
       # Find RMSE value
       MHW_data <- MHW_data()
@@ -867,18 +870,22 @@ server <- function(input, output, session) {
         filter(region == event_sub$region,
                event_no == event_sub$event,
                ts == input$ts_single,
-               Parameter2 == paste0(input$rmse_var,"_budget")) %>% 
+               Parameter2 == input$rmse_var) %>% 
         na.omit()
+      
+      # Label coordinates for Qx term
+      Qx_x <- MHW_temp$t[nrow(MHW_temp)]
+      Qx_y <- MHW_temp[[nrow(MHW_temp), input$rmse_var]]
       
       # The plot
       rp <- ggplot(data = MHW_temp, aes(x = t)) +
         geom_point(aes(y = SST), colour = "red") +
         geom_line(aes(y = SST), colour = "red") +
-        geom_point(aes(y = Qx), colour = "blue") +
-        geom_line(aes(y = Qx), colour = "blue") +
+        geom_point(aes_string(y = input$rmse_var), colour = "blue") +
+        geom_line(aes_string(y = input$rmse_var), colour = "blue") +
         geom_label(aes(x = t[nrow(MHW_temp)], y = SST[nrow(MHW_temp)],
                        label = "SST"), colour = "red") +
-        geom_label(aes(x = t[nrow(MHW_temp)], y = Qx[nrow(MHW_temp)],
+        geom_label(aes(x = Qx_x, y = Qx_y,
                        label = input$rmse_var), colour = "blue") +
         geom_label(aes(x = mean(t), y = quantile(SST, 0.1),
                        label = paste0("RMSE = ",MHW_rmse$rmse[1]))) +
