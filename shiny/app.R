@@ -27,6 +27,15 @@ library(see)
 # region_MHW <- readRDS("GLORYS_region_MHW.Rda")
 region_MHW <- readRDS("OISST_region_MHW.Rda")
 
+# Corners of the study area
+# Created in 'MHWNWA/analysis/polygon-prep.Rmd'
+NWA_corners <- readRDS("NWA_corners.Rda")
+
+# Individual regions
+# Created in 'MHWNWA/analysis/polygon-prep.Rmd'
+NWA_coords <- readRDS("NWA_coords.Rda") %>% 
+  mutate(region = factor(region, levels = c("mab", "gm", "ss", "cbs", "gsl", "nfs")))
+
 # MHW Clims
 MHW_clim <- region_MHW %>%
     select(-cats) %>%
@@ -84,7 +93,7 @@ ALL_ts_anom_cum <- readRDS("ALL_ts_anom_cum.Rda")
 
 # Combine the anomaly dataframes into one
 ALL_ts_anom_full <- rbind(ALL_ts_anom[,c("region", "var", "t", "anom")], 
-                       ALL_ts_anom_cum[,c("region", "var", "t", "anom")]) %>%
+                          ALL_ts_anom_cum[,c("region", "var", "t", "anom")]) %>%
   filter(var %in% choose_vars) %>% 
   mutate(region = factor(region, levels = c("mab", "gm", "ss", "cbs", "gsl", "nfs")),
          var = case_when(var == "sst" ~ "SST",
@@ -121,16 +130,16 @@ ALL_cor <- readRDS("ALL_cor.Rda") %>%
                                 Parameter1 == "tcc_cum" ~ "Cloud_cover_c",
                                 Parameter1 == "p_e_cum" ~ "Precip_Evap_c",
                                 Parameter1 == "mslp_cum" ~ "MSLP_c",
-                                Parameter1 == "lwr_mld_cum" ~ "Qlw",
-                                Parameter1 == "swr_mld_cum" ~ "Qsw",
-                                Parameter1 == "lhf_mld_cum" ~ "Qlh",
-                                Parameter1 == "shf_mld_cum" ~ "Qsh",
-                                Parameter1 == "qnet_mld_cum" ~ "Qnet",
-                                Parameter1 == "lwr_budget" ~ "Qlw_budget",
-                                Parameter1 == "swr_budget" ~ "Qsw_budget",
-                                Parameter1 == "lhf_budget" ~ "Qlh_budget",
-                                Parameter1 == "shf_budget" ~ "Qsh_budget",
-                                Parameter1 == "qnet_budget" ~ "Qnet_budget",
+                                # Parameter1 == "lwr_mld_cum" ~ "Qlw",
+                                # Parameter1 == "swr_mld_cum" ~ "Qsw",
+                                # Parameter1 == "lhf_mld_cum" ~ "Qlh",
+                                # Parameter1 == "shf_mld_cum" ~ "Qsh",
+                                # Parameter1 == "qnet_mld_cum" ~ "Qnet",
+                                Parameter1 == "lwr_budget" ~ "Qlw",
+                                Parameter1 == "swr_budget" ~ "Qsw",
+                                Parameter1 == "lhf_budget" ~ "Qlh",
+                                Parameter1 == "shf_budget" ~ "Qsh",
+                                Parameter1 == "qnet_budget" ~ "Qnet",
                                 TRUE ~ Parameter1),
          Parameter2 = case_when(Parameter2 == "sst" ~ "SST",
                                 Parameter2 == "bottomT" ~ "SBT",
@@ -141,11 +150,11 @@ ALL_cor <- readRDS("ALL_cor.Rda") %>%
                                 Parameter2 == "tcc_cum" ~ "Cloud_cover_c",
                                 Parameter2 == "p_e_cum" ~ "Precip_Evap_c",
                                 Parameter2 == "mslp_cum" ~ "MSLP_c",
-                                Parameter2 == "lwr_mld_cum" ~ "Qlw",
-                                Parameter2 == "swr_mld_cum" ~ "Qsw",
-                                Parameter2 == "lhf_mld_cum" ~ "Qlh",
-                                Parameter2 == "shf_mld_cum" ~ "Qsh",
-                                Parameter2 == "qnet_mld_cum" ~ "Qnet",
+                                # Parameter2 == "lwr_mld_cum" ~ "Qlw",
+                                # Parameter2 == "swr_mld_cum" ~ "Qsw",
+                                # Parameter2 == "lhf_mld_cum" ~ "Qlh",
+                                # Parameter2 == "shf_mld_cum" ~ "Qsh",
+                                # Parameter2 == "qnet_mld_cum" ~ "Qnet",
                                 Parameter2 == "lwr_budget" ~ "Qlw_budget",
                                 Parameter2 == "swr_budget" ~ "Qsw_budget",
                                 Parameter2 == "lhf_budget" ~ "Qlh_budget",
@@ -169,14 +178,22 @@ ALL_RMSE <- ALL_cor %>%
 # Load SOM results
 som <- readRDS("som.Rda")
 
-# Corners of the study area
-    # Created in 'MHWNWA/analysis/polygon-prep.Rmd'
-NWA_corners <- readRDS("NWA_corners.Rda")
+# Wide SOM base data
+som_data_wide <- som$data %>% 
+  dplyr::select(-sd) %>% 
+  pivot_wider(names_from = var, values_from = val)
 
-# Individual regions
-    # Created in 'MHWNWA/analysis/polygon-prep.Rmd'
-NWA_coords <- readRDS("NWA_coords.Rda") %>% 
-    mutate(region = factor(region, levels = c("mab", "gm", "ss", "cbs", "gsl", "nfs")))
+# Wide SOM other data
+som_other_wide <- som$other_data %>% 
+  dplyr::select(-sd) %>% 
+  pivot_wider(names_from = var, values_from = val)
+
+# Subset vectors for tidiness
+lon_sub <- seq(NWA_corners[1], NWA_corners[2], by = 1)+0.125
+lat_sub <- seq(NWA_corners[3], NWA_corners[4], by = 1)-0.125
+som_data_sub <- som_data_wide %>%
+  select(node, lon, lat, anom_u, anom_v, anom_u10, anom_v10) %>%
+  filter(lon %in% lon_sub, lat %in% lat_sub)
 
 # The base land polygon
 # Created in 'MHWNWA/analysis/polygon-prep.Rmd'
@@ -195,6 +212,12 @@ frame_base <- ggplot(map_base, aes(x = lon, y = lat)) +
     theme(panel.border = element_rect(fill = NA, colour = "black", size = 1),
           axis.text = element_text(size = 12, colour = "black"),
           axis.ticks = element_line(colour = "black"))
+
+# Establish the vector scalar for the currents
+current_uv_scalar <- 4
+
+# Establish the vector scalar for the wind
+wind_uv_scalar <- 0.5
 
 # The results text table
 # res_table <- read_csv("res_table.csv")
@@ -235,9 +258,9 @@ ui <- dashboardPage(
     # Map figures -------------------------------------------------------------
 
             tabItem(tabName = "map",
-                    fluidRow(box(plotOutput("mapRegions"), width = 6, title = "Region map",
+                    fluidRow(box(plotOutput("mapRegions", height = "740px"), width = 6, height = "800px", title = "Region map",
                                  status = "primary", solidHeader = TRUE, collapsible = TRUE),
-                             box(plotlyOutput("eventLolli"), width = 6, title = "MHW Lollis",
+                             box(plotlyOutput("eventLolli", height = "740px"), width = 6, height = "800px", title = "MHW Lollis",
                                  status = "primary", solidHeader = TRUE, collapsible = TRUE))),
             
             
@@ -348,7 +371,7 @@ ui <- dashboardPage(
     tabItem(tabName = "som",
             fluidRow(box(width = 12, height = "800px", title = "Nodes", status = "primary", 
                          solidHeader = TRUE, collapsible = TRUE,
-                         plotOutput("somPlot")))),
+                         shinycssloaders::withSpinner(plotOutput("somPlot", height = "740px"), type = 6, color = "#b0b7be") ))),
     
     
     # Flavour figures ---------------------------------------------------------
@@ -409,7 +432,7 @@ ui <- dashboardPage(
                                climatology, as seen throughout the rest of the project. The blue line shows the SST value from day 1 of the time series, with the
                                cumulative seasonal anomaly Qx term added to it for each time step."),
                              h2(tags$b("RMSE")),
-                             p("T"),
+                             p("Text to come..."),
                              h2(tags$b("Correlations")),
                              p("The summary tab shows a higher level report on the correlations between variables and SST. The left panel shows the correlation results
                                via histograms. The X-axes in the histogram show the strength of the correlations between SST and the given variable. These will range
@@ -425,7 +448,7 @@ ui <- dashboardPage(
                                that there isn't much of a pattern. That longer MHWs tend to be more unique in their drivers so any relationship with the duration of an
                                event and physical drivers tends to break down after 30 days or so."),
                              h2(tags$b("SOM")),
-                             p("T"),
+                             p("Text to come..."),
                              h2(tags$b("Flavours")),
                              p("Welcome to flavourtown! This was my failed attempt at creating some sort of visualisation that looked like ice-cream cones. The
                                idea was that there appear to be different 'flavours' of MHWs. For example, events whose onset coincides with strong latent heatflux
@@ -795,7 +818,7 @@ server <- function(input, output, session) {
     output$eventTable = renderDataTable({
         MHW_data() %>% 
         left_join(ALL_cor_wide, by = c("region", "season", "event"))
-    }, selection = 'single', caption = "test")
+    }, selection = 'single', server = TRUE, options = list(scrollX = TRUE))
     
     # Correlation plot for single figure
     output$correlationPlot <- renderPlot({
@@ -903,7 +926,7 @@ server <- function(input, output, session) {
       if(input$fill != "none"){
         ggplot(data = rmse_data, aes(x = ts, y = rmse)) +
           # geom_hline(aes(yintercept = 0), colour = "red", size = 1) +
-          geom_boxplot(aes_string(fill = input$fill), notch = input$notch_ts) +
+          geom_boxplot(aes_string(fill = input$fill), notch = input$notch_var) +
           facet_wrap(~Parameter2) +
           labs(x = NULL)
       } else {
@@ -994,20 +1017,20 @@ server <- function(input, output, session) {
     # e.g. They could choose which values are shown as fill, contours, and vectors
     
     # Faceted node plot
-    output$linePlotCor <- renderPlot({
+    output$somPlot <- renderPlot({
       # req(input$vars); req(input$p_val); req(input$ts_multiple)
       frame_base +
         # The air temperature
-        geom_raster(data = fig_data$som_data_wide, aes(fill = anom_t2m)) +
+        geom_raster(data = som_data_wide, aes(fill = anom_t2m)) +
         # The land mass
         geom_polygon(data = map_base, aes(group = group), alpha = 1,
                      fill = NA, colour = "black", size = 0.5, show.legend = FALSE) +
         # The mean sea level pressure contours
-        geom_contour(data = fig_data$other_data_wide, binwidth = 100,
+        geom_contour(data = som_other_wide, binwidth = 100,
                      # breaks = c(-2000, -1500, -1000, -500, 0, 500, 1000),
                      aes(z = anom_mslp, colour = stat(level)), size = 2) +
         # The wind vectors
-        geom_segment(data = fig_data$som_data_sub,
+        geom_segment(data = som_data_sub,
                      aes(xend = lon + anom_u10 * wind_uv_scalar,
                          yend = lat + anom_v10 * wind_uv_scalar),
                      arrow = arrow(angle = 40, length = unit(0.1, "cm"), type = "open"),
@@ -1020,7 +1043,8 @@ server <- function(input, output, session) {
         #                        colours = c("green1", "green2", "green3", "green4", #"grey", 
         #                                    "yellow4", "yellow3", "yellow2", "yellow1"), 
         #                        values = c(0, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 1.0)) +
-        theme(legend.position = "bottom")
+        theme(legend.position = "bottom") +
+        facet_wrap(~node)
     })
     
     # Flavour figures ---------------------------------------------------------
