@@ -153,6 +153,15 @@ ALL_cor <- readRDS("ALL_cor.Rda") %>%
                                 Parameter2 == "qnet_budget" ~ "Qnet_budget",
                                 TRUE ~ Parameter2))
 
+ALL_cor_wide <- ALL_cor %>% 
+  filter(Parameter1 == "SST",
+         Parameter2 %in% c("SST", "SSS", "SBT", "MLD_c", "MLD_1_c", "Air_temp", "Cloud_cover_c", "Precip_Evap_c", 
+                           "MSLP_c", "Qlw_budget", "Qsw_budget", "Qlh_budget", "Qsh_budget", "Qnet_budget")) %>% 
+  dplyr::select(region:ts, Parameter2, r, rmse) %>% 
+  pivot_wider(values_from = c(r, rmse), names_from = c(Parameter2, ts)) %>% 
+  select_if(~sum(!is.na(.)) > 0) %>% 
+  dplyr::rename(event = event_no)
+
 # Create RMSE data.frame
 ALL_RMSE <- ALL_cor %>% 
   filter(rmse > 0)
@@ -283,25 +292,23 @@ ui <- dashboardPage(
     tabItem(tabName = "rmse", 
             fluidRow(
               # Histogram box
-              box(width = 6, title = "Histogram", status = "primary", solidHeader = TRUE, collapsible = TRUE,
-                  dropdownButton(
-                    h4("Histogram controls:"),
-                    radioButtons(inputId = "position", label = "Position:", 
-                                 choices = c("stack", "dodge"),
-                                 selected = "stack", inline = T),
-                    sliderInput(inputId = "bins", label = "Number of bins:",
-                                min = 1, max = 20, value = 10),
-                    circle = TRUE, status = "danger", icon = icon("gear")),
-                  plotOutput("histPlotRMSE")),
-              # Boxplot box
-              box(width = 6, title = "Boxplot", status = "primary", solidHeader = TRUE, collapsible = TRUE,
+              box(width = 6, title = "Boxplot - time series portion", status = "primary", solidHeader = TRUE, collapsible = TRUE,
                   dropdownButton(
                     h4("Boxplot controls:"),
-                    radioButtons(inputId = "notch", label = "Notches:", 
+                    radioButtons(inputId = "notch_ts", label = "Notches:", 
                                  choices = c(TRUE, FALSE),
                                  selected = TRUE, inline = T),
                     circle = TRUE, status = "danger", icon = icon("gear")),
-                  plotOutput("boxPlotRMSE"))),
+                  plotOutput("boxPlotRMSEts")),
+              # Boxplot box
+              box(width = 6, title = "Boxplot - variable", status = "primary", solidHeader = TRUE, collapsible = TRUE,
+                  dropdownButton(
+                    h4("Boxplot controls:"),
+                    radioButtons(inputId = "notch_var", label = "Notches:", 
+                                 choices = c(TRUE, FALSE),
+                                 selected = TRUE, inline = T),
+                    circle = TRUE, status = "danger", icon = icon("gear")),
+                  plotOutput("boxPlotRMSEvar"))),
             # Lineplot box
             fluidRow(box(plotOutput("linePlotRMSE"), width = 12, title = "Lineplot", status = "primary", 
                          solidHeader = TRUE, collapsible = TRUE, collapsed = TRUE))),
@@ -339,7 +346,9 @@ ui <- dashboardPage(
     # SOM figures -------------------------------------------------------------
 
     tabItem(tabName = "som",
-            fluidRow(box(width = 12, height = "800px", title = "Nodes", status = "primary", solidHeader = TRUE, collapsible = TRUE))),
+            fluidRow(box(width = 12, height = "800px", title = "Nodes", status = "primary", 
+                         solidHeader = TRUE, collapsible = TRUE,
+                         plotOutput("somPlot")))),
     
     
     # Flavour figures ---------------------------------------------------------
@@ -784,7 +793,8 @@ server <- function(input, output, session) {
     # Table showing filtered events from sidebar controls
     # Add a title explicitly stating what this shows
     output$eventTable = renderDataTable({
-        MHW_data()
+        MHW_data() %>% 
+        left_join(ALL_cor_wide, by = c("region", "season", "event"))
     }, selection = 'single', caption = "test")
     
     # Correlation plot for single figure
@@ -863,24 +873,29 @@ server <- function(input, output, session) {
 
     # RMSE figures ------------------------------------------------------------
 
-    # Histogram
-    output$histPlotRMSE <- renderPlot({
+    # Boxplot faceted by ts
+    output$boxPlotRMSEts <- renderPlot({
       req(input$vars_rmse); req(input$ts_multiple)#; req(input$p_val)
+      
+      rmse_data <- rmse_data()
+      
       if(input$fill != "none"){
-        ggplot(rmse_data(), aes(x = rmse)) +
-          # geom_vline(aes(xintercept = 0), colour = "red", size = 1) +
-          geom_histogram(aes_string(fill = input$fill), bins = input$bins, position = input$position) +
-          facet_grid(ts ~ Parameter2)
+        ggplot(data = rmse_data, aes(x = Parameter2, y = rmse)) +
+          # geom_hline(aes(yintercept = 0), colour = "red", size = 1) +
+          geom_boxplot(aes_string(fill = input$fill), notch = input$notch_ts) +
+          facet_wrap(~ts) +
+          labs(x = NULL)
       } else {
-        ggplot(rmse_data(), aes(x = rmse)) +
-          # geom_vline(aes(xintercept = 0), colour = "red", size = 1) +
-          geom_histogram(bins = input$bins, position = input$position) +
-          facet_grid(ts ~ Parameter2)
+        ggplot(data = rmse_data, aes(x = Parameter2, y = rmse)) +
+          # geom_hline(aes(yintercept = 0), colour = "red", size = 1) +
+          geom_boxplot(notch = input$notch_ts) +
+          facet_wrap(~ts) +
+          labs(x = NULL)
       }
     })
     
-    # Boxplot
-    output$boxPlotRMSE <- renderPlot({
+    # Boxplot faceted by variables
+    output$boxPlotRMSEvar <- renderPlot({
       req(input$vars_rmse); req(input$ts_multiple)#; req(input$p_val)
       
       rmse_data <- rmse_data()
@@ -888,13 +903,15 @@ server <- function(input, output, session) {
       if(input$fill != "none"){
         ggplot(data = rmse_data, aes(x = ts, y = rmse)) +
           # geom_hline(aes(yintercept = 0), colour = "red", size = 1) +
-          geom_boxplot(aes_string(fill = input$fill), notch = input$notch) +
-          facet_wrap(~Parameter2)
+          geom_boxplot(aes_string(fill = input$fill), notch = input$notch_ts) +
+          facet_wrap(~Parameter2) +
+          labs(x = NULL)
       } else {
         ggplot(data = rmse_data, aes(x = ts, y = rmse)) +
           # geom_hline(aes(yintercept = 0), colour = "red", size = 1) +
-          geom_boxplot(notch = input$notch) +
-          facet_wrap(~Parameter2)
+          geom_boxplot(notch = input$notch_var) +
+          facet_wrap(~Parameter2) +
+          labs(x = NULL)
       }
     })
     
@@ -976,6 +993,35 @@ server <- function(input, output, session) {
     # their own figures based on variable preference.
     # e.g. They could choose which values are shown as fill, contours, and vectors
     
+    # Faceted node plot
+    output$linePlotCor <- renderPlot({
+      # req(input$vars); req(input$p_val); req(input$ts_multiple)
+      frame_base +
+        # The air temperature
+        geom_raster(data = fig_data$som_data_wide, aes(fill = anom_t2m)) +
+        # The land mass
+        geom_polygon(data = map_base, aes(group = group), alpha = 1,
+                     fill = NA, colour = "black", size = 0.5, show.legend = FALSE) +
+        # The mean sea level pressure contours
+        geom_contour(data = fig_data$other_data_wide, binwidth = 100,
+                     # breaks = c(-2000, -1500, -1000, -500, 0, 500, 1000),
+                     aes(z = anom_mslp, colour = stat(level)), size = 2) +
+        # The wind vectors
+        geom_segment(data = fig_data$som_data_sub,
+                     aes(xend = lon + anom_u10 * wind_uv_scalar,
+                         yend = lat + anom_v10 * wind_uv_scalar),
+                     arrow = arrow(angle = 40, length = unit(0.1, "cm"), type = "open"),
+                     linejoin = "mitre", size = 0.4, alpha = 0.4) +
+        # Colour scale
+        scale_fill_gradient2(name = "Air temp.\nanom. (°C)", low = "blue", high = "red") +
+        scale_colour_gradient2("MSLP anom.\n(hPa)",# guide = "legend",
+                               low = "green", mid = "grey", high = "yellow") +
+        # scale_colour_gradientn("MSLP anom.\n(hPa)",# guide = "legend",
+        #                        colours = c("green1", "green2", "green3", "green4", #"grey", 
+        #                                    "yellow4", "yellow3", "yellow2", "yellow1"), 
+        #                        values = c(0, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 1.0)) +
+        theme(legend.position = "bottom")
+    })
     
     # Flavour figures ---------------------------------------------------------
 
