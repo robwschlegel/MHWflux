@@ -75,15 +75,15 @@ Surface temperature:
 - NOAA OISST
   - SST
 - ERA5
- - Qlh, Qsh, Qlw, Qsw
-  - Qnet
- - MSLP
- - Precipitation
- - Evaporation
- - Cloud cover
- - Air temp. (2 m)
- - Wind (10 m): U + V
-  - Wind speed + direction
+  - Qlh, Qsh, Qlw, Qsw
+    - Qnet
+  - MSLP
+  - Precipitation
+  - Evaporation
+  - Cloud cover
+  - Air temp. (2 m)
+  - Wind (10 m): U + V
+    - Wind speed + direction
 - GLORYS
   - MLD
   - SSS
@@ -100,7 +100,7 @@ Qx/ρ~0~c~p~H
 
 where Qx is the given heat flux variable, ρ~0~ = 1042, c~p~ ~= 4000, and H is the MLD on a given day. This effectively converted the Qx terms into units of °C/day. The final step in the data prep before running the RMSE was to create cumulative Qx terms during a MHW. This was done by taking the Qx on the first day of an event, and cumulatively adding the following days until the end of the event. These cumulative Qx terms were then added to the SSTa from the first day of the MHW to show how much of the daily change could be attributed to a given Qx term. For example:
 
-SSTa1 ->      SSTa2     ->      SSTa3     ->     SSTa4
+SSTa1 ->      SSTa2     ->      SSTa3     ->     SSTa4  
 SSTa1 ->    SST1a+Qx1   ->   SST1a+Qx2    ->   SST1a+Qx3
 
 ## Correlations
