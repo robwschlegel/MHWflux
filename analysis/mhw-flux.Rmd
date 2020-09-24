@@ -17,7 +17,7 @@ knitr::opts_chunk$set(fig.width = 8, fig.align = 'center',
 
 ## Introduction
 
-This vignette will walk through the thinking and the process for how to link physical variables to their potential effect on driving or dissipating MHWs. The primary source that inspired this work was @Chen2016. In this paper the authors were able to illustrate which parts of the heat budget were most likely driving the anomalous heat content in the surface of the ocean. What this analysis seeks to do is to build on this methodology by applying the fundamental concept to ALL of the MHWs detected in the NW Atlantic. Fundamentally we are running thousands of correlations between SST anomalies and the co-occurring anomalies for a range of physical variables. The stronger the correlation (both positive and negative) the more of an indication this is to us that these phenomena are related.
+This vignette will walk through the thinking and the process for how to link physical variables to their potential effect on driving or dissipating MHWs. The primary source that inspired this work was @Chen2016. In this paper the authors were able to illustrate which parts of the heat budget were most likely driving the anomalous heat content in the surface of the ocean. What this analysis seeks to do is to build on this methodology by applying the fundamental concept to ALL of the MHWs detected in the NW Atlantic. Fundamentally we are running thousands of RMSE and correlation calculations between SST anomalies and the co-occurring anomalies for a range of physical variables. The lower the RMSE and the stronger the correlation (both positive and negative) the more of an indication this is to us that these phenomena are related. We will also be comparing the magnitude of change for Qx terms and SSTa during the onset and decline of MHWs to see how much of these events can be attributed to heat flux.
 
 ```{r startup}
 # All of the libraries and objects used in the project
@@ -27,9 +27,15 @@ source("code/functions.R")
 
 ## Relating SSTa to physical variables
 
-We know when MHWs occurred, and our physical data are prepped, so what we need to do is run RMSE and correlations between SSTa from the start to peak and peak to end of each event for the full suite of variables. This will show us for each event which values related the best for the onset AND decline of the events. We will run RMSE and correlations on the full time series, too.
+We know when MHWs occurred, and our physical data are prepped, so what we need to do is run magnitude comparisons, RMSE, and correlations between SSTa from the start to peak and peak to end of each event for the full suite of variables. This will show us for each event which values related the best for the onset AND decline of the events. We will run RMSE and correlations on the full time series, but these were decided not to be included in the final manuscript as they don't add much other than to show how much better the calculations for onset or decline are.
 
-Running correlations is useful to see how well certain variables change in relation to SSTa, but these do not show how similar those proportions of change are. In order to do this we need to calculate the RMSE between the SST anomalies and the Qx terms. This may only be done with the Qx terms because they are in the same units as SST. One additional tweak we will need here is to add the cumulative Qx term for the following day to the SST anomaly from the first day of the MHW. This is done so that we may see more closely how the developing Qx term matches to the development of the SST anomaly. Effectively this tells us how much the Qx term may be driving SSTa.
+Up first is the analysis of the magnitude of change in SSTa and SST_Qx for the onset and decline of MHWs. This will be calculated by finding how much SSTa and SST_Qx increase from the onset to the peak of a MHW, and how much SSTa and SST_Qx decrease on the decline of the same event. The thinking here is that if SSTa exceeds the SST_Qx increase for the onset, this will indicate that some advective process is aiding the development of the SSTa, but if SST_Qx exceeds SSTa, this indicates that the heat flux term is responsible for the creation of the event. Likewise for the decline of events, if the SST_Qx value decreases more than SSTa this would mean that negative heat flux into the ocean was terminating the event, whereas a greater decrease in SSTa would imply that advection was primarily terminating the event.
+
+```{r MHW-magnitude, eval=FALSE}
+
+```
+
+Running correlations is useful to see how well certain variables change in relation to SSTa, but these do not show how similar those proportions of change are. In order to do this we need to calculate the RMSE between the SST anomalies and the SST_Qx terms. This may only be done with the SST_Qx terms because they are in the same units as SST. One additional tweak we will need here is to add the cumulative Qx term for the following day to the SSTa from the first day of the MHW. This is done so that we may see more closely how the developing Qx term matches to the development of the SSTa. Effectively this tells us how much the Qx term may be driving SSTa.
 
 ```{r MHW-var-cor, eval=FALSE}
 # Extract just the event info
@@ -40,7 +46,7 @@ OISST_MHW_event_index <- OISST_MHW_event %>%
 
 # Run all the stats
 ALL_cor <- plyr::ddply(OISST_MHW_event_index, .parallel = T,
-                       .variables = c("row_index"), .fun = cor_all,
+                       .variables = c("row_index"), .fun = stats_all,
                        df_event = OISST_MHW_event) %>% 
   left_join(OISST_MHW_event_index, by = "row_index") %>% 
   select(region, season, event_no, ts, everything()) %>%
@@ -393,6 +399,14 @@ cor_summary_season <- ALL_cor %>%
 cor_summary_season %>% 
   filter(Parameter2 == "mld")
 ```
+
+### Lead or lag of heat flux
+
+Also could look into lead or lag of Qnet etc.
+
+### Variability in Qx during regins and seasons
+
+See if there is more variance in Qx during certain seasons or regions.
 
 ### Relationships
 

@@ -359,6 +359,22 @@ calc_clim_anom <- function(df, point_accuracy){
 
 # Correlation functions ---------------------------------------------------
 
+# Convenience function for magnitude of change calculations
+mag_calc <- function(df_sub, onset = T){
+  # if(onset){
+  #   i_1 <- nrow(df_sub); i_2 <- 1
+  # } else{
+  #   i_2 <- nrow(df_sub); i_1 <- 1
+  # }
+  df_res <- df_sub %>% 
+    summarise(sst = sst[n()]-sst[1],
+              qnet_budget = qnet_budget[n()]-qnet_budget[1],
+              lwr_budget = lwr_budget[n()]-lwr_budget[1],
+              swr_budget = swr_budget[n()]-swr_budget[1],
+              lhf_budget = lhf_budget[n()]-lhf_budget[1],
+              shf_budget = shf_budget[n()]-shf_budget[1])
+}
+
 # Convenience wrapper for RMSE calculations
 rmse_wrap <- function(df_sub){
   df_res <- df_sub %>% 
@@ -372,8 +388,8 @@ rmse_wrap <- function(df_sub){
 }
 
 # Subset data based on events and regions and run all correlations
-# This also runs RMSE for the Qx terms
-cor_all <- function(df, df_event){
+# This also runs magnitudes of change and RMSE for the Qx terms
+stats_all <- function(df, df_event){
   
   # Get the info for the focus event
   event_sub <- df_event %>% 
@@ -396,6 +412,11 @@ cor_all <- function(df, df_event){
   ts_decline <- ts_full %>% 
     filter(t >= event_sub$date_peak,
            t <= event_sub$date_end)
+  
+  # Calculate magnitudes of change
+  mag_onset <- mag_calc(ts_onset)
+
+  
   # Run the correlations
   R2_full <- broom::glance(lm(sst ~ t, ts_full))
   ts_full_cor <- correlation(ts_full, redundant = T) %>% 
