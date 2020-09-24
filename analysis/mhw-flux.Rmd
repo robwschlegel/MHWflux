@@ -163,7 +163,8 @@ mag_scatter <- ALL_mag_prop %>%
 mag_box <- ALL_mag_prop %>% 
   ggplot(aes(x = ts, y = prop)) +
   geom_hline(aes(yintercept = 0), colour = "red") +
-  geom_boxplot(outlier.shape = NA) +
+    geom_boxplot(aes(fill = season), outlier.shape = NA) +
+  # geom_boxplot(aes(fill = region), outlier.shape = NA) +
   scale_y_continuous(limits = c(-2, 2)) +
   facet_wrap(~Parameter2.x, nrow = 1) +
   labs(x = NULL, y = "ΔSST_Qx / ΔSSTa")
@@ -174,6 +175,8 @@ mag_full <- ggpubr::ggarrange(mag_schematic, mag_scatter, mag_box, ncol = 1, nro
 ggsave("output/magnitude_schematic.png", height = 8, width = 10)
 ggsave("output/magnitude_schematic.pdf", height = 8, width = 10)
 mag_full
+
+# Table showing the count of best magnitude match per variable per region/season
 ```
 
 ### RMSE summary
