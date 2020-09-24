@@ -360,19 +360,16 @@ calc_clim_anom <- function(df, point_accuracy){
 # Correlation functions ---------------------------------------------------
 
 # Convenience function for magnitude of change calculations
-mag_calc <- function(df_sub, onset = T){
-  # if(onset){
-  #   i_1 <- nrow(df_sub); i_2 <- 1
-  # } else{
-  #   i_2 <- nrow(df_sub); i_1 <- 1
-  # }
+mag_wrap <- function(df_sub, mag_name){
   df_res <- df_sub %>% 
     summarise(sst = sst[n()]-sst[1],
               qnet_budget = qnet_budget[n()]-qnet_budget[1],
               lwr_budget = lwr_budget[n()]-lwr_budget[1],
               swr_budget = swr_budget[n()]-swr_budget[1],
               lhf_budget = lhf_budget[n()]-lhf_budget[1],
-              shf_budget = shf_budget[n()]-shf_budget[1])
+              shf_budget = shf_budget[n()]-shf_budget[1]) %>% 
+    pivot_longer(cols = everything(), names_to = "Parameter2", values_to = "mag") %>% 
+    mutate(Parameter1 = "sst")
 }
 
 # Convenience wrapper for RMSE calculations
@@ -412,41 +409,40 @@ stats_all <- function(df, df_event){
   ts_decline <- ts_full %>% 
     filter(t >= event_sub$date_peak,
            t <= event_sub$date_end)
-  
-  # Calculate magnitudes of change
-  mag_onset <- mag_calc(ts_onset)
 
-  
   # Run the correlations
   R2_full <- broom::glance(lm(sst ~ t, ts_full))
-  ts_full_cor <- correlation(ts_full, redundant = T) %>% 
+  ts_full_stats <- correlation(ts_full, redundant = T) %>% 
     mutate(ts = "full",
            sst_R2 = round(R2_full$r.squared, 4),
            sst_p = round(R2_full$p.value, 4)) %>% 
+    left_join(mag_wrap(ts_full), by = c("Parameter1", "Parameter2")) %>% 
     left_join(rmse_wrap(ts_full), by = c("Parameter1", "Parameter2"))
   if(nrow(ts_onset) > 2){
     R2_onset <- broom::glance(lm(sst ~ t, ts_onset))
-    ts_onset_cor <- correlation(ts_onset, redundant = T) %>% 
+    ts_onset_stats <- correlation(ts_onset, redundant = T) %>% 
       mutate(ts = "onset",
              sst_R2 = round(R2_onset$r.squared, 4),
              sst_p = round(R2_onset$p.value, 4)) %>% 
+      left_join(mag_wrap(ts_onset), by = c("Parameter1", "Parameter2")) %>% 
       left_join(rmse_wrap(ts_onset), by = c("Parameter1", "Parameter2"))
   } else {
-    ts_onset_cor <- ts_full_cor[0,]
+    ts_onset_stats <- ts_full_stats[0,]
   }
   if(nrow(ts_decline) > 2){
     R2_decline <- broom::glance(lm(sst ~ t, ts_decline))
-    ts_decline_cor <- correlation(ts_decline, redundant = T) %>% 
+    ts_decline_stats <- correlation(ts_decline, redundant = T) %>% 
       mutate(ts = "decline",
              sst_R2 = round(R2_decline$r.squared, 4),
              sst_p = round(R2_decline$p.value, 4)) %>% 
+      left_join(mag_wrap(ts_decline), by = c("Parameter1", "Parameter2")) %>% 
       left_join(rmse_wrap(ts_decline), by = c("Parameter1", "Parameter2"))
   } else {
-    ts_decline_cor <- ts_full_cor[0,]
+    ts_decline_stats <- ts_full_stats[0,]
   }
   
   # Combine and finish
-  ts_cor <- rbind(ts_full_cor, ts_onset_cor, ts_decline_cor) %>% 
+  ts_stats <- rbind(ts_full_stats, ts_onset_stats, ts_decline_stats) %>% 
     mutate(p = round(p, 4),
            r = round(r, 2),
            CI_low = round(CI_low, 2),
@@ -544,6 +540,45 @@ wide_packet_func <- function(df){
   # Exit
   return(res_filter)
 }
+
+
+# Visualise the magnitude of SSTa and SST_Qx change -----------------------
+
+fig_mag_func <- function(event_sub, region_sub){
+  
+  # Get the info for the focus event
+  event_sub <- OISST_MHW_event %>% 
+    filter(event_no == event_sub, region == region_sub)
+  
+  # Subset the time series for the onset and decline portions
+  ts_full <- ALL_ts_anom_full_wide %>% 
+    filter(t >= event_sub$date_start,
+           t <= event_sub$date_end,
+           region == event_sub$region) %>% 
+    mutate(qnet_budget = c(0, qnet_mld_cum[1:event_sub$duration-1]) + sst[1],
+           lhf_budget = c(0, lhf_mld_cum[1:event_sub$duration-1]) + sst[1],
+           shf_budget = c(0, shf_mld_cum[1:event_sub$duration-1]) + sst[1],
+           lwr_budget = c(0, lwr_mld_cum[1:event_sub$duration-1]) + sst[1],
+           swr_budget = c(0, swr_mld_cum[1:event_sub$duration-1]) + sst[1]) %>% 
+    dplyr::select(t, sst, qnet_budget:swr_budget) %>% 
+    pivot_longer(cols = sst:swr_budget, values_to = "val", names_to = "var")
+  ts_onset <- ts_full %>% 
+    filter(t >= event_sub$date_start,
+           t <= event_sub$date_peak) %>% 
+    mutate(ts = "onset")
+  ts_decline <- ts_full %>% 
+    filter(t >= event_sub$date_peak,
+           t <= event_sub$date_end) %>% 
+    mutate(ts = "decline")
+  
+  # Plot
+  rbind(ts_onset, ts_decline) %>% 
+    mutate(ts = factor(ts, levels = c("onset", "decline"))) %>% 
+    ggplot(aes(x = t, y = val)) +
+    geom_line(aes(colour = var, linetype = ts)) +
+    labs(x = NULL, y = "ΔTemperature (C)", linetype = "Time series", colour = "variable")
+}
+
 
 # Visualise a single data packet ------------------------------------------
 

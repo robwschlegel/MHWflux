@@ -29,11 +29,7 @@ source("code/functions.R")
 
 We know when MHWs occurred, and our physical data are prepped, so what we need to do is run magnitude comparisons, RMSE, and correlations between SSTa from the start to peak and peak to end of each event for the full suite of variables. This will show us for each event which values related the best for the onset AND decline of the events. We will run RMSE and correlations on the full time series, but these were decided not to be included in the final manuscript as they don't add much other than to show how much better the calculations for onset or decline are.
 
-Up first is the analysis of the magnitude of change in SSTa and SST_Qx for the onset and decline of MHWs. This will be calculated by finding how much SSTa and SST_Qx increase from the onset to the peak of a MHW, and how much SSTa and SST_Qx decrease on the decline of the same event. The thinking here is that if SSTa exceeds the SST_Qx increase for the onset, this will indicate that some advective process is aiding the development of the SSTa, but if SST_Qx exceeds SSTa, this indicates that the heat flux term is responsible for the creation of the event. Likewise for the decline of events, if the SST_Qx value decreases more than SSTa this would mean that negative heat flux into the ocean was terminating the event, whereas a greater decrease in SSTa would imply that advection was primarily terminating the event.
-
-```{r MHW-magnitude, eval=FALSE}
-
-```
+The magnitude of change in SSTa and SST_Qx for the onset and decline of MHWs will be calculated by finding how much SSTa and SST_Qx increase from the onset to the peak of a MHW, and how much SSTa and SST_Qx decrease on the decline of the same event. The thinking here is that if SSTa exceeds the SST_Qx increase for the onset, this will indicate that some advective process is aiding the development of the SSTa, but if SST_Qx exceeds SSTa, this indicates that the heat flux term is responsible for the creation of the event. Likewise for the decline of events, if the SST_Qx value decreases more than SSTa this would mean that negative heat flux into the ocean was terminating the event, whereas a greater decrease in SSTa would imply that advection was primarily terminating the event.
 
 Running correlations is useful to see how well certain variables change in relation to SSTa, but these do not show how similar those proportions of change are. In order to do this we need to calculate the RMSE between the SST anomalies and the SST_Qx terms. This may only be done with the SST_Qx terms because they are in the same units as SST. One additional tweak we will need here is to add the cumulative Qx term for the following day to the SSTa from the first day of the MHW. This is done so that we may see more closely how the developing Qx term matches to the development of the SSTa. Effectively this tells us how much the Qx term may be driving SSTa.
 
@@ -58,7 +54,7 @@ saveRDS(ALL_cor, "data/ALL_cor.Rda")
 saveRDS(ALL_cor, "shiny/ALL_cor.Rda")
 ```
 
-What we have now is a long dataframe containing the RMSE and correlations of different variables with SSTa. It must be pointed out that the correlations for the non-Qx terms are for the same day, there is no time lag introduced, which may be important. Below we are going to visualise the range of correlations for each variable to see how much each distribution is skewed. This skewness could probably be quantified in a meaningful way... but let's look at the data first.
+What we have now is a long dataframe containing the magnitude of change, RMSE, and correlations of different variables with SSTa. It must be pointed out that the correlations for the non-Qx terms are for the same day, there is no time lag introduced, which may be important. Below we are going to visualise the range of correlations for each variable to see how much each distribution is skewed. This skewness could probably be quantified in a meaningful way... but let's look at the data first.
 
 ```{r shiny-histo}
 # source("shiny/app.R")
@@ -117,6 +113,68 @@ ALL_cor_stack %>%
 ```
 
 The new an improved method that correctly integrates Qx into SSTa creates much lower RMSE values for almost every variable and region. A smashing success.
+
+### Magnitude of change summary
+
+In this sub-section we will look at how the different magnitudes of change for onset and decline of the SST_Qx terms compare to the same changes in SSTa.
+
+```{r mag-summary}
+# Load magnitude data
+ALL_mag <- readRDS("data/ALL_cor.Rda") %>% 
+  dplyr::select(region:ts, Parameter1, Parameter2, n_Obs, mag) %>% 
+  na.omit()
+
+# Calculate the proportions of change in magnitudes
+ALL_mag_prop <- ALL_mag %>% 
+  filter(Parameter2 != "sst") %>% 
+  left_join(filter(ALL_mag, Parameter2 == "sst"), 
+            by = c("region", "season", "event_no", "ts", "Parameter1", "n_Obs")) %>% 
+  filter(ts != "full") %>% 
+  mutate(prop = mag.x/mag.y)
+
+# Find an event with good onset and decline match
+ALL_mag_prop %>% 
+  filter(Parameter2.x == "qnet_budget",
+         prop >= 1, prop <= 2)
+
+
+# Create schematic figure showing how magnitudes are calculated
+p1 <- fig_mag_func(2, "gsl") +
+  ggtitle("Good onset, bad decline")
+p2 <- fig_mag_func(44, "gm") +
+  ggtitle("Bad onset, good decline")
+p3 <- fig_mag_func(32, "gsl") +
+  ggtitle("Good onset, good decline")
+mag_schematic <- ggpubr::ggarrange(p1, p2, p3, ncol = 3, nrow = 1, common.legend = TRUE)
+# mag_schematic
+
+# Scatterplot of SSTa vs SST_Qx (facets per variable)
+mag_scatter <- ALL_mag_prop %>% 
+  ggplot(aes(x = mag.y, y = mag.x)) +
+  geom_point(aes(colour = n_Obs, shape = ts)) +
+  geom_smooth(aes(linetype = ts), method = "lm", colour = "black") +
+  scale_colour_gradientn(colours = rainbow(10)) +
+  facet_wrap(~Parameter2.x, nrow = 1) +
+  labs(x = "ΔSSTa", y = "ΔSST_Qx", shape = "Time series", linetype = "Time series") +
+  theme(legend.position = "top")
+# mag_scatter
+
+# Boxplots of proportions of change for SST_Qx for onset/decline
+mag_box <- ALL_mag_prop %>% 
+  ggplot(aes(x = ts, y = prop)) +
+  geom_hline(aes(yintercept = 0), colour = "red") +
+  geom_boxplot(outlier.shape = NA) +
+  scale_y_continuous(limits = c(-2, 2)) +
+  facet_wrap(~Parameter2.x, nrow = 1) +
+  labs(x = NULL, y = "ΔSST_Qx / ΔSSTa")
+# mag_box
+
+# Combine for one massive display
+mag_full <- ggpubr::ggarrange(mag_schematic, mag_scatter, mag_box, ncol = 1, nrow = 3, labels = c("A)", "B)", "C)"))
+ggsave("output/magnitude_schematic.png", height = 8, width = 10)
+ggsave("output/magnitude_schematic.pdf", height = 8, width = 10)
+mag_full
+```
 
 ### RMSE summary
 
