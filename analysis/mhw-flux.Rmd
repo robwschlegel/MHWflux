@@ -121,22 +121,30 @@ In this sub-section we will look at how the different magnitudes of change for o
 ```{r mag-summary}
 # Load magnitude data
 ALL_mag <- readRDS("data/ALL_cor.Rda") %>% 
-  dplyr::select(region:ts, Parameter1, Parameter2, n_Obs, mag) %>% 
+  dplyr::select(region:ts, Parameter2, n_Obs, mag) %>% 
   na.omit()
 
 # Calculate the proportions of change in magnitudes
 ALL_mag_prop <- ALL_mag %>% 
   filter(Parameter2 != "sst") %>% 
   left_join(filter(ALL_mag, Parameter2 == "sst"), 
-            by = c("region", "season", "event_no", "ts", "Parameter1", "n_Obs")) %>% 
+            by = c("region", "season", "event_no", "ts", "n_Obs")) %>% 
   filter(ts != "full") %>% 
-  mutate(prop = mag.x/mag.y)
+  dplyr::select(-Parameter2.y) %>% 
+  dplyr::rename(var = Parameter2.x, mag_Qx = mag.x, mag_SSTa = mag.y) %>% 
+  mutate(prop = mag_Qx/mag_SSTa) %>% 
+  mutate(var = as.character(var),
+         var = case_when(var == "lwr_budget" ~ "Qlw",
+                         var == "swr_budget" ~ "Qsw",
+                         var == "lhf_budget" ~ "Qlh",
+                         var == "shf_budget" ~ "Qsh",
+                         var == "qnet_budget" ~ "Qnet",
+                         TRUE ~ var),
+         var = factor(var, levels = c("Qnet", "Qlh", "Qsh", "Qlw", "Qsw")),
+         region = toupper(region))
 
 # Find an event with good onset and decline match
-ALL_mag_prop %>% 
-  filter(Parameter2.x == "qnet_budget",
-         prop >= 1, prop <= 2)
-
+ALL_mag_prop %>% filter(var == "Qnet", prop >= 1, prop <= 2)
 
 # Create schematic figure showing how magnitudes are calculated
 p1 <- fig_mag_func(2, "gsl") +
@@ -150,11 +158,11 @@ mag_schematic <- ggpubr::ggarrange(p1, p2, p3, ncol = 3, nrow = 1, common.legend
 
 # Scatterplot of SSTa vs SST_Qx (facets per variable)
 mag_scatter <- ALL_mag_prop %>% 
-  ggplot(aes(x = mag.y, y = mag.x)) +
+  ggplot(aes(x = mag_SSTa, y = mag_Qx)) +
   geom_point(aes(colour = n_Obs, shape = ts)) +
   geom_smooth(aes(linetype = ts), method = "lm", colour = "black") +
   scale_colour_gradientn(colours = rainbow(10)) +
-  facet_wrap(~Parameter2.x, nrow = 1) +
+  facet_wrap(~var, nrow = 1) +
   labs(x = "ΔSSTa", y = "ΔSST_Qx", shape = "Time series", linetype = "Time series") +
   theme(legend.position = "top")
 # mag_scatter
@@ -166,7 +174,7 @@ mag_box <- ALL_mag_prop %>%
     geom_boxplot(aes(fill = season), outlier.shape = NA) +
   # geom_boxplot(aes(fill = region), outlier.shape = NA) +
   scale_y_continuous(limits = c(-2, 2)) +
-  facet_wrap(~Parameter2.x, nrow = 1) +
+  facet_wrap(~var, nrow = 1) +
   labs(x = NULL, y = "ΔSST_Qx / ΔSSTa")
 # mag_box
 
@@ -175,9 +183,65 @@ mag_full <- ggpubr::ggarrange(mag_schematic, mag_scatter, mag_box, ncol = 1, nro
 ggsave("output/magnitude_schematic.png", height = 8, width = 10)
 ggsave("output/magnitude_schematic.pdf", height = 8, width = 10)
 mag_full
-
-# Table showing the count of best magnitude match per variable per region/season
 ```
+
+These figures are helpful, but we also want a table showing the count of best magnitude match per variable per region/season.
+
+```{r mag-table}
+# Get total 
+mag_region_count <- ALL_mag_prop %>% 
+  dplyr::select(region:ts, n_Obs) %>% 
+  unique() %>% 
+  group_by(region, ts) %>% 
+  summarise(count = n(), .groups = "drop")
+mag_season_count <- ALL_mag_prop %>% 
+  dplyr::select(region:ts, n_Obs) %>% 
+  unique() %>% 
+  group_by(season, ts) %>% 
+  summarise(count = n(), .groups = "drop")
+
+# Get the top results other than Qnet
+ALL_mag_top <- ALL_mag_prop %>% 
+  filter(var != "Qnet") %>% # Remove Qnet
+  group_by(region, season, event_no, ts) %>% 
+  filter(prop == max(prop))
+
+# The top count by region
+ALL_mag_region <- ALL_mag_top %>% 
+  group_by(region, ts, var) %>% 
+  summarise(count = n(), .groups = "drop") %>% 
+  pivot_wider(names_from = var, values_from = count) %>% 
+  mutate(Qlw = replace_na(Qlw, 0)) %>% 
+  left_join(mag_region_count, by = c("region", "ts")) %>% 
+  dplyr::select(region, ts, count, Qlh:Qsw) %>% 
+  mutate(Qlh = paste0(Qlh, " (",round((Qlh/count)*100),"%)"),
+         Qsh = paste0(Qsh, " (",round((Qsh/count)*100),"%)"),
+         Qlw = paste0(Qlw, " (",round((Qlw/count)*100),"%)"),
+         Qsw = paste0(Qsw, " (",round((Qsw/count)*100),"%)")) %>% 
+  dplyr::rename(group = region)
+# knitr::kable(ALL_mag_region)
+
+# The top count by season
+ALL_mag_season <- ALL_mag_top %>% 
+  group_by(season, ts, var) %>% 
+  summarise(count = n(), .groups = "drop") %>% 
+  pivot_wider(names_from = var, values_from = count) %>% 
+  mutate(Qsh = replace_na(Qsh, 0)) %>%
+  left_join(mag_season_count, by = c("season", "ts")) %>% 
+  dplyr::select(season, ts, count, Qlh:Qsw) %>% 
+  mutate(Qlh = paste0(Qlh, " (",round((Qlh/count)*100),"%)"),
+         Qsh = paste0(Qsh, " (",round((Qsh/count)*100),"%)"),
+         Qlw = paste0(Qlw, " (",round((Qlw/count)*100),"%)"),
+         Qsw = paste0(Qsw, " (",round((Qsw/count)*100),"%)")) %>% 
+  dplyr::rename(group = season)
+# knitr::kable(ALL_mag_season)
+
+# Print table
+ALL_mag_region_season <- rbind(ALL_mag_region, ALL_mag_season)
+knitr::kable(ALL_mag_region_season)
+```
+
+These tables help to reiterate how much more important Qswr is for the onset and decline of MHWs over the other variables, and that Qlhf often comes in second. For the seasons though we see a much more complex relationship that I won't go into here.
 
 ### RMSE summary
 
@@ -187,21 +251,22 @@ Here we will go about summarising the RMSE results. We will also create some box
 # The base RMSE results
 ALL_RMSE <- ALL_cor %>% 
   filter(rmse > 0 ) %>% 
-  dplyr::select(region:ts, Parameter2, n_Obs, rmse) %>% 
-    mutate(Parameter2 = as.character(Parameter2),
-           Parameter2 = case_when(Parameter2 == "lwr_budget" ~ "Qlw",
-                                  Parameter2 == "swr_budget" ~ "Qsw",
-                                  Parameter2 == "lhf_budget" ~ "Qlh",
-                                  Parameter2 == "shf_budget" ~ "Qsh",
-                                  Parameter2 == "qnet_budget" ~ "Qnet",
-                                  TRUE ~ Parameter2),
-           Parameter2 = factor(Parameter2, levels = c("Qnet", "Qlh", "Qsh", "Qlw", "Qsw")),
-           region = toupper(region))
+  dplyr::rename(var = Parameter2) %>% 
+  dplyr::select(region:ts, var, n_Obs, rmse) %>% 
+  mutate(var = as.character(var),
+         var = case_when(var == "lwr_budget" ~ "Qlw",
+                         var == "swr_budget" ~ "Qsw",
+                         var == "lhf_budget" ~ "Qlh",
+                         var == "shf_budget" ~ "Qsh",
+                         var == "qnet_budget" ~ "Qnet",
+                         TRUE ~ var),
+         var = factor(var, levels = c("Qnet", "Qlh", "Qsh", "Qlw", "Qsw")),
+         region = toupper(region))
 
 # Summaries by region
 ALL_RMSE_region <- ALL_RMSE %>% 
   dplyr::select(-season, -event_no, -n_Obs) %>% 
-  group_by(region, ts, Parameter2) %>% 
+  group_by(region, ts, var) %>% 
   summarise(rmse_min = min(rmse),
            rmse_mean = mean(rmse),
            rmse_max = max(rmse), .groups = "drop")
@@ -209,7 +274,7 @@ ALL_RMSE_region <- ALL_RMSE %>%
 # Boxplot of region summaries
 ALL_RMSE %>% 
   dplyr::select(-season, -event_no, -n_Obs) %>% 
-  ggplot(aes(x = Parameter2, y = rmse)) +
+  ggplot(aes(x = var, y = rmse)) +
   geom_boxplot(aes(fill = ts)) +
   facet_wrap(~region) #+
   # theme(axis.text.x = element_text(angle = 45))
@@ -217,7 +282,7 @@ ALL_RMSE %>%
 # Summaries by season
 ALL_RMSE_season <- ALL_RMSE %>% 
   dplyr::select(-region, -event_no, -n_Obs) %>% 
-  group_by(season, ts, Parameter2) %>% 
+  group_by(season, ts, var) %>% 
   summarise(rmse_min = min(rmse),
            rmse_mean = mean(rmse),
            rmse_max = max(rmse), .groups = "drop")
@@ -225,7 +290,7 @@ ALL_RMSE_season <- ALL_RMSE %>%
 # Boxplot of season results
 ALL_RMSE %>% 
   dplyr::select(-region, -event_no, -n_Obs) %>% 
-  ggplot(aes(x = Parameter2, y = rmse)) +
+  ggplot(aes(x = var, y = rmse)) +
   geom_boxplot(aes(fill = ts)) +
   facet_wrap(~season)
 ```
@@ -238,63 +303,53 @@ RMSE_region_count <- ALL_RMSE %>%
   dplyr::select(region:ts, n_Obs) %>% 
   unique() %>% 
   group_by(region, ts) %>% 
-  summarise(count = n())
+  summarise(count = n(), .groups = "drop")
 RMSE_season_count <- ALL_RMSE %>% 
   dplyr::select(region:ts, n_Obs) %>% 
   unique() %>% 
   group_by(season, ts) %>% 
-  summarise(count = n())
-
-# Get the top RMSE results (i.e. the lowest RMSE scores)
-ALL_RMSE_Qnet <- ALL_RMSE %>% 
-  group_by(region, season, event_no, ts) %>% 
-  filter(rmse == min(rmse))
+  summarise(count = n(), .groups = "drop")
 
 # Get the top results other than Qnet
-ALL_RMSE_other <- ALL_RMSE %>% 
-  filter(Parameter2 != "Qnet") %>% # Remove Qnet
+ALL_RMSE_top <- ALL_RMSE %>% 
+  filter(var != "Qnet") %>% # Remove Qnet
   group_by(region, season, event_no, ts) %>% 
   filter(rmse == min(rmse))
 
 # The top count by region
-ALL_RMSE_Qnet_region <- ALL_RMSE_Qnet %>% 
-  group_by(region, ts, Parameter2) %>% 
+ALL_RMSE_region <- ALL_RMSE_top %>% 
+  group_by(region, ts, var) %>% 
   summarise(count = n(), .groups = "drop") %>% 
-  filter(Parameter2 == "Qnet")
-ALL_RMSE_region <- ALL_RMSE_other %>% 
-  group_by(region, ts, Parameter2) %>% 
-  summarise(count = n(), .groups = "drop") %>% 
-  rbind(ALL_RMSE_Qnet_region) %>% 
-  pivot_wider(names_from = Parameter2, values_from = count) %>% 
+  pivot_wider(names_from = var, values_from = count) %>% 
   mutate(Qlw = replace_na(Qlw, 0)) %>% 
   left_join(RMSE_region_count, by = c("region", "ts")) %>% 
-  dplyr::select(region, ts, count, Qnet, Qlh:Qsw) %>% 
-  mutate(Qnet = paste0(Qnet, " (",round((Qnet/count)*100),"%)"),
-         Qlh = paste0(Qlh, " (",round((Qlh/count)*100),"%)"),
+  dplyr::select(region, ts, count, Qlh:Qsw) %>% 
+  filter(ts != "full") %>% 
+  mutate(Qlh = paste0(Qlh, " (",round((Qlh/count)*100),"%)"),
          Qsh = paste0(Qsh, " (",round((Qsh/count)*100),"%)"),
          Qlw = paste0(Qlw, " (",round((Qlw/count)*100),"%)"),
-         Qsw = paste0(Qsw, " (",round((Qsw/count)*100),"%)"))
-knitr::kable(ALL_RMSE_region)
+         Qsw = paste0(Qsw, " (",round((Qsw/count)*100),"%)")) %>% 
+  dplyr::rename(group = region)
+# knitr::kable(ALL_RMSE_region)
 
 # The top count by season
-ALL_RMSE_Qnet_season <- ALL_RMSE_Qnet %>% 
-  group_by(season, ts, Parameter2) %>% 
+ALL_RMSE_season <- ALL_RMSE_top %>% 
+  group_by(season, ts, var) %>% 
   summarise(count = n(), .groups = "drop") %>% 
-  filter(Parameter2 == "Qnet")
-ALL_RMSE_season <- ALL_RMSE_other %>% 
-  group_by(season, ts, Parameter2) %>% 
-  summarise(count = n(), .groups = "drop") %>% 
-  rbind(ALL_RMSE_Qnet_season) %>% 
-  pivot_wider(names_from = Parameter2, values_from = count) %>% 
+  pivot_wider(names_from = var, values_from = count) %>% 
   # mutate(Qlw = replace_na(Qlw, 0)) %>% 
   left_join(RMSE_season_count, by = c("season", "ts")) %>% 
-  dplyr::select(season, ts, count, Qnet, Qlh:Qsw) %>% 
-    mutate(Qnet = paste0(Qnet, " (",round((Qnet/count)*100),"%)"),
-         Qlh = paste0(Qlh, " (",round((Qlh/count)*100),"%)"),
+  dplyr::select(season, ts, count, Qlh:Qsw) %>% 
+  mutate(Qlh = paste0(Qlh, " (",round((Qlh/count)*100),"%)"),
          Qsh = paste0(Qsh, " (",round((Qsh/count)*100),"%)"),
          Qlw = paste0(Qlw, " (",round((Qlw/count)*100),"%)"),
-         Qsw = paste0(Qsw, " (",round((Qsw/count)*100),"%)"))
-knitr::kable(ALL_RMSE_season)
+         Qsw = paste0(Qsw, " (",round((Qsw/count)*100),"%)")) %>% 
+  dplyr::rename(group = season)
+# knitr::kable(ALL_RMSE_season)
+
+# Print table
+ALL_RMSE_region_season <- rbind(ALL_RMSE_region, ALL_RMSE_season)
+knitr::kable(ALL_RMSE_region_season)
 ```
 
 I'm pretty happy with how these results are displayed. But I think it would be better to show the regions and seasons in separate tables just to keep them more manageable. In the last chunk in this sub-section we will grab some specific summary stats that are used in the publication.

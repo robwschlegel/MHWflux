@@ -388,9 +388,9 @@ summary_region <- OISST_MHW_event %>%
   ungroup() %>%
   pivot_longer(duration:rate_decline) %>% 
   group_by(group, name) %>% 
-  summarise(value_mean = round(mean(value), 2),
-            value_sd = round(sd(value), 2), .groups = "drop") %>% 
-  unite("value_summary", value_mean:value_sd, sep = "±") %>% 
+  summarise(value_mean = round(mean(value), 1),
+            value_sd = round(sd(value), 1), .groups = "drop") %>% 
+  unite("value_summary", value_mean:value_sd, sep = " ± ") %>% 
   pivot_wider(names_from = name, values_from = value_summary) %>% 
   dplyr::rename(i_cum = intensity_cumulative, i_max = intensity_max, 
                 i_mean = intensity_mean, r_decline = rate_decline, r_onset = rate_onset) %>% 
@@ -407,9 +407,9 @@ summary_season <- OISST_MHW_event %>%
   ungroup() %>%
   pivot_longer(duration:rate_decline) %>% 
   group_by(group, name) %>% 
-  summarise(value_mean = round(mean(value), 2),
-            value_sd = round(sd(value), 2), .groups = "drop") %>% 
-  unite("value_summary", value_mean:value_sd, sep = "±") %>% 
+  summarise(value_mean = round(mean(value), 1),
+            value_sd = round(sd(value), 1), .groups = "drop") %>% 
+  unite("value_summary", value_mean:value_sd, sep = " ± ") %>% 
   pivot_wider(names_from = name, values_from = value_summary) %>% 
   dplyr::rename(i_cum = intensity_cumulative, i_max = intensity_max, 
                 i_mean = intensity_mean, r_decline = rate_decline, r_onset = rate_onset) %>% 
