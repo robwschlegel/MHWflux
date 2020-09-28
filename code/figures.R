@@ -471,5 +471,5 @@ fig_6 <- events_cor_SOM %>%
         panel.background = element_rect(colour = "black"))
 # fig_6
 ggsave("figures/fig_6.png", fig_6, height = 7, width = 14)
-ggsave("figures/fig_6.png", fig_6, height = 7, width = 14)
+ggsave("figures/fig_6.pdf", fig_6, height = 7, width = 14)
 
