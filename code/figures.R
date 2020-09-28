@@ -391,9 +391,7 @@ base_data <- fig_data_prep(SOM)
 fig_4 <- fig_map_func("region_season", base_data, 1, 9, 13) +
   facet_wrap(~node, labeller = labeller(node = node_labeller)) +
   theme(axis.text = element_blank(),
-        axis.ticks = element_blank())#, 
-        # strip.background = element_blank(),
-        # strip.text = element_blank())
+        axis.ticks = element_blank())
 # fig_4
 ggsave("figures/fig_4.png", fig_4, height = 9, width = 13)
 ggsave("figures/fig_4.pdf", fig_4, height = 9, width = 13)
@@ -403,11 +401,9 @@ ggsave("figures/fig_4.pdf", fig_4, height = 9, width = 13)
 
 # SOM atmosphere panels
 fig_5 <- fig_map_func("air_u_v_mslp_anom", base_data, 1, 9, 13) +
-  facet_wrap(~node) +
+  facet_wrap(~node, labeller = labeller(node = node_labeller)) +
   theme(axis.text = element_blank(),
-        axis.ticks = element_blank(), 
-        strip.background = element_blank(),
-        strip.text = element_blank())
+        axis.ticks = element_blank())
 # fig_5
 ggsave("figures/fig_5.png", fig_5, height = 9, width = 13)
 ggsave("figures/fig_5.pdf", fig_5, height = 9, width = 13)
@@ -465,7 +461,7 @@ fig_6 <- events_cor_SOM %>%
          name = factor(name, levels = c("Cloud", "P-E", "Air", "MSLP", "MLD", "SSS", "Bottom"))) %>% 
   ggplot(aes(x = name, y = ts)) +
   geom_tile(aes(fill = value)) +
-  facet_wrap(~node, scales = "free") +
+  facet_wrap(~node, labeller = labeller(node = node_labeller)) +
   scale_fill_gradient2(low = "blue", high = "red") +
   coord_cartesian(expand = F) +
   labs(x = NULL, y = NULL, fill = "r (mean)") +
