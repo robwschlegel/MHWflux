@@ -59,6 +59,7 @@ coords_6 <- cbind(mat_col(NWA_polygons[11]), mat_col(NWA_polygons[12])[2])
 # Combine them into one full dataframe
 NWA_coords_base <- rbind(coords_1, coords_2, coords_3, coords_4, coords_5, coords_6)
 colnames(NWA_coords_base) <- c("region", "lon", "lat")
+NWA_coords_base$region <- toupper(NWA_coords_base$region)
 ```
 
 With our polygons switched over from MATLAB to R we now want to visualise them to ensure that everything has gone smoothly.
@@ -82,15 +83,15 @@ ggplot(data = NWA_coords_base, aes(x = lon, y = lat)) +
   theme(legend.position = "bottom")
 ```
 
-The region abbreviations are: "gm" for Gulf of Maine, "gls" for Gulf of St. Lawrence, "ls" for Labrador Shelf, "mab" for Mid-Atlantic Bight, "nfs" for Newfoundland Shelf and "ss" for Scotian Shelf.
+The region abbreviations are: "GM" for Gulf of Maine, "GLS" for Gulf of St. Lawrence, "LS" for Labrador Shelf, "MAB" for Mid-Atlantic Bight, "NFS" for Newfoundland Shelf and "SS" for Scotian Shelf.
 
 ### Cabot Strait
 
-It was decided that because we are interested in the geography of the regions, and not just their temperature regimes, the Cabot Strait needed to be defined apart from the Gulf of St. Lawrence region. To do this we will simply snip the "gsl" polygon into two pieces at its narrowest point.
+It was decided that because we are interested in the geography of the regions, and not just their temperature regimes, the Cabot Strait needed to be defined apart from the Gulf of St. Lawrence region. To do this we will simply snip the "GSL" polygon into two pieces at its narrowest point.
 
 ```{r cabot-strait-1}
 # Extract the gsl region only
-gsl_sub <- NWA_coords_base[NWA_coords_base$region == "gsl",]
+gsl_sub <- NWA_coords_base[NWA_coords_base$region == "GSL",]
 
 # Add a simple integer column for ease of plotting
 gsl_sub$row_count <- 1:nrow(gsl_sub)
@@ -105,17 +106,17 @@ It appears from the crude figure above that we should pinch the polygon off into
 
 ```{r cabot-strait-2}
 # Create smaller gsl polygon
-gsl_new <- NWA_coords_base[NWA_coords_base$region == "gsl",] %>% 
+gsl_new <- NWA_coords_base[NWA_coords_base$region == "GSL",] %>% 
   slice(-c(7:9))
 
 # Create new cbs (Cabot Strait) polygon
-cbs <- NWA_coords_base[NWA_coords_base$region == "gsl",] %>% 
+cbs <- NWA_coords_base[NWA_coords_base$region == "GSL",] %>% 
   slice(6:10) %>% 
-  mutate(region = "cbs")
+  mutate(region = "CBS")
 
 # Attach the new polygons to the original polygons
 NWA_coords_cabot <- NWA_coords_base %>% 
-  filter(region != "gsl") %>% 
+  filter(region != "GSL") %>% 
   rbind(., gsl_new, cbs)
 
 # Plot the new areas to ensure everything worked
@@ -133,9 +134,9 @@ ggplot(data = NWA_coords_cabot, aes(x = lon, y = lat)) +
 After running through a series of self-organising map (SOM) experiments in an earlier version of this project it was decided that the Labrador Shelf (ls) region needs to be excluded from the study. This is predominantly because the inclusion of this region into the SOM study makes it too difficult for the machine to make sense of the patterns it is seeing. We concluded that this was because of the strong, sometimes unrelated processes happening in the Gulf Stream vs. the Labrador Sea. Because we are primarily concerned with the Atlantic coast, we prioritised the more southern regions over the Labrador shelf region. The code below shows what these final regions look like.
 
 ```{r no-ls}
-# FIlter out the ls region
+# Filter out the ls region
 NWA_coords <- NWA_coords_cabot %>% 
-  filter(region != "ls")
+  filter(region != "LS")
 
 # Save these final study region coordinates
 # saveRDS(NWA_coords, "data/NWA_coords.Rda")
@@ -189,3 +190,4 @@ NWA_corners
 Up next is the creation of the SST time series for each of the regions and the calculation of the marine heatwaves (MHWs). This work is continued in the [data preparation](https://robwschlegel.github.io/MHWNWA/sst-prep.html) vignette.
 
 ## References
+

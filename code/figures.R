@@ -330,57 +330,20 @@ tab_3 <- knitr::kable(ALL_RMSE_region_season)#, format = "latex")
 tab_3
 
 
-# Figure X ----------------------------------------------------------------
-
-# Boxplots showing range of RMSE results per region and season
-
-# Prep the RMSE data
-ALL_RMSE_fig <- ALL_cor_fig %>% 
-  filter(rmse > 0) %>% 
-  dplyr::select(region, season, ts, var, rmse)
-
-# Region boxplot
-fig_2a <- ALL_RMSE_fig %>% 
-  ggplot(aes(x = var, y = rmse)) +
-  geom_boxplot(aes(fill = ts)) +
-  scale_fill_brewer(palette = "Set2") +
-  facet_wrap(~region) +
-  labs(x = NULL, y = "RMSE", fill = "Time series") +
-  theme(panel.background = element_rect(colour = "black"))
-# fig_2a
-
-# Season boxplot
-fig_2b <- ALL_RMSE_fig %>% 
-  ggplot(aes(x = var, y = rmse)) +
-  geom_boxplot(aes(fill = ts)) +
-  scale_fill_brewer(palette = "Set2") +
-  facet_wrap(~season) +
-  labs(x = NULL, y = "RMSE", fill = "Time series") +
-  theme(panel.background = element_rect(colour = "black"))
-# fig_2b
-
-# Combine and save
-fig_2 <- ggpubr::ggarrange(fig_2a, fig_2b, ncol = 2, nrow = 1, labels = c("A)", "B)"), 
-                          widths = c(3, 2), align = "h", common.legend = T)
-# fig_2
-ggsave("figures/fig_2.png", fig_2, height = 5, width = 10)
-ggsave("figures/fig_2.pdf", fig_2, height = 5, width = 10)
-
-
-# Figure 3 ----------------------------------------------------------------
+# Figure 2 ----------------------------------------------------------------
 
 # Histogram of r values
 
 # Function for plotting histograms of chosen variables
 hist_var <- function(var_choices, y_label){
   ALL_cor_fig %>% 
-    filter(Parameter2 %in% var_choices) %>% 
+    filter(var %in% var_choices) %>% 
     ggplot(aes(x = r)) +
     geom_vline(aes(xintercept = 0), colour = "red", size = 1) +
     geom_histogram(bins = 10) +
     scale_y_continuous(expand = c(0, 0)) +
     scale_x_continuous(expand = c(0, 0), breaks = c(-0.9, -0.5, 0, 0.5, 0.9)) +
-    facet_grid(ts ~ Parameter2) +
+    facet_grid(ts ~ var) +
     coord_fixed(ratio = 0.01) +
     labs(x = NULL, y = y_label) +
     theme(axis.title.y = element_text(size = 16),
@@ -388,30 +351,28 @@ hist_var <- function(var_choices, y_label){
 }
 
 # The three figures
-hist_Q <- hist_var(c("Qnet", "Qlh", "Qsh", "Qlw", "Qsw"), "Heat flux")
+# hist_Q <- hist_var(c("Qnet", "Qlh", "Qsh", "Qlw", "Qsw"), "Heat flux")
 hist_air <- hist_var(c("Air", "P-E", "MSLP"), "Atmosphere")
 hist_ocean <- hist_var(c("SSS", "MLD", "Bottom"), "Ocean")
 
-# Combine bottom two
-hist_bottom <- ggpubr::ggarrange(hist_air, hist_ocean, ncol = 2, nrow = 1, align = "h",  labels = c("B)", "C)"))
-
-# The final figure
-fig_3 <- ggpubr::ggarrange(hist_Q, hist_bottom, ncol = 1, nrow = 2, align = "h",  labels = c("A)"))
-# fig_3
-ggsave("figures/fig_3.png", fig_3, height = 7, width = 10)
+# Combine air and sea
+fig_2 <- ggpubr::ggarrange(hist_air, hist_ocean, ncol = 2, nrow = 1, align = "h",  labels = c("A)", "B)"))
+# fig_2
+ggsave("figures/fig_2.png", fig_2, height = 2.7, width = 10)
+ggsave("figures/fig_2.pdf", fig_2, height = 2.7, width = 10)
 
 
-# Figure 4 ----------------------------------------------------------------
+# Figure 3 ----------------------------------------------------------------
 
 # Most important variables by region/season
 boxplot_var <-  function(var_choices, y_label){
   ALL_cor_fig %>% 
-    filter(Parameter2 %in% var_choices) %>% 
+    filter(var %in% var_choices) %>% 
     ggplot(aes(x = ts, y = r)) +
     geom_hline(aes(yintercept = 0), colour = "red", size = 1) +
     geom_boxplot(aes(fill = season), notch = F) +
     # geom_violin(aes(fill = season)) + # Looks bad
-    facet_wrap(~Parameter2, nrow = 1) +
+    facet_wrap(~var, nrow = 1) +
     scale_fill_manual(values = c("#a99a35", "#8baa43", "#e89c3c", "#9a9997")) + # muted
     # scale_fill_manual(values = c("#d6cf36", "#a5bfe4", "#efbe83", "#b6b6b4")) + # larger spread
     # scale_y_continuous(expand = c(0, 0)) +
@@ -423,20 +384,20 @@ boxplot_var <-  function(var_choices, y_label){
           panel.background = element_rect(colour = "black"))
 }
 
-box_Q <- boxplot_var(c("Qnet", "Qlh", "Qsh", "Qlw", "Qsw"), "Heat flux")
+# box_Q <- boxplot_var(c("Qnet", "Qlh", "Qsh", "Qlw", "Qsw"), "Heat flux")
 box_air <- boxplot_var(c("Air", "P-E", "MSLP"), "Atmosphere")
 box_ocean <- boxplot_var(c("SSS", "MLD", "Bottom"), "Ocean")
 
 # Combine bottom two
-box_bottom <- ggpubr::ggarrange(box_air, box_ocean, ncol = 2, nrow = 1, align = "h",  labels = c("B)", "C)"), legend = "none")
-
-# The final figure
-fig_4 <- ggpubr::ggarrange(box_Q, box_bottom, ncol = 1, nrow = 2, align = "h",  labels = c("A)"), common.legend = T)
-# fig_4
-ggsave("figures/fig_4.png", fig_4, height = 5, width = 10)
+fig_3 <- ggpubr::ggarrange(box_air, box_ocean, ncol = 2, nrow = 1, align = "h",  labels = c("A)", "B)"), common.legend = T)
+# fig_3
+ggsave("figures/fig_3.png", fig_3, height = 2.7, width = 10)
+ggsave("figures/fig_3.png", fig_3, height = 2.7, width = 10)
 
 
-# Figure 5 ----------------------------------------------------------------
+# Figure 4 ----------------------------------------------------------------
+
+# The SOM region/season figure
 
 # Load the SOM data
 SOM <- readRDS("data/som.Rda")
@@ -461,6 +422,12 @@ fig_5b
 # Combine and save
 fig_5 <- ggpubr::ggarrange(fig_5a, fig_5b, ncol = 1, nrow = 2, align = "hv", labels = c("A)", "B)"))
 ggsave("figures/fig_5.png", fig_5, height = 18, width = 13)
+
+
+
+# Table 5 -----------------------------------------------------------------
+
+# The summary of the SOM nodes
 
 
 # Figure 6 ----------------------------------------------------------------

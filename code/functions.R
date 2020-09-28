@@ -1104,7 +1104,7 @@ fig_single_node <- function(node_number, fig_packet, fig_height, fig_width){
 # testers...
 # map_var = "region_season"
 # fig_data <- fig_data_prep(readRDS("data/som.Rda"))
-# col_num = 4
+# col_num = 1
 fig_map_func <- function(map_var, fig_data, col_num, fig_height, fig_width){
   # Find which figure to make
   if(map_var == "region_season"){
