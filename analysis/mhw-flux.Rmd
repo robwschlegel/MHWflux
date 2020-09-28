@@ -47,7 +47,7 @@ ALL_cor <- plyr::ddply(OISST_MHW_event_index, .parallel = T,
   left_join(OISST_MHW_event_index, by = "row_index") %>% 
   select(region, season, event_no, ts, everything()) %>%
   arrange(region, event_no) %>% 
-  mutate(Parameter2 = factor(Parameter2))
+  mutate(var = factor(var))
 
 # Save
 saveRDS(ALL_cor, "data/ALL_cor.Rda")
@@ -75,6 +75,7 @@ While going through the data it was discovered that the OISST temperature values
 ```{r shift-compare}
 # Load old and new data
 ALL_cor_old <- readRDS("data/ALL_cor_old.Rda") %>% 
+  mutate(region = toupper(region)) %>% 
   mutate(run = "old")
 ALL_cor <- readRDS("data/ALL_cor.Rda") %>% 
   dplyr::select(region:n_Obs, rmse) %>% 
@@ -147,11 +148,11 @@ ALL_mag_prop <- ALL_mag %>%
 ALL_mag_prop %>% filter(var == "Qnet", prop >= 1, prop <= 2)
 
 # Create schematic figure showing how magnitudes are calculated
-p1 <- fig_mag_func(2, "gsl") +
+p1 <- fig_mag_func(2, "GSL") +
   ggtitle("Good onset, bad decline")
-p2 <- fig_mag_func(44, "gm") +
+p2 <- fig_mag_func(44, "GM") +
   ggtitle("Bad onset, good decline")
-p3 <- fig_mag_func(32, "gsl") +
+p3 <- fig_mag_func(32, "GSL") +
   ggtitle("Good onset, good decline")
 mag_schematic <- ggpubr::ggarrange(p1, p2, p3, ncol = 3, nrow = 1, common.legend = TRUE)
 # mag_schematic
@@ -358,13 +359,13 @@ I'm pretty happy with how these results are displayed. But I think it would be b
 ```{r RMSE-stats}
 # Short event best fits
 ALL_RMSE_short <- ALL_RMSE %>% 
-  filter(n_Obs <= 14, Parameter2 != "Qnet") %>% 
+  filter(n_Obs <= 14, var != "Qnet") %>% 
   group_by(region, season, event_no, ts) %>% 
   filter(rmse == min(rmse))
 
 # Short event index
 ALL_RMSE_long <- ALL_RMSE %>% 
-  filter(n_Obs > 14, Parameter2 != "Qnet") %>% 
+  filter(n_Obs > 14, var != "Qnet") %>% 
   group_by(region, season, event_no, ts) %>% 
   filter(rmse == min(rmse))
 
@@ -372,9 +373,9 @@ ALL_RMSE_long <- ALL_RMSE %>%
 ALL_RMSE_short_region <- ALL_RMSE_short %>%
   group_by(region, ts) %>% 
   mutate(count = n()) %>% 
-  group_by(region, ts, count, Parameter2) %>% 
+  group_by(region, ts, count, var) %>% 
   summarise(count_Q = n(), .groups = "drop") %>% 
-  pivot_wider(names_from = Parameter2, values_from = count_Q) %>% 
+  pivot_wider(names_from = var, values_from = count_Q) %>% 
   mutate(Qlw = replace_na(Qlw, 0)) %>%
   dplyr::select(region, ts, count, Qlh:Qsw) %>% 
   mutate(Qlh = paste0(Qlh, " (",round((Qlh/count)*100),"%)"),
@@ -404,9 +405,9 @@ knitr::kable(ALL_RMSE_long_region)
 ALL_RMSE_short_season <- ALL_RMSE_short %>%
   group_by(season, ts) %>% 
   mutate(count = n()) %>% 
-  group_by(season, ts, count, Parameter2) %>% 
+  group_by(season, ts, count, var) %>% 
   summarise(count_Q = n(), .groups = "drop") %>% 
-  pivot_wider(names_from = Parameter2, values_from = count_Q) %>% 
+  pivot_wider(names_from = var, values_from = count_Q) %>% 
   mutate(Qlw = replace_na(Qlw, 0)) %>%
   dplyr::select(season, ts, count, Qlh:Qsw) %>% 
   mutate(Qlh = paste0(Qlh, " (",round((Qlh/count)*100),"%)"),
@@ -419,9 +420,9 @@ knitr::kable(ALL_RMSE_short_season)
 ALL_RMSE_long_season <- ALL_RMSE_long %>%
   group_by(season, ts) %>% 
   mutate(count = n()) %>% 
-  group_by(season, ts, count, Parameter2) %>% 
+  group_by(season, ts, count, var) %>% 
   summarise(count_Q = n(), .groups = "drop") %>% 
-  pivot_wider(names_from = Parameter2, values_from = count_Q) %>% 
+  pivot_wider(names_from = var, values_from = count_Q) %>% 
   mutate(Qsh = replace_na(Qsh, 0),
          Qsw = replace_na(Qsw, 0),
          Qlw = replace_na(Qlw, 0),
@@ -532,32 +533,31 @@ With patterns pulled out by region and season, we want to see if there are any r
 Another thing to consider would be if fast onset slow decline (and vice versa) events have different characteristics to slower evolving events. The same question could be posed to long vs short events and those with high intensities vs low. In order to begin this investigation we must join the MHW results to the correlation results. We will visualise these patterns with heatmaps.
 
 ```{r metrics_cor}
-# Strong positive correlation at onset and strong positive and decline
-# Vice versa
-
+# Strong positive correlation at onset and strong positive and decline and vice versa
 ALL_cor_wide <- readRDS("data/ALL_cor.Rda") %>% 
+  dplyr::rename(var = Parameter2) %>% 
   ungroup() %>% 
   filter(Parameter1 == "sst") %>% 
-  dplyr::select(region:ts, Parameter2, r, n_Obs) %>% 
-  mutate(Parameter2 = as.character(Parameter2)) %>% 
-  mutate(Parameter2 = case_when(Parameter2 == "sst" ~ "SST",
-                         Parameter2 == "bottomT" ~ "SBT",
-                         Parameter2 == "sss" ~ "SSS",
-                         Parameter2 == "mld_cum" ~ "MLD_c",
-                         Parameter2 == "mld_1_cum" ~ "MLD_1_c",
-                         Parameter2 == "t2m" ~ "Air_temp",
-                         Parameter2 == "tcc_cum" ~ "Cloud_cover_c",
-                         Parameter2 == "p_e_cum" ~ "Precip_Evap_c",
-                         Parameter2 == "mslp_cum" ~ "MSLP_c",
-                         Parameter2 == "lwr_budget" ~ "Qlw",
-                         Parameter2 == "swr_budget" ~ "Qsw",
-                         Parameter2 == "lhf_budget" ~ "Qlh",
-                         Parameter2 == "shf_budget" ~ "Qsh",
-                         Parameter2 == "qnet_budget" ~ "Qnet",
-                         TRUE ~ Parameter2)) %>% 
-  filter(Parameter2 %in% c("SST", "SSS", "SBT", "MLD_c", "MLD_1_c", "Air_temp", "Cloud_cover_c",
+  dplyr::select(region:ts, var, r, n_Obs) %>% 
+  mutate(var = as.character(var)) %>% 
+  mutate(var = case_when(var == "sst" ~ "SST",
+                         var == "bottomT" ~ "SBT",
+                         var == "sss" ~ "SSS",
+                         var == "mld_cum" ~ "MLD_c",
+                         var == "mld_1_cum" ~ "MLD_1_c",
+                         var == "t2m" ~ "Air_temp",
+                         var == "tcc_cum" ~ "Cloud_cover_c",
+                         var == "p_e_cum" ~ "Precip_Evap_c",
+                         var == "mslp_cum" ~ "MSLP_c",
+                         var == "lwr_budget" ~ "Qlw",
+                         var == "swr_budget" ~ "Qsw",
+                         var == "lhf_budget" ~ "Qlh",
+                         var == "shf_budget" ~ "Qsh",
+                         var == "qnet_budget" ~ "Qnet",
+                         TRUE ~ var)) %>% 
+  filter(var %in% c("SST", "SSS", "SBT", "MLD_c", "MLD_1_c", "Air_temp", "Cloud_cover_c",
                            "Precip_Evap_c", "MSLP_c", "Qlw", "Qsw", "Qlh", "Qsh", "Qnet")) %>% 
-  pivot_wider(values_from = r, names_from = Parameter2)
+  pivot_wider(values_from = r, names_from = var)
 
 # Combine MHW metrics and correlation results
 events_cor_prep <- OISST_MHW_event %>% 
@@ -608,7 +608,7 @@ events_cor_prep %>%
   group_by(ts, rate_onset) %>% 
   mutate(count = n()) %>% 
   summarise_if(is.numeric, mean) %>% 
-  pivot_longer(cols = sst:qnet_mld_cum) %>% 
+  pivot_longer(cols = Air_temp:Qsw) %>% 
   filter(name != "sst",
          ts != "full",
          rate_onset <= 0.75) %>% # Only two is faster than this 
@@ -628,7 +628,7 @@ events_cor_prep %>%
   group_by(ts, rate_decline) %>% 
   mutate(count = n()) %>% 
   summarise_if(is.numeric, mean) %>% 
-  pivot_longer(cols = sst:qnet_mld_cum) %>% 
+  pivot_longer(cols = Air_temp:Qsw) %>% 
   filter(name != "sst",
          ts != "full") %>% 
   ggplot(aes(x = rate_decline, y = name)) +
@@ -689,26 +689,26 @@ events_cor_cat <- events_cor_prep %>%
 
 # Events with high Qlw correlations at onset
 events_cor_cat %>% 
-  filter(ts == "onset", lwr_mld_cum >= 0.7)
+  filter(ts == "onset", Qlw >= 0.7)
 
 # Melt the data frame and find the q term with the highest correlation
 # Those are then used to separate events into groups
 events_q_onset <- events_cor_cat %>% 
   filter(ts == "onset") %>% 
-  dplyr::select(region:event_no, ts, lwr_mld_cum:shf_mld_cum) %>% 
-  pivot_longer(cols = lwr_mld_cum:shf_mld_cum, names_to = "var", values_to = "val") %>% 
+  dplyr::select(region:event_no, ts, Qnet:Qsh) %>% 
+  pivot_longer(cols = Qnet:Qsh, names_to = "var", values_to = "val") %>% 
   group_by(region, season, event_no) %>% 
   filter(abs(val) == max(abs(val)))
 
 # With this guide one may then parse out the q groups
 events_lhf_p_onset <- events_q_onset %>% 
-  filter(val >= 0, var == "lhf_mld_cum") %>% 
+  filter(val >= 0, var == "Qlh") %>% 
   left_join(events_cor_cat) %>% 
   ungroup() %>% 
   # unite(region, season, event_no, sep = "_")
   mutate(event_no = as.factor(event_no)) %>% 
-  dplyr::select(region:ts, bottomT:qnet_mld_cum, -mld_1_cum) %>% 
-  pivot_longer(bottomT:qnet_mld_cum) %>% 
+  dplyr::select(region:ts, Air_temp:Qsw) %>% 
+  pivot_longer(Air_temp:Qsw) %>% 
   ggplot(aes(x = event_no, y = name)) +
   geom_tile(aes(fill = value)) +
   # facet_wrap(~name, scales = "free") +

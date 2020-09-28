@@ -522,8 +522,8 @@ wide_packet_func <- function(df){
                    measure = c(colnames(.)[-c(1:4)]),
                    variable.name = "var", value.name = "val") %>%
     dplyr::arrange(var, lon, lat) %>%
-    unite(coords, c(lon, lat, var), sep = "BBB") %>%
-    unite(event_ID, c(region, event_no), sep = "BBB") %>%
+    unite(coords, c(lon, lat, var), sep = "z") %>%
+    unite(event_ID, c(region, event_no), sep = "z") %>%
     reshape2::dcast(event_ID ~ coords, value.var = "val")
   
   # Remove columns (pixels) with missing data
@@ -772,7 +772,7 @@ som_model_PCI <- function(data_packet, other_states, xdim = 4, ydim = 3){
   # Create a data.frame of info
   node_info <- data.frame(event_ID = data_packet[,"event_ID"],
                           node = som_model$classif) %>%
-    separate(event_ID, into = c("region", "event_no"), sep = "BBB") %>%
+    separate(event_ID, into = c("region", "event_no"), sep = "z") %>%
     group_by(node) %>%
     mutate(count = n()) %>%
     ungroup() %>%
@@ -788,7 +788,7 @@ som_model_PCI <- function(data_packet, other_states, xdim = 4, ydim = 3){
   
   # Determine which event goes in which node and melt
   data_packet_long <- cbind(node = som_model$classif, data_packet) %>%
-    separate(event_ID, into = c("region", "event_no"), sep = "BBB") %>%
+    separate(event_ID, into = c("region", "event_no"), sep = "z") %>%
     data.table() %>%
     reshape2::melt(id = c("node", "region", "event_no"),
                    measure = c(colnames(.)[-c(1:3)]),
@@ -800,7 +800,7 @@ som_model_PCI <- function(data_packet, other_states, xdim = 4, ydim = 3){
     summarise(val = mean(value, na.rm = T),
               sd = sd(value, na.rm = T)) %>%
     ungroup() %>%
-    separate(variable, into = c("lon", "lat", "var"), sep = "BBB") %>%
+    separate(variable, into = c("lon", "lat", "var"), sep = "z") %>%
     dplyr::arrange(node, var, lon, lat) %>%
     mutate(lon = as.numeric(lon),
            lat = as.numeric(lat),
@@ -832,7 +832,7 @@ som_model_PCI <- function(data_packet, other_states, xdim = 4, ydim = 3){
   
   # ANOSIM for goodness of fit for node count
   # node_data_wide <- node_data %>%
-  #   unite(coords, c(lon, lat, var), sep = "BBB") %>%
+  #   unite(coords, c(lon, lat, var), sep = "z") %>%
   #   dplyr::select(-sd) %>%
   #   data.table() %>%
   #   dcast(node~coords, value.var = "val")
@@ -868,18 +868,22 @@ fig_data_prep <- function(data_packet, region_MHW = OISST_region_MHW){
   som_data_wide <- data_packet$data %>%
     dplyr::select(-sd) %>%
     spread(var, val) #%>%
+    # mutate(node = LETTERS[node])
   # mutate(mld_anom_cut = cut(mld_anom, breaks = seq(-0.5, 0.5, 0.1)))
   other_data_wide <- data_packet$other_data %>%
     dplyr::select(-sd) %>%
-    spread(var, val)
+    spread(var, val) #%>%
+    # mutate(node = LETTERS[node])
   # Variance data
   som_sd_wide <- data_packet$data %>%
     dplyr::select(-val) %>%
     spread(var, sd) #%>%
+    # mutate(node = LETTERS[node])
   # mutate(mld_anom_cut = cut(mld_anom, breaks = seq(-0.5, 0.5, 0.1)))
   other_sd_wide <- data_packet$other_data %>%
     dplyr::select(-val) %>%
-    spread(var, sd)
+    spread(var, sd) #%>%
+    # mutate(node = LETTERS[node])
   
   # currents <- currents[(currents$lon %in% lon_sub & currents$lat %in% lat_sub),]
   som_data_sub <- som_data_wide %>%
@@ -890,7 +894,8 @@ fig_data_prep <- function(data_packet, region_MHW = OISST_region_MHW){
   
   # MHW season of (peak) occurrence and other meta-data
   region_MHW_meta <- region_MHW_event %>%
-    left_join(data_packet$info, by = c("region", "event_no"))
+    left_join(data_packet$info, by = c("region", "event_no")) #%>%
+    # mutate(node = LETTERS[node])
   
   # Grid of complete node x season matrix
   node_season_grid <- expand.grid(seq(1:max(region_MHW_meta$node, na.rm = T)),
@@ -1136,10 +1141,16 @@ fig_map_func <- function(map_var, fig_data, col_num, fig_height, fig_width){
       geom_label(data = filter(fig_data$node_season_info, season_peak == "Autumn"),
                  aes(x = -48, y = 34, fill = node_season_prop,
                      label = paste0("Autumn\n n = ",node_season_count))) +
+      # Corner label
+      # geom_label(data = fig_data$region_prop_label,
+      #            label.r = unit(0.9, "lines"), label.padding = unit(0.5, "lines"),
+      #            aes(x = -78, y = 51, label = paste0(LETTERS[node],")"))) +
       # Colour scale
       scale_fill_distiller("Proportion\nof events",
                            palette = "BuPu", direction = 1) +
-      theme(legend.position = "bottom")
+      theme(legend.position = "bottom") #+
+      # facet_wrap(~node)
+      # fig_res
   } else if(map_var == "sst_u_v_anom"){
     fig_res <- frame_base +
       # The ocean temperature
@@ -1180,6 +1191,10 @@ fig_map_func <- function(map_var, fig_data, col_num, fig_height, fig_width){
                        yend = lat + anom_v10 * wind_uv_scalar),
                    arrow = arrow(angle = 40, length = unit(0.1, "cm"), type = "open"),
                    linejoin = "mitre", size = 0.4, alpha = 0.4) +
+      # Corner label
+      # geom_label(data = fig_data$region_prop_label,
+      #            label.r = unit(0.9, "lines"), label.padding = unit(0.5, "lines"),
+      #            aes(x = -78, y = 51, label = paste0(LETTERS[node],")"))) +
       # Colour scale
       scale_fill_gradient2(name = "Air temp.\nanom. (°C)", low = "blue", high = "red") +
       scale_colour_gradient2("MSLP anom.\n(hPa)",# guide = "legend",

@@ -65,6 +65,7 @@ system.time(packet <- synoptic_states %>%
               select(region, event_no, synoptic) %>%
               unnest(cols = "synoptic") %>%
               wide_packet_func()) # 79 seconds
+
 # Save
 saveRDS(packet, "data/packet.Rda")
 ```
@@ -79,7 +80,7 @@ packet <- readRDS("data/packet.Rda")
 synoptic_states_other <- readRDS("data/synoptic_states_other.Rda")
 system.time(som <- som_model_PCI(packet, synoptic_states_other)) # 176 seconds
 saveRDS(som, file = "data/som.Rda")
-saveRDS(som, file = "shiny/som.Rda")
+# saveRDS(som, file = "shiny/som.Rda")
 ```
 
 ## Correlations
@@ -147,20 +148,20 @@ events_cor_SOM %>%
   mutate(node = as.factor(node),
          ts = factor(ts, levels = c("decline", "full", "onset")),
          name = case_when(name == "sst" ~ "SST",
-                         name == "bottomT" ~ "Bottom",
-                         name == "sss" ~ "SSS",
-                         name == "mld_cum" ~ "MLD",
-                         name == "mld_1_cum" ~ "MLD_1_c",
-                         name == "t2m" ~ "Air",
-                         name == "tcc_cum" ~ "Cloud",
-                         name == "p_e_cum" ~ "P_E",
-                         name == "mslp_cum" ~ "MSLP",
-                         name == "lwr_budget" ~ "Qlw",
-                         name == "swr_budget" ~ "Qsw",
-                         name == "lhf_budget" ~ "Qlh",
-                         name == "shf_budget" ~ "Qsh",
-                         name == "qnet_budget" ~ "Qnet",
-                         TRUE ~ name),
+                          name == "bottomT" ~ "Bottom",
+                          name == "sss" ~ "SSS",
+                          name == "mld_cum" ~ "MLD",
+                          name == "mld_1_cum" ~ "MLD_1_c",
+                          name == "t2m" ~ "Air",
+                          name == "tcc_cum" ~ "Cloud",
+                          name == "p_e_cum" ~ "P_E",
+                          name == "mslp_cum" ~ "MSLP",
+                          name == "lwr_budget" ~ "Qlw",
+                          name == "swr_budget" ~ "Qsw",
+                          name == "lhf_budget" ~ "Qlh",
+                          name == "shf_budget" ~ "Qsh",
+                          name == "qnet_budget" ~ "Qnet",
+                          TRUE ~ name),
          name = factor(name, levels = c("Qnet", "Qlw", "Qsw", "Qlh", "Qsh", "Cloud", 
                                         "P_E", "Air", "MSLP", "MLD", "SSS", "Bottom"))) %>% 
   ggplot(aes(x = name, y = ts)) +

@@ -312,6 +312,7 @@ OISST_all_ts <- readRDS("data/OISST_all_ts.Rda")
 
 # Calculate the MHWs
 OISST_region_MHW <- OISST_all_ts %>%
+  mutate(region = toupper(region)) %>% 
   group_by(region) %>%
   nest() %>%
   mutate(clims = map(data, ts2clm,
@@ -431,7 +432,8 @@ ERA5_all_ts <- readRDS("data/ERA5_all_ts.Rda")
 OISST_all_ts <- readRDS("data/OISST_all_ts.Rda")
 ALL_ts <- left_join(ERA5_all_ts, GLORYS_all_ts, by = c("region", "t")) %>% 
   left_join(OISST_all_ts, by = c("region", "t")) %>% 
-  filter(t <= "2018-12-31")
+  filter(t <= "2018-12-31") %>% 
+  mutate(region = toupper(region))
 
 # Calculate GLORYS clims and anoms
   # Also give better names to the variables
