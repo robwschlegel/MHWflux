@@ -241,7 +241,7 @@ ALL_mag_region_season <- rbind(ALL_mag_region, ALL_mag_season)
 knitr::kable(ALL_mag_region_season)
 ```
 
-These tables help to reiterate how much more important Qswr is for the onset and decline of MHWs over the other variables, and that Qlhf often comes in second. For the seasons though we see a much more complex relationship that I won't go into here.
+These tables help to reiterate how much more important Qsw is for the onset and decline of MHWs over the other variables, and that Qlh often comes in second. For the seasons though we see a much more complex relationship that I won't go into here.
 
 ### RMSE summary
 
@@ -340,6 +340,7 @@ ALL_RMSE_season <- ALL_RMSE_top %>%
   # mutate(Qlw = replace_na(Qlw, 0)) %>% 
   left_join(RMSE_season_count, by = c("season", "ts")) %>% 
   dplyr::select(season, ts, count, Qlh:Qsw) %>% 
+  filter(ts != "full") %>% 
   mutate(Qlh = paste0(Qlh, " (",round((Qlh/count)*100),"%)"),
          Qsh = paste0(Qsh, " (",round((Qsh/count)*100),"%)"),
          Qlw = paste0(Qlw, " (",round((Qlw/count)*100),"%)"),

@@ -113,7 +113,7 @@ ALL_ts_anom_full <- rbind(ALL_ts_anom[,c("region", "var", "t", "anom")],
 ALL_ts_anom_full_wide <- ALL_ts_anom_full %>% 
   pivot_wider(values_from = anom, names_from = var)
 
-# The corerelation/RMSE results
+# The magnitude, correlation, and RMSE results
 ALL_cor <- readRDS("data/ALL_cor.Rda")
 
 # The base land polygon
