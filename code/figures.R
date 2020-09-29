@@ -432,8 +432,8 @@ fig_5 <- fig_map_func("region_season", base_data, 1, 9, 13) +
   theme(axis.text = element_blank(),
         axis.ticks = element_blank())
 # fig_5
-ggsave("figures/fig_5.png", fig_4, height = 9, width = 13)
-ggsave("figures/fig_5.pdf", fig_4, height = 9, width = 13)
+ggsave("figures/fig_5.png", fig_5, height = 9, width = 13)
+ggsave("figures/fig_5.pdf", fig_5, height = 9, width = 13)
 
 
 # Figure 6 ----------------------------------------------------------------
