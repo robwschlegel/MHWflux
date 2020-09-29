@@ -181,17 +181,12 @@ tab_1
 
 # Table 2 -----------------------------------------------------------------
 
-# Central tendencies for magnitudes of change and the proportions thereof 
+# Count of events with greatest increase/decrease in a SST_Qx term
 
-# Load magnitude data
+# Prep magnitude data
 ALL_mag <- ALL_cor_fig %>% 
   dplyr::select(region:ts, var, n_Obs, mag) %>% 
   na.omit()
-
-
-# Table 2 -----------------------------------------------------------------
-
-# Count of events with greatest increase/decrease in a SST_Qx term
 
 # Calculate the proportions of change in magnitudes
 ALL_mag_prop <- ALL_mag %>% 
@@ -244,9 +239,25 @@ tab_2 <- knitr::kable(ALL_mag_region_season)#, format = "latex")
 tab_2
 
 
-# Table 4 -----------------------------------------------------------------
+# Figure 2 ----------------------------------------------------------------
 
-# Central tendencies of RMSE values per variable
+# Central tendencies for proportions of change and the magnitudes thereof 
+
+fig_2 <- ALL_mag_prop %>% 
+  filter(var != "Qnet") %>% 
+  ggplot(aes(x = ts, y = prop, fill = season)) +
+  geom_hline(aes(yintercept = 0), colour = "red") +
+  geom_boxplot(position = position_dodge(width = 0.9), outlier.shape = NA) +
+  geom_point(aes(colour = mag_Qx), position = position_jitterdodge(dodge.width = 0.9)) +
+  scale_y_continuous(limits = c(-2, 2), expand = c(0,0), breaks = c(-1, 0, 1)) +
+  scale_fill_manual(values = c("#a99a35", "#8baa43", "#e89c3c", "#9a9997")) +
+  scale_colour_gradient2(low = "blue", high = "red", mid = "grey") +
+  facet_wrap(~var, nrow = 2) +
+  labs(x = NULL, y = "ΔSST_Qx / ΔSSTa", colour = "ΔSST_Qx", fill = "Season") +
+  theme(legend.position = "top")
+# fig_2
+ggsave("figures/fig_2.png", fig_2, height = 9, width = 10)
+ggsave("figures/fig_2.pdf", fig_2, height = 9, width = 10)
 
 
 # Table 3 -----------------------------------------------------------------
@@ -312,7 +323,35 @@ tab_3 <- knitr::kable(ALL_RMSE_region_season)#, format = "latex")
 tab_3
 
 
-# Figure 2 ----------------------------------------------------------------
+# Table 4 -----------------------------------------------------------------
+
+# Central tendencies of RMSE values per variable per region
+ALL_RMSE_central_region <- ALL_RMSE %>% 
+  filter(ts != "full", var != "Qnet") %>% 
+  dplyr::rename(group = region) %>% 
+  group_by(group, ts, var) %>% 
+  summarise(rmse_mean = round(mean(rmse, na.rm = T), 1),
+            rmse_sd = round(sd(rmse, na.rm = T), 1), .groups = "drop") %>% 
+  unite("rmse_summary", rmse_mean:rmse_sd, sep = " ± ") %>% 
+  pivot_wider(names_from = var, values_from = rmse_summary)
+
+# Central tendencies of RMSE values per variable per season
+ALL_RMSE_central_season <- ALL_RMSE %>% 
+  filter(ts != "full", var != "Qnet") %>% 
+  dplyr::rename(group = season) %>% 
+  group_by(group, ts, var) %>% 
+  summarise(rmse_mean = round(mean(rmse, na.rm = T), 1),
+            rmse_sd = round(sd(rmse, na.rm = T), 1), .groups = "drop") %>% 
+  unite("rmse_summary", rmse_mean:rmse_sd, sep = " ± ") %>% 
+  pivot_wider(names_from = var, values_from = rmse_summary)
+
+# Print table
+ALL_RMSE_central_region_season <- rbind(ALL_RMSE_central_region, ALL_RMSE_central_season)
+tab_4 <- knitr::kable(ALL_RMSE_central_region_season)#, format = "latex")
+tab_4
+
+
+# Figure 3 ----------------------------------------------------------------
 
 # Histogram of r values
 
@@ -338,13 +377,13 @@ hist_air <- hist_var(c("Air", "P-E", "MSLP"), "Atmosphere")
 hist_ocean <- hist_var(c("SSS", "MLD", "Bottom"), "Ocean")
 
 # Combine air and sea
-fig_2 <- ggpubr::ggarrange(hist_air, hist_ocean, ncol = 2, nrow = 1, align = "h",  labels = c("A)", "B)"))
-# fig_2
-ggsave("figures/fig_2.png", fig_2, height = 2.7, width = 10)
-ggsave("figures/fig_2.pdf", fig_2, height = 2.7, width = 10)
+fig_3 <- ggpubr::ggarrange(hist_air, hist_ocean, ncol = 2, nrow = 1, align = "h",  labels = c("A)", "B)"))
+# fig_3
+ggsave("figures/fig_3.png", fig_3, height = 2.7, width = 10)
+ggsave("figures/fig_3.pdf", fig_3, height = 2.7, width = 10)
 
 
-# Figure 3 ----------------------------------------------------------------
+# Figure 4 ----------------------------------------------------------------
 
 # Most important variables by region/season
 boxplot_var <-  function(var_choices, y_label){
@@ -371,13 +410,13 @@ box_air <- boxplot_var(c("Air", "P-E", "MSLP"), "Atmosphere")
 box_ocean <- boxplot_var(c("SSS", "MLD", "Bottom"), "Ocean")
 
 # Combine bottom two
-fig_3 <- ggpubr::ggarrange(box_air, box_ocean, ncol = 2, nrow = 1, align = "h",  labels = c("A)", "B)"), common.legend = T)
-# fig_3
-ggsave("figures/fig_3.png", fig_3, height = 2.7, width = 10)
-ggsave("figures/fig_3.png", fig_3, height = 2.7, width = 10)
+fig_4 <- ggpubr::ggarrange(box_air, box_ocean, ncol = 2, nrow = 1, align = "h",  labels = c("A)", "B)"), common.legend = T)
+# fig_4
+ggsave("figures/fig_4.png", fig_4, height = 2.7, width = 10)
+ggsave("figures/fig_4.png", fig_4, height = 2.7, width = 10)
 
 
-# Figure 4 ----------------------------------------------------------------
+# Figure 5 ----------------------------------------------------------------
 
 # The SOM region/season figure
 
@@ -388,25 +427,25 @@ SOM <- readRDS("data/som.Rda")
 base_data <- fig_data_prep(SOM)
 
 # SOM region + season panels
-fig_4 <- fig_map_func("region_season", base_data, 1, 9, 13) +
-  facet_wrap(~node, labeller = labeller(node = node_labeller)) +
-  theme(axis.text = element_blank(),
-        axis.ticks = element_blank())
-# fig_4
-ggsave("figures/fig_4.png", fig_4, height = 9, width = 13)
-ggsave("figures/fig_4.pdf", fig_4, height = 9, width = 13)
-
-
-# Figure 5 ----------------------------------------------------------------
-
-# SOM atmosphere panels
-fig_5 <- fig_map_func("air_u_v_mslp_anom", base_data, 1, 9, 13) +
+fig_5 <- fig_map_func("region_season", base_data, 1, 9, 13) +
   facet_wrap(~node, labeller = labeller(node = node_labeller)) +
   theme(axis.text = element_blank(),
         axis.ticks = element_blank())
 # fig_5
-ggsave("figures/fig_5.png", fig_5, height = 9, width = 13)
-ggsave("figures/fig_5.pdf", fig_5, height = 9, width = 13)
+ggsave("figures/fig_5.png", fig_4, height = 9, width = 13)
+ggsave("figures/fig_5.pdf", fig_4, height = 9, width = 13)
+
+
+# Figure 6 ----------------------------------------------------------------
+
+# SOM atmosphere panels
+fig_6 <- fig_map_func("air_u_v_mslp_anom", base_data, 1, 9, 13) +
+  facet_wrap(~node, labeller = labeller(node = node_labeller)) +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank())
+# fig_6
+ggsave("figures/fig_6.png", fig_6, height = 9, width = 13)
+ggsave("figures/fig_6.pdf", fig_6, height = 9, width = 13)
 
 
 # Table 5 -----------------------------------------------------------------
@@ -414,12 +453,12 @@ ggsave("figures/fig_5.pdf", fig_5, height = 9, width = 13)
 # The summary of the SOM nodes
 
 
-# Figure 6 ----------------------------------------------------------------
+# Figure 7 ----------------------------------------------------------------
 
 # The correlation results clustered by SOM node
 
 # Load correlations
-ALL_cor_wide <- readRDS("data/ALL_cor.Rda") %>% 
+ALL_cor_wide <- ALL_cor %>% 
   ungroup() %>% 
   filter(Parameter1 == "sst") %>% 
   dplyr::select(region:ts, Parameter2, r, n_Obs) %>% 
@@ -431,7 +470,7 @@ events_cor_prep <- OISST_MHW_event %>%
                 intensity_cumulative, rate_onset, rate_decline) %>% 
   left_join(ALL_cor_wide, by = c("region", "season", "event_no")) %>% 
   # ungroup() %>% 
-  dplyr::select(region:n_Obs, sst, bottomT, sss, mld_cum, t2m, tcc_cum, p_e_cum, mslp_cum)
+  dplyr::select(region:n_Obs, sst, bottomT, sss, mld_cum, t2m, p_e_cum, mslp_cum)
 
 # Grab only the node info
 SOM_info <- SOM$info
@@ -439,7 +478,7 @@ SOM_info <- SOM$info
 # Join to the GLORYS MHW correlation results
 events_cor_SOM <- left_join(events_cor_prep, SOM_info, by = c("region", "event_no"))
 
-fig_6 <- events_cor_SOM %>% 
+fig_7 <- events_cor_SOM %>% 
   dplyr::select(node, ts, bottomT:mslp_cum) %>% 
   group_by(node, ts) %>% 
   summarise_if(is.numeric, mean) %>% 
@@ -454,11 +493,10 @@ fig_6 <- events_cor_SOM %>%
                           name == "sss" ~ "SSS",
                           name == "mld_cum" ~ "MLD",
                           name == "t2m" ~ "Air",
-                          name == "tcc_cum" ~ "Cloud",
                           name == "p_e_cum" ~ "P-E",
                           name == "mslp_cum" ~ "MSLP",
                           TRUE ~ name),
-         name = factor(name, levels = c("Cloud", "P-E", "Air", "MSLP", "MLD", "SSS", "Bottom"))) %>% 
+         name = factor(name, levels = c("P-E", "Air", "MSLP", "MLD", "SSS", "Bottom"))) %>% 
   ggplot(aes(x = name, y = ts)) +
   geom_tile(aes(fill = value)) +
   facet_wrap(~node, labeller = labeller(node = node_labeller)) +
@@ -469,7 +507,7 @@ fig_6 <- events_cor_SOM %>%
         axis.text.y = element_text(angle = 90, hjust = 0.5),
         axis.text.x = element_text(angle = 30, hjust = 1.0),
         panel.background = element_rect(colour = "black"))
-# fig_6
-ggsave("figures/fig_6.png", fig_6, height = 7, width = 14)
-ggsave("figures/fig_6.pdf", fig_6, height = 7, width = 14)
+# fig_7
+ggsave("figures/fig_7.png", fig_7, height = 7, width = 14)
+ggsave("figures/fig_7.pdf", fig_7, height = 7, width = 14)
 

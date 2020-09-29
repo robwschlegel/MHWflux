@@ -516,6 +516,9 @@ cor_summary_season <- ALL_cor %>%
 # Look at specific results
 cor_summary_season %>% 
   filter(Parameter2 == "mld")
+
+# Test for normality of r distributions
+
 ```
 
 ### Lead or lag of heat flux
