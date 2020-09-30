@@ -34,7 +34,7 @@ The following code chunk creates PDFs and PNGs for each of the variables for eac
 
 ```{r som-visualise, eval=FALSE}
 # Create the full range of visuals
-som <- readRDS("data/SOM/som.Rda")
+som <- readRDS("data/som.Rda")
 fig_all_som(som)
 ```
 
@@ -46,17 +46,16 @@ The summaries for the figures below have a lot of acronyms in them but they are 
 knitr::include_graphics("output/NWA_study_area.png")
 ```
 
-The region abbreviations will always be in _lower case_ and are:  
+The region abbreviations are:  
 
-- cbs = Cabot Straight
-- gm = Gulf of Maine
-- gls = Gulf of St. Lawrence  
-- ls = Labrador Shelf  **NO LONGER USED**
-- mab = Mid-Atlantic Bight
-- nfs = Newfoundland Shelf  
-- ss = Scotian Shelf  
+- CBS = Cabot Straight
+- GM = Gulf of Maine
+- GSL = Gulf of St. Lawrence
+- MAB = Mid-Atlantic Bight
+- NFS = Newfoundland Shelf  
+- SS = Scotian Shelf  
 
-The upper case abbreviations are used for larger features and are:  
+The abbreviations for larger features are:  
 
 - SST = Sea surface temperature
 - SOM = Self-organising map(s)
@@ -78,7 +77,7 @@ The written summary of each individual node below is broken into three pieces:
 
 ## SOM results
 
-There are a total of 289 MHWs considered when putting this 12 node (4x3) SOM together. The largest concentration of MHWs is into the middle two SOM nodes (6 + 7), where there are twice as many events as some of the side and corner nodes. The top left corner, node 1, also has a large amount of events placed within it and the diagonally opposite node (12) has a decent number. Overall I would not have said that any of the nodes have a questionable allotment of events, but further analysis shows that node 8 (middle right) is mostly populated by MHWs from one large event.
+There are a total of 291 MHWs considered when putting this 12 node (4x3) SOM together. The largest concentration of MHWs is into the middle two SOM nodes (6 + 7), where there are twice as many events as some of the side and corner nodes. The top left corner, node 1, also has a large amount of events placed within it and the diagonally opposite node (12) has a decent number. Overall I would not have said that any of the nodes have a questionable allotment of events, but further analysis shows that node 8 (middle right) is mostly populated by MHWs from one large event.
 
 ### Node summary tables
 
@@ -157,7 +156,7 @@ node_cause <- data.frame(Node = c(1:12),
 knitr::kable(node_cause)
 
 # Summary stats
-node_stats <- fig_data_prep(readRDS("data/SOM/som.Rda"))$node_h_lines
+node_stats <- fig_data_prep(readRDS("data/som.Rda"))$node_h_lines
 # saveRDS(node_stats, "data/node_stats.Rds")
 knitr::kable(node_stats)
 ```
