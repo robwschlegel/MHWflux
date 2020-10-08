@@ -439,7 +439,7 @@ ALL_ts <- left_join(ERA5_all_ts, GLORYS_all_ts, by = c("region", "t")) %>%
   # Also give better names to the variables
   # Also convert the Qx terms from seconds to days by multiplying by 86,400
 ALL_ts_anom <- ALL_ts %>%
-  dplyr::rename(lwr = msnlwrf, swr = msnswrf, lhf = mslhf, 
+  dplyr::rename(lwr = msnlwrf, swr = swr_down, lhf = mslhf, 
                 shf = msshf, mslp = msl, sst = temp.y) %>% 
   dplyr::select(-wind_dir, -cur_dir, -temp.x) %>% 
   mutate(qnet_mld = (qnet*86400)/(mld*1024*4000),

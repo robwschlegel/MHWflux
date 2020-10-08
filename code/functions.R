@@ -116,6 +116,18 @@ ALL_ts_anom_full_wide <- ALL_ts_anom_full %>%
 # The magnitude, correlation, and RMSE results
 ALL_cor <- readRDS("data/ALL_cor.Rda")
 
+# Counts per region and season
+count_region <- ALL_cor %>% 
+  dplyr::select(region:ts, n_Obs) %>% 
+  distinct() %>% 
+  group_by(region, ts) %>% 
+  summarise(count = n(), .groups = "drop")
+count_season <- ALL_mag_prop %>% 
+  dplyr::select(region:ts, n_Obs) %>% 
+  distinct() %>% 
+  group_by(season, ts) %>% 
+  summarise(count = n(), .groups = "drop")
+
 # The base land polygon
   # Created in 'analysis/polygon-prep.Rmd'
 map_base <- readRDS("metadata/map_base.Rda")

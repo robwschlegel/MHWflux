@@ -78,36 +78,46 @@ plyr::ddply(ERA5_files, c("var_group"), process_ERA5, .parallel = F) # Won't run
 
 ## Correct Qsw radiance decay with MLD
 # First load the MLD from GLORYS
-registerDoParallel(cores = 25)
-GLORYS_all <- plyr::ldply(GLORYS_files, load_GLORYS, .parallel = T, .paropts = c(.inorder = FALSE))
+# registerDoParallel(cores = 25)
+# GLORYS_all <- plyr::ldply(GLORYS_files, load_GLORYS, .parallel = T, .paropts = c(.inorder = FALSE))
 # Trim down to just MLD
-GLORYS_MLD <- GLORYS_all %>% 
-  dplyr::select(lon, lat, t, mld)
-rm(GLORYS_all); gc()
+# GLORYS_MLD <- GLORYS_all %>% 
+#   dplyr::select(lon, lat, t, mld)
+# rm(GLORYS_all); gc()
 # Load the shortwave radiation data
-ERA5_swr_base <- plyr::ldply(ERA5_swr_files, load_ERA5, .parallel = F, .progress = "text", time_shift = 43200)
-# Combine the little half days
-ERA5_swr_dt <- data.table(ERA5_swr_base)
-setkey(ERA5_swr_dt, lon, lat, t)
-ERA5_swr_mean <- ERA5_swr_dt[, lapply(.SD, mean), by = list(lon, lat, t)]
+# ERA5_swr_anom <- readRDS("data/ERA5_swr_anom.Rda")
+# ERA5_swr_anom <- dplyr::select(lon, lat, t, msnswr)
 # Left join MLD
-ERA5_swr_MLD <- left_join(ERA5_swr_mean, GLORYS_MLD, by = c("lon", "lat", "t"))
-saveRDS(ERA5_swr_MLD, "data/ERA5_swr_MLD.Rda")
+# ERA5_swr_MLD <- left_join(ERA5_swr_anom, GLORYS_MLD, by = c("lon", "lat", "t"))
+# saveRDS(ERA5_swr_MLD, "data/ERA5_swr_MLD.Rda")
 # Calculate radiance decay
-ERA5_down <- ERA5_swr_MLD %>% 
-  filter(lon == ERA5_swr_MLD$lon[1], lat == ERA5_swr_MLD$lat[1]) %>% # Testing
-  mutate(down = msnswrf*((0.67*exp(-mld/1.00))+((1-0.67)*exp(-mld/17.00)))) %>% 
-  mutate(down = na_replace(down, 0),
-         swr_down = msnswrf-down)
-saveRDS(ERA5_down, "data/ERA5_down.Rda")
+# ERA5_down <- ERA5_swr_MLD %>% 
+#   # filter(lon == ERA5_swr_MLD$lon[1], lat == ERA5_swr_MLD$lat[1]) %>% # Testing
+#   mutate(down = msnswrf*((0.67*exp(-mld/1.00))+((1-0.67)*exp(-mld/17.00)))) %>% 
+#   mutate(down = replace_na(down, 0),
+#          swr_down = msnswrf-down)
+# saveRDS(ERA5_down, "data/ERA5_down.Rda")
+# Test visuals
+# ERA5_down %>% 
+#   filter(t == "2000-01-01") %>% 
+#   ggplot(aes(x = lon, y = lat)) +
+#   geom_raster(aes(fill = swr_down)) +
+#   scale_fill_viridis_c()
+# Calculate time series
+# ERA5_down_ts <- ERA5_down %>% 
+#   right_join(OISST_regions, by = c("lon", "lat")) %>%
+#   na.omit() %>% 
+#   dplyr::select(region, t, swr_down) %>% 
+#   group_by(region, t) %>% 
+#   summarise_all("mean") %>% 
+#   ungroup()
+# saveRDS(ERA5_down_ts, "data/ERA5_down_ts.Rda")
 # Calculate swr_down anoms
-ERA5_down_anom <- ERA5_down %>% 
-  pivot_longer(cols = c(-lon, -lat, -t), names_to = "var", values_to = "val") %>% 
-  plyr::ddply(., c("lon", "lat", "var"), calc_clim_anom, .parallel = T, point_accuracy = 8)
-saveRDS(ERA5_down_anom, "data/ERA5_down_anom.Rda")
-
-mld_test <- 40
-((0.67*exp(-mld_test/1.00))+((1-0.67)*exp(-mld_test/17.00)))
+# ERA5_down_anom <- ERA5_down %>% 
+#   dplyr::select(lon, lat, t, swr_down) %>% 
+#   pivot_longer(cols = c(-lon, -lat, -t), names_to = "var", values_to = "val") %>% 
+#   plyr::ddply(., c("lon", "lat", "var"), calc_clim_anom, .parallel = T, point_accuracy = 8)
+# saveRDS(ERA5_down_anom, "data/ERA5_down_anom.Rda")
 
 # Load the heat flux layers
 system.time(ERA5_lhf_anom <- readRDS("data/ERA5_lhf_anom.Rda")) # 40 seconds
@@ -116,8 +126,10 @@ ERA5_shf_anom <- readRDS("data/ERA5_shf_anom.Rda")
 colnames(ERA5_shf_anom)[6] <- "shf"
 ERA5_lwr_anom <- readRDS("data/ERA5_lwr_anom.Rda")
 colnames(ERA5_lwr_anom)[6] <- "lwr"
-ERA5_swr_anom <- readRDS("data/ERA5_swr_anom.Rda")
+ERA5_swr_anom <- readRDS("data/ERA5_swr_anom.Rda") # Base values
 colnames(ERA5_swr_anom)[6] <- "swr"
+# ERA5_swr_anom <- readRDS("data/ERA5_down_anom.Rda") # Values corrected for by MLD
+# colnames(ERA5_swr_anom)[6] <- "swr"
 
 # Combine to make Qnet
 ccols <- c(1, 2, 5, 6); jcols <- c("lon", "lat", "t")
@@ -128,7 +140,6 @@ system.time(
     mutate(val = lhf+shf+lwr+swr) %>% 
     dplyr::select(lon, lat, t, val)
 ) # 189 seconds
-system.time(saveRDS(ERA5_qnet_anom, "data/ERA5_qnet_anom.Rda")) # 151 seconds
 
 # Cleanup
 rm(ERA5_lhf_anom, ERA5_shf_anom, ERA5_lwr_anom, ERA5_swr_anom, ERA5_qnet_anom); gc()
@@ -138,17 +149,18 @@ rm(ERA5_lhf_anom, ERA5_shf_anom, ERA5_lwr_anom, ERA5_swr_anom, ERA5_qnet_anom); 
 # registerDoParallel(cores = 25)
 
 # Calculate anomalies and save
-# system.time(
-#   ERA5_qnet_anom <- plyr::ddply(ERA5_qnet, c("lon", "lat"), calc_clim_anom, .parallel = T, point_accuracy = 8) %>% 
-#     mutate(var = "qnet") %>% 
-#     dplyr::select(lon, lat, var, doy, t, val, seas, thresh, anom)
-# ) # 222 seconds
-# system.time(saveRDS(ERA5_qnet_anom, "data/ERA5_qnet_anom.Rda")) # 151 seconds
-# rm(ERA5_qnet, ERA5_qnet_anom); gc()
+system.time(
+  ERA5_qnet_anom <- plyr::ddply(ERA5_qnet, c("lon", "lat"), calc_clim_anom, .parallel = T, point_accuracy = 8) %>%
+    mutate(var = "qnet") %>%
+    dplyr::select(lon, lat, var, doy, t, val, seas, thresh, anom)
+) # 222 seconds
+system.time(saveRDS(ERA5_qnet_anom, "data/ERA5_qnet_anom.Rda")) # 151 seconds
+rm(ERA5_qnet, ERA5_qnet_anom); gc()
 
 # Load the ts data
 ERA5_lwr_ts <- readRDS("data/ERA5_lwr_ts.Rda")
-ERA5_swr_ts <- readRDS("data/ERA5_swr_ts.Rda")
+# ERA5_swr_ts <- readRDS("data/ERA5_swr_ts.Rda") # Base values
+ERA5_swr_ts <- readRDS("data/ERA5_down_ts.Rda") # Corrected for MLD
 ERA5_lhf_ts <- readRDS("data/ERA5_lhf_ts.Rda")
 ERA5_shf_ts <- readRDS("data/ERA5_shf_ts.Rda")
 ERA5_tcc_ts <- readRDS("data/ERA5_tcc_ts.Rda")
@@ -175,7 +187,8 @@ ERA5_all_ts <- left_join(ERA5_lwr_ts, ERA5_swr_ts, by = join_cols) %>%
   left_join(ERA5_pcp_ts, by = join_cols) %>% 
   left_join(ERA5_evp_ts, by = join_cols) %>% 
   mutate(p_e = tp+e, # All ERA5 values are positive downward, so negative evaporation shows water leaving the surface
-         qnet = msnlwrf+msnswrf+mslhf+msshf,
+         # qnet = msnlwrf+msnswrf+mslhf+msshf, # Base values
+         qnet = msnlwrf+swr_down+mslhf+msshf, # Corrected for MLD
          wind_spd = round(sqrt(u10^2 + v10^2), 2),
          wind_dir = round((270-(atan2(v10, u10)*(180/pi)))%%360))
 saveRDS(ERA5_all_ts, "data/ERA5_all_ts.Rda")

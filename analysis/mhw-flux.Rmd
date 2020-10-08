@@ -47,7 +47,7 @@ ALL_cor <- plyr::ddply(OISST_MHW_event_index, .parallel = T,
   left_join(OISST_MHW_event_index, by = "row_index") %>% 
   select(region, season, event_no, ts, everything()) %>%
   arrange(region, event_no) %>% 
-  mutate(var = factor(var))
+  mutate(Parameter2 = factor(Parameter2))
 
 # Save
 saveRDS(ALL_cor, "data/ALL_cor.Rda")
@@ -183,24 +183,25 @@ mag_box <- ALL_mag_prop %>%
 mag_full <- ggpubr::ggarrange(mag_schematic, mag_scatter, mag_box, ncol = 1, nrow = 3, labels = c("A)", "B)", "C)"))
 ggsave("output/magnitude_schematic.png", height = 8, width = 10)
 ggsave("output/magnitude_schematic.pdf", height = 8, width = 10)
-mag_full
+# mag_full
 ```
+
+The first thing we want to look at with these magnitude scores is how many MHWs appear to be driven or decayed by Qnet. We determine this if the proportion of change in Qnet is more than half that of the change in SSTa. But also, because the Qx variables can be greater than the sum (Qnet), we will see when individual variables are contributing more than half of the change in SSTa, too.
+
+```{r mag-prop}
+# Create TRUE/FALSE table when prop is over 0.5 for any variable
+ALL_mag_TF <- ALL_mag_prop %>% 
+  mutate(prop_TF = ifelse(prop > 0.5, TRUE, FALSE)) %>% 
+  dplyr::select(region:n_Obs, prop_TF) %>% 
+  pivot_wider(names_from = var, values_from = prop_TF)
+
+sum(ALL_mag_TF$Qnet)/nrow(ALL_mag_TF)
+```
+
 
 These figures are helpful, but we also want a table showing the count of best magnitude match per variable per region/season.
 
 ```{r mag-table}
-# Get total 
-mag_region_count <- ALL_mag_prop %>% 
-  dplyr::select(region:ts, n_Obs) %>% 
-  unique() %>% 
-  group_by(region, ts) %>% 
-  summarise(count = n(), .groups = "drop")
-mag_season_count <- ALL_mag_prop %>% 
-  dplyr::select(region:ts, n_Obs) %>% 
-  unique() %>% 
-  group_by(season, ts) %>% 
-  summarise(count = n(), .groups = "drop")
-
 # Get the top results other than Qnet
 ALL_mag_top <- ALL_mag_prop %>% 
   filter(var != "Qnet") %>% # Remove Qnet
