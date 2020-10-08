@@ -4,6 +4,7 @@
 .Ruserdata
 data/OISST_all_anom.Rda
 data/GLORYS_all_anom.Rda
+data/ERA5_swr_MLD.Rda
 data/*_anom.Rda
 data/ALL_other.Rda
 data/packet.Rda

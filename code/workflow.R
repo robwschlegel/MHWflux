@@ -92,16 +92,22 @@ setkey(ERA5_swr_dt, lon, lat, t)
 ERA5_swr_mean <- ERA5_swr_dt[, lapply(.SD, mean), by = list(lon, lat, t)]
 # Left join MLD
 ERA5_swr_MLD <- left_join(ERA5_swr_mean, GLORYS_MLD, by = c("lon", "lat", "t"))
+saveRDS(ERA5_swr_MLD, "data/ERA5_swr_MLD.Rda")
 # Calculate radiance decay
 ERA5_down <- ERA5_swr_MLD %>% 
   filter(lon == ERA5_swr_MLD$lon[1], lat == ERA5_swr_MLD$lat[1]) %>% # Testing
-  mutate(down = ((0.67*exp(mld/1.00))+((1-0.67)*exp(mld/17.00))))
+  mutate(down = msnswrf*((0.67*exp(-mld/1.00))+((1-0.67)*exp(-mld/17.00)))) %>% 
+  mutate(down = na_replace(down, 0),
+         swr_down = msnswrf-down)
 saveRDS(ERA5_down, "data/ERA5_down.Rda")
 # Calculate swr_down anoms
 ERA5_down_anom <- ERA5_down %>% 
   pivot_longer(cols = c(-lon, -lat, -t), names_to = "var", values_to = "val") %>% 
   plyr::ddply(., c("lon", "lat", "var"), calc_clim_anom, .parallel = T, point_accuracy = 8)
 saveRDS(ERA5_down_anom, "data/ERA5_down_anom.Rda")
+
+mld_test <- 40
+((0.67*exp(-mld_test/1.00))+((1-0.67)*exp(-mld_test/17.00)))
 
 # Load the heat flux layers
 system.time(ERA5_lhf_anom <- readRDS("data/ERA5_lhf_anom.Rda")) # 40 seconds
