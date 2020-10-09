@@ -452,13 +452,21 @@ SOM_info <- SOM$info
 
 # Assign nodes to each MHW and get mean+-sd metrics
 MHW_SOM <- left_join(OISST_MHW_event, SOM_info, by = c("region", "event_no")) %>% 
-  group_by(node) %>% 
-  summarise(count = n(), 
-            duration = round(mean(duration), 2),
-            intensity_max = round(mean(intensity_max), 2),
-            intensity_cumulative = mean(intensity_cumulative),
-            rate_onset = mean(rate_onset),
-            rate_decline = mean(rate_decline), .groups = "drop")
+  group_by(node) %>%
+  mutate(count = n()) %>% 
+  dplyr::select(node, count, duration, intensity_max, intensity_cumulative, rate_onset, rate_decline) %>% 
+  summarise_all(c("mean", "sd")) %>% 
+  mutate_all(round, 1) %>% 
+  mutate(node = LETTERS[node]) %>% 
+  dplyr::rename(count = count_mean) %>% 
+  dplyr::select(-count_sd) %>% 
+  unite("duration", duration_mean, duration_sd, sep = " ± ") %>% 
+  unite("imax", intensity_max_mean, intensity_max_sd, sep = " ± ") %>% 
+  unite("icum", intensity_cumulative_mean, intensity_cumulative_sd, sep = " ± ") %>% 
+  unite("ronset", rate_onset_mean, rate_onset_sd, sep = " ± ") %>% 
+  unite("rdecline", rate_decline_mean, rate_decline_sd, sep = " ± ")
+tab_4 <- knitr::kable(MHW_SOM)
+tab_4
 
 
 # Table 5 -----------------------------------------------------------------
