@@ -122,7 +122,7 @@ count_region <- ALL_cor %>%
   distinct() %>% 
   group_by(region, ts) %>% 
   summarise(count = n(), .groups = "drop")
-count_season <- ALL_mag_prop %>% 
+count_season <- ALL_cor %>% 
   dplyr::select(region:ts, n_Obs) %>% 
   distinct() %>% 
   group_by(season, ts) %>% 

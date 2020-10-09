@@ -126,15 +126,15 @@ ERA5_shf_anom <- readRDS("data/ERA5_shf_anom.Rda")
 colnames(ERA5_shf_anom)[6] <- "shf"
 ERA5_lwr_anom <- readRDS("data/ERA5_lwr_anom.Rda")
 colnames(ERA5_lwr_anom)[6] <- "lwr"
-ERA5_swr_anom <- readRDS("data/ERA5_swr_anom.Rda") # Base values
-colnames(ERA5_swr_anom)[6] <- "swr"
-# ERA5_swr_anom <- readRDS("data/ERA5_down_anom.Rda") # Values corrected for by MLD
+# ERA5_swr_anom <- readRDS("data/ERA5_swr_anom.Rda") # Base values
 # colnames(ERA5_swr_anom)[6] <- "swr"
+ERA5_swr_anom <- readRDS("data/ERA5_down_anom.Rda") # Values corrected for by MLD
+colnames(ERA5_swr_anom)[6] <- "swr"
 
 # Combine to make Qnet
 ccols <- c(1, 2, 5, 6); jcols <- c("lon", "lat", "t")
 system.time(
-  ERA5_qnet_anom <- left_join(ERA5_lhf_anom[,ccols], ERA5_shf_anom[,ccols], by = jcols) %>% 
+  ERA5_qnet <- left_join(ERA5_lhf_anom[,ccols], ERA5_shf_anom[,ccols], by = jcols) %>% 
     left_join(ERA5_lwr_anom[,ccols], by = jcols) %>%
     left_join(ERA5_swr_anom[,ccols], by = jcols) %>% 
     mutate(val = lhf+shf+lwr+swr) %>% 
@@ -142,11 +142,11 @@ system.time(
 ) # 189 seconds
 
 # Cleanup
-rm(ERA5_lhf_anom, ERA5_shf_anom, ERA5_lwr_anom, ERA5_swr_anom, ERA5_qnet_anom); gc()
+rm(ERA5_lhf_anom, ERA5_shf_anom, ERA5_lwr_anom, ERA5_swr_anom); gc()
 
 # Set number of cores
   # NB: This is very RAM heavy, be careful with core use
-# registerDoParallel(cores = 25)
+registerDoParallel(cores = 25)
 
 # Calculate anomalies and save
 system.time(
@@ -216,7 +216,7 @@ saveRDS(ERA5_all_ts, "data/ERA5_all_ts.Rda")
 print(paste0("Began combining all anoms at ", Sys.time()))
 
 ## ERA 5
-  # NB: We start with ERA 5 as it has the most pixels due to it being atmospheric
+  # NB: We start with ERA5 as it has the most pixels due to it being atmospheric
 system.time(ERA5_u_anom <- load_anom("data/ERA5_u_anom.Rda")) # xxx seconds
 system.time(ERA5_v_anom <- load_anom("data/ERA5_v_anom.Rda")) # xxx seconds
 system.time(ALL_anom <- merge(ERA5_u_anom, ERA5_v_anom,
@@ -372,5 +372,5 @@ system.time(saveRDS(ALL_other, "data/ALL_other.Rda")) # xxx seconds
 
 # Visuals -----------------------------------------------------------------
 
-
+# See "code/figures.R" for the code used to make the final figures/tables
 

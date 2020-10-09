@@ -452,7 +452,7 @@ ALL_RMSE_long_season <- ALL_RMSE_long %>%
   dplyr::select(season, ts, count, Qlh:Qlw) %>% 
   mutate(Qlh = paste0(Qlh, " (",round((Qlh/count)*100),"%)"),
          Qsh = paste0(Qsh, " (",round((Qsh/count)*100),"%)"),
-         Qlw = paste0(Qlw, " (",round((Qlw/count)*100),"%)"), # Qlw is never the most important for any of the seasons
+         Qlw = paste0(Qlw, " (",round((Qlw/count)*100),"%)"),
          Qsw = paste0(Qsw, " (",round((Qsw/count)*100),"%)"))
 knitr::kable(ALL_RMSE_long_season)
 ```
