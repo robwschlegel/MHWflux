@@ -353,10 +353,12 @@ ALL_RMSE %>%
 
 # Boxplot by variable
 ALL_RMSE %>% 
+  filter(var != "Qnet") %>% 
   ggplot(aes(x = region, y = rmse)) +
   geom_boxplot(aes(fill = ts)) +
   facet_wrap(~var)
 ALL_RMSE %>% 
+    filter(var != "Qnet") %>% 
   ggplot(aes(x = season, y = rmse)) +
   geom_boxplot(aes(fill = ts)) +
   facet_wrap(~var)

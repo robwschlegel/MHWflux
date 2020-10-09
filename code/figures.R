@@ -338,7 +338,7 @@ fig_2 <- ALL_RMSE %>%
   ggplot(aes(x = var, y = rmse)) +
   geom_boxplot(aes(fill = ts)) +
   geom_hline(aes(yintercept = 0), colour = "red") +
-  facet_wrap(~season) + 
+  facet_wrap(~season, nrow = 1) + 
   labs(x = NULL, y = "RMSE") +
   theme(legend.position = "bottom")
 # fig_2
