@@ -342,8 +342,8 @@ fig_2 <- ALL_RMSE %>%
   labs(x = NULL, y = "RMSE") +
   theme(legend.position = "bottom")
 # fig_2
-ggsave("figures/fig_2.png", fig_2, height = 9, width = 10)
-ggsave("figures/fig_2.pdf", fig_2, height = 9, width = 10)
+ggsave("figures/fig_2.png", fig_2, height = 4, width = 10)
+ggsave("figures/fig_2.pdf", fig_2, height = 4, width = 10)
 
 
 # Figure 3 ----------------------------------------------------------------
