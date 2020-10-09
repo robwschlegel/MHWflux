@@ -253,45 +253,22 @@ tab_2 <- knitr::kable(ALL_mag_count_ts_region_season)#, format = "latex")
 tab_2
 
 
-# Figure 2 ----------------------------------------------------------------
-
-# Central tendencies for proportions of change and the magnitudes thereof 
-
-fig_2 <- ALL_mag_prop %>% 
-  filter(var != "Qnet") %>% 
-  ggplot(aes(x = ts, y = prop, fill = season)) +
-  geom_hline(aes(yintercept = 0), colour = "red") +
-  geom_boxplot(position = position_dodge(width = 0.9), outlier.shape = NA) +
-  geom_point(aes(colour = mag_Qx), position = position_jitterdodge(dodge.width = 0.9)) +
-  scale_y_continuous(limits = c(-2, 2), expand = c(0,0), breaks = c(-1, 0, 1)) +
-  scale_fill_manual(values = c("#a99a35", "#8baa43", "#e89c3c", "#9a9997")) +
-  scale_colour_gradient2(low = "blue", high = "red", mid = "grey") +
-  facet_wrap(~var, nrow = 2) +
-  labs(x = NULL, y = "ΔSST_Qx / ΔSSTa", colour = "ΔSST_Qx", fill = "Season") +
-  theme(legend.position = "top")
-# fig_2
-ggsave("figures/fig_2.png", fig_2, height = 9, width = 10)
-ggsave("figures/fig_2.pdf", fig_2, height = 9, width = 10)
-
-
 # Table 3 -----------------------------------------------------------------
 
 # The top count of Qx terms by RMSE per region
 
+# Create TRUE/FALSE table when prop is over 0.5 for any variable
+ALL_mag_TF <- ALL_mag_prop %>% 
+  mutate(prop_TF = ifelse(prop > 0.5, TRUE, FALSE)) %>% 
+  dplyr::select(region:n_Obs, prop_TF) %>% 
+  pivot_wider(names_from = var, values_from = prop_TF)
+
 # The base RMSE results
-ALL_RMSE <- ALL_cor %>% 
+ALL_RMSE <- ALL_cor_fig %>% 
   filter(rmse > 0) %>% 
-  dplyr::rename(var = Parameter2) %>% 
-  dplyr::select(region:ts, var, n_Obs, rmse) %>% 
-  mutate(var = as.character(var),
-         var = case_when(var == "lwr_budget" ~ "Qlw",
-                         var == "swr_budget" ~ "Qsw",
-                         var == "lhf_budget" ~ "Qlh",
-                         var == "shf_budget" ~ "Qsh",
-                         var == "qnet_budget" ~ "Qnet",
-                         TRUE ~ var),
-         var = factor(var, levels = c("Qnet", "Qlh", "Qsh", "Qlw", "Qsw")),
-         region = toupper(region))
+  left_join(ALL_mag_TF, by = c("region", "season", "event_no", "ts", "n_Obs")) %>% 
+  filter(Qnet == TRUE) %>% 
+  dplyr::select(region:ts, var, n_Obs, rmse)
 
 # Get the top results other than Qnet
 ALL_RMSE_top <- ALL_RMSE %>% 
@@ -299,70 +276,74 @@ ALL_RMSE_top <- ALL_RMSE %>%
   group_by(region, season, event_no, ts) %>% 
   filter(rmse == min(rmse))
 
-# The top count by region
-ALL_RMSE_region <- ALL_RMSE_top %>% 
-  group_by(region, ts, var) %>% 
+# The top count by phase
+ALL_RMSE_ts <- ALL_RMSE_top %>%
+  group_by(ts) %>%
+  mutate(total_count = n(),
+         group = "Total") %>% 
+  group_by(group, ts, total_count, var) %>% 
   summarise(count = n(), .groups = "drop") %>% 
   pivot_wider(names_from = var, values_from = count) %>% 
-  mutate(Qlw = replace_na(Qlw, 0)) %>% 
-  left_join(region_count, by = c("region", "ts")) %>% 
-  dplyr::select(region, ts, count, Qlh:Qsw) %>% 
+  replace_na(list(Qlh = 0, Qsh = 0, Qlw = 0, Qsw = 0)) %>% 
+  dplyr::select(group, ts, total_count, Qlh:Qsw) %>% 
+  mutate(Qlh = paste0(Qlh, " (",round((Qlh/total_count)*100),"%)"),
+         Qsh = paste0(Qsh, " (",round((Qsh/total_count)*100),"%)"),
+         Qlw = paste0(Qlw, " (",round((Qlw/total_count)*100),"%)"),
+         Qsw = paste0(Qsw, " (",round((Qsw/total_count)*100),"%)"))
+
+# The top count by region
+ALL_RMSE_region <- ALL_RMSE_top %>%
+  group_by(region, ts) %>%
+  mutate(total_count = n()) %>% 
+  group_by(region, ts, total_count, var) %>% 
+  summarise(count = n(), .groups = "drop") %>% 
+  pivot_wider(names_from = var, values_from = count) %>% 
+  replace_na(list(Qlh = 0, Qsh = 0, Qlw = 0, Qsw = 0)) %>% 
+  dplyr::select(region, ts, total_count, Qlh:Qlw) %>% 
   filter(ts != "full") %>% 
-  mutate(Qlh = paste0(Qlh, " (",round((Qlh/count)*100),"%)"),
-         Qsh = paste0(Qsh, " (",round((Qsh/count)*100),"%)"),
-         Qlw = paste0(Qlw, " (",round((Qlw/count)*100),"%)"),
-         Qsw = paste0(Qsw, " (",round((Qsw/count)*100),"%)")) %>% 
+  mutate(Qlh = paste0(Qlh, " (",round((Qlh/total_count)*100),"%)"),
+         Qsh = paste0(Qsh, " (",round((Qsh/total_count)*100),"%)"),
+         Qlw = paste0(Qlw, " (",round((Qlw/total_count)*100),"%)"),
+         Qsw = paste0(Qsw, " (",round((Qsw/total_count)*100),"%)")) %>% 
   dplyr::rename(group = region)
-# knitr::kable(ALL_RMSE_region)
 
 # The top count by season
 ALL_RMSE_season <- ALL_RMSE_top %>% 
-  group_by(season, ts, var) %>% 
+  group_by(season, ts) %>%
+  mutate(total_count = n()) %>% 
+  group_by(season, ts, total_count, var) %>% 
   summarise(count = n(), .groups = "drop") %>% 
   pivot_wider(names_from = var, values_from = count) %>% 
-  # mutate(Qlw = replace_na(Qlw, 0)) %>% 
-  left_join(season_count, by = c("season", "ts")) %>% 
-  dplyr::select(season, ts, count, Qlh:Qsw) %>% 
+  replace_na(list(Qlh = 0, Qsh = 0, Qlw = 0, Qsw = 0)) %>% 
+  dplyr::select(season, ts, total_count, Qlh:Qlw) %>% 
   filter(ts != "full") %>% 
-  mutate(Qlh = paste0(Qlh, " (",round((Qlh/count)*100),"%)"),
-         Qsh = paste0(Qsh, " (",round((Qsh/count)*100),"%)"),
-         Qlw = paste0(Qlw, " (",round((Qlw/count)*100),"%)"),
-         Qsw = paste0(Qsw, " (",round((Qsw/count)*100),"%)")) %>% 
+  mutate(Qlh = paste0(Qlh, " (",round((Qlh/total_count)*100),"%)"),
+         Qsh = paste0(Qsh, " (",round((Qsh/total_count)*100),"%)"),
+         Qlw = paste0(Qlw, " (",round((Qlw/total_count)*100),"%)"),
+         Qsw = paste0(Qsw, " (",round((Qsw/total_count)*100),"%)")) %>% 
   dplyr::rename(group = season)
-# knitr::kable(ALL_RMSE_season)
 
 # Print table
-ALL_RMSE_region_season <- rbind(ALL_RMSE_region, ALL_RMSE_season)
-tab_3 <- knitr::kable(ALL_RMSE_region_season)#, format = "latex")
+ALL_RMSE_ts_region_season <- rbind(ALL_RMSE_ts, ALL_RMSE_region, ALL_RMSE_season)
+tab_3 <- knitr::kable(ALL_RMSE_ts_region_season)#, format = "latex")
 tab_3
 
 
-# Table 4 -----------------------------------------------------------------
+# Figure 2 ----------------------------------------------------------------
 
-# Central tendencies of RMSE values per variable per region
-ALL_RMSE_central_region <- ALL_RMSE %>% 
-  filter(ts != "full", var != "Qnet") %>% 
-  dplyr::rename(group = region) %>% 
-  group_by(group, ts, var) %>% 
-  summarise(rmse_mean = round(mean(rmse, na.rm = T), 1),
-            rmse_sd = round(sd(rmse, na.rm = T), 1), .groups = "drop") %>% 
-  unite("rmse_summary", rmse_mean:rmse_sd, sep = " ± ") %>% 
-  pivot_wider(names_from = var, values_from = rmse_summary)
+# Boxplots showing the range of RMSE values for T_Qx by season
 
-# Central tendencies of RMSE values per variable per season
-ALL_RMSE_central_season <- ALL_RMSE %>% 
-  filter(ts != "full", var != "Qnet") %>% 
-  dplyr::rename(group = season) %>% 
-  group_by(group, ts, var) %>% 
-  summarise(rmse_mean = round(mean(rmse, na.rm = T), 1),
-            rmse_sd = round(sd(rmse, na.rm = T), 1), .groups = "drop") %>% 
-  unite("rmse_summary", rmse_mean:rmse_sd, sep = " ± ") %>% 
-  pivot_wider(names_from = var, values_from = rmse_summary)
-
-# Print table
-ALL_RMSE_central_region_season <- rbind(ALL_RMSE_central_region, ALL_RMSE_central_season)
-tab_4 <- knitr::kable(ALL_RMSE_central_region_season)#, format = "latex")
-tab_4
+fig_2 <- ALL_RMSE %>%
+  filter(var != "Qnet") %>% 
+  ggplot(aes(x = var, y = rmse)) +
+  geom_boxplot(aes(fill = ts)) +
+  geom_hline(aes(yintercept = 0), colour = "red") +
+  facet_wrap(~season) + 
+  labs(x = NULL, y = "RMSE") +
+  theme(legend.position = "bottom")
+# fig_2
+ggsave("figures/fig_2.png", fig_2, height = 9, width = 10)
+ggsave("figures/fig_2.pdf", fig_2, height = 9, width = 10)
 
 
 # Figure 3 ----------------------------------------------------------------
@@ -462,7 +443,7 @@ ggsave("figures/fig_6.png", fig_6, height = 9, width = 13)
 ggsave("figures/fig_6.pdf", fig_6, height = 9, width = 13)
 
 
-# Table 5 -----------------------------------------------------------------
+# Table 4 -----------------------------------------------------------------
 
 # The summary of the SOM nodes
 
