@@ -183,7 +183,7 @@ mag_box <- ALL_mag_prop %>%
 mag_full <- ggpubr::ggarrange(mag_schematic, mag_scatter, mag_box, ncol = 1, nrow = 3, labels = c("A)", "B)", "C)"))
 ggsave("output/magnitude_schematic.png", height = 8, width = 10)
 ggsave("output/magnitude_schematic.pdf", height = 8, width = 10)
-# mag_full
+mag_full
 ```
 
 The first thing we want to look at with these magnitude scores is how many MHWs appear to be driven or decayed by Qnet. We determine this if the proportion of change in Qnet is more than half that of the change in SSTa. But also, because the Qx variables can be greater than the sum (Qnet), we will see when individual variables are contributing more than half of the change in SSTa, too.
@@ -201,13 +201,17 @@ sum(ALL_mag_TF$Qnet)/nrow(ALL_mag_TF)
 # Counts by time series phase
 ALL_mag_count_ts <- ALL_mag_prop %>% 
   group_by(ts, var) %>% 
-  mutate(ts_count = n()) %>% 
+  mutate(ts_count = n(),
+         group = "Total") %>% 
   filter(prop > 0.5) %>% 
   mutate(filter_count = n(),
          filter_prop = round(filter_count/ts_count, 2)) %>% 
-  dplyr::select(ts, var, filter_prop) %>% 
+  dplyr::select(group, ts, var, filter_prop) %>% 
   distinct() %>% 
-  pivot_wider(names_from = var, values_from = filter_prop)
+  mutate(var = factor(var, levels = c("Qnet", "Qlh", "Qsh", "Qlw", "Qsw"))) %>% 
+  pivot_wider(names_from = var, values_from = filter_prop) %>% 
+  dplyr::select(group, ts, Qnet, Qlh, Qsh, Qlw, Qsw)
+# knitr::kable(ALL_mag_count_ts)
 
 # Counts by time region phase
 ALL_mag_count_region <- ALL_mag_prop %>% 
@@ -218,7 +222,11 @@ ALL_mag_count_region <- ALL_mag_prop %>%
          filter_prop = round(filter_count/ts_count, 2)) %>% 
   dplyr::select(region, ts, var, filter_prop) %>% 
   distinct() %>% 
-  pivot_wider(names_from = var, values_from = filter_prop)
+  pivot_wider(names_from = var, values_from = filter_prop) %>% 
+  dplyr::select(region, ts, Qnet, Qlh, Qsh, Qlw, Qsw) %>% 
+  arrange(region, ts) %>% 
+  dplyr::rename(group = region)
+# knitr::kable(ALL_mag_count_region)
 
 # Counts by time series phase
 ALL_mag_count_season <- ALL_mag_prop %>% 
@@ -229,7 +237,18 @@ ALL_mag_count_season <- ALL_mag_prop %>%
          filter_prop = round(filter_count/ts_count, 2)) %>% 
   dplyr::select(season, ts, var, filter_prop) %>% 
   distinct() %>% 
-  pivot_wider(names_from = var, values_from = filter_prop)
+  pivot_wider(names_from = var, values_from = filter_prop) %>% 
+  dplyr::select(season, ts, Qnet, Qlh, Qsh, Qlw, Qsw) %>% 
+  arrange(season, ts) %>% 
+  dplyr::rename(group = season)
+# knitr::kable(ALL_mag_count_season)
+ALL_mag_count_ts_region_season <- rbind(ALL_mag_count_ts, ALL_mag_count_region, ALL_mag_count_season) %>% 
+  dplyr::select(group:Qnet) %>% 
+  pivot_wider(names_from = ts, values_from = Qnet) %>% 
+  dplyr::select(group, onset, decline) %>% 
+  mutate(onset = paste0(onset*100,"%"),
+         decline = paste0(decline*100,"%"))
+knitr::kable(ALL_mag_count_ts_region_season)
 ```
 
 We also want a table showing the count of best magnitude match per variable per region/season.
@@ -331,6 +350,16 @@ ALL_RMSE %>%
   ggplot(aes(x = var, y = rmse)) +
   geom_boxplot(aes(fill = ts)) +
   facet_wrap(~season)
+
+# Boxplot by variable
+ALL_RMSE %>% 
+  ggplot(aes(x = region, y = rmse)) +
+  geom_boxplot(aes(fill = ts)) +
+  facet_wrap(~var)
+ALL_RMSE %>% 
+  ggplot(aes(x = season, y = rmse)) +
+  geom_boxplot(aes(fill = ts)) +
+  facet_wrap(~var)
 ```
 
 These boxplots help to tell a high level story about the importance of the Qx terms with SSTa, but I want a slightly more fine-grain level of results. To do this I am going to count which of the Qx terms has the lowest RMSE per MHW. These will then be grouped by region and season to provide an understanding for how this may vary.
@@ -341,6 +370,22 @@ ALL_RMSE_top <- ALL_RMSE %>%
   filter(var != "Qnet") %>% # Remove Qnet
   group_by(region, season, event_no, ts) %>% 
   filter(rmse == min(rmse))
+
+# The top count overall
+ALL_RMSE_ts <- ALL_RMSE_top %>%
+  group_by(ts) %>%
+  mutate(total_count = n(),
+         group = "Total") %>% 
+  group_by(group, ts, total_count, var) %>% 
+  summarise(count = n(), .groups = "drop") %>% 
+  pivot_wider(names_from = var, values_from = count) %>% 
+  replace_na(list(Qlh = 0, Qsh = 0, Qlw = 0, Qsw = 0)) %>% 
+  dplyr::select(group, ts, total_count, Qlh:Qsw) %>% 
+  filter(ts != "full") %>% 
+  mutate(Qlh = paste0(Qlh, " (",round((Qlh/total_count)*100),"%)"),
+         Qsh = paste0(Qsh, " (",round((Qsh/total_count)*100),"%)"),
+         Qlw = paste0(Qlw, " (",round((Qlw/total_count)*100),"%)"),
+         Qsw = paste0(Qsw, " (",round((Qsw/total_count)*100),"%)"))
 
 # The top count by region
 ALL_RMSE_region <- ALL_RMSE_top %>%
@@ -377,8 +422,9 @@ ALL_RMSE_season <- ALL_RMSE_top %>%
 # knitr::kable(ALL_RMSE_season)
 
 # Print table
-ALL_RMSE_region_season <- rbind(ALL_RMSE_region, ALL_RMSE_season)
-knitr::kable(ALL_RMSE_region_season)
+ALL_RMSE_ts_region_season <- rbind(ALL_RMSE_ts, ALL_RMSE_region, ALL_RMSE_season) %>% 
+  dplyr::rename(count = total_count)
+knitr::kable(ALL_RMSE_ts_region_season)
 ```
 
 I'm pretty happy with how these results are displayed. But I think it would be better to show the regions and seasons in separate tables just to keep them more manageable. In the last chunk in this sub-section we will grab some specific summary stats that are used in the publication.

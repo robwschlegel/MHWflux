@@ -184,6 +184,7 @@ tab_1
 # Count of events with greatest increase/decrease in a SST_Qx term
 
 # Prep magnitude data
+# Load magnitude data
 ALL_mag <- ALL_cor_fig %>% 
   dplyr::select(region:ts, var, n_Obs, mag) %>% 
   na.omit()
@@ -195,47 +196,60 @@ ALL_mag_prop <- ALL_mag %>%
             by = c("region", "season", "event_no", "ts", "n_Obs")) %>% 
   dplyr::select(-var.y) %>% 
   dplyr::rename(var = var.x, mag_Qx = mag.x, mag_SSTa = mag.y) %>% 
-  mutate(prop = mag_Qx/mag_SSTa) %>% 
-  droplevels()
+  mutate(prop = mag_Qx/mag_SSTa)
 
-# Get the top results other than Qnet
-ALL_mag_top <- ALL_mag_prop %>% 
-  filter(var != "Qnet") %>% # Remove Qnet
-  droplevels() %>% 
-  group_by(region, season, event_no, ts) %>% 
-  filter(prop == max(prop))
+# Counts by time series phase
+ALL_mag_count_ts <- ALL_mag_prop %>% 
+  group_by(ts, var) %>% 
+  mutate(ts_count = n(),
+         group = "Total") %>% 
+  filter(prop > 0.5) %>% 
+  mutate(filter_count = n(),
+         filter_prop = round(filter_count/ts_count, 2)) %>% 
+  dplyr::select(group, ts, var, filter_prop) %>% 
+  distinct() %>% 
+  mutate(var = factor(var, levels = c("Qnet", "Qlh", "Qsh", "Qlw", "Qsw"))) %>% 
+  pivot_wider(names_from = var, values_from = filter_prop) %>% 
+  dplyr::select(group, ts, Qnet, Qlh, Qsh, Qlw, Qsw)
 
-# The top count by region
-ALL_mag_region <- ALL_mag_top %>% 
+# Counts by time region phase
+ALL_mag_count_region <- ALL_mag_prop %>% 
   group_by(region, ts, var) %>% 
-  summarise(count = n(), .groups = "drop") %>% 
-  pivot_wider(names_from = var, values_from = count) %>% 
-  mutate(Qlw = replace_na(Qlw, 0)) %>% 
-  left_join(region_count, by = c("region", "ts")) %>% 
-  dplyr::select(region, ts, count, Qlh:Qlw) %>% 
-  mutate(Qlh = paste0(Qlh, " (",round((Qlh/count)*100),"%)"),
-         Qsh = paste0(Qsh, " (",round((Qsh/count)*100),"%)"),
-         Qlw = paste0(Qlw, " (",round((Qlw/count)*100),"%)"),
-         Qsw = paste0(Qsw, " (",round((Qsw/count)*100),"%)")) %>% 
+  mutate(ts_count = n()) %>% 
+  filter(prop > 0.5) %>% 
+  mutate(filter_count = n(),
+         filter_prop = round(filter_count/ts_count, 2)) %>% 
+  dplyr::select(region, ts, var, filter_prop) %>% 
+  distinct() %>% 
+  pivot_wider(names_from = var, values_from = filter_prop) %>% 
+  dplyr::select(region, ts, Qnet, Qlh, Qsh, Qlw, Qsw) %>% 
+  arrange(region, ts) %>% 
   dplyr::rename(group = region)
 
-# The top count by season
-ALL_mag_season <- ALL_mag_top %>% 
+# Counts by time series phase
+ALL_mag_count_season <- ALL_mag_prop %>% 
   group_by(season, ts, var) %>% 
-  summarise(count = n(), .groups = "drop") %>% 
-  pivot_wider(names_from = var, values_from = count) %>% 
-  mutate(Qsh = replace_na(Qsh, 0)) %>%
-  left_join(season_count, by = c("season", "ts")) %>% 
-  dplyr::select(season, ts, count, Qlh:Qsw) %>% 
-  mutate(Qlh = paste0(Qlh, " (",round((Qlh/count)*100),"%)"),
-         Qsh = paste0(Qsh, " (",round((Qsh/count)*100),"%)"),
-         Qlw = paste0(Qlw, " (",round((Qlw/count)*100),"%)"),
-         Qsw = paste0(Qsw, " (",round((Qsw/count)*100),"%)")) %>% 
+  mutate(ts_count = n()) %>% 
+  filter(prop > 0.5) %>% 
+  mutate(filter_count = n(),
+         filter_prop = round(filter_count/ts_count, 2)) %>% 
+  dplyr::select(season, ts, var, filter_prop) %>% 
+  distinct() %>% 
+  pivot_wider(names_from = var, values_from = filter_prop) %>% 
+  dplyr::select(season, ts, Qnet, Qlh, Qsh, Qlw, Qsw) %>% 
+  arrange(season, ts) %>% 
   dplyr::rename(group = season)
 
+# Combine and prep
+ALL_mag_count_ts_region_season <- rbind(ALL_mag_count_ts, ALL_mag_count_region, ALL_mag_count_season) %>% 
+  dplyr::select(group:Qnet) %>% 
+  pivot_wider(names_from = ts, values_from = Qnet) %>% 
+  dplyr::select(group, onset, decline) %>% 
+  mutate(onset = paste0(onset*100,"%"),
+         decline = paste0(decline*100,"%"))
+
 # Print table
-ALL_mag_region_season <- rbind(ALL_mag_region, ALL_mag_season)
-tab_2 <- knitr::kable(ALL_mag_region_season)#, format = "latex")
+tab_2 <- knitr::kable(ALL_mag_count_ts_region_season)#, format = "latex")
 tab_2
 
 
