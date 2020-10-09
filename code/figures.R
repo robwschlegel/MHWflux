@@ -447,3 +447,20 @@ ggsave("figures/fig_6.pdf", fig_6, height = 9, width = 13)
 
 # The summary of the SOM nodes
 
+# Get node info
+SOM_info <- SOM$info
+
+# Assign nodes to each MHW and get mean+-sd metrics
+MHW_SOM <- left_join(OISST_MHW_event, SOM_info, by = c("region", "event_no")) %>% 
+  group_by(node) %>% 
+  summarise(count = n(), 
+            duration = round(mean(duration), 2),
+            intensity_max = round(mean(intensity_max), 2),
+            intensity_cumulative = mean(intensity_cumulative),
+            rate_onset = mean(rate_onset),
+            rate_decline = mean(rate_decline), .groups = "drop")
+
+
+# Table 5 -----------------------------------------------------------------
+
+# Expert summary of the SOM nodes
