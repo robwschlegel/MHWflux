@@ -198,6 +198,14 @@ ALL_mag_prop <- ALL_mag %>%
                               prop <= quantile(prop, 0.05) ~ quantile(prop, 0.05),
                               TRUE ~ prop))
 
+# Median proportion of changes
+ALL_mag_prop %>% 
+  filter(ts == "onset", var == "Qnet") %>% 
+  summarise(median(prop))
+ALL_mag_prop %>% 
+  filter(ts == "decline", var == "Qnet") %>% 
+  summarise(median(prop))
+
 # Filter out only events that were driven or decayed by Qnet
 ALL_mag_prop_onset <- ALL_mag_prop %>% 
   filter(ts == "onset", prop > 0.5)
@@ -235,7 +243,7 @@ mag_box <- ALL_mag_prop %>%
 mag_box
 
 # Combine and save
-fig_2 <- ggpubr::ggarrange(mag_scat, mag_box, labels = c("A)", "B)"), align = "hv")
+fig_2 <- ggpubr::ggarrange(mag_scat, mag_box, labels = c("A)", "B)"), align = "hv", widths = c(1.5, 1))
 ggsave("figures/fig_2.png", fig_2, height = 4, width = 10)
 ggsave("figures/fig_2.pdf", fig_2, height = 4, width = 10)
 
@@ -375,11 +383,11 @@ tab_3 <- knitr::kable(ALL_RMSE_ts_region_season)#, format = "latex")
 tab_3
 
 
-# Figure 2 ----------------------------------------------------------------
+# Figure 3 ----------------------------------------------------------------
 
 # Boxplots showing the range of RMSE values for T_Qx by season
 
-fig_2 <- ALL_RMSE %>%
+fig_3 <- ALL_RMSE %>%
   filter(var != "Qnet") %>% 
   ggplot(aes(x = var, y = rmse)) +
   geom_boxplot(aes(fill = ts)) +
@@ -387,12 +395,12 @@ fig_2 <- ALL_RMSE %>%
   facet_wrap(~season, nrow = 1) + 
   labs(x = NULL, y = "RMSE") +
   theme(legend.position = "bottom")
-# fig_2
-ggsave("figures/fig_2.png", fig_2, height = 4, width = 10)
-ggsave("figures/fig_2.pdf", fig_2, height = 4, width = 10)
+# fig_3
+ggsave("figures/fig_3.png", fig_3, height = 4, width = 10)
+ggsave("figures/fig_3.pdf", fig_3, height = 4, width = 10)
 
 
-# Figure 3 ----------------------------------------------------------------
+# Figure 4 ----------------------------------------------------------------
 
 # Histogram of r values
 
@@ -418,13 +426,13 @@ hist_air <- hist_var(c("Air", "P-E", "MSLP"), "Atmosphere")
 hist_ocean <- hist_var(c("SSS", "MLD", "Bottom"), "Ocean")
 
 # Combine air and sea
-fig_3 <- ggpubr::ggarrange(hist_air, hist_ocean, ncol = 2, nrow = 1, align = "h",  labels = c("A)", "B)"))
-# fig_3
-ggsave("figures/fig_3.png", fig_3, height = 2.7, width = 10)
-ggsave("figures/fig_3.pdf", fig_3, height = 2.7, width = 10)
+fig_4 <- ggpubr::ggarrange(hist_air, hist_ocean, ncol = 2, nrow = 1, align = "h",  labels = c("A)", "B)"))
+# fig_4
+ggsave("figures/fig_4.png", fig_4, height = 2.7, width = 10)
+ggsave("figures/fig_4.pdf", fig_4, height = 2.7, width = 10)
 
 
-# Figure 4 ----------------------------------------------------------------
+# Figure 5 ----------------------------------------------------------------
 
 # Most important variables by region/season
 boxplot_var <-  function(var_choices, y_label){
@@ -451,13 +459,13 @@ box_air <- boxplot_var(c("Air", "P-E", "MSLP"), "Atmosphere")
 box_ocean <- boxplot_var(c("SSS", "MLD", "Bottom"), "Ocean")
 
 # Combine bottom two
-fig_4 <- ggpubr::ggarrange(box_air, box_ocean, ncol = 2, nrow = 1, align = "h",  labels = c("A)", "B)"), common.legend = T)
-# fig_4
-ggsave("figures/fig_4.png", fig_4, height = 2.7, width = 10)
-ggsave("figures/fig_4.png", fig_4, height = 2.7, width = 10)
+fig_5 <- ggpubr::ggarrange(box_air, box_ocean, ncol = 2, nrow = 1, align = "h",  labels = c("A)", "B)"), common.legend = T)
+# fig_5
+ggsave("figures/fig_5.png", fig_5, height = 2.7, width = 10)
+ggsave("figures/fig_5.png", fig_5, height = 2.7, width = 10)
 
 
-# Figure 5 ----------------------------------------------------------------
+# Figure 6 ----------------------------------------------------------------
 
 # The SOM region/season figure
 
@@ -468,25 +476,25 @@ SOM <- readRDS("data/som.Rda")
 base_data <- fig_data_prep(SOM)
 
 # SOM region + season panels
-fig_5 <- fig_map_func("region_season", base_data, 1, 9, 13) +
-  facet_wrap(~node, labeller = labeller(node = node_labeller)) +
-  theme(axis.text = element_blank(),
-        axis.ticks = element_blank())
-# fig_5
-ggsave("figures/fig_5.png", fig_5, height = 9, width = 13)
-ggsave("figures/fig_5.pdf", fig_5, height = 9, width = 13)
-
-
-# Figure 6 ----------------------------------------------------------------
-
-# SOM atmosphere panels
-fig_6 <- fig_map_func("air_u_v_mslp_anom", base_data, 1, 9, 13) +
+fig_6 <- fig_map_func("region_season", base_data, 1, 9, 13) +
   facet_wrap(~node, labeller = labeller(node = node_labeller)) +
   theme(axis.text = element_blank(),
         axis.ticks = element_blank())
 # fig_6
 ggsave("figures/fig_6.png", fig_6, height = 9, width = 13)
 ggsave("figures/fig_6.pdf", fig_6, height = 9, width = 13)
+
+
+# Figure 7 ----------------------------------------------------------------
+
+# SOM atmosphere panels
+fig_7 <- fig_map_func("air_u_v_mslp_anom", base_data, 1, 9, 13) +
+  facet_wrap(~node, labeller = labeller(node = node_labeller)) +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank())
+# fig_7
+ggsave("figures/fig_7.png", fig_7, height = 9, width = 13)
+ggsave("figures/fig_7.pdf", fig_7, height = 9, width = 13)
 
 
 # Table 4 -----------------------------------------------------------------

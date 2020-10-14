@@ -1193,16 +1193,19 @@ fig_map_func <- function(map_var, fig_data, col_num, fig_height, fig_width){
       # The land mass
       geom_polygon(data = map_base, aes(group = group), alpha = 1,
                    fill = NA, colour = "black", size = 0.5, show.legend = FALSE) +
-      # The mean sea level pressure contours
-      geom_contour(data = fig_data$other_data_wide, binwidth = 100,
-                   # breaks = c(-2000, -1500, -1000, -500, 0, 500, 1000),
-                   aes(z = anom_mslp, colour = stat(level)), size = 2) +
       # The wind vectors
       geom_segment(data = fig_data$som_data_sub,
                    aes(xend = lon + anom_u10 * wind_uv_scalar,
                        yend = lat + anom_v10 * wind_uv_scalar),
                    arrow = arrow(angle = 40, length = unit(0.1, "cm"), type = "open"),
-                   linejoin = "mitre", size = 0.4, alpha = 0.4) +
+                   linejoin = "mitre", size = 0.4, alpha = 0.3) +
+      # The mean sea level pressure contours
+      geom_contour(data = filter(fig_data$other_data_wide, anom_mslp >= -100), binwidth = 100,
+                   aes(z = anom_mslp, colour = stat(level)), size = 2) +
+      # Negative contours
+      geom_contour(data = filter(fig_data$other_data_wide, anom_mslp < 0), binwidth = 100, linetype = "dashed",
+                   # breaks = c(-2000, -1500, -1000, -500, 0, 500, 1000),
+                   aes(z = anom_mslp, colour = stat(level)), size = 2) +
       # Corner label
       # geom_label(data = fig_data$region_prop_label,
       #            label.r = unit(0.9, "lines"), label.padding = unit(0.5, "lines"),
