@@ -179,12 +179,9 @@ tab_1 <- knitr::kable(summary_region_season)#, format = "latex")
 tab_1
 
 
-# Table 2 -----------------------------------------------------------------
-
-# Count of events with greatest increase/decrease in a SST_Qx term
+# Figure 2 ----------------------------------------------------------------
 
 # Prep magnitude data
-# Load magnitude data
 ALL_mag <- ALL_cor_fig %>% 
   dplyr::select(region:ts, var, n_Obs, mag) %>% 
   na.omit()
@@ -196,7 +193,56 @@ ALL_mag_prop <- ALL_mag %>%
             by = c("region", "season", "event_no", "ts", "n_Obs")) %>% 
   dplyr::select(-var.y) %>% 
   dplyr::rename(var = var.x, mag_Qx = mag.x, mag_SSTa = mag.y) %>% 
-  mutate(prop = mag_Qx/mag_SSTa)
+  mutate(prop = mag_Qx/mag_SSTa) %>% 
+  mutate(prop_cap = case_when(prop >= quantile(prop, 0.95) ~ quantile(prop, 0.95),
+                              prop <= quantile(prop, 0.05) ~ quantile(prop, 0.05),
+                              TRUE ~ prop))
+
+# Filter out only events that were driven or decayed by Qnet
+ALL_mag_prop_onset <- ALL_mag_prop %>% 
+  filter(ts == "onset", prop > 0.5)
+ALL_mag_prop_decline <- ALL_mag_prop %>% 
+  filter(ts == "decline", prop > 0.5)
+
+# Scatterplot of mag T_Qx vs mag SSTa
+mag_scat <- ALL_mag_prop %>%
+  filter(var == "Qnet") %>% 
+  ggplot(aes(x = mag_SSTa, y = mag_Qx)) +
+  geom_point(aes(fill = prop_cap), shape = 21, stroke = 0, size = 2) +
+  geom_point(data = ALL_mag_prop_onset, aes(fill = prop_cap), colour = "deeppink1", shape = 21, stroke = 1) +
+  geom_point(data = ALL_mag_prop_decline, aes(fill = prop_cap), colour = "darkorchid1", shape = 21, stroke = 1) +
+  geom_smooth(aes(colour = ts), method = "lm") +
+  geom_smooth(data = ALL_mag_prop_onset, colour = "deeppink1", linetype = "dashed", method = "lm") +
+  geom_smooth(data = ALL_mag_prop_decline, colour = "darkorchid1", linetype = "dashed", method = "lm") +
+  scale_fill_viridis_c() +
+  scale_colour_manual(values = c("deeppink1", "darkorchid1")) +
+  labs(x = "𝚫SSTa", y = "𝚫T_Qnet", colour = "Phase", fill = "Prop.")# +
+  # theme(legend.position = "bottom")
+mag_scat
+
+# Boxplots showing the range of magnitudes
+mag_box <- ALL_mag_prop %>%
+  filter(var == "Qnet") %>% 
+  ggplot(aes(x = ts, y = prop)) +
+  geom_hline(aes(yintercept = 0), colour = "red") +
+  geom_boxplot(aes(fill = ts), show.legend = F) +
+  # geom_point(aes(colour = mag_SSTa), position = position_jitterdodge(dodge.width = 0.9)) +
+  scale_fill_manual(values = c("deeppink1", "darkorchid1")) +
+  # scale_colour_viridis_c() +
+  coord_cartesian(ylim = c(-2, 2)) +
+  labs(x = NULL, y = "𝚫T_Qnet/𝚫SSTa") +
+  theme(legend.position = "bottom")
+mag_box
+
+# Combine and save
+fig_2 <- ggpubr::ggarrange(mag_scat, mag_box, labels = c("A)", "B)"), align = "hv")
+ggsave("figures/fig_2.png", fig_2, height = 4, width = 10)
+ggsave("figures/fig_2.pdf", fig_2, height = 4, width = 10)
+
+
+# Table 2 -----------------------------------------------------------------
+
+# Count of events with greatest increase/decrease in a SST_Qx term
 
 # Counts by time series phase
 ALL_mag_count_ts <- ALL_mag_prop %>% 

@@ -198,6 +198,18 @@ ALL_mag_TF <- ALL_mag_prop %>%
 # Total proportion of MHWs forced by Qnet
 sum(ALL_mag_TF$Qnet)/nrow(ALL_mag_TF)
 
+# Total number of events driven by Qnet
+nrow(filter(ALL_mag_TF, ts == "onset", Qnet == TRUE))
+
+# Total number of events decayed by Qnet
+nrow(filter(ALL_mag_TF, ts == "decline", Qnet == TRUE))
+
+# Proportion of MHWs with Qnet inset and decline
+ALL_mag_TF %>% 
+  dplyr::select(region:ts, Qnet) %>% 
+  pivot_wider(names_from = ts, values_from = Qnet) %>% 
+  filter(onset == TRUE, decline == TRUE)
+
 # Counts by time series phase
 ALL_mag_count_ts <- ALL_mag_prop %>% 
   group_by(ts, var) %>% 
