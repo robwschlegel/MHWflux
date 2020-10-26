@@ -54,6 +54,11 @@ node_labeller <- c(
   "7" = "G)", "8" = "H)", "9" = "I)", "10" = "J)", "11" = "K)", "12" = "L)"
 )
 
+# Labeller to convert Qx labels to T_Qx
+var_labeller <- c(
+  "Qnet" = "T[Qnet]", "Qlw" = "T[Qlw]", "3" = "C)", "4" = "D)", "5" = "E)", "6" = "F)",
+)
+
 
 # Figure 1 ----------------------------------------------------------------
 
@@ -100,11 +105,11 @@ NWA_study_area <- ggplot(data = NWA_coords, aes(x = lon, y = lat)) +
   geom_label(data = filter(season_count_full, season == "Spring"), 
              aes(x = -55, y = 41, label = paste0(season,": ",count))) +
   geom_label(data = filter(season_count_full, season == "Summer"), 
-             aes(x = -55, y = 39.7, label = paste0(season,": ",count))) +
+             aes(x = -55, y = 39.65, label = paste0(season,": ",count))) +
   geom_label(data = filter(season_count_full, season == "Autumn"), 
-             aes(x = -55, y = 38.4, label = paste0(season,": ",count))) +
+             aes(x = -55, y = 38.3, label = paste0(season,": ",count))) +
   geom_label(data = filter(season_count_full, season == "Winter"), 
-             aes(x = -55, y = 37.1, label = paste0(season,": ",count))) +
+             aes(x = -55, y = 36.95, label = paste0(season,": ",count))) +
   coord_cartesian(xlim = NWA_corners[1:2], ylim = NWA_corners[3:4], expand = F) +
   scale_x_continuous(breaks = seq(-70, -50, 10),
                      labels = c("70°W", "60°W", "50°W"),
@@ -238,9 +243,9 @@ mag_scat <- ALL_mag_prop %>%
   geom_rect(aes(xmin = -3.5, xmax = -0.01, ymin = -3.5, ymax = 3.5), colour = "darkorchid1", fill = NA) +
   geom_rect(aes(xmin = 0.01, xmax = 3.5, ymin = -3.5, ymax = 3.5), colour = "deeppink1", fill = NA) +
   geom_segment(aes(x = 0.4, xend = 0.4, y = 1.4, yend = 3.3), arrow = arrow(angle = 30, length = unit(3, "mm")), colour = "deeppink1") +
-  geom_label(aes(x = 0.8, y = 2.5, label = "Onset"), colour = "deeppink1") +
+  geom_label(aes(x = 0.8, y = 2.5, label = "onset"), colour = "deeppink1") +
   geom_segment(aes(x = -0.4, xend = -0.4, y = -1.4, yend = -3.3), arrow = arrow(angle = 30, length = unit(3, "mm")), colour = "darkorchid1") +
-  geom_label(aes(x = -0.8, y = -2.5, label = "Decline"), colour = "darkorchid1") +
+  geom_label(aes(x = -0.8, y = -2.5, label = "decline"), colour = "darkorchid1") +
   # geom_point(data = ALL_mag_prop_onset, aes(fill = prop_cap), colour = "deeppink1", shape = 21, stroke = 1) +
   # geom_point(data = ALL_mag_prop_decline, aes(fill = prop_cap), colour = "darkorchid1", shape = 21, stroke = 1) +
   # geom_smooth(aes(colour = ts), method = "lm", show.legend = F) +
@@ -346,6 +351,7 @@ ALL_mag_count_ts_region_season <- rbind(ALL_mag_count_ts, ALL_mag_count_region, 
          decline = paste0(decline*100,"%"))
 
 # Print table
+write_csv(ALL_mag_count_ts_region_season, "figures/tab_2.csv")
 tab_2 <- knitr::kable(ALL_mag_count_ts_region_season)#, format = "latex")
 tab_2
 
@@ -422,6 +428,7 @@ ALL_RMSE_season <- ALL_RMSE_top %>%
 
 # Print table
 ALL_RMSE_ts_region_season <- rbind(ALL_RMSE_ts, ALL_RMSE_region, ALL_RMSE_season)
+write_csv(ALL_RMSE_ts_region_season, "figures/tab_3.csv")
 tab_3 <- knitr::kable(ALL_RMSE_ts_region_season)#, format = "latex")
 tab_3
 
@@ -429,18 +436,25 @@ tab_3
 # Figure 3 ----------------------------------------------------------------
 
 # Boxplots showing the range of RMSE values for T_Qx by season
-
 fig_3 <- ALL_RMSE %>%
   filter(var != "Qnet") %>% 
+  # mutate(var = as.character(var)) %>% 
+  # mutate(var = paste0("T<sub>",var,"</sub>")) +
+  # mutate(var = paste0("T[",var,"]")) +
   ggplot(aes(x = var, y = rmse)) +
-  geom_boxplot(aes(fill = ts)) +
+  geom_boxplot(aes(fill = ts), outlier.size = 0.5) +
   geom_hline(aes(yintercept = 0), colour = "red") +
-  facet_wrap(~season, nrow = 1) + 
-  labs(x = NULL, y = "RMSE") +
-  theme(legend.position = "bottom")
+  scale_fill_manual(values = c("deeppink1", "darkorchid1")) +
+  facet_wrap(~season, nrow = 2) + 
+  # scale_x_discrete() +
+  labs(x = "Heat flux variable (T<sub>Qx</sub>)", y = "RMSE", fill = "Phase") +
+  theme(legend.position = "top",
+        panel.background = element_rect(colour = "black"),
+        axis.title.x = ggtext::element_markdown())
 # fig_3
-ggsave("figures/fig_3.png", fig_3, height = 4, width = 10)
-ggsave("figures/fig_3.pdf", fig_3, height = 4, width = 10)
+ggsave("figures/fig_3.jpg", fig_3, height = 120, width = 85, units = "mm", dpi = 300)
+ggsave("figures/fig_3.png", fig_3, height = 120, width = 85, units = "mm", dpi = 300)
+ggsave("figures/fig_3.pdf", fig_3, height = 120, width = 85, units = "mm")
 
 
 # Figure 4 ----------------------------------------------------------------
@@ -449,18 +463,44 @@ ggsave("figures/fig_3.pdf", fig_3, height = 4, width = 10)
 
 # Function for plotting histograms of chosen variables
 hist_var <- function(var_choices, y_label){
-  ALL_cor_fig %>% 
+  hist_plot <- ALL_cor_fig %>% 
     filter(var %in% var_choices) %>% 
+    group_by(var, ts) %>% 
+    mutate(mean_r = mean(r)) %>% 
+    ungroup() %>% 
+    mutate(var = as.character(var),
+           var = case_when(var == "Air" ~ "T[air]",
+                           var == "P-E" ~ "P-E[cum]",
+                           var == "MSLP" ~ "MSLP[cum]",
+                           var == "MLD" ~ "MLD[cum]",
+                           var == "Bottom" ~ "T[b]",
+                           TRUE ~ var)) %>% 
     ggplot(aes(x = r)) +
     geom_vline(aes(xintercept = 0), colour = "red", size = 1) +
-    geom_histogram(bins = 10) +
-    scale_y_continuous(expand = c(0, 0)) +
-    scale_x_continuous(expand = c(0, 0), breaks = c(-0.9, -0.5, 0, 0.5, 0.9)) +
-    facet_grid(ts ~ var) +
-    coord_fixed(ratio = 0.01) +
-    labs(x = NULL, y = y_label) +
-    theme(axis.title.y = element_text(size = 16),
-          panel.background = element_rect(colour = "black"))
+    geom_vline(aes(xintercept = mean_r), colour = "red", size = 1, linetype = "dashed") +
+    geom_histogram(bins = 20) +
+    # scale_y_continuous(expand = c(0, 0)) +
+    scale_x_continuous(expand = c(0, 0),
+                       limits = c(-1, 1),
+                       breaks = c(-0.5, 0, 0.5),
+                       labels = c("-0.5", "0", "0.5")) +
+    facet_grid(ts ~ var, labeller = label_parsed) +
+    # coord_fixed(ratio = 0.01) +
+    labs(x = "Correlation value (*r*)", y = "Count", title = y_label) +
+    theme(panel.background = element_rect(colour = "black"),
+          axis.title.x = ggtext::element_markdown())
+  if(y_label == "Atmosphere"){
+    hist_plot <- hist_plot +
+      scale_y_continuous(expand = c(0, 0), breaks = c(15, 45)) +
+      labs(x = NULL)
+      # theme(axis.text.x = element_blank(),
+      #       axis.title.x = element_blank(),
+      #       axis.ticks.x = element_blank())
+  } else{
+    hist_plot <- hist_plot +
+      scale_y_continuous(expand = c(0, 0), breaks = c(30, 90)) #+
+  }
+  return(hist_plot)
 }
 
 # The three figures
@@ -469,32 +509,52 @@ hist_air <- hist_var(c("Air", "P-E", "MSLP"), "Atmosphere")
 hist_ocean <- hist_var(c("SSS", "MLD", "Bottom"), "Ocean")
 
 # Combine air and sea
-fig_4 <- ggpubr::ggarrange(hist_air, hist_ocean, ncol = 2, nrow = 1, align = "h",  labels = c("A)", "B)"))
+fig_4 <- ggpubr::ggarrange(hist_air, hist_ocean, ncol = 1, nrow = 2, labels = c("A)", "B)"), heights = c(1, 1.1))
 # fig_4
-ggsave("figures/fig_4.png", fig_4, height = 2.7, width = 10)
-ggsave("figures/fig_4.pdf", fig_4, height = 2.7, width = 10)
+ggsave("figures/fig_4.jpg", fig_4, height = 100, width = 85, units = "mm", dpi = 300)
+ggsave("figures/fig_4.png", fig_4, height = 100, width = 85, units = "mm", dpi = 300)
+ggsave("figures/fig_4.pdf", fig_4, height = 100, width = 85, units = "mm")
 
 
 # Figure 5 ----------------------------------------------------------------
 
 # Most important variables by region/season
 boxplot_var <-  function(var_choices, y_label){
-  ALL_cor_fig %>% 
+  box_plot <- ALL_cor_fig %>% 
     filter(var %in% var_choices) %>% 
+    mutate(var = as.character(var),
+           var = case_when(var == "Air" ~ "T[air]",
+                           var == "P-E" ~ "P-E[cum]",
+                           var == "MSLP" ~ "MSLP[cum]",
+                           var == "MLD" ~ "MLD[cum]",
+                           var == "Bottom" ~ "T[b]",
+                           TRUE ~ var)) %>% 
     ggplot(aes(x = ts, y = r)) +
     geom_hline(aes(yintercept = 0), colour = "red", size = 1) +
-    geom_boxplot(aes(fill = season), notch = F) +
+    geom_boxplot(aes(fill = season), notch = F, outlier.size = 0.5) +
     # geom_violin(aes(fill = season)) + # Looks bad
-    facet_wrap(~var, nrow = 1) +
-    scale_fill_manual(values = c("#a99a35", "#8baa43", "#e89c3c", "#9a9997")) + # muted
+    facet_wrap(~var, nrow = 1, labeller = label_parsed) +
+    # scale_fill_manual(values = c("#a99a35", "#8baa43", "#e89c3c", "#9a9997")) + # muted
     # scale_fill_manual(values = c("#d6cf36", "#a5bfe4", "#efbe83", "#b6b6b4")) + # larger spread
-    # scale_y_continuous(expand = c(0, 0)) +
+    scale_fill_manual(values = RColorBrewer::brewer.pal(4, "Accent")[c(1,4,3,2)]) +
+    scale_y_continuous(expand = c(0, 0)) +
     # scale_x_continuous(expand = c(0, 0)) +
     # facet_grid(ts ~ Parameter2) +
-    coord_equal(ratio = 1.5) +
-    labs(x = NULL, y = y_label, fill = "Region") +
-    theme(axis.title.y = element_text(size = 16),
-          panel.background = element_rect(colour = "black"))
+    # coord_equal(ratio = 1.5) +
+    labs(x = "Phase", y = "Corr. value (*r*)", fill = "Season") +
+    theme(panel.border = element_rect(colour = "black", fill = NA),
+          axis.title.y = ggtext::element_markdown(),
+          legend.title = element_text(size = 7),
+          legend.text = element_text(size = 6))
+  if(y_label == "Atmosphere"){
+    box_plot <- box_plot +
+      # scale_y_continuous(expand = c(0, 0), breaks = c(15, 45)) +
+      labs(x = NULL)
+    # theme(axis.text.x = element_blank(),
+    #       axis.title.x = element_blank(),
+    #       axis.ticks.x = element_blank())
+  }
+  return(box_plot)
 }
 
 # box_Q <- boxplot_var(c("Qnet", "Qlh", "Qsh", "Qlw", "Qsw"), "Heat flux")
@@ -502,10 +562,11 @@ box_air <- boxplot_var(c("Air", "P-E", "MSLP"), "Atmosphere")
 box_ocean <- boxplot_var(c("SSS", "MLD", "Bottom"), "Ocean")
 
 # Combine bottom two
-fig_5 <- ggpubr::ggarrange(box_air, box_ocean, ncol = 2, nrow = 1, align = "h",  labels = c("A)", "B)"), common.legend = T)
+fig_5 <- ggpubr::ggarrange(box_air, box_ocean, ncol = 1, nrow = 2, labels = c("A)", "B)"), common.legend = T, heights = c(1, 1.1))
 # fig_5
-ggsave("figures/fig_5.png", fig_5, height = 2.7, width = 10)
-ggsave("figures/fig_5.png", fig_5, height = 2.7, width = 10)
+ggsave("figures/fig_5.jpg", fig_5, height = 100, width = 85, units = "mm", dpi = 300)
+ggsave("figures/fig_5.png", fig_5, height = 100, width = 85, units = "mm", dpi = 300)
+ggsave("figures/fig_5.pdf", fig_5, height = 100, width = 85, units = "mm")
 
 
 # Figure 6 ----------------------------------------------------------------
