@@ -200,7 +200,10 @@ ALL_mag_prop <- ALL_mag %>%
   mutate(prop = mag_Qx/mag_SSTa) %>% 
   mutate(prop_cap = case_when(prop >= quantile(prop, 0.95) ~ quantile(prop, 0.95),
                               prop <= quantile(prop, 0.05) ~ quantile(prop, 0.05),
-                              TRUE ~ prop))
+                              TRUE ~ prop),
+         prop_cat = case_when(prop > 0.5 ~ "> 0.5",
+                              prop <= 0.5 & prop >= 0 ~ "0 - 0.5",
+                              prop < 0.5 ~ "< 0"))
 
 # Median proportion of changes
 ALL_mag_prop %>% 
@@ -230,21 +233,23 @@ mag_scat <- ALL_mag_prop %>%
   ggplot(aes(x = mag_SSTa, y = mag_Qx)) +
   geom_segment(aes(x = -3.5, xend = 3.5, y = -3.5, yend = 3.5), linetype = "dashed", colour = "grey50") +
   geom_hline(aes(yintercept = 0), colour = "red") +
-  geom_point(aes(colour = prop_cap), size = 1) +
-  geom_rect(aes(xmin = -3.5, xmax = -0.02, ymin = -3.5, ymax = 3.5), colour = "darkorchid1", fill = NA) +
-  geom_rect(aes(xmin = 0.02, xmax = 3.5, ymin = -3.5, ymax = 3.5), colour = "deeppink1", fill = NA) +
-  geom_segment(aes(x = 0.1, xend = 0.1, y = 1.1, yend = 2.9), arrow = arrow(angle = 30, length = unit(3, "mm")), colour = "deeppink1") +
-  geom_label(aes(x = 0.5, y = 2.5, label = "Onset"), colour = "deeppink1") +
-  geom_segment(aes(x = -0.1, xend = -0.1, y = -1.1, yend = -2.9), arrow = arrow(angle = 30, length = unit(3, "mm")), colour = "darkorchid1") +
-  geom_label(aes(x = -0.5, y = -2.5, label = "Decline"), colour = "darkorchid1") +
+  # geom_point(aes(colour = prop_cap), size = 1) +
+  geom_point(aes(colour = prop_cat), size = 1) +
+  geom_rect(aes(xmin = -3.5, xmax = -0.01, ymin = -3.5, ymax = 3.5), colour = "darkorchid1", fill = NA) +
+  geom_rect(aes(xmin = 0.01, xmax = 3.5, ymin = -3.5, ymax = 3.5), colour = "deeppink1", fill = NA) +
+  geom_segment(aes(x = 0.4, xend = 0.4, y = 1.4, yend = 3.3), arrow = arrow(angle = 30, length = unit(3, "mm")), colour = "deeppink1") +
+  geom_label(aes(x = 0.8, y = 2.5, label = "Onset"), colour = "deeppink1") +
+  geom_segment(aes(x = -0.4, xend = -0.4, y = -1.4, yend = -3.3), arrow = arrow(angle = 30, length = unit(3, "mm")), colour = "darkorchid1") +
+  geom_label(aes(x = -0.8, y = -2.5, label = "Decline"), colour = "darkorchid1") +
   # geom_point(data = ALL_mag_prop_onset, aes(fill = prop_cap), colour = "deeppink1", shape = 21, stroke = 1) +
   # geom_point(data = ALL_mag_prop_decline, aes(fill = prop_cap), colour = "darkorchid1", shape = 21, stroke = 1) +
   # geom_smooth(aes(colour = ts), method = "lm", show.legend = F) +
-  geom_smooth(data = filter(ALL_mag_prop, ts == "onset"), colour = "deeppink1", method = "lm") +
-  geom_smooth(data = filter(ALL_mag_prop, ts == "decline"), colour = "darkorchid1", method = "lm") +
+  geom_smooth(data = filter(ALL_mag_prop, ts == "onset"), colour = "deeppink1", method = "lm", size = 0.5) +
+  geom_smooth(data = filter(ALL_mag_prop, ts == "decline"), colour = "darkorchid1", method = "lm", size = 0.5) +
   # scale_fill_viridis_c(option = "D") +
   # scale_fill_distiller(palette = "PuOr") +
-  scale_colour_gradient2(low = pal_jco()(3)[1], mid = pal_jco()(3)[3], high = pal_jco()(3)[2]) +
+  # scale_colour_gradient2(low = pal_jco()(3)[1], mid = pal_jco()(3)[3], high = pal_jco()(3)[2]) +
+  scale_colour_manual(values = c(pal_jco()(3)[c(1,3,2)])) +
   # scale_colour_manual(values = c("deeppink1", "darkorchid1")) +
   # scale_y_continuous(limits = c(-3, 3)) +
   # scale_x_continuous(limits = c(-3, 3)) +
@@ -254,12 +259,14 @@ mag_scat <- ALL_mag_prop %>%
        y = "𝚫T<sub>Qnet</sub>",
        colour = "Prop.") +
   theme(axis.title.y = ggtext::element_markdown(),
-        legend.position = c(0.6, 0.1),
-        legend.background = element_rect(colour = "black"),
-        legend.direction = "horizontal",
+        legend.position = c(0.11, 0.76),
+        legend.background = element_rect(colour = "black", fill = "white"),
+        # legend.direction = "horizontal",
+        legend.title = element_text(size = 8),
+        legend.text = element_text(size = 7),
         panel.background = element_rect(colour = "black"))
   # theme(legend.position = "bottom")
-mag_scat
+# mag_scat
 
 # Boxplots showing the range of magnitudes
 mag_box <- ALL_mag_prop %>%
@@ -271,10 +278,11 @@ mag_box <- ALL_mag_prop %>%
   scale_fill_manual(values = c("deeppink1", "darkorchid1")) +
   # scale_colour_viridis_c() +
   coord_cartesian(ylim = c(-2, 2)) +
-  labs(x = NULL, y = "𝚫T<sub>Qnet</sub> / 𝚫SSTa") +
+  labs(x = "Phase", 
+       y = "𝚫T<sub>Qnet</sub> / 𝚫SSTa") +
   theme(axis.title.y = ggtext::element_markdown(),
         panel.background = element_rect(colour = "black"))
-mag_box
+# mag_box
 
 # Combine and save
 fig_2 <- ggpubr::ggarrange(mag_scat, mag_box, labels = c("A)", "B)"), align = "hv", widths = c(1.5, 1))
