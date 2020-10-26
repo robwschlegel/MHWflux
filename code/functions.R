@@ -1165,32 +1165,32 @@ fig_map_func <- function(map_var, fig_data, col_num, fig_height, fig_width){
       # The base map
       geom_polygon(data = map_base, aes(group = group), show.legend = F) +
       # Count per region
-      geom_label(data = fig_data$region_prop_label,
+      geom_label(data = fig_data$region_prop_label, size = 3,
                  aes(x = lon_center, y = lat_center, label = node_region_count)) +
       # Overall node count
-      geom_label(data = fig_data$region_prop_label,
-                 aes(x = -72, y = 50, label = paste0("n \n = \n ",count))) +
+      # geom_label(data = fig_data$region_prop_label, size = 3,
+      #            aes(x = -72, y = 51, label = paste0("n: ",count))) +
       # Onset and decline
-      geom_label(data = fig_data$region_prop_label,
-                 aes(x = -72, y = 48, label = paste0("o = ",onset))) +
-      geom_label(data = fig_data$region_prop_label,
-                 aes(x = -72, y = 46, label = paste0("d = ",decline))) +
+      geom_label(data = fig_data$region_prop_label, size = 3, hjust = "left",
+                 aes(x = -79, y = 50.5, label = paste0("onset: ",onset), fill = onset_prop)) +
+      geom_label(data = fig_data$region_prop_label, size = 3, hjust = "left",
+                 aes(x = -79, y = 48.5, label = paste0("decline: ",decline), fill = decline_prop)) +
       # Spring count
       geom_label(data = filter(fig_data$node_season_info, season_peak == "Spring"), size = 3,
-                 aes(x = -60.0, y = 38, fill = node_season_prop,
-                     label = paste0("Spring\n n = ",node_season_count))) +
+                 aes(x = -55, y = 40, fill = node_season_prop,
+                     label = paste0("Spring: ",node_season_count))) +
       # Summer count
       geom_label(data = filter(fig_data$node_season_info, season_peak == "Summer"), size = 3,
-                 aes(x = -48.5, y = 38, fill = node_season_prop,
-                     label = paste0("Summer\n n = ",node_season_count))) +
+                 aes(x = -55, y = 38, fill = node_season_prop,
+                     label = paste0("Summer: ",node_season_count))) +
       # Autumn count
       geom_label(data = filter(fig_data$node_season_info, season_peak == "Autumn"), size = 3,
-                 aes(x = -58.5, y = 34, fill = node_season_prop,
-                     label = paste0("Autumn\n n = ",node_season_count))) +
+                 aes(x = -55, y = 36, fill = node_season_prop,
+                     label = paste0("Autumn: ",node_season_count))) +
       # Winter count
       geom_label(data = filter(fig_data$node_season_info, season_peak == "Winter"), size = 3,
-                 aes(x = -47.5, y = 34, fill = node_season_prop,
-                     label = paste0("Winter\n n = ",node_season_count))) +
+                 aes(x = -55, y = 34, fill = node_season_prop,
+                     label = paste0("Winter: ",node_season_count))) +
       # Corner label
       # geom_label(data = fig_data$region_prop_label,
       #            label.r = unit(0.9, "lines"), label.padding = unit(0.5, "lines"),
@@ -1235,7 +1235,7 @@ fig_map_func <- function(map_var, fig_data, col_num, fig_height, fig_width){
       geom_segment(data = fig_data$som_data_sub,
                    aes(xend = lon + anom_u10 * wind_uv_scalar,
                        yend = lat + anom_v10 * wind_uv_scalar),
-                   arrow = arrow(angle = 40, length = unit(5, "mm"), type = "open"),
+                   arrow = arrow(angle = 40, length = unit(1, "mm"), type = "open"),
                    linejoin = "mitre", size = 0.4, alpha = 0.3) +
       # The mean sea level pressure contours
       geom_contour(data = filter(fig_data$other_data_wide, anom_mslp >= -100), binwidth = 100,

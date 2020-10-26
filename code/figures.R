@@ -89,7 +89,7 @@ region_prop_label <- NWA_coords %>%
                                 region == "MAB" ~ lon_center+1.3,
                                 TRUE ~ lon_center),
          lat_center = case_when(region == "GM" ~ lat_center-1.5,
-                                region == "MAB" ~ lat_center+0.8,
+                                region == "MAB" ~ lat_center+0.5,
                                 TRUE ~ lat_center)) %>%
   ungroup()
 
@@ -249,8 +249,8 @@ mag_scat <- ALL_mag_prop %>%
   # geom_point(data = ALL_mag_prop_onset, aes(fill = prop_cap), colour = "deeppink1", shape = 21, stroke = 1) +
   # geom_point(data = ALL_mag_prop_decline, aes(fill = prop_cap), colour = "darkorchid1", shape = 21, stroke = 1) +
   # geom_smooth(aes(colour = ts), method = "lm", show.legend = F) +
-  geom_smooth(data = filter(ALL_mag_prop, ts == "onset"), colour = "deeppink1", method = "lm", size = 0.5) +
-  geom_smooth(data = filter(ALL_mag_prop, ts == "decline"), colour = "darkorchid1", method = "lm", size = 0.5) +
+  # geom_smooth(data = filter(ALL_mag_prop, ts == "onset"), colour = "deeppink1", method = "lm", size = 0.5) +
+  # geom_smooth(data = filter(ALL_mag_prop, ts == "decline"), colour = "darkorchid1", method = "lm", size = 0.5) +
   # scale_fill_viridis_c(option = "D") +
   # scale_fill_distiller(palette = "PuOr") +
   # scale_colour_gradient2(low = pal_jco()(3)[1], mid = pal_jco()(3)[3], high = pal_jco()(3)[2]) +
@@ -476,8 +476,8 @@ hist_var <- function(var_choices, y_label){
                            var == "Bottom" ~ "T[b]",
                            TRUE ~ var)) %>% 
     ggplot(aes(x = r)) +
-    geom_vline(aes(xintercept = 0), colour = "red", size = 1) +
-    geom_vline(aes(xintercept = mean_r), colour = "red", size = 1, linetype = "dashed") +
+    geom_vline(aes(xintercept = 0), colour = "red", size = 0.5) +
+    geom_vline(aes(xintercept = mean_r), colour = "red", size = 0.5, linetype = "dashed") +
     geom_histogram(bins = 20) +
     # scale_y_continuous(expand = c(0, 0)) +
     scale_x_continuous(expand = c(0, 0),
@@ -614,17 +614,19 @@ SOM_info <- SOM$info
 MHW_SOM <- left_join(OISST_MHW_event, SOM_info, by = c("region", "event_no")) %>% 
   group_by(node) %>%
   mutate(count = n()) %>% 
-  dplyr::select(node, count, duration, intensity_max, intensity_cumulative, rate_onset, rate_decline) %>% 
+  dplyr::select(node, count, duration, intensity_mean, intensity_max, intensity_cumulative) %>% #, rate_onset, rate_decline) %>% 
   summarise_all(c("mean", "sd")) %>% 
   mutate_all(round, 1) %>% 
   mutate(node = LETTERS[node]) %>% 
   dplyr::rename(count = count_mean) %>% 
   dplyr::select(-count_sd) %>% 
-  unite("duration", duration_mean, duration_sd, sep = " ± ") %>% 
+  unite("D", duration_mean, duration_sd, sep = " ± ") %>% 
+  unite("imean", intensity_mean_mean, intensity_mean_sd, sep = " ± ") %>% 
   unite("imax", intensity_max_mean, intensity_max_sd, sep = " ± ") %>% 
-  unite("icum", intensity_cumulative_mean, intensity_cumulative_sd, sep = " ± ") %>% 
-  unite("ronset", rate_onset_mean, rate_onset_sd, sep = " ± ") %>% 
-  unite("rdecline", rate_decline_mean, rate_decline_sd, sep = " ± ")
+  unite("icum", intensity_cumulative_mean, intensity_cumulative_sd, sep = " ± ") #%>% 
+  # unite("ronset", rate_onset_mean, rate_onset_sd, sep = " ± ") %>% 
+  # unite("rdecline", rate_decline_mean, rate_decline_sd, sep = " ± ")
+write_csv(MHW_SOM, "figures/tab_4.csv")
 tab_4 <- knitr::kable(MHW_SOM)
 tab_4
 
