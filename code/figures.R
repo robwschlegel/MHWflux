@@ -37,6 +37,10 @@ ALL_cor_fig <- ALL_cor %>%
                                       "SST", "SSS", "MLD", "MLD_1", "Bottom")))
 
 # Get total counts
+total_count <- ALL_cor_fig %>% 
+  select(region, season, event_no) %>% 
+  distinct() %>% 
+  summarise(count = n())
 region_count <- ALL_cor_fig %>% 
   dplyr::select(region:ts, n_Obs) %>% 
   unique() %>% 
@@ -52,11 +56,6 @@ season_count <- ALL_cor_fig %>%
 node_labeller <- c(
   "1" = "A)", "2" = "B)", "3" = "C)", "4" = "D)", "5" = "E)", "6" = "F)", 
   "7" = "G)", "8" = "H)", "9" = "I)", "10" = "J)", "11" = "K)", "12" = "L)"
-)
-
-# Labeller to convert Qx labels to T_Qx
-var_labeller <- c(
-  "Qnet" = "T[Qnet]", "Qlw" = "T[Qlw]", "3" = "C)", "4" = "D)", "5" = "E)", "6" = "F)",
 )
 
 
@@ -102,6 +101,7 @@ NWA_study_area <- ggplot(data = NWA_coords, aes(x = lon, y = lat)) +
   geom_label(data = region_prop_label, label.size = 0, show.legend = F, size = 3,
              aes(x = lon_center, y = lat_center, label = count), colour = "black") +
   geom_polygon(data = map_base, aes(group = group), show.legend = F) +
+  # geom_label(data = total_count, aes(x = -75, y = 50, label = paste0("n: ",count))) +
   geom_label(data = filter(season_count_full, season == "Spring"), 
              aes(x = -55, y = 41, label = paste0(season,": ",count))) +
   geom_label(data = filter(season_count_full, season == "Summer"), 
@@ -123,7 +123,7 @@ NWA_study_area <- ggplot(data = NWA_coords, aes(x = lon, y = lat)) +
   theme(legend.position = c(0.6, 0.1),
         legend.background = element_rect(colour = "black"),
         legend.direction = "horizontal",
-        panel.background = element_rect(colour = "black"))
+        panel.border = element_rect(colour = "black", fill = NA))
 # NWA_study_area
 
 # Lollis
@@ -136,7 +136,7 @@ MHW_lolli_plot <- ggplot(data = OISST_MHW_event , aes(x = date_peak, y = intensi
   theme(strip.background = element_blank(),
         strip.text.x = element_blank(),
         axis.text.x = element_text(angle = 30),
-        panel.background = element_rect(colour = "black"))
+        panel.border = element_rect(colour = "black", fill = NA))
 # MHW_lolli_plot
 
 # Combine
@@ -286,7 +286,7 @@ mag_box <- ALL_mag_prop %>%
   labs(x = "Phase", 
        y = "𝚫T<sub>Qnet</sub> / 𝚫SSTa") +
   theme(axis.title.y = ggtext::element_markdown(),
-        panel.background = element_rect(colour = "black"))
+        panel.border = element_rect(colour = "black", fill = NA))
 # mag_box
 
 # Combine and save
@@ -449,7 +449,7 @@ fig_3 <- ALL_RMSE %>%
   # scale_x_discrete() +
   labs(x = "Heat flux variable (T<sub>Qx</sub>)", y = "RMSE", fill = "Phase") +
   theme(legend.position = "top",
-        panel.background = element_rect(colour = "black"),
+        panel.border = element_rect(colour = "black", fill = NA),
         axis.title.x = ggtext::element_markdown())
 # fig_3
 ggsave("figures/fig_3.jpg", fig_3, height = 120, width = 85, units = "mm", dpi = 300)
@@ -487,7 +487,7 @@ hist_var <- function(var_choices, y_label){
     facet_grid(ts ~ var, labeller = label_parsed) +
     # coord_fixed(ratio = 0.01) +
     labs(x = "Correlation value (*r*)", y = "Count", title = y_label) +
-    theme(panel.background = element_rect(colour = "black"),
+    theme(panel.border = element_rect(colour = "black", fill = NA),
           axis.title.x = ggtext::element_markdown())
   if(y_label == "Atmosphere"){
     hist_plot <- hist_plot +
@@ -585,8 +585,9 @@ fig_6 <- fig_map_func("region_season", base_data, 1, 9, 13) +
   theme(axis.text = element_blank(),
         axis.ticks = element_blank())
 # fig_6
-ggsave("figures/fig_6.png", fig_6, height = 9, width = 13)
-ggsave("figures/fig_6.pdf", fig_6, height = 9, width = 13)
+ggsave("figures/fig_6.jpg", fig_6, height = 180, width = 180, units = "mm", dpi = 300)
+ggsave("figures/fig_6.png", fig_6, height = 180, width = 180, units = "mm", dpi = 300)
+ggsave("figures/fig_6.pdf", fig_6, height = 180, width = 180, units = "mm")
 
 
 # Figure 7 ----------------------------------------------------------------
@@ -597,8 +598,9 @@ fig_7 <- fig_map_func("air_u_v_mslp_anom", base_data, 1, 9, 13) +
   theme(axis.text = element_blank(),
         axis.ticks = element_blank())
 # fig_7
-ggsave("figures/fig_7.png", fig_7, height = 9, width = 13)
-ggsave("figures/fig_7.pdf", fig_7, height = 9, width = 13)
+ggsave("figures/fig_7.jpg", fig_7, height = 180, width = 180, units = "mm", dpi = 300)
+ggsave("figures/fig_7.png", fig_7, height = 180, width = 180, units = "mm", dpi = 300)
+ggsave("figures/fig_7.pdf", fig_7, height = 180, width = 180, units = "mm")
 
 
 # Table 4 -----------------------------------------------------------------
