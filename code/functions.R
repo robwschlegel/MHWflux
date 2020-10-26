@@ -1317,7 +1317,6 @@ fig_sd <- function(col_name, fig_data, col_num, fig_height, fig_width){
 }
 
 
-
 # Lolli figure function ---------------------------------------------------
 
 fig_lolli_func <- function(lolli_var, fig_data, col_num, fig_height, fig_width){

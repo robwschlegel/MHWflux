@@ -6,6 +6,7 @@
 # Setup -------------------------------------------------------------------
 
 source("code/functions.R")
+library(ggsci) # Scientific colour palettes
 
 # The correlations
 ALL_cor_fig <- ALL_cor %>% 
@@ -81,7 +82,7 @@ region_prop_label <- NWA_coords %>%
   mutate(lon_center = case_when(region == "GSL" ~ lon_center+2,
                                 region == "SS" ~ lon_center+1,
                                 region == "GM" ~ lon_center-1,
-                                region == "MAB" ~ lon_center+1.8,
+                                region == "MAB" ~ lon_center+1.3,
                                 TRUE ~ lon_center),
          lat_center = case_when(region == "GM" ~ lat_center-1.5,
                                 region == "MAB" ~ lat_center+0.8,
@@ -91,19 +92,19 @@ region_prop_label <- NWA_coords %>%
 # Study area
 NWA_study_area <- ggplot(data = NWA_coords, aes(x = lon, y = lat)) +
   geom_polygon(aes(colour = region, fill = region), size = 2, alpha = 0.2) +
-  geom_polygon(data = map_base, aes(group = group), show.legend = F) +
-  geom_label(data = region_prop_label, label.size = 3, show.legend = F,
+  geom_label(data = region_prop_label, label.size = 3, show.legend = F, size = 3,
              aes(x = lon_center, y = lat_center, label = count, colour = region)) +
-  geom_label(data = region_prop_label, label.size = 0, show.legend = F,
+  geom_label(data = region_prop_label, label.size = 0, show.legend = F, size = 3,
              aes(x = lon_center, y = lat_center, label = count), colour = "black") +
+  geom_polygon(data = map_base, aes(group = group), show.legend = F) +
   geom_label(data = filter(season_count_full, season == "Spring"), 
              aes(x = -55, y = 41, label = paste0(season,": ",count))) +
   geom_label(data = filter(season_count_full, season == "Summer"), 
-             aes(x = -55, y = 40, label = paste0(season,": ",count))) +
+             aes(x = -55, y = 39.7, label = paste0(season,": ",count))) +
   geom_label(data = filter(season_count_full, season == "Autumn"), 
-             aes(x = -55, y = 39, label = paste0(season,": ",count))) +
+             aes(x = -55, y = 38.4, label = paste0(season,": ",count))) +
   geom_label(data = filter(season_count_full, season == "Winter"), 
-             aes(x = -55, y = 38, label = paste0(season,": ",count))) +
+             aes(x = -55, y = 37.1, label = paste0(season,": ",count))) +
   coord_cartesian(xlim = NWA_corners[1:2], ylim = NWA_corners[3:4], expand = F) +
   scale_x_continuous(breaks = seq(-70, -50, 10),
                      labels = c("70°W", "60°W", "50°W"),
@@ -114,7 +115,7 @@ NWA_study_area <- ggplot(data = NWA_coords, aes(x = lon, y = lat)) +
                       aesthetics = c("colour", "fill")) +
   labs(x = NULL, y = NULL, colour = "Region", fill = "Region") +
   # theme_bw() +
-  theme(legend.position = c(0.7, 0.1),
+  theme(legend.position = c(0.6, 0.1),
         legend.background = element_rect(colour = "black"),
         legend.direction = "horizontal",
         panel.background = element_rect(colour = "black"))
@@ -123,20 +124,22 @@ NWA_study_area <- ggplot(data = NWA_coords, aes(x = lon, y = lat)) +
 # Lollis
 MHW_lolli_plot <- ggplot(data = OISST_MHW_event , aes(x = date_peak, y = intensity_cumulative)) +
   geom_lolli(aes(colour = region), colour_n = "red", n = 0, size = 1.0, show.legend = F) +
-  labs(x = "Peak Date", y = "Cumulative Intensity (°C x days)") +
+  labs(x = "Peak Date", y = "Cumulative Intensity (°C days)") +
   scale_colour_manual(values = RColorBrewer::brewer.pal(n = 6, name = 'Dark2')[c(1,2,5,4,3,6)]) +
   scale_y_continuous(limits = c(0, 250), breaks = seq(50, 200, 50), expand = c(0,0)) +
   facet_wrap(~region, ncol = 2) +
   theme(strip.background = element_blank(),
         strip.text.x = element_blank(),
+        axis.text.x = element_text(angle = 30),
         panel.background = element_rect(colour = "black"))
 # MHW_lolli_plot
 
 # Combine
 fig_1 <- cowplot::plot_grid(NWA_study_area, MHW_lolli_plot, labels = c('A)', 'B)'), label_size = 10,
                             align = 'hv', rel_widths = c(1.2, 1), nrow = 1, axis = "l")
-ggsave("figures/fig_1.png", fig_1, height = 5, width = 10)
-ggsave("figures/fig_1.pdf", fig_1, height = 5, width = 10)
+ggsave("figures/fig_1.jpg", fig_1, height = 90, width = 180, units = "mm", dpi = 300)
+ggsave("figures/fig_1.png", fig_1, height = 90, width = 180, units = "mm", dpi = 300)
+ggsave("figures/fig_1.pdf", fig_1, height = 90, width = 180, units = "mm")
 
 
 # Table 1 -----------------------------------------------------------------
@@ -158,7 +161,7 @@ summary_region <- MHW_event_prep %>%
   pivot_wider(names_from = name, values_from = value_summary) %>% 
   dplyr::rename(i_cum = intensity_cumulative, i_max = intensity_max, 
                 i_mean = intensity_mean, r_decline = rate_decline, r_onset = rate_onset) %>% 
-  dplyr::select(group, duration, i_mean, i_max, i_cum, r_onset, r_decline)
+  dplyr::select(group, duration, i_mean, i_max, i_cum)#, r_onset, r_decline) # Decided to remove rate of onset and decline
 
 # Differences between seasons
 summary_season <- MHW_event_prep %>% 
@@ -171,10 +174,11 @@ summary_season <- MHW_event_prep %>%
   pivot_wider(names_from = name, values_from = value_summary) %>% 
   dplyr::rename(i_cum = intensity_cumulative, i_max = intensity_max, 
                 i_mean = intensity_mean, r_decline = rate_decline, r_onset = rate_onset) %>% 
-  dplyr::select(group, duration, i_mean, i_max, i_cum, r_onset, r_decline)
+  dplyr::select(group, duration, i_mean, i_max, i_cum)#, r_onset, r_decline)
 
 # Table showing the mean +- SD per region and season
 summary_region_season <- rbind(summary_region, summary_season)
+write_csv(summary_region_season, "figures/tab_1.csv")
 tab_1 <- knitr::kable(summary_region_season)#, format = "latex")
 tab_1
 
@@ -206,6 +210,14 @@ ALL_mag_prop %>%
   filter(ts == "decline", var == "Qnet") %>% 
   summarise(median(prop))
 
+# Number of events contributing negatively to onset or decline
+ALL_mag_prop %>% 
+  filter(ts == "onset", var == "Qnet", mag_Qx > 0) %>% 
+  summarise(n())
+ALL_mag_prop %>% 
+  filter(ts == "decline", var == "Qnet", mag_Qx < 0) %>% 
+  summarise(n())
+
 # Filter out only events that were driven or decayed by Qnet
 ALL_mag_prop_onset <- ALL_mag_prop %>% 
   filter(ts == "onset", prop > 0.5)
@@ -216,15 +228,36 @@ ALL_mag_prop_decline <- ALL_mag_prop %>%
 mag_scat <- ALL_mag_prop %>%
   filter(var == "Qnet") %>% 
   ggplot(aes(x = mag_SSTa, y = mag_Qx)) +
-  geom_point(aes(fill = prop_cap), shape = 21, stroke = 0, size = 2) +
-  geom_point(data = ALL_mag_prop_onset, aes(fill = prop_cap), colour = "deeppink1", shape = 21, stroke = 1) +
-  geom_point(data = ALL_mag_prop_decline, aes(fill = prop_cap), colour = "darkorchid1", shape = 21, stroke = 1) +
-  geom_smooth(aes(colour = ts), method = "lm") +
-  geom_smooth(data = ALL_mag_prop_onset, colour = "deeppink1", linetype = "dashed", method = "lm") +
-  geom_smooth(data = ALL_mag_prop_decline, colour = "darkorchid1", linetype = "dashed", method = "lm") +
-  scale_fill_viridis_c() +
-  scale_colour_manual(values = c("deeppink1", "darkorchid1")) +
-  labs(x = "𝚫SSTa", y = "𝚫T_Qnet", colour = "Phase", fill = "Prop.")# +
+  geom_segment(aes(x = -3.5, xend = 3.5, y = -3.5, yend = 3.5), linetype = "dashed", colour = "grey50") +
+  geom_hline(aes(yintercept = 0), colour = "red") +
+  geom_point(aes(colour = prop_cap), size = 1) +
+  geom_rect(aes(xmin = -3.5, xmax = -0.02, ymin = -3.5, ymax = 3.5), colour = "darkorchid1", fill = NA) +
+  geom_rect(aes(xmin = 0.02, xmax = 3.5, ymin = -3.5, ymax = 3.5), colour = "deeppink1", fill = NA) +
+  geom_segment(aes(x = 0.1, xend = 0.1, y = 1.1, yend = 2.9), arrow = arrow(angle = 30, length = unit(3, "mm")), colour = "deeppink1") +
+  geom_label(aes(x = 0.5, y = 2.5, label = "Onset"), colour = "deeppink1") +
+  geom_segment(aes(x = -0.1, xend = -0.1, y = -1.1, yend = -2.9), arrow = arrow(angle = 30, length = unit(3, "mm")), colour = "darkorchid1") +
+  geom_label(aes(x = -0.5, y = -2.5, label = "Decline"), colour = "darkorchid1") +
+  # geom_point(data = ALL_mag_prop_onset, aes(fill = prop_cap), colour = "deeppink1", shape = 21, stroke = 1) +
+  # geom_point(data = ALL_mag_prop_decline, aes(fill = prop_cap), colour = "darkorchid1", shape = 21, stroke = 1) +
+  # geom_smooth(aes(colour = ts), method = "lm", show.legend = F) +
+  geom_smooth(data = filter(ALL_mag_prop, ts == "onset"), colour = "deeppink1", method = "lm") +
+  geom_smooth(data = filter(ALL_mag_prop, ts == "decline"), colour = "darkorchid1", method = "lm") +
+  # scale_fill_viridis_c(option = "D") +
+  # scale_fill_distiller(palette = "PuOr") +
+  scale_colour_gradient2(low = pal_jco()(3)[1], mid = pal_jco()(3)[3], high = pal_jco()(3)[2]) +
+  # scale_colour_manual(values = c("deeppink1", "darkorchid1")) +
+  # scale_y_continuous(limits = c(-3, 3)) +
+  # scale_x_continuous(limits = c(-3, 3)) +
+  coord_cartesian(xlim = c(-3.5, 3.5), ylim = c(-3.5, 3.5), expand = F) +
+  labs(x = "𝚫SSTa", 
+       # y = "𝚫*T*<sub>*Q* net</sub>",
+       y = "𝚫T<sub>Qnet</sub>",
+       colour = "Prop.") +
+  theme(axis.title.y = ggtext::element_markdown(),
+        legend.position = c(0.6, 0.1),
+        legend.background = element_rect(colour = "black"),
+        legend.direction = "horizontal",
+        panel.background = element_rect(colour = "black"))
   # theme(legend.position = "bottom")
 mag_scat
 
@@ -238,14 +271,16 @@ mag_box <- ALL_mag_prop %>%
   scale_fill_manual(values = c("deeppink1", "darkorchid1")) +
   # scale_colour_viridis_c() +
   coord_cartesian(ylim = c(-2, 2)) +
-  labs(x = NULL, y = "𝚫T_Qnet/𝚫SSTa") +
-  theme(legend.position = "bottom")
+  labs(x = NULL, y = "𝚫T<sub>Qnet</sub> / 𝚫SSTa") +
+  theme(axis.title.y = ggtext::element_markdown(),
+        panel.background = element_rect(colour = "black"))
 mag_box
 
 # Combine and save
 fig_2 <- ggpubr::ggarrange(mag_scat, mag_box, labels = c("A)", "B)"), align = "hv", widths = c(1.5, 1))
-ggsave("figures/fig_2.png", fig_2, height = 4, width = 10)
-ggsave("figures/fig_2.pdf", fig_2, height = 4, width = 10)
+ggsave("figures/fig_2.jpg", fig_2, height = 72, width = 180, units = "mm", dpi = 300)
+ggsave("figures/fig_2.png", fig_2, height = 72, width = 180, units = "mm", dpi = 300)
+ggsave("figures/fig_2.pdf", fig_2, height = 72, width = 180, units = "mm")
 
 
 # Table 2 -----------------------------------------------------------------
