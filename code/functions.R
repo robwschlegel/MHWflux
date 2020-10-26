@@ -140,6 +140,7 @@ frame_base <- ggplot(map_base, aes(x = lon, y = lat)) +
   scale_y_continuous(breaks = c(40, 50),
                      labels = scales::unit_format(suffix = "°N", sep = "")) +
   coord_cartesian(xlim = c(NWA_corners[1:2]), ylim = c(NWA_corners[3:4]), expand = F) +
+  # coord_quickmap(xlim = c(NWA_corners[1:2]), ylim = c(NWA_corners[3:4]), expand = F) +
   labs(x = NULL, y = NULL) +
   theme_bw() +
   theme(panel.border = element_rect(fill = NA, colour = "black", size = 1),
@@ -909,6 +910,26 @@ fig_data_prep <- function(data_packet, region_MHW = OISST_region_MHW){
     left_join(data_packet$info, by = c("region", "event_no")) #%>%
     # mutate(node = LETTERS[node])
   
+  # Calculate the proportions of change in magnitudes of phases of events
+  node_mag_count <- ALL_cor %>% 
+    dplyr::rename(var = Parameter2) %>% 
+    dplyr::select(region:ts, var, mag) %>% 
+    na.omit() %>% 
+    filter(var == "qnet_budget", ts != "full") %>% 
+    left_join(select(filter(ALL_cor, Parameter2 == "sst"), region:ts, Parameter2, mag),
+              by = c("region", "season", "event_no", "ts")) %>% 
+    na.omit() %>% 
+    dplyr::select(-Parameter2) %>% 
+    dplyr::rename(mag_Qx = mag.x, mag_SSTa = mag.y) %>% 
+    mutate(prop = mag_Qx/mag_SSTa) %>% 
+    filter(prop > 0.5) %>% 
+    left_join(region_MHW_meta[,c("region", "event_no", "node")], by = c("region", "event_no")) %>% 
+    group_by(node, ts) %>% 
+    summarise(count = n(), .groups = "drop") %>% 
+    pivot_wider(names_from = ts, values_from = count) %>% 
+    mutate(onset = replace_na(onset, 0),
+           decline = replace_na(decline, 0))
+  
   # Grid of complete node x season matrix
   node_season_grid <- expand.grid(seq(1:max(region_MHW_meta$node, na.rm = T)),
                                   c("Summer", "Autumn", "Winter", "Spring"),
@@ -955,12 +976,24 @@ fig_data_prep <- function(data_packet, region_MHW = OISST_region_MHW){
     mutate(count = max(count, na.rm = T)) %>%
     ungroup()
   
-  # Create labels for number of states per region per node
+  # Create labels for number of events per region per node
   region_prop_label <- NWA_coords %>%
     group_by(region) %>%
     mutate(lon_center = mean(lon), lat_center = mean(lat)) %>%
     left_join(node_region_info, by = "region") %>%
-    na.omit()
+    na.omit() %>% 
+    mutate(lon_center = case_when(region == "GSL" ~ lon_center+2,
+                                  region == "SS" ~ lon_center+1,
+                                  region == "GM" ~ lon_center-1,
+                                  region == "MAB" ~ lon_center+1.3,
+                                  TRUE ~ lon_center),
+           lat_center = case_when(region == "GM" ~ lat_center-1.5,
+                                  region == "MAB" ~ lat_center+0.5,
+                                  TRUE ~ lat_center)) %>% 
+    ungroup() %>% 
+    left_join(node_mag_count, by = "node") %>% 
+    mutate(onset_prop = round(onset/count, 2),
+           decline_prop = round(decline/count, 2))
   
   # Calculate mean and median intensities/durations per node for plotting
   node_h_lines <- region_MHW_meta %>%
@@ -1132,34 +1165,39 @@ fig_map_func <- function(map_var, fig_data, col_num, fig_height, fig_width){
       # The base map
       geom_polygon(data = map_base, aes(group = group), show.legend = F) +
       # Count per region
-      geom_label(data = fig_data$region_prop_label,
+      geom_label(data = fig_data$region_prop_label, size = 3,
                  aes(x = lon_center, y = lat_center, label = node_region_count)) +
       # Overall node count
-      geom_label(data = fig_data$region_prop_label,
-                 aes(x = -68, y = 36, label = paste0("n = ",count))) +
-      # Winter count
-      geom_label(data = filter(fig_data$node_season_info, season_peak == "Winter"),
-                 aes(x = -58, y = 38, fill = node_season_prop,
-                     label = paste0("Winter\n n = ",node_season_count))) +
+      # geom_label(data = fig_data$region_prop_label, size = 3,
+      #            aes(x = -72, y = 51, label = paste0("n: ",count))) +
+      # Onset and decline
+      geom_label(data = fig_data$region_prop_label, size = 3, hjust = "left",
+                 aes(x = -79, y = 50.5, label = paste0("onset: ",onset), fill = onset_prop)) +
+      geom_label(data = fig_data$region_prop_label, size = 3, hjust = "left",
+                 aes(x = -79, y = 48.5, label = paste0("decline: ",decline), fill = decline_prop)) +
       # Spring count
-      geom_label(data = filter(fig_data$node_season_info, season_peak == "Spring"),
-                 aes(x = -48, y = 38, fill = node_season_prop,
-                     label = paste0("Spring\n n = ",node_season_count))) +
+      geom_label(data = filter(fig_data$node_season_info, season_peak == "Spring"), size = 3,
+                 aes(x = -55, y = 40, fill = node_season_prop,
+                     label = paste0("Spring: ",node_season_count))) +
       # Summer count
-      geom_label(data = filter(fig_data$node_season_info, season_peak == "Summer"),
-                 aes(x = -58, y = 34, fill = node_season_prop,
-                     label = paste0("Summer\n n = ",node_season_count))) +
+      geom_label(data = filter(fig_data$node_season_info, season_peak == "Summer"), size = 3,
+                 aes(x = -55, y = 38, fill = node_season_prop,
+                     label = paste0("Summer: ",node_season_count))) +
       # Autumn count
-      geom_label(data = filter(fig_data$node_season_info, season_peak == "Autumn"),
-                 aes(x = -48, y = 34, fill = node_season_prop,
-                     label = paste0("Autumn\n n = ",node_season_count))) +
+      geom_label(data = filter(fig_data$node_season_info, season_peak == "Autumn"), size = 3,
+                 aes(x = -55, y = 36, fill = node_season_prop,
+                     label = paste0("Autumn: ",node_season_count))) +
+      # Winter count
+      geom_label(data = filter(fig_data$node_season_info, season_peak == "Winter"), size = 3,
+                 aes(x = -55, y = 34, fill = node_season_prop,
+                     label = paste0("Winter: ",node_season_count))) +
       # Corner label
       # geom_label(data = fig_data$region_prop_label,
       #            label.r = unit(0.9, "lines"), label.padding = unit(0.5, "lines"),
       #            aes(x = -78, y = 51, label = paste0(LETTERS[node],")"))) +
       # Colour scale
       scale_fill_distiller("Proportion\nof events",
-                           palette = "BuPu", direction = 1) +
+                           palette = "OrRd", direction = 1) +
       theme(legend.position = "bottom") #+
       # facet_wrap(~node)
       # fig_res
@@ -1178,7 +1216,7 @@ fig_map_func <- function(map_var, fig_data, col_num, fig_height, fig_width){
       geom_segment(data = fig_data$som_data_sub,
                    aes(xend = lon + anom_u * current_uv_scalar,
                        yend = lat + anom_v * current_uv_scalar),
-                   arrow = arrow(angle = 40, length = unit(0.1, "cm"), type = "open"),
+                   arrow = arrow(angle = 40, length = unit(5, "mm"), type = "open"),
                    linejoin = "mitre", size = 0.4, alpha = 0.8) +
       # The land mass
       geom_polygon(data = map_base, aes(group = group), alpha = 1,
@@ -1197,15 +1235,15 @@ fig_map_func <- function(map_var, fig_data, col_num, fig_height, fig_width){
       geom_segment(data = fig_data$som_data_sub,
                    aes(xend = lon + anom_u10 * wind_uv_scalar,
                        yend = lat + anom_v10 * wind_uv_scalar),
-                   arrow = arrow(angle = 40, length = unit(0.1, "cm"), type = "open"),
+                   arrow = arrow(angle = 40, length = unit(1, "mm"), type = "open"),
                    linejoin = "mitre", size = 0.4, alpha = 0.3) +
       # The mean sea level pressure contours
       geom_contour(data = filter(fig_data$other_data_wide, anom_mslp >= -100), binwidth = 100,
-                   aes(z = anom_mslp, colour = stat(level)), size = 2) +
+                   aes(z = anom_mslp, colour = stat(level)), size = 1) +
       # Negative contours
-      geom_contour(data = filter(fig_data$other_data_wide, anom_mslp < 0), binwidth = 100, linetype = "dashed",
+      geom_contour(data = filter(fig_data$other_data_wide, anom_mslp <= 100), binwidth = 100, linetype = "dashed",
                    # breaks = c(-2000, -1500, -1000, -500, 0, 500, 1000),
-                   aes(z = anom_mslp, colour = stat(level)), size = 2) +
+                   aes(z = anom_mslp, colour = stat(level)), size = 1) +
       # Corner label
       # geom_label(data = fig_data$region_prop_label,
       #            label.r = unit(0.9, "lines"), label.padding = unit(0.5, "lines"),
@@ -1315,7 +1353,6 @@ fig_sd <- function(col_name, fig_data, col_num, fig_height, fig_width){
   }
   # return(sd_heat_map)
 }
-
 
 
 # Lolli figure function ---------------------------------------------------
