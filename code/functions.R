@@ -1206,18 +1206,18 @@ fig_map_func <- function(map_var, fig_data, col_num, fig_height, fig_width){
       # The ocean temperature
       geom_raster(data = fig_data$som_data_wide, aes(fill = anom_sst)) +
       # The region polygons
-      geom_polygon(data = NWA_coords, aes(group = region),
-                   fill = NA, colour = "black", size = 1, alpha = 0.2) +
+      # geom_polygon(data = NWA_coords, aes(group = region),
+      #              fill = NA, colour = "black", size = 1, alpha = 0.2) +
       # The bathymetry
-      stat_contour(data = bathy[bathy$depth > -2000,],
+      stat_contour(data = bathy[bathy$depth > -2200,],
                    aes(x = lon, y = lat, z = depth), alpha = 0.5,
                    colour = "black", size = 0.5, binwidth = 200, na.rm = TRUE, show.legend = FALSE) +
       # The current vectors
       geom_segment(data = fig_data$som_data_sub,
                    aes(xend = lon + anom_u * current_uv_scalar,
                        yend = lat + anom_v * current_uv_scalar),
-                   arrow = arrow(angle = 40, length = unit(5, "mm"), type = "open"),
-                   linejoin = "mitre", size = 0.4, alpha = 0.8) +
+                   arrow = arrow(angle = 40, length = unit(1, "mm"), type = "open"),
+                   linejoin = "mitre", size = 0.4, alpha = 0.3) +
       # The land mass
       geom_polygon(data = map_base, aes(group = group), alpha = 1,
                    fill = "grey70", colour = "black", size = 0.5, show.legend = FALSE) +
@@ -1266,7 +1266,13 @@ fig_map_func <- function(map_var, fig_data, col_num, fig_height, fig_width){
                    fill = "grey80", colour = "black", size = 0.5, show.legend = FALSE) +
       # The net downward heat flux contours
       geom_contour(data = fig_data$som_data_wide, binwidth = 50,
-                   aes(z = anom_qnet, colour = stat(level)), size = 1) +
+      aes(z = anom_qnet, colour = stat(level)), size = 1) +
+      # Positive contours
+      # geom_contour(data = filter(fig_data$som_data_wide, anom_qnet >= -50), binwidth = 50,
+      #              aes(z = anom_qnet, colour = stat(level)), size = 1) +
+      # Negative contours
+      # geom_contour(data = filter(fig_data$som_data_wide, anom_qnet <= 50), binwidth = 50, linetype = "dashed",
+      #              aes(z = anom_qnet, colour = stat(level)), size = 1) +
       # Colour scale
       scale_fill_gradient2("MLD\nanom. (m)",low = "blue", high = "red") +
       scale_colour_gradient2("Qnet anom.\n(W/m2)", #guide = "legend",

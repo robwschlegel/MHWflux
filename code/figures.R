@@ -634,3 +634,58 @@ tab_4
 # Table 5 -----------------------------------------------------------------
 
 # Expert summary of the SOM nodes
+
+# The proportion of T_Qnet onsets/declines for each node
+node_prop <- base_data$region_prop_label %>% 
+  dplyr::select(node, onset_prop, decline_prop) %>% 
+  distinct() %>% 
+  mutate(onset_prop = paste0(onset_prop*100,"%"),
+         decline_prop = paste0(decline_prop*100,"%"))
+
+# NB: The rest of the table was written by hand by looking at the other figures/tables
+
+
+# Figure S1 ---------------------------------------------------------------
+
+# SOM oceanic panels
+fig_S1 <- fig_map_func("sst_u_v_anom", base_data, 1, 9, 13) +
+  facet_wrap(~node, labeller = labeller(node = node_labeller)) +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank())
+# fig_S1
+
+# The caption
+fig_cap_S1 <- as.character("Figure S1: The average synoptic states for sea surface temperature (SST) and current speed/direction for each node in the SOM results. 
+                           All values shown are anomalies. 
+                           Solid contours show bathymetry from the surface to the 2000 m isobath in 200 m intervals.")
+
+# Attach the caption and save
+fig_S1_cap <-  grid::textGrob(paste0(strwrap(fig_cap_S1, 110), sep = "", collapse = "\n"),
+                              x = 0.01, just = "left", gp = grid::gpar(fontsize = 10))
+fig_S1_cap <- ggpubr::ggarrange(fig_S1, fig_S1_cap, heights = c(1, 0.15), nrow = 2)
+ggsave("figures/fig_S1.jpg", fig_S1_cap, height = 207, width = 180, units = "mm", dpi = 300)
+ggsave("figures/fig_S1.png", fig_S1_cap, height = 207, width = 180, units = "mm", dpi = 300)
+ggsave("figures/fig_S1.pdf", fig_S1_cap, height = 207, width = 180, units = "mm")
+
+
+# Figure S2 ---------------------------------------------------------------
+
+# SOM Qnet panels
+fig_S2 <- fig_map_func("qnet_mld_anom", base_data, 1, 9, 13) +
+  facet_wrap(~node, labeller = labeller(node = node_labeller)) +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank())
+# fig_S2
+
+# The caption
+fig_cap_S2 <- as.character("Figure S2: The average synoptic states for mixed layer depth (MLD) and net downward heat flux (Qnet) for each node in the SOM results. 
+                           Qnet is shown with contours at 50 W/m^2 intervals. All values shown are anomalies.")
+
+# Attach the caption and save
+fig_S2_cap <-  grid::textGrob(paste0(strwrap(fig_cap_S2, 110), sep = "", collapse = "\n"),
+                              x = 0.01, just = "left", gp = grid::gpar(fontsize = 10))
+fig_S2_cap <- ggpubr::ggarrange(fig_S2, fig_S2_cap, heights = c(1, 0.15), nrow = 2)
+ggsave("figures/fig_S2.jpg", fig_S2_cap, height = 207, width = 180, units = "mm", dpi = 300)
+ggsave("figures/fig_S2.png", fig_S2_cap, height = 207, width = 180, units = "mm", dpi = 300)
+ggsave("figures/fig_S2.pdf", fig_S2_cap, height = 207, width = 180, units = "mm")
+
