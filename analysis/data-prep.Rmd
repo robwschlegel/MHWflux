@@ -472,6 +472,7 @@ The movement terms aren't very useful and may not be worth including as they don
 ```{r cum-heat-flux, eval=FALSE}
 # Event index used for calculations
 OISST_MHW_event_index <- OISST_MHW_event %>% 
+  ungroup() %>% 
   mutate(row_index = 1:n())
 
 # Wide anomaly dataframe to be used for cumulative calculations

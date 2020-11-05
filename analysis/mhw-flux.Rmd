@@ -36,14 +36,12 @@ Running correlations is useful to see how well certain variables change in relat
 ```{r MHW-var-cor, eval=FALSE}
 # Event index used for calculations
 OISST_MHW_event_index <- OISST_MHW_event %>% 
+  ungroup() %>% 
   mutate(row_index = 1:n())
 
 # Run all the stats
-ALL_cor <- plyr::ddply(OISST_MHW_event_index, .parallel = T,
-                       .variables = c("row_index"), .fun = stats_all,
-                       df_event = OISST_MHW_event) %>% 
-  left_join(OISST_MHW_event_index, by = "row_index") %>% 
-  select(region, season, event_no, ts, everything()) %>%
+ALL_cor <- plyr::ddply(OISST_MHW_event_index, c("row_index"), stats_all, .parallel = T) %>% 
+  dplyr::select(-row_index) %>% 
   arrange(region, event_no) %>% 
   mutate(Parameter2 = factor(Parameter2))
 
@@ -74,7 +72,8 @@ While going through the data it was discovered that the OISST temperature values
 # Load old and new data
 ALL_cor_old <- readRDS("data/ALL_cor_old.Rda") %>% 
   mutate(region = toupper(region)) %>% 
-  mutate(run = "old")
+  mutate(run = "old") %>% 
+  dplyr::select(-row_index)
 ALL_cor <- readRDS("data/ALL_cor.Rda") %>% 
   dplyr::select(region:n_Obs, rmse) %>% 
   mutate(run = "new")
@@ -276,7 +275,7 @@ ALL_mag_region <- ALL_mag_top %>%
   summarise(count = n(), .groups = "drop") %>% 
   pivot_wider(names_from = var, values_from = count) %>% 
   mutate(Qlw = replace_na(Qlw, 0)) %>% 
-  left_join(mag_region_count, by = c("region", "ts")) %>% 
+  left_join(count_region, by = c("region", "ts")) %>% 
   dplyr::select(region, ts, count, Qlh:Qsw) %>% 
   mutate(Qlh = paste0(Qlh, " (",round((Qlh/count)*100),"%)"),
          Qsh = paste0(Qsh, " (",round((Qsh/count)*100),"%)"),
@@ -291,7 +290,7 @@ ALL_mag_season <- ALL_mag_top %>%
   summarise(count = n(), .groups = "drop") %>% 
   pivot_wider(names_from = var, values_from = count) %>% 
   mutate(Qsh = replace_na(Qsh, 0)) %>%
-  left_join(mag_season_count, by = c("season", "ts")) %>% 
+  left_join(count_season, by = c("season", "ts")) %>% 
   dplyr::select(season, ts, count, Qlh:Qsw) %>% 
   mutate(Qlh = paste0(Qlh, " (",round((Qlh/count)*100),"%)"),
          Qsh = paste0(Qsh, " (",round((Qsh/count)*100),"%)"),
@@ -477,7 +476,7 @@ ALL_RMSE_long_region <- ALL_RMSE_long %>%
   summarise(count_Q = n(), .groups = "drop") %>% 
   pivot_wider(names_from = var, values_from = count_Q) %>% 
   replace_na(list(Qlh = 0, Qsh = 0, Qlw = 0, Qsw = 0)) %>% 
-  dplyr::select(region, ts, count, Qlh:Qlw) %>% 
+  dplyr::select(region, ts, count, Qlh:Qsh) %>% 
   mutate(Qlh = paste0(Qlh, " (",round((Qlh/count)*100),"%)"),
          Qsh = paste0(Qsh, " (",round((Qsh/count)*100),"%)"),
          Qlw = paste0(Qlw, " (",round((Qlw/count)*100),"%)"),
@@ -530,7 +529,6 @@ ggplot(ALL_RMSE, aes(x = n_Obs, y = rmse)) +
   geom_smooth(aes(colour = ts), method = "lm") +
   facet_wrap(~season)
 ```
-
 
 ### Correlations: summary, regions, seasons
 
@@ -817,19 +815,6 @@ With a table organised by each variable, it makes sense to also create a table o
 ```{r}
 
 ```
-
-### NWA 2012
-
-From Chen et al. 2016 (JGR)
-Such an extreme event in the MAB was attributed to the anomalous atmospheric forcing, which was linked to the northward shift in the jet stream position [Chen et al., 2014a, 2015]. The anomalously warm atmospheric conditions in the winter of 2011–2012 increased the ocean heat content (increased the ocean heat content anomaly) and facilitated the extreme warm ocean temperature in spring 2012 [Chen et al., 2014a, 2015]. On the other hand, the ocean advection played a secondary role, which partially damped the heat content anomaly created by the air-sea heat flux [Chen et al., 2015].
-In both cases, initial temperature and ocean advection are not sufficient to describe the seasonal mean temperature. Additional cooling (warming) in addition to ocean advection is needed to further describe the winter (spring) temperature. In comparison, using the sum of the initial temperature and air-sea flux yields a much better description of seasonal mean temperatures (Figures 5c and 5f)
-While the overall role of ocean advection is smaller than that of air-sea flux in determining the winter and spring temperatures, the year-to-year changes in the relative importance is worth investigating.
-Normally, given anomalous initial temperature, air will act to damp the temperature anomaly, as in winter 2007 or 2011, or even 2005 to some extent. However, in winter 2012, the air continued to increase the temperature anomaly.
-Out of the 12 years 2003–2014, the air-sea flux normally dominated the temperature anomaly in the MAB during winter. In only 3 years was the winter time temperature anomaly primarily controlled by ocean advection.
-For spring, ocean advection has more control on the temperature anomalies than air-sea flux does, although the difference is smaller (Table 2). In both seasons, the relative importance of air-sea flux and ocean advection does not seem to be related to either the initial or seasonal mean thermal condition of the shelf water (fourth and fifth columns of Tables 1 and 2).
-The correlation coefficients increase from 0.66 in the first half of February to 0.91 in the second half of March. This suggests that estimation of spring temperature anomaly in the MAB  based  on  the  thermal  condition  2 months before spring is statistically possible.
-This suggests that more northerly jet stream positions result in larger heatflux from the atmosphere into the ocean in the MAB. This is likely due to warmer and more humid air overlying the continental shelf, which reduces the heat loss from the ocean during the cooling seasons [Chenet al., 2014a].
-In spring and summer, the air-sea flux may be less correlated with the air temperature due to the shallowness of the surface mixed layer, and thus may be disconnected from large-scale atmospheric circulation, i.e., jet stream variability.
 
 ## References
 

@@ -108,10 +108,11 @@ ALL_ts_anom <- readRDS("data/ALL_ts_anom.Rda")
 ALL_ts_anom_cum <- readRDS("data/ALL_ts_anom_cum.Rda")
 
 # Combine the anomaly dataframes into one
-ALL_ts_anom_full <- rbind(ALL_ts_anom[,c("region", "var", "t", "anom")], 
-                          ALL_ts_anom_cum[,c("region", "var", "t", "anom")])
-ALL_ts_anom_full_wide <- ALL_ts_anom_full %>% 
-  pivot_wider(values_from = anom, names_from = var)
+  # NB: The shapes have changed so no longer sync up like this
+# ALL_ts_anom_full <- rbind(ALL_ts_anom[,c("region", "var", "t", "anom")], 
+#                           ALL_ts_anom_cum[,c("region", "var", "t", "anom")])
+# ALL_ts_anom_full_wide <- ALL_ts_anom_full %>% 
+#   pivot_wider(values_from = anom, names_from = var)
 
 # The magnitude, correlation, and RMSE results
 ALL_cor <- readRDS("data/ALL_cor.Rda")
@@ -373,7 +374,7 @@ calc_clim_anom <- function(df, point_accuracy){
 # Cumulative values by phase ----------------------------------------------
 
 # testers...
-# event_index <- OISST_MHW_event_index[1,]
+# event_index <- OISST_MHW_event_index[100,]
 # df <- ALL_ts_anom_wide
 cum_phase <- function(event_index, df){
   ts_full <- df %>% 
@@ -429,31 +430,48 @@ rmse_wrap <- function(df_sub){
     mutate(Parameter1 = "sst")
 }
 
-# Subset data based on events and regions and run all correlations
-# This also runs magnitudes of change and RMSE for the Qx terms
-stats_all <- function(df, df_event){
+# Convenience function that preps each phase of the data
+ts_wrap <- function(ts_choice, event_index){
+  
+  if(ts_choice == "full"){
+    t_start <-  event_index$date_start
+    t_end <-  event_index$date_end
+  } else if(ts_choice == "onset"){
+    t_start <-  event_index$date_start
+    t_end <-  event_index$date_peak
+  } else if(ts_choice == "decline"){
+    t_start <-  event_index$date_peak
+    t_end <-  event_index$date_end
+  }
   
   # Get the info for the focus event
-  event_sub <- df_event %>% 
-    filter(event_no == df$event_no[1],
-           region == df$region[1])
+  anom_sub <- ALL_ts_anom %>% 
+    filter(t >= t_start,
+           t <= t_end,
+           region == event_index$region) %>% 
+    mutate(event_no = event_index$event_no[1],
+           ts = ts_choice) %>% 
+    dplyr::select(region, event_no, var, ts, t, anom) %>% 
+    rbind(filter(ALL_ts_anom_cum, ts == ts_choice, 
+                 region == event_index$region[1],
+                 event_no == event_index$event_no[1])) %>% 
+    pivot_wider(names_from = var, values_from = anom) %>% 
+    mutate(qnet_budget = c(0, qnet_mld_cum[1:n()-1]) + sst[1],
+           lhf_budget = c(0, lhf_mld_cum[1:n()-1]) + sst[1],
+           shf_budget = c(0, shf_mld_cum[1:n()-1]) + sst[1],
+           lwr_budget = c(0, lwr_mld_cum[1:n()-1]) + sst[1],
+           swr_budget = c(0, swr_mld_cum[1:n()-1]) + sst[1]) %>% 
+    dplyr::select(-event_no)
+}
+
+# Subset data based on events and regions and run all correlations
+# This also runs magnitudes of change and RMSE for the Qx terms
+stats_all <- function(event_index){
   
-  # Subset the time series for the onset and decline portions
-  ts_full <- ALL_ts_anom_full_wide %>% 
-    filter(t >= event_sub$date_start,
-           t <= event_sub$date_end,
-           region == event_sub$region) %>% 
-    mutate(qnet_budget = c(0, qnet_mld_cum[1:event_sub$duration-1]) + sst[1],
-           lhf_budget = c(0, lhf_mld_cum[1:event_sub$duration-1]) + sst[1],
-           shf_budget = c(0, shf_mld_cum[1:event_sub$duration-1]) + sst[1],
-           lwr_budget = c(0, lwr_mld_cum[1:event_sub$duration-1]) + sst[1],
-           swr_budget = c(0, swr_mld_cum[1:event_sub$duration-1]) + sst[1])
-  ts_onset <- ts_full %>% 
-    filter(t >= event_sub$date_start,
-           t <= event_sub$date_peak)
-  ts_decline <- ts_full %>% 
-    filter(t >= event_sub$date_peak,
-           t <= event_sub$date_end)
+  # Subset the time series for the full, onset, and decline portions
+  ts_full <- ts_wrap("full", event_index)
+  ts_onset <- ts_wrap("onset", event_index)
+  ts_decline <- ts_wrap("decline", event_index)
 
   # Run the correlations
   R2_full <- broom::glance(lm(sst ~ t, ts_full))
@@ -488,14 +506,19 @@ stats_all <- function(df, df_event){
   
   # Combine and finish
   ts_stats <- rbind(ts_full_stats, ts_onset_stats, ts_decline_stats) %>% 
-    mutate(p = round(p, 4),
+    mutate(region = event_index$region,
+           event_no = event_index$event_no,
+           season = event_index$season,
+           p = round(p, 4),
            r = round(r, 2),
            CI_low = round(CI_low, 2),
            CI_high = round(CI_high, 2),
            t = round(t, 4),
            rmse = round(rmse, 4),
-           ts = factor(ts, levels = c("onset", "full", "decline")))
+           ts = factor(ts, levels = c("onset", "full", "decline"))) %>% 
+    dplyr::select(region, season, event_no, ts, everything())
 }
+
 
 # Load anomaly data -------------------------------------------------------
 
@@ -592,32 +615,17 @@ wide_packet_func <- function(df){
 fig_mag_func <- function(event_sub, region_sub){
   
   # Get the info for the focus event
-  event_sub <- OISST_MHW_event %>% 
+  event_index <- OISST_MHW_event %>% 
     filter(event_no == event_sub, region == region_sub)
   
   # Subset the time series for the onset and decline portions
-  ts_full <- ALL_ts_anom_full_wide %>% 
-    filter(t >= event_sub$date_start,
-           t <= event_sub$date_end,
-           region == event_sub$region) %>% 
-    mutate(qnet_budget = c(0, qnet_mld_cum[1:event_sub$duration-1]) + sst[1],
-           lhf_budget = c(0, lhf_mld_cum[1:event_sub$duration-1]) + sst[1],
-           shf_budget = c(0, shf_mld_cum[1:event_sub$duration-1]) + sst[1],
-           lwr_budget = c(0, lwr_mld_cum[1:event_sub$duration-1]) + sst[1],
-           swr_budget = c(0, swr_mld_cum[1:event_sub$duration-1]) + sst[1]) %>% 
-    dplyr::select(t, sst, qnet_budget:swr_budget) %>% 
-    pivot_longer(cols = sst:swr_budget, values_to = "val", names_to = "var")
-  ts_onset <- ts_full %>% 
-    filter(t >= event_sub$date_start,
-           t <= event_sub$date_peak) %>% 
-    mutate(ts = "onset")
-  ts_decline <- ts_full %>% 
-    filter(t >= event_sub$date_peak,
-           t <= event_sub$date_end) %>% 
-    mutate(ts = "decline")
+  ts_onset <- ts_wrap("onset", event_index)
+  ts_decline <- ts_wrap("decline", event_index)
   
   # Plot
   rbind(ts_onset, ts_decline) %>% 
+    dplyr::select(t, ts, sst, qnet_budget:swr_budget) %>% 
+    pivot_longer(cols = sst:swr_budget, values_to = "val", names_to = "var") %>% 
     mutate(ts = factor(ts, levels = c("onset", "decline"))) %>% 
     ggplot(aes(x = t, y = val)) +
     geom_line(aes(colour = var, linetype = ts)) +
