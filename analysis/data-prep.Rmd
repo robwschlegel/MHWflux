@@ -465,25 +465,25 @@ saveRDS(ALL_ts_anom, "shiny/ALL_ts_anom.Rda")
 
 ## Cumulative heat flux terms
 
-We also need to create cumulative heatflux terms as well as a few other choice variables. This is done by taking the first day during the MHW and adding the daily values together cumulatively until the end of the event. The daily values are first divided by the MLD on that day as seen above. The MLD value used to divide the daily variables accounts for the water density and specific heat constant: Q/(rho x Cp x hmld), where rho = 1042 and Cp ~= 4000. Th Qnet term calculated this way approximates the air-sea flux term.
+We also need to create cumulative heatflux terms as well as a few other choice variables. This is done by taking the first day during a phase of a MHW and adding the daily values together cumulatively until the end of that phase. The daily values are first divided by the MLD on that day as seen above. The MLD value used to divide the daily variables accounts for the water density and specific heat constant: Q/(rho x Cp x hmld), where rho = 1042 and Cp ~= 4000. The Qnet term calculated this way approximates the air-sea flux term.
 
 The movement terms aren't very useful and may not be worth including as they don't really show advection. So rather one can say that the parts of the heating that aren't explained by anything else could be attributed to advection through the process of elimination. For the moment they are still left in here.
 
 ```{r cum-heat-flux, eval=FALSE}
-# We're going to switch over to the NOAA OISST data for MHWs now
-ALL_ts_anom_cum <- ALL_ts_anom %>%
+# Event index used for calculations
+OISST_MHW_event_index <- OISST_MHW_event %>% 
+  mutate(row_index = 1:n())
+
+# Wide anomaly dataframe to be used for cumulative calculations
+ALL_ts_anom_wide <- ALL_ts_anom %>%
   dplyr::select(region, var, t, anom) %>% 
   pivot_wider(id_cols = c("region", "t"), names_from = var, values_from = anom) %>% 
-  dplyr::select(region:tcc, mslp, qnet, p_e, mld, mld_1, qnet_mld:shf_mld) %>% 
-  left_join(OISST_MHW_clim[,c("region", "t", "event_no")], by = c("region", "t")) %>% 
-  filter(event_no > 0) %>% 
-  group_by(region, event_no) %>% 
-  mutate_if(is.numeric, cumsum) %>% 
-  ungroup() %>% 
-  dplyr::select(region, event_no, t, everything()) %>% 
-  pivot_longer(cols = c(-region, -event_no, -t), names_to = "var", values_to = "anom") %>% 
-  mutate(var = paste0(var,"_cum")) %>% 
-  dplyr::select(region, var, event_no, t, anom)
+  dplyr::select(region:tcc, mslp, qnet, p_e, mld, mld_1, qnet_mld:shf_mld)
+
+# Calculate cumulative values based on MHW phases
+ALL_ts_anom_cum <- plyr::ddply(OISST_MHW_event_index, c("row_index"), cum_phase, 
+                               df = ALL_ts_anom_wide, .parallel = T) %>% 
+  dplyr::select(-row_index)
 
 # Save
 saveRDS(ALL_ts_anom_cum, "data/ALL_ts_anom_cum.Rda")

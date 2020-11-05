@@ -34,10 +34,8 @@ The magnitude of change in SSTa and SST_Qx for the onset and decline of MHWs wil
 Running correlations is useful to see how well certain variables change in relation to SSTa, but these do not show how similar those proportions of change are. In order to do this we need to calculate the RMSE between the SST anomalies and the SST_Qx terms. This may only be done with the SST_Qx terms because they are in the same units as SST. One additional tweak we will need here is to add the cumulative Qx term for the following day to the SSTa from the first day of the MHW. This is done so that we may see more closely how the developing Qx term matches to the development of the SSTa. Effectively this tells us how much the Qx term may be driving SSTa.
 
 ```{r MHW-var-cor, eval=FALSE}
-# Extract just the event info
+# Event index used for calculations
 OISST_MHW_event_index <- OISST_MHW_event %>% 
-  select(event_no, region, season) %>% 
-  ungroup() %>% 
   mutate(row_index = 1:n())
 
 # Run all the stats

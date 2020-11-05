@@ -370,6 +370,38 @@ calc_clim_anom <- function(df, point_accuracy){
 }
 
 
+# Cumulative values by phase ----------------------------------------------
+
+# testers...
+# event_index <- OISST_MHW_event_index[1,]
+# df <- ALL_ts_anom_wide
+cum_phase <- function(event_index, df){
+  ts_full <- df %>% 
+    filter(t >= event_index$date_start,
+           t <= event_index$date_end,
+           region == event_index$region) %>% 
+    mutate_if(is.numeric, cumsum) %>% 
+    mutate(ts = "full")
+  ts_onset <- df %>% 
+    filter(t >= event_index$date_start,
+           t <= event_index$date_peak,
+           region == event_index$region) %>% 
+    mutate_if(is.numeric, cumsum) %>% 
+    mutate(ts = "onset")
+  ts_decline <- df %>% 
+    filter(t >= event_index$date_peak,
+           t <= event_index$date_end,
+           region == event_index$region) %>% 
+    mutate_if(is.numeric, cumsum) %>% 
+    mutate(ts = "decline")
+  ts_ALL <- rbind(ts_full, ts_onset, ts_decline) %>% 
+    pivot_longer(lwr:shf_mld, names_to = "var", values_to = "anom") %>% 
+    mutate(event_no = event_index$event_no[1],
+           var = paste0(var,"_cum")) %>% 
+    dplyr::select(region, event_no, var, ts, t, anom)
+}
+
+
 # Correlation functions ---------------------------------------------------
 
 # Convenience function for magnitude of change calculations
