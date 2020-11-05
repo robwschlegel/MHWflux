@@ -155,6 +155,19 @@ MHW_event_prep <- OISST_MHW_event %>%
                 intensity_cumulative, rate_onset, rate_decline) %>% 
   mutate(region = toupper(region))
 
+# Overall summary of MHWs
+summary_total <- MHW_event_prep %>% 
+  dplyr::mutate(group = "Total") %>%
+  pivot_longer(duration:rate_decline) %>% 
+  group_by(group, name) %>% 
+  summarise(value_mean = round(mean(value), 1),
+            value_sd = round(sd(value), 1), .groups = "drop") %>% 
+  unite("value_summary", value_mean:value_sd, sep = " ± ") %>% 
+  pivot_wider(names_from = name, values_from = value_summary) %>% 
+  dplyr::rename(i_cum = intensity_cumulative, i_max = intensity_max, 
+                i_mean = intensity_mean, r_decline = rate_decline, r_onset = rate_onset) %>% 
+  dplyr::select(group, duration, i_mean, i_max, i_cum)
+
 # Differences between regions
 summary_region <- MHW_event_prep %>% 
   dplyr::rename(group = region) %>% 
@@ -182,9 +195,9 @@ summary_season <- MHW_event_prep %>%
   dplyr::select(group, duration, i_mean, i_max, i_cum)#, r_onset, r_decline)
 
 # Table showing the mean +- SD per region and season
-summary_region_season <- rbind(summary_region, summary_season)
-write_csv(summary_region_season, "figures/tab_1.csv")
-tab_1 <- knitr::kable(summary_region_season)#, format = "latex")
+summary_total_region_season <- rbind(summary_total, summary_region, summary_season)
+write_csv(summary_total_region_season, "figures/tab_1.csv")
+tab_1 <- knitr::kable(summary_total_region_season)#, format = "latex")
 tab_1
 
 
@@ -218,7 +231,7 @@ ALL_mag_prop %>%
   filter(ts == "decline", var == "Qnet") %>% 
   summarise(median(prop))
 
-# Number of events contributing negatively to onset or decline
+# Number of events contributing to onset or decline
 ALL_mag_prop %>% 
   filter(ts == "onset", var == "Qnet", mag_Qx > 0) %>% 
   summarise(n())
