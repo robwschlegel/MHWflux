@@ -1212,9 +1212,9 @@ fig_map_func <- function(map_var, fig_data, col_num, fig_height, fig_width){
       #            aes(x = -72, y = 51, label = paste0("n: ",count))) +
       # Onset and decline
       geom_label(data = fig_data$region_prop_label, size = 3, hjust = "left",
-                 aes(x = -79, y = 50.5, label = paste0("onset: ",onset), fill = onset_prop)) +
+                 aes(x = -79, y = 50.5, label = paste0("on: ",onset_prop*100,"%"))) +
       geom_label(data = fig_data$region_prop_label, size = 3, hjust = "left",
-                 aes(x = -79, y = 48.5, label = paste0("decline: ",decline), fill = decline_prop)) +
+                 aes(x = -79, y = 48.5, label = paste0("de: ",decline_prop*100,"%"))) +
       # Spring count
       geom_label(data = filter(fig_data$node_season_info, season_peak == "Spring"), size = 3,
                  aes(x = -55, y = 40, fill = node_season_prop,

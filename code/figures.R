@@ -231,9 +231,9 @@ ALL_mag_prop %>%
   filter(ts == "decline", var == "Qnet") %>% 
   summarise(median(prop))
 
-# Number of events contributing to onset or decline
+# Number of events when air-sea heat flux contributes negatively to onset or decline
 ALL_mag_prop %>% 
-  filter(ts == "onset", var == "Qnet", mag_Qx > 0) %>% 
+  filter(ts == "onset", var == "Qnet", mag_Qx < 0) %>% 
   summarise(n())
 ALL_mag_prop %>% 
   filter(ts == "decline", var == "Qnet", mag_Qx < 0) %>% 
@@ -241,9 +241,9 @@ ALL_mag_prop %>%
 
 # Filter out only events that were driven or decayed by Qnet
 ALL_mag_prop_onset <- ALL_mag_prop %>% 
-  filter(ts == "onset", prop > 0.5)
+  filter(ts == "onset", prop > 0.5, var == "Qnet")
 ALL_mag_prop_decline <- ALL_mag_prop %>% 
-  filter(ts == "decline", prop > 0.5)
+  filter(ts == "decline", prop > 0.5, var == "Qnet")
 
 # Scatterplot of mag T_Qx vs mag SSTa
 mag_scat <- ALL_mag_prop %>%
@@ -251,7 +251,6 @@ mag_scat <- ALL_mag_prop %>%
   ggplot(aes(x = mag_SSTa, y = mag_Qx)) +
   geom_segment(aes(x = -3.5, xend = 3.5, y = -3.5, yend = 3.5), linetype = "dashed", colour = "grey50") +
   geom_hline(aes(yintercept = 0), colour = "red") +
-  # geom_point(aes(colour = prop_cap), size = 1) +
   geom_point(aes(colour = prop_cat), size = 1) +
   geom_rect(aes(xmin = -3.5, xmax = -0.01, ymin = -3.5, ymax = 3.5), colour = "darkorchid1", fill = NA) +
   geom_rect(aes(xmin = 0.01, xmax = 3.5, ymin = -3.5, ymax = 3.5), colour = "deeppink1", fill = NA) +
@@ -259,31 +258,17 @@ mag_scat <- ALL_mag_prop %>%
   geom_label(aes(x = 0.8, y = 2.5, label = "onset"), colour = "deeppink1") +
   geom_segment(aes(x = -0.4, xend = -0.4, y = -1.4, yend = -3.3), arrow = arrow(angle = 30, length = unit(3, "mm")), colour = "darkorchid1") +
   geom_label(aes(x = -0.8, y = -2.5, label = "decline"), colour = "darkorchid1") +
-  # geom_point(data = ALL_mag_prop_onset, aes(fill = prop_cap), colour = "deeppink1", shape = 21, stroke = 1) +
-  # geom_point(data = ALL_mag_prop_decline, aes(fill = prop_cap), colour = "darkorchid1", shape = 21, stroke = 1) +
-  # geom_smooth(aes(colour = ts), method = "lm", show.legend = F) +
-  # geom_smooth(data = filter(ALL_mag_prop, ts == "onset"), colour = "deeppink1", method = "lm", size = 0.5) +
-  # geom_smooth(data = filter(ALL_mag_prop, ts == "decline"), colour = "darkorchid1", method = "lm", size = 0.5) +
-  # scale_fill_viridis_c(option = "D") +
-  # scale_fill_distiller(palette = "PuOr") +
-  # scale_colour_gradient2(low = pal_jco()(3)[1], mid = pal_jco()(3)[3], high = pal_jco()(3)[2]) +
   scale_colour_manual(values = c(pal_jco()(3)[c(1,3,2)])) +
-  # scale_colour_manual(values = c("deeppink1", "darkorchid1")) +
-  # scale_y_continuous(limits = c(-3, 3)) +
-  # scale_x_continuous(limits = c(-3, 3)) +
   coord_cartesian(xlim = c(-3.5, 3.5), ylim = c(-3.5, 3.5), expand = F) +
-  labs(x = "𝚫SSTa", 
-       # y = "𝚫*T*<sub>*Q* net</sub>",
+  labs(x = "𝚫SSTa",
        y = "𝚫T<sub>Qnet</sub>",
        colour = "Prop.") +
   theme(axis.title.y = ggtext::element_markdown(),
         legend.position = c(0.11, 0.76),
         legend.background = element_rect(colour = "black", fill = "white"),
-        # legend.direction = "horizontal",
         legend.title = element_text(size = 8),
         legend.text = element_text(size = 7),
         panel.background = element_rect(colour = "black"))
-  # theme(legend.position = "bottom")
 # mag_scat
 
 # Boxplots showing the range of magnitudes
@@ -448,12 +433,14 @@ tab_3
 
 # Figure 3 ----------------------------------------------------------------
 
+# RMSE averages per season
+ALL_RMSE %>% 
+  group_by(season, ts) %>% 
+  summarise_if(is.numeric, median)
+
 # Boxplots showing the range of RMSE values for T_Qx by season
-fig_3 <- ALL_RMSE %>%
+box_season <- ALL_RMSE %>%
   filter(var != "Qnet") %>% 
-  # mutate(var = as.character(var)) %>% 
-  # mutate(var = paste0("T<sub>",var,"</sub>")) +
-  # mutate(var = paste0("T[",var,"]")) +
   ggplot(aes(x = var, y = rmse)) +
   geom_boxplot(aes(fill = ts), outlier.size = 0.5) +
   geom_hline(aes(yintercept = 0), colour = "red") +
@@ -464,10 +451,27 @@ fig_3 <- ALL_RMSE %>%
   theme(legend.position = "top",
         panel.border = element_rect(colour = "black", fill = NA),
         axis.title.x = ggtext::element_markdown())
-# fig_3
-ggsave("figures/fig_3.jpg", fig_3, height = 120, width = 85, units = "mm", dpi = 300)
-ggsave("figures/fig_3.png", fig_3, height = 120, width = 85, units = "mm", dpi = 300)
-ggsave("figures/fig_3.pdf", fig_3, height = 120, width = 85, units = "mm")
+
+# Boxplots showing the range of RMSE values for T_Qx by season
+box_region <- ALL_RMSE %>%
+  filter(var != "Qnet") %>% 
+  ggplot(aes(x = var, y = rmse)) +
+  geom_boxplot(aes(fill = ts), outlier.size = 0.5) +
+  geom_hline(aes(yintercept = 0), colour = "red") +
+  scale_fill_manual(values = c("deeppink1", "darkorchid1")) +
+  facet_wrap(~region, nrow = 2) + 
+  # scale_x_discrete() +
+  labs(x = "Heat flux variable (T<sub>Qx</sub>)", y = "RMSE", fill = "Phase") +
+  theme(legend.position = "top",
+        panel.border = element_rect(colour = "black", fill = NA),
+        axis.title.x = ggtext::element_markdown())
+
+# Combine and save
+fig_3 <- ggpubr::ggarrange(box_season, box_region, labels = c("A)", "B)"), align = "h", 
+                           widths = c(1, 1.5), common.legend = T)
+ggsave("figures/fig_3.jpg", fig_3, height = 100, width = 180, units = "mm", dpi = 300)
+ggsave("figures/fig_3.png", fig_3, height = 120, width = 180, units = "mm", dpi = 300)
+ggsave("figures/fig_3.pdf", fig_3, height = 120, width = 180, units = "mm")
 
 
 # Figure 4 ----------------------------------------------------------------
@@ -653,8 +657,10 @@ node_prop <- base_data$region_prop_label %>%
   dplyr::select(node, onset_prop, decline_prop) %>% 
   distinct() %>% 
   mutate(onset_prop = paste0(onset_prop*100,"%"),
-         decline_prop = paste0(decline_prop*100,"%"))
-
+         decline_prop = paste0(decline_prop*100,"%"),
+         node = LETTERS[node]) %>% 
+  arrange(node)
+knitr::kable(node_prop)
 # NB: The rest of the table was written by hand by looking at the other figures/tables
 
 
