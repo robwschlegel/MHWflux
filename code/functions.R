@@ -3,7 +3,7 @@
 
 
 ## Ideas
-# MHW intensity globally is heterogenous
+# MHW intensity globally is heterogeneous
 # We also know that there are different primary drivers in different parts of the world
 # So can this knowledge be used to identify the drivers of the most extreme events?
 # Can the risk of certain drivers be quantified/ordered?
@@ -107,13 +107,6 @@ OISST_MHW_cats <- OISST_region_MHW %>%
 ALL_ts_anom <- readRDS("data/ALL_ts_anom.Rda")
 ALL_ts_anom_cum <- readRDS("data/ALL_ts_anom_cum.Rda")
 
-# Combine the anomaly dataframes into one
-  # NB: The shapes have changed so no longer sync up like this
-# ALL_ts_anom_full <- rbind(ALL_ts_anom[,c("region", "var", "t", "anom")], 
-#                           ALL_ts_anom_cum[,c("region", "var", "t", "anom")])
-# ALL_ts_anom_full_wide <- ALL_ts_anom_full %>% 
-#   pivot_wider(values_from = anom, names_from = var)
-
 # The magnitude, correlation, and RMSE results
 ALL_cor <- readRDS("data/ALL_cor.Rda")
 
@@ -168,14 +161,6 @@ lat_sub <- seq(NWA_corners[3], NWA_corners[4], by = 1)-0.125
 # Bathymetry data
   # Created in MHWNWA/analysis/polygon-prep.Rmd
 bathy <- readRDS("metadata/NWA_bathy_lowres.Rda")
-
-# The OISST land mask
-# land_mask_OISST <- readRDS("data/land_mask_OISST.Rda")
-
-# Filter it to the smaller domain only
-# land_mask_OISST_sub <- land_mask_OISST%>%
-#   filter(lon >= NWA_corners[1], lon <= NWA_corners[2],
-#          lat >= NWA_corners[3], lat <= NWA_corners[4])
 
 
 # Extract data from OISST NetCDF ------------------------------------------

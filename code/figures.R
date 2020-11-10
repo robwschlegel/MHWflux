@@ -101,7 +101,6 @@ NWA_study_area <- ggplot(data = NWA_coords, aes(x = lon, y = lat)) +
   geom_label(data = region_prop_label, label.size = 0, show.legend = F, size = 3,
              aes(x = lon_center, y = lat_center, label = count), colour = "black") +
   geom_polygon(data = map_base, aes(group = group), show.legend = F) +
-  # geom_label(data = total_count, aes(x = -75, y = 50, label = paste0("n: ",count))) +
   geom_label(data = filter(season_count_full, season == "Spring"), 
              aes(x = -55, y = 41, label = paste0(season,": ",count))) +
   geom_label(data = filter(season_count_full, season == "Summer"), 
@@ -179,7 +178,7 @@ summary_region <- MHW_event_prep %>%
   pivot_wider(names_from = name, values_from = value_summary) %>% 
   dplyr::rename(i_cum = intensity_cumulative, i_max = intensity_max, 
                 i_mean = intensity_mean, r_decline = rate_decline, r_onset = rate_onset) %>% 
-  dplyr::select(group, duration, i_mean, i_max, i_cum)#, r_onset, r_decline) # Decided to remove rate of onset and decline
+  dplyr::select(group, duration, i_mean, i_max, i_cum)
 
 # Differences between seasons
 summary_season <- MHW_event_prep %>% 
@@ -192,12 +191,12 @@ summary_season <- MHW_event_prep %>%
   pivot_wider(names_from = name, values_from = value_summary) %>% 
   dplyr::rename(i_cum = intensity_cumulative, i_max = intensity_max, 
                 i_mean = intensity_mean, r_decline = rate_decline, r_onset = rate_onset) %>% 
-  dplyr::select(group, duration, i_mean, i_max, i_cum)#, r_onset, r_decline)
+  dplyr::select(group, duration, i_mean, i_max, i_cum)
 
 # Table showing the mean +- SD per region and season
 summary_total_region_season <- rbind(summary_total, summary_region, summary_season)
 write_csv(summary_total_region_season, "figures/tab_1.csv")
-tab_1 <- knitr::kable(summary_total_region_season)#, format = "latex")
+tab_1 <- knitr::kable(summary_total_region_season)
 tab_1
 
 
@@ -279,7 +278,6 @@ mag_box <- ALL_mag_prop %>%
   geom_boxplot(aes(fill = ts), show.legend = F) +
   # geom_point(aes(colour = mag_SSTa), position = position_jitterdodge(dodge.width = 0.9)) +
   scale_fill_manual(values = c("deeppink1", "darkorchid1")) +
-  # scale_colour_viridis_c() +
   coord_cartesian(ylim = c(-2, 2)) +
   labs(x = "Phase", 
        y = "𝚫T<sub>Qnet</sub> / 𝚫SSTa") +
@@ -350,7 +348,7 @@ ALL_mag_count_ts_region_season <- rbind(ALL_mag_count_ts, ALL_mag_count_region, 
 
 # Print table
 write_csv(ALL_mag_count_ts_region_season, "figures/tab_2.csv")
-tab_2 <- knitr::kable(ALL_mag_count_ts_region_season)#, format = "latex")
+tab_2 <- knitr::kable(ALL_mag_count_ts_region_season)
 tab_2
 
 
@@ -427,7 +425,7 @@ ALL_RMSE_season <- ALL_RMSE_top %>%
 # Print table
 ALL_RMSE_ts_region_season <- rbind(ALL_RMSE_ts, ALL_RMSE_region, ALL_RMSE_season)
 write_csv(ALL_RMSE_ts_region_season, "figures/tab_3.csv")
-tab_3 <- knitr::kable(ALL_RMSE_ts_region_season)#, format = "latex")
+tab_3 <- knitr::kable(ALL_RMSE_ts_region_season)
 tab_3
 
 
@@ -446,7 +444,6 @@ box_season <- ALL_RMSE %>%
   geom_hline(aes(yintercept = 0), colour = "red") +
   scale_fill_manual(values = c("deeppink1", "darkorchid1")) +
   facet_wrap(~season, nrow = 2) + 
-  # scale_x_discrete() +
   labs(x = "Heat flux variable (T<sub>Qx</sub>)", y = "RMSE", fill = "Phase") +
   theme(legend.position = "top",
         panel.border = element_rect(colour = "black", fill = NA),
@@ -460,7 +457,6 @@ box_region <- ALL_RMSE %>%
   geom_hline(aes(yintercept = 0), colour = "red") +
   scale_fill_manual(values = c("deeppink1", "darkorchid1")) +
   facet_wrap(~region, nrow = 2) + 
-  # scale_x_discrete() +
   labs(x = "Heat flux variable (T<sub>Qx</sub>)", y = "RMSE", fill = "Phase") +
   theme(legend.position = "top",
         panel.border = element_rect(colour = "black", fill = NA),
@@ -496,13 +492,11 @@ hist_var <- function(var_choices, y_label){
     geom_vline(aes(xintercept = 0), colour = "red", size = 0.5) +
     geom_vline(aes(xintercept = mean_r), colour = "red", size = 0.5, linetype = "dashed") +
     geom_histogram(bins = 20) +
-    # scale_y_continuous(expand = c(0, 0)) +
     scale_x_continuous(expand = c(0, 0),
                        limits = c(-1, 1),
                        breaks = c(-0.5, 0, 0.5),
                        labels = c("-0.5", "0", "0.5")) +
     facet_grid(ts ~ var, labeller = label_parsed) +
-    # coord_fixed(ratio = 0.01) +
     labs(x = "Correlation value (*r*)", y = "Count", title = y_label) +
     theme(panel.border = element_rect(colour = "black", fill = NA),
           axis.title.x = ggtext::element_markdown())
@@ -510,9 +504,6 @@ hist_var <- function(var_choices, y_label){
     hist_plot <- hist_plot +
       scale_y_continuous(expand = c(0, 0), breaks = c(15, 45)) +
       labs(x = NULL)
-      # theme(axis.text.x = element_blank(),
-      #       axis.title.x = element_blank(),
-      #       axis.ticks.x = element_blank())
   } else{
     hist_plot <- hist_plot +
       scale_y_continuous(expand = c(0, 0), breaks = c(30, 90)) #+
@@ -520,8 +511,7 @@ hist_var <- function(var_choices, y_label){
   return(hist_plot)
 }
 
-# The three figures
-# hist_Q <- hist_var(c("Qnet", "Qlh", "Qsh", "Qlw", "Qsw"), "Heat flux")
+# The figures
 hist_air <- hist_var(c("Air", "P-E", "MSLP"), "Atmosphere")
 hist_ocean <- hist_var(c("SSS", "MLD", "Bottom"), "Ocean")
 
@@ -549,15 +539,9 @@ boxplot_var <-  function(var_choices, y_label){
     ggplot(aes(x = ts, y = r)) +
     geom_hline(aes(yintercept = 0), colour = "red", size = 1) +
     geom_boxplot(aes(fill = season), notch = F, outlier.size = 0.5) +
-    # geom_violin(aes(fill = season)) + # Looks bad
     facet_wrap(~var, nrow = 1, labeller = label_parsed) +
-    # scale_fill_manual(values = c("#a99a35", "#8baa43", "#e89c3c", "#9a9997")) + # muted
-    # scale_fill_manual(values = c("#d6cf36", "#a5bfe4", "#efbe83", "#b6b6b4")) + # larger spread
     scale_fill_manual(values = RColorBrewer::brewer.pal(4, "Accent")[c(1,4,3,2)]) +
     scale_y_continuous(expand = c(0, 0)) +
-    # scale_x_continuous(expand = c(0, 0)) +
-    # facet_grid(ts ~ Parameter2) +
-    # coord_equal(ratio = 1.5) +
     labs(x = "Phase", y = "Corr. value (*r*)", fill = "Season") +
     theme(panel.border = element_rect(colour = "black", fill = NA),
           axis.title.y = ggtext::element_markdown(),
@@ -565,16 +549,11 @@ boxplot_var <-  function(var_choices, y_label){
           legend.text = element_text(size = 6))
   if(y_label == "Atmosphere"){
     box_plot <- box_plot +
-      # scale_y_continuous(expand = c(0, 0), breaks = c(15, 45)) +
       labs(x = NULL)
-    # theme(axis.text.x = element_blank(),
-    #       axis.title.x = element_blank(),
-    #       axis.ticks.x = element_blank())
   }
   return(box_plot)
 }
 
-# box_Q <- boxplot_var(c("Qnet", "Qlh", "Qsh", "Qlw", "Qsw"), "Heat flux")
 box_air <- boxplot_var(c("Air", "P-E", "MSLP"), "Atmosphere")
 box_ocean <- boxplot_var(c("SSS", "MLD", "Bottom"), "Ocean")
 
@@ -631,7 +610,7 @@ SOM_info <- SOM$info
 MHW_SOM <- left_join(OISST_MHW_event, SOM_info, by = c("region", "event_no")) %>% 
   group_by(node) %>%
   mutate(count = n()) %>% 
-  dplyr::select(node, count, duration, intensity_mean, intensity_max, intensity_cumulative) %>% #, rate_onset, rate_decline) %>% 
+  dplyr::select(node, count, duration, intensity_mean, intensity_max, intensity_cumulative) %>%
   summarise_all(c("mean", "sd")) %>% 
   mutate_all(round, 1) %>% 
   mutate(node = LETTERS[node]) %>% 
@@ -640,9 +619,7 @@ MHW_SOM <- left_join(OISST_MHW_event, SOM_info, by = c("region", "event_no")) %>
   unite("D", duration_mean, duration_sd, sep = " ± ") %>% 
   unite("imean", intensity_mean_mean, intensity_mean_sd, sep = " ± ") %>% 
   unite("imax", intensity_max_mean, intensity_max_sd, sep = " ± ") %>% 
-  unite("icum", intensity_cumulative_mean, intensity_cumulative_sd, sep = " ± ") #%>% 
-  # unite("ronset", rate_onset_mean, rate_onset_sd, sep = " ± ") %>% 
-  # unite("rdecline", rate_decline_mean, rate_decline_sd, sep = " ± ")
+  unite("icum", intensity_cumulative_mean, intensity_cumulative_sd, sep = " ± ")
 write_csv(MHW_SOM, "figures/tab_4.csv")
 tab_4 <- knitr::kable(MHW_SOM)
 tab_4

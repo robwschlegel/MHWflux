@@ -1,7 +1,7 @@
 name: "MHWflux"
 output_dir: ../docs
 navbar:
-  title: "MHW heat flux"
+  title: "MHW air-sea heat flux"
   left:
   - text: "Overview"
     href: index.html
@@ -15,8 +15,6 @@ navbar:
       href: mhw-flux.html
     - text: "SOM analysis"
       href: som.html
-    # - text: "Heat flux K-means"
-      # href: k-means-flux.html
   - text: License
     href: license.html
   right:

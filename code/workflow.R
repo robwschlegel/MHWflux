@@ -15,16 +15,15 @@ source("code/functions.R")
 # dir("analysis", pattern = ".Rmd", full.names = T)
 
 # Run this to re-compile the entire project
-# system.time(
-# workflowr::wflow_publish(files = c("analysis/index.Rmd",
-#                                    "analysis/polygon-prep.Rmd",
-#                                    "analysis/data-prep.Rmd",
-#                                    "analysis/mhw-flux.Rmd",
-#                                    "analysis/som.Rmd"#,
-#                                    # "analysis/k-means-flux.Rmd"
-#                                    ),
-#                          message = "Re-built site.")
-# ) # 102 seconds
+system.time(
+workflowr::wflow_publish(files = c("analysis/index.Rmd",
+                                   "analysis/polygon-prep.Rmd",
+                                   "analysis/data-prep.Rmd",
+                                   "analysis/mhw-flux.Rmd",
+                                   "analysis/som.Rmd"
+                                   ),
+                         message = "Re-built site.")
+) # 102 seconds
 
 
 # Study area --------------------------------------------------------------
@@ -78,46 +77,53 @@ plyr::ddply(ERA5_files, c("var_group"), process_ERA5, .parallel = F) # Won't run
 
 ## Correct Qsw radiance decay with MLD
 # First load the MLD from GLORYS
-# registerDoParallel(cores = 25)
-# GLORYS_all <- plyr::ldply(GLORYS_files, load_GLORYS, .parallel = T, .paropts = c(.inorder = FALSE))
+registerDoParallel(cores = 25)
+GLORYS_all <- plyr::ldply(GLORYS_files, load_GLORYS, .parallel = T, .paropts = c(.inorder = FALSE))
+
 # Trim down to just MLD
-# GLORYS_MLD <- GLORYS_all %>% 
-#   dplyr::select(lon, lat, t, mld)
-# rm(GLORYS_all); gc()
+GLORYS_MLD <- GLORYS_all %>%
+  dplyr::select(lon, lat, t, mld)
+rm(GLORYS_all); gc()
+
 # Load the shortwave radiation data
-# ERA5_swr_anom <- readRDS("data/ERA5_swr_anom.Rda")
-# ERA5_swr_anom <- dplyr::select(lon, lat, t, msnswr)
+ERA5_swr_anom <- readRDS("data/ERA5_swr_anom.Rda")
+ERA5_swr_anom <- dplyr::select(lon, lat, t, msnswr)
+
 # Left join MLD
-# ERA5_swr_MLD <- left_join(ERA5_swr_anom, GLORYS_MLD, by = c("lon", "lat", "t"))
-# saveRDS(ERA5_swr_MLD, "data/ERA5_swr_MLD.Rda")
+ERA5_swr_MLD <- left_join(ERA5_swr_anom, GLORYS_MLD, by = c("lon", "lat", "t"))
+saveRDS(ERA5_swr_MLD, "data/ERA5_swr_MLD.Rda")
+
 # Calculate radiance decay
-# ERA5_down <- ERA5_swr_MLD %>% 
-#   # filter(lon == ERA5_swr_MLD$lon[1], lat == ERA5_swr_MLD$lat[1]) %>% # Testing
-#   mutate(down = msnswrf*((0.67*exp(-mld/1.00))+((1-0.67)*exp(-mld/17.00)))) %>% 
-#   mutate(down = replace_na(down, 0),
-#          swr_down = msnswrf-down)
-# saveRDS(ERA5_down, "data/ERA5_down.Rda")
+ERA5_down <- ERA5_swr_MLD %>%
+  # filter(lon == ERA5_swr_MLD$lon[1], lat == ERA5_swr_MLD$lat[1]) %>% # Testing
+  mutate(down = msnswrf*((0.67*exp(-mld/1.00))+((1-0.67)*exp(-mld/17.00)))) %>%
+  mutate(down = replace_na(down, 0),
+         swr_down = msnswrf-down)
+saveRDS(ERA5_down, "data/ERA5_down.Rda")
+
 # Test visuals
 # ERA5_down %>% 
 #   filter(t == "2000-01-01") %>% 
 #   ggplot(aes(x = lon, y = lat)) +
 #   geom_raster(aes(fill = swr_down)) +
 #   scale_fill_viridis_c()
+
 # Calculate time series
-# ERA5_down_ts <- ERA5_down %>% 
-#   right_join(OISST_regions, by = c("lon", "lat")) %>%
-#   na.omit() %>% 
-#   dplyr::select(region, t, swr_down) %>% 
-#   group_by(region, t) %>% 
-#   summarise_all("mean") %>% 
-#   ungroup()
-# saveRDS(ERA5_down_ts, "data/ERA5_down_ts.Rda")
+ERA5_down_ts <- ERA5_down %>%
+  right_join(OISST_regions, by = c("lon", "lat")) %>%
+  na.omit() %>%
+  dplyr::select(region, t, swr_down) %>%
+  group_by(region, t) %>%
+  summarise_all("mean") %>%
+  ungroup()
+saveRDS(ERA5_down_ts, "data/ERA5_down_ts.Rda")
+
 # Calculate swr_down anoms
-# ERA5_down_anom <- ERA5_down %>% 
-#   dplyr::select(lon, lat, t, swr_down) %>% 
-#   pivot_longer(cols = c(-lon, -lat, -t), names_to = "var", values_to = "val") %>% 
-#   plyr::ddply(., c("lon", "lat", "var"), calc_clim_anom, .parallel = T, point_accuracy = 8)
-# saveRDS(ERA5_down_anom, "data/ERA5_down_anom.Rda")
+ERA5_down_anom <- ERA5_down %>%
+  dplyr::select(lon, lat, t, swr_down) %>%
+  pivot_longer(cols = c(-lon, -lat, -t), names_to = "var", values_to = "val") %>%
+  plyr::ddply(., c("lon", "lat", "var"), calc_clim_anom, .parallel = T, point_accuracy = 8)
+saveRDS(ERA5_down_anom, "data/ERA5_down_anom.Rda")
 
 # Load the heat flux layers
 system.time(ERA5_lhf_anom <- readRDS("data/ERA5_lhf_anom.Rda")) # 40 seconds
@@ -160,7 +166,7 @@ rm(ERA5_qnet, ERA5_qnet_anom); gc()
 # Load the ts data
 ERA5_lwr_ts <- readRDS("data/ERA5_lwr_ts.Rda")
 # ERA5_swr_ts <- readRDS("data/ERA5_swr_ts.Rda") # Base values
-ERA5_swr_ts <- readRDS("data/ERA5_down_ts.Rda") # Corrected for MLD
+ERA5_swr_ts <- readRDS("data/ERA5_down_ts.Rda") # Corrected for by MLD loss
 ERA5_lhf_ts <- readRDS("data/ERA5_lhf_ts.Rda")
 ERA5_shf_ts <- readRDS("data/ERA5_shf_ts.Rda")
 ERA5_tcc_ts <- readRDS("data/ERA5_tcc_ts.Rda")
