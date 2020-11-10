@@ -355,7 +355,7 @@ div.tocify {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">MHW heat flux</a>
+      <a class="navbar-brand" href="index.html">MHW air-sea heat flux</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
@@ -431,7 +431,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2020-09-03
+<strong>Last updated:</strong> 2020-11-10
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -522,16 +522,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtreed1c9bad99578db1209cfc5bac4d417abfca33f85targetblankd1c9bada"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/robwschlegel/MHWflux/tree/d1c9bad99578db1209cfc5bac4d417abfca33f85" target="_blank">d1c9bad</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtreecbc5b749020fe72d28ecead35adc45c7734aaff3targetblankcbc5b74a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/robwschlegel/MHWflux/tree/cbc5b749020fe72d28ecead35adc45c7734aaff3" target="_blank">cbc5b74</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtreed1c9bad99578db1209cfc5bac4d417abfca33f85targetblankd1c9bada" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtreecbc5b749020fe72d28ecead35adc45c7734aaff3targetblankcbc5b74a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/robwschlegel/MHWflux/tree/d1c9bad99578db1209cfc5bac4d417abfca33f85" target="_blank">d1c9bad</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/robwschlegel/MHWflux/tree/cbc5b749020fe72d28ecead35adc45c7734aaff3" target="_blank">cbc5b74</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -543,6 +543,8 @@ Ignored files:
     Ignored:    data/ALL_anom.Rda
     Ignored:    data/ALL_other.Rda
     Ignored:    data/ALL_ts_anom.Rda
+    Ignored:    data/ERA5_down.Rda
+    Ignored:    data/ERA5_down_anom.Rda
     Ignored:    data/ERA5_evp_anom.Rda
     Ignored:    data/ERA5_lhf_anom.Rda
     Ignored:    data/ERA5_lwr_anom.Rda
@@ -550,6 +552,7 @@ Ignored files:
     Ignored:    data/ERA5_pcp_anom.Rda
     Ignored:    data/ERA5_qnet_anom.Rda
     Ignored:    data/ERA5_shf_anom.Rda
+    Ignored:    data/ERA5_swr_MLD.Rda
     Ignored:    data/ERA5_swr_anom.Rda
     Ignored:    data/ERA5_t2m_anom.Rda
     Ignored:    data/ERA5_tcc_anom.Rda
@@ -564,9 +567,10 @@ Ignored files:
 
 Unstaged changes:
     Modified:   analysis/_site.yml
-    Modified:   analysis/node-summary.Rmd
+    Modified:   code/figures.R
+    Modified:   code/functions.R
     Modified:   code/workflow.R
-    Modified:   talk/WHOI_talk.Rmd
+    Modified:   shiny/app.R
 
 </code></pre>
 <p>
@@ -605,6 +609,142 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/cbc5b749020fe72d28ecead35adc45c7734aaff3/analysis/data-prep.Rmd" target="_blank">cbc5b74</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-11-10
+</td>
+<td>
+Re-built site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/2e73a82555f15fcb9238a2e3cf8469157851bcba/analysis/data-prep.Rmd" target="_blank">2e73a82</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-11-05
+</td>
+<td>
+Changed how magnitude and RMSE calculations were made
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/abed6b295e91d58b13e35285ca59138f8912cfce/analysis/data-prep.Rmd" target="_blank">abed6b2</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-11-05
+</td>
+<td>
+Changing the way in which cumulative values are calculated
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/fdc115cce37cb92da773e0cb9c09ff4d92b07f25/analysis/data-prep.Rmd" target="_blank">fdc115c</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-10-08
+</td>
+<td>
+Propogated the swr down values through the results
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/54144a7c30d7c6248923c2ac6e5cf0582399f35a/analysis/data-prep.Rmd" target="_blank">54144a7</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-09-28
+</td>
+<td>
+Working on non-numeric node labels
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/d067646b335b5ccef3c04204e9004af6c42511b5/analysis/data-prep.Rmd" target="_blank">d067646</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-09-24
+</td>
+<td>
+Update to magnitude shcematic and improved tables
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/ab4326cd9d0a9619bd77ab9988778804aa998a56/analysis/data-prep.Rmd" target="_blank">ab4326c</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-09-03
+</td>
+<td>
+Some changes for the site to be re-built
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/robwschlegel/MHWflux/8d657581062aa4f04ebb53fd75a7cd27dc1fd62d/docs/data-prep.html" target="_blank">8d65758</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-09-03
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1413,7 +1553,7 @@ Adding the foundational content to the site
 </div>
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
-<p>The purpose of this vignette is to walk through the steps taken to prepare the data from the NOAA OISST, ERA5, and GLORYS products for the following analyses. The statistical analyses may be found in the <a href="">MHWs vs. heat flux</a> vignette, and the SOM analysis may be found in the <a href="">SOM</a> vignette.</p>
+<p>The purpose of this vignette is to walk through the steps taken to prepare the data from the NOAA OISST, ERA5, and GLORYS products for the following analyses. The statistical analyses may be found in the <a href="https://robwschlegel.github.io/MHWflux/mhw-flux.html">MHWs vs. heat flux</a> vignette, and the SOM analysis may be found in the <a href="https://robwschlegel.github.io/MHWflux/som.html">SOM</a> vignette.</p>
 <p>All of the libraries and functions used in this vignette, and the project more broadly, may be found <a href="https://github.com/robwschlegel/MHWflux/blob/master/code/functions.R">here</a>.</p>
 <pre class="r"><code># get everything up and running in one go
 source(&quot;code/functions.R&quot;)
@@ -1469,7 +1609,7 @@ robwschlegel
 </div>
 <div id="pixels-per-region" class="section level2">
 <h2>Pixels per region</h2>
-<p>In this study it was decided to use the higher resolution 1/12th degree GLORYS data. This means we will need to re-calculate which pixels fall within which region so we can later determine how to create our average SST time series per region as well as the other averaged heat flux term time series.</p>
+<p>We will now calculate which pixels fall within which region so we can later determine how to create our average SST time series per region as well as the other averaged heat flux, atmospheric, and oceanic time series.</p>
 <p>For the SOM we will want to have everything on the same 1/4 degree grid. For the ERA5 data this is an easy shift to make, but for the GLORYS 1/12 degree data we want to ensure that these smaller pixels are being matched correctly to the nearest centre of an OISST pixels. To do this we will create an index of pairings using a fastest nearest neighbour search.</p>
 <pre class="r"><code># Load one OISST file to extract the lon/lat coords
 OISST_grid &lt;- readRDS(&quot;../data/OISST/daily/1982/daily.1982-01-01.Rda&quot;) %&gt;% 
@@ -1600,6 +1740,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/8d657581062aa4f04ebb53fd75a7cd27dc1fd62d/docs/figure/data-prep.Rmd/grid-points-visual-1.png" target="_blank">8d65758</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-09-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/robwschlegel/MHWflux/blob/c6087d9b0fc349e3e566290d3406147941b13a73/docs/figure/data-prep.Rmd/grid-points-visual-1.png" target="_blank">c6087d9</a>
 </td>
 <td>
@@ -1624,7 +1775,7 @@ robwschlegel
 </table>
 </div>
 </div>
-<pre class="r"><code>ggsave(filename = &quot;output/NWA_product_regions.pdf&quot;, height = 5, width = 18)</code></pre>
+<pre class="r"><code># ggsave(filename = &quot;output/NWA_product_regions.pdf&quot;, height = 5, width = 18)</code></pre>
 <p>With our pixels per region determined we may now go about creating the average time series for each region from the OISST, GLORYS, and ERA5 data.</p>
 </div>
 <div id="oisst-data-processing" class="section level2">
@@ -1757,18 +1908,19 @@ GLORYS_all_anom %&gt;%
 </div>
 <div id="era5-data-processing" class="section level2">
 <h2>ERA5 data processing</h2>
-<p>Note that the ERA5 data are on an hourly 0.25 degree spatiotemporal grid. This loading process constrains them to a daily 0.25 degree grid that matches the OISST data before finally converting them to a single time series per region.</p>
+<p>Note that the ERA5 data are on an hourly 1/4 degree spatiotemporal grid. This loading process constrains them to a daily 1/4 degree grid that matches the OISST data before finally converting them to a single time series per region.</p>
 <pre class="r"><code># See the code/workflow script for the code used for ERA5 data prep
 # There is too much code to run from an RMarkdown document as each variable must loaded individually</code></pre>
 </div>
 <div id="mhws-per-region" class="section level2">
 <h2>MHWs per region</h2>
-<p>We will be using the SST values from GLORYS for calculating the MHWs and will use the standard Hobday definition with a base period of 1993-01-01 to 2018-12-25. We are using an uneven length year as the data do not quite extend to the end of December. It was decided that the increased accuracy of the climatology from the 2018 year outweighed the negative consideration of having a clim period that excludes a few days of winter.</p>
+<p>We will be using the SST values from OISST for calculating the MHWs and will use the standard Hobday definition with a base period of 1993-01-01 to 2018-12-25. We are using an uneven length year as the GLORYS data do not quite extend to the end of December. It was decided that the increased accuracy of the climatology from the 2018 year outweighed the negative consideration of having a clim period that excludes a few days of winter.</p>
 <pre class="r"><code># Load the data
 OISST_all_ts &lt;- readRDS(&quot;data/OISST_all_ts.Rda&quot;)
 
 # Calculate the MHWs
 OISST_region_MHW &lt;- OISST_all_ts %&gt;%
+  mutate(region = toupper(region)) %&gt;% 
   group_by(region) %&gt;%
   nest() %&gt;%
   mutate(clims = map(data, ts2clm,
@@ -1803,12 +1955,12 @@ OISST_MHW_new %&gt;%
 <pre><code># A tibble: 6 x 2
   region count
   &lt;chr&gt;  &lt;int&gt;
-1 cbs       53
-2 gm        47
-3 gsl       49
-4 mab       57
-5 nfs       44
-6 ss        41</code></pre>
+1 CBS       53
+2 GM        47
+3 GSL       49
+4 MAB       57
+5 NFS       44
+6 SS        41</code></pre>
 <pre class="r"><code># Old
 OISST_MHW_old %&gt;% 
   group_by(region) %&gt;% 
@@ -1831,12 +1983,12 @@ OISST_MHW_new %&gt;%
 <pre><code># A tibble: 6 x 7
   region duration intensity_mean intensity_max intensity_cumul… rate_onset
   &lt;chr&gt;     &lt;dbl&gt;          &lt;dbl&gt;         &lt;dbl&gt;            &lt;dbl&gt;      &lt;dbl&gt;
-1 cbs        13.3           1.76          2.12             24.7      0.172
-2 gm         14.6           1.79          2.13             26.9      0.146
-3 gsl        12.7           1.63          2.05             21.6      0.168
-4 mab        13.4           1.76          2.12             25.0      0.161
-5 nfs        15.8           1.69          2.07             28.4      0.153
-6 ss         18.1           1.99          2.43             37.7      0.192
+1 CBS        13.3           1.76          2.12             24.7      0.172
+2 GM         14.6           1.79          2.13             26.9      0.146
+3 GSL        12.7           1.63          2.05             21.6      0.168
+4 MAB        13.4           1.76          2.12             25.0      0.161
+5 NFS        15.8           1.69          2.07             28.4      0.153
+6 SS         18.1           1.99          2.43             37.7      0.192
 # … with 1 more variable: rate_decline &lt;dbl&gt;</code></pre>
 <pre class="r"><code># Old
 OISST_MHW_old %&gt;% 
@@ -1895,9 +2047,9 @@ summary_region &lt;- OISST_MHW_event %&gt;%
   ungroup() %&gt;%
   pivot_longer(duration:rate_decline) %&gt;% 
   group_by(group, name) %&gt;% 
-  summarise(value_mean = round(mean(value), 2),
-            value_sd = round(sd(value), 2), .groups = &quot;drop&quot;) %&gt;% 
-  unite(&quot;value_summary&quot;, value_mean:value_sd, sep = &quot;±&quot;) %&gt;% 
+  summarise(value_mean = round(mean(value), 1),
+            value_sd = round(sd(value), 1), .groups = &quot;drop&quot;) %&gt;% 
+  unite(&quot;value_summary&quot;, value_mean:value_sd, sep = &quot; ± &quot;) %&gt;% 
   pivot_wider(names_from = name, values_from = value_summary) %&gt;% 
   dplyr::rename(i_cum = intensity_cumulative, i_max = intensity_max, 
                 i_mean = intensity_mean, r_decline = rate_decline, r_onset = rate_onset) %&gt;% 
@@ -1914,9 +2066,9 @@ summary_season &lt;- OISST_MHW_event %&gt;%
   ungroup() %&gt;%
   pivot_longer(duration:rate_decline) %&gt;% 
   group_by(group, name) %&gt;% 
-  summarise(value_mean = round(mean(value), 2),
-            value_sd = round(sd(value), 2), .groups = &quot;drop&quot;) %&gt;% 
-  unite(&quot;value_summary&quot;, value_mean:value_sd, sep = &quot;±&quot;) %&gt;% 
+  summarise(value_mean = round(mean(value), 1),
+            value_sd = round(sd(value), 1), .groups = &quot;drop&quot;) %&gt;% 
+  unite(&quot;value_summary&quot;, value_mean:value_sd, sep = &quot; ± &quot;) %&gt;% 
   pivot_wider(names_from = name, values_from = value_summary) %&gt;% 
   dplyr::rename(i_cum = intensity_cumulative, i_max = intensity_max, 
                 i_mean = intensity_mean, r_decline = rate_decline, r_onset = rate_onset) %&gt;% 
@@ -1940,93 +2092,93 @@ knitr::kable(summary_region_season)</code></pre>
 <tbody>
 <tr class="odd">
 <td align="left">CBS</td>
-<td align="left">13.3±11.32</td>
-<td align="left">1.76±0.46</td>
-<td align="left">2.12±0.7</td>
-<td align="left">24.72±24.31</td>
-<td align="left">0.17±0.17</td>
-<td align="left">0.2±0.2</td>
+<td align="left">13.3 ± 11.3</td>
+<td align="left">1.8 ± 0.5</td>
+<td align="left">2.1 ± 0.7</td>
+<td align="left">24.7 ± 24.3</td>
+<td align="left">0.2 ± 0.2</td>
+<td align="left">0.2 ± 0.2</td>
 </tr>
 <tr class="even">
 <td align="left">GM</td>
-<td align="left">14.57±9.39</td>
-<td align="left">1.79±0.32</td>
-<td align="left">2.13±0.51</td>
-<td align="left">26.92±19.1</td>
-<td align="left">0.15±0.11</td>
-<td align="left">0.16±0.13</td>
+<td align="left">14.6 ± 9.4</td>
+<td align="left">1.8 ± 0.3</td>
+<td align="left">2.1 ± 0.5</td>
+<td align="left">26.9 ± 19.1</td>
+<td align="left">0.1 ± 0.1</td>
+<td align="left">0.2 ± 0.1</td>
 </tr>
 <tr class="odd">
 <td align="left">GSL</td>
-<td align="left">12.73±10.86</td>
-<td align="left">1.63±0.61</td>
-<td align="left">2.05±0.84</td>
-<td align="left">21.64±19.6</td>
-<td align="left">0.17±0.12</td>
-<td align="left">0.24±0.23</td>
+<td align="left">12.7 ± 10.9</td>
+<td align="left">1.6 ± 0.6</td>
+<td align="left">2 ± 0.8</td>
+<td align="left">21.6 ± 19.6</td>
+<td align="left">0.2 ± 0.1</td>
+<td align="left">0.2 ± 0.2</td>
 </tr>
 <tr class="even">
 <td align="left">MAB</td>
-<td align="left">13.44±15.21</td>
-<td align="left">1.76±0.33</td>
-<td align="left">2.12±0.59</td>
-<td align="left">25.03±32.66</td>
-<td align="left">0.16±0.09</td>
-<td align="left">0.18±0.17</td>
+<td align="left">13.4 ± 15.2</td>
+<td align="left">1.8 ± 0.3</td>
+<td align="left">2.1 ± 0.6</td>
+<td align="left">25 ± 32.7</td>
+<td align="left">0.2 ± 0.1</td>
+<td align="left">0.2 ± 0.2</td>
 </tr>
 <tr class="odd">
 <td align="left">NFS</td>
-<td align="left">15.82±16.77</td>
-<td align="left">1.69±0.44</td>
-<td align="left">2.07±0.68</td>
-<td align="left">28.41±34.69</td>
-<td align="left">0.15±0.12</td>
-<td align="left">0.17±0.21</td>
+<td align="left">15.8 ± 16.8</td>
+<td align="left">1.7 ± 0.4</td>
+<td align="left">2.1 ± 0.7</td>
+<td align="left">28.4 ± 34.7</td>
+<td align="left">0.2 ± 0.1</td>
+<td align="left">0.2 ± 0.2</td>
 </tr>
 <tr class="even">
 <td align="left">SS</td>
-<td align="left">18.12±16.32</td>
-<td align="left">1.99±0.31</td>
-<td align="left">2.43±0.51</td>
-<td align="left">37.66±35.73</td>
-<td align="left">0.19±0.16</td>
-<td align="left">0.19±0.25</td>
+<td align="left">18.1 ± 16.3</td>
+<td align="left">2 ± 0.3</td>
+<td align="left">2.4 ± 0.5</td>
+<td align="left">37.7 ± 35.7</td>
+<td align="left">0.2 ± 0.2</td>
+<td align="left">0.2 ± 0.2</td>
 </tr>
 <tr class="odd">
 <td align="left">Spring</td>
-<td align="left">13.28±10.24</td>
-<td align="left">1.93±0.4</td>
-<td align="left">2.43±0.69</td>
-<td align="left">26.76±23.56</td>
-<td align="left">0.2±0.13</td>
-<td align="left">0.24±0.16</td>
+<td align="left">13.3 ± 10.2</td>
+<td align="left">1.9 ± 0.4</td>
+<td align="left">2.4 ± 0.7</td>
+<td align="left">26.8 ± 23.6</td>
+<td align="left">0.2 ± 0.1</td>
+<td align="left">0.2 ± 0.2</td>
 </tr>
 <tr class="even">
 <td align="left">Summer</td>
-<td align="left">13.04±11.16</td>
-<td align="left">1.97±0.33</td>
-<td align="left">2.38±0.53</td>
-<td align="left">26.86±25.47</td>
-<td align="left">0.21±0.15</td>
-<td align="left">0.27±0.28</td>
+<td align="left">13 ± 11.2</td>
+<td align="left">2 ± 0.3</td>
+<td align="left">2.4 ± 0.5</td>
+<td align="left">26.9 ± 25.5</td>
+<td align="left">0.2 ± 0.2</td>
+<td align="left">0.3 ± 0.3</td>
 </tr>
 <tr class="odd">
 <td align="left">Autumn</td>
-<td align="left">15.84±13.49</td>
-<td align="left">1.68±0.26</td>
-<td align="left">2.01±0.45</td>
-<td align="left">28.19±27.48</td>
-<td align="left">0.12±0.07</td>
-<td align="left">0.13±0.09</td>
+<td align="left">15.8 ± 13.5</td>
+<td align="left">1.7 ± 0.3</td>
+<td align="left">2 ± 0.4</td>
+<td align="left">28.2 ± 27.5</td>
+<td align="left">0.1 ± 0.1</td>
+<td align="left">0.1 ± 0.1</td>
 </tr>
 <tr class="even">
 <td align="left">Winter</td>
-<td align="left">16.74±19.08</td>
-<td align="left">1.32±0.45</td>
-<td align="left">1.61±0.68</td>
-<td align="left">26.04±38.34</td>
-<td align="left">0.11±0.09</td>
-<td align="left">0.09±0.05</td>
+<td align="left">16.7 ± 19.1</td>
+<td align="left">1.3 ± 0.4</td>
+<td align="left">1.6 ± 0.7</td>
+<td align="left">26 ± 38.3</td>
+<td align="left">0.1 ± 0.1</td>
+<td align="left">0.1 ± 0.1</td>
 </tr>
 </tbody>
 </table>
@@ -2034,20 +2186,21 @@ knitr::kable(summary_region_season)</code></pre>
 </div>
 <div id="region-clims-anoms-per-variable" class="section level2">
 <h2>Region clims + anoms per variable</h2>
-<p>The analyses to come are going to be performed on anomaly values, not the original time series. In order to calculate the anomalies we are first going to need the climatologies for each variable. We will use the Hobday definition of climatology creation and then subtract the expected climatology from the observed values. We are again using the 1993-01-01 to 2018-12-25 base period for these calculations to ensure consistency throughout the project.</p>
+<p>The analyses to come are going to be performed on anomaly values, not the original time series. In order to calculate the anomalies we are first going to need the climatologies for each variable. We will use the Hobday definition of climatology creation and then subtract the expected climatology from the observed values. We are again using the 1993-01-01 to 2018-12-25 base period for these calculations to ensure consistency throughout the project. The daily air-sea heat flux values are first divided by the MLD on that day. The MLD value used to divide the daily variables accounts for the water density and specific heat constant: Q/(rho x Cp x hmld), where rho = 1024 and Cp ~= 4000. The Qnet term calculated this way approximates the air-sea flux term.</p>
 <pre class="r"><code># Load the data
 GLORYS_all_ts &lt;- readRDS(&quot;data/GLORYS_all_ts.Rda&quot;)
 ERA5_all_ts &lt;- readRDS(&quot;data/ERA5_all_ts.Rda&quot;)
 OISST_all_ts &lt;- readRDS(&quot;data/OISST_all_ts.Rda&quot;)
 ALL_ts &lt;- left_join(ERA5_all_ts, GLORYS_all_ts, by = c(&quot;region&quot;, &quot;t&quot;)) %&gt;% 
   left_join(OISST_all_ts, by = c(&quot;region&quot;, &quot;t&quot;)) %&gt;% 
-  filter(t &lt;= &quot;2018-12-31&quot;)
+  filter(t &lt;= &quot;2018-12-31&quot;) %&gt;% 
+  mutate(region = toupper(region))
 
-# Calculate GLORYS clims and anoms
+# Calculate all clims and anoms
   # Also give better names to the variables
   # Also convert the Qx terms from seconds to days by multiplying by 86,400
 ALL_ts_anom &lt;- ALL_ts %&gt;%
-  dplyr::rename(lwr = msnlwrf, swr = msnswrf, lhf = mslhf, 
+  dplyr::rename(lwr = msnlwrf, swr = swr_down, lhf = mslhf, 
                 shf = msshf, mslp = msl, sst = temp.y) %&gt;% 
   dplyr::select(-wind_dir, -cur_dir, -temp.x) %&gt;% 
   mutate(qnet_mld = (qnet*86400)/(mld*1024*4000),
@@ -2072,22 +2225,23 @@ saveRDS(ALL_ts_anom, &quot;shiny/ALL_ts_anom.Rda&quot;)</code></pre>
 </div>
 <div id="cumulative-heat-flux-terms" class="section level2">
 <h2>Cumulative heat flux terms</h2>
-<p>We also need to create cumulative heatflux terms as well as a few other choice variables. This is done by taking the first day during the MHW and adding the daily values together cumulatively until the end of the event. The daily values are first divided by the MLD on that day as seen above. The MLD value used to divide the daily variables accounts for the water density and specific heat constant: Q/(rho x Cp x hmld), where rho = 1042 and Cp ~= 4000. Th Qnet term calculated this way approximates the air-sea flux term.</p>
+<p>We also need to create cumulative air-sea heat flux terms as well as a few other choice variables. This is done by taking the first day during a phase of a MHW and adding the daily values together cumulatively until the end of that phase.</p>
 <p>The movement terms aren’t very useful and may not be worth including as they don’t really show advection. So rather one can say that the parts of the heating that aren’t explained by anything else could be attributed to advection through the process of elimination. For the moment they are still left in here.</p>
-<pre class="r"><code># We&#39;re going to switch over to the NOAA OISST data for MHWs now
-ALL_ts_anom_cum &lt;- ALL_ts_anom %&gt;%
+<pre class="r"><code># Event index used for calculations
+OISST_MHW_event_index &lt;- OISST_MHW_event %&gt;% 
+  ungroup() %&gt;% 
+  mutate(row_index = 1:n())
+
+# Wide anomaly dataframe to be used for cumulative calculations
+ALL_ts_anom_wide &lt;- ALL_ts_anom %&gt;%
   dplyr::select(region, var, t, anom) %&gt;% 
   pivot_wider(id_cols = c(&quot;region&quot;, &quot;t&quot;), names_from = var, values_from = anom) %&gt;% 
-  dplyr::select(region:tcc, mslp, qnet, p_e, mld, mld_1, qnet_mld:shf_mld) %&gt;% 
-  left_join(OISST_MHW_clim[,c(&quot;region&quot;, &quot;t&quot;, &quot;event_no&quot;)], by = c(&quot;region&quot;, &quot;t&quot;)) %&gt;% 
-  filter(event_no &gt; 0) %&gt;% 
-  group_by(region, event_no) %&gt;% 
-  mutate_if(is.numeric, cumsum) %&gt;% 
-  ungroup() %&gt;% 
-  dplyr::select(region, event_no, t, everything()) %&gt;% 
-  pivot_longer(cols = c(-region, -event_no, -t), names_to = &quot;var&quot;, values_to = &quot;anom&quot;) %&gt;% 
-  mutate(var = paste0(var,&quot;_cum&quot;)) %&gt;% 
-  dplyr::select(region, var, event_no, t, anom)
+  dplyr::select(region:tcc, mslp, qnet, p_e, mld, mld_1, qnet_mld:shf_mld)
+
+# Calculate cumulative values based on MHW phases
+ALL_ts_anom_cum &lt;- plyr::ddply(OISST_MHW_event_index, c(&quot;row_index&quot;), cum_phase, 
+                               df = ALL_ts_anom_wide, .parallel = T) %&gt;% 
+  dplyr::select(-row_index)
 
 # Save
 saveRDS(ALL_ts_anom_cum, &quot;data/ALL_ts_anom_cum.Rda&quot;)
@@ -2109,13 +2263,13 @@ saveRDS(ALL_ts_anom_cum, &quot;shiny/ALL_ts_anom_cum.Rda&quot;)</code></pre>
 </p>
 <div id="workflowr-sessioninfo" class="collapse">
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>R version 4.0.2 (2020-06-22)
+<pre><code>R version 4.0.3 (2020-10-10)
 Platform: x86_64-pc-linux-gnu (64-bit)
-Running under: Ubuntu 16.04.6 LTS
+Running under: Ubuntu 20.04.1 LTS
 
 Matrix products: default
-BLAS:   /usr/lib/openblas-base/libblas.so.3
-LAPACK: /usr/lib/libopenblasp-r0.2.18.so
+BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3
+LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/liblapack.so.3
 
 locale:
  [1] LC_CTYPE=en_CA.UTF-8       LC_NUMERIC=C              
@@ -2134,10 +2288,10 @@ other attached packages:
  [4] doParallel_1.0.15    iterators_1.0.12     foreach_1.5.0       
  [7] Metrics_0.1.4        yasomi_0.3           proxy_0.4-24        
 [10] e1071_1.7-3          ggraph_2.0.3         correlation_0.3.0   
-[13] tidync_0.2.4         heatwaveR_0.4.4.9000 lubridate_1.7.9     
-[16] data.table_1.13.0    forcats_0.5.0        stringr_1.4.0       
-[19] dplyr_1.0.1          purrr_0.3.4          readr_1.3.1         
-[22] tidyr_1.1.1          tibble_3.0.3         ggplot2_3.3.2       
+[13] tidync_0.2.4         heatwaveR_0.4.4.9001 lubridate_1.7.9     
+[16] data.table_1.13.2    forcats_0.5.0        stringr_1.4.0       
+[19] dplyr_1.0.2          purrr_0.3.4          readr_1.3.1         
+[22] tidyr_1.1.2          tibble_3.0.4         ggplot2_3.3.2       
 [25] tidyverse_1.3.0     
 
 loaded via a namespace (and not attached):
@@ -2145,25 +2299,25 @@ loaded via a namespace (and not attached):
  [5] rio_0.5.16         rprojroot_1.3-2    parameters_0.8.2   fs_1.5.0          
  [9] rstudioapi_0.11    farver_2.0.3       graphlayouts_0.7.0 ggrepel_0.8.2     
 [13] fansi_0.4.1        xml2_1.3.2         codetools_0.2-16   ncdf4_1.17        
-[17] knitr_1.29         polyclip_1.10-0    jsonlite_1.7.0     workflowr_1.6.2   
+[17] knitr_1.29         polyclip_1.10-0    jsonlite_1.7.1     workflowr_1.6.2   
 [21] broom_0.7.0        dbplyr_1.4.4       ggforce_0.3.2      effectsize_0.3.2  
-[25] compiler_4.0.2     httr_1.4.2         backports_1.1.8    assertthat_0.2.1  
-[29] lazyeval_0.2.2     cli_2.0.2          later_1.1.0.1      tweenr_1.0.1      
-[33] htmltools_0.5.0    tools_4.0.2        igraph_1.2.5       gtable_0.3.0      
-[37] glue_1.4.1         Rcpp_1.0.5         carData_3.0-4      cellranger_1.1.0  
-[41] RNetCDF_2.3-1      vctrs_0.3.2        insight_0.9.0      xfun_0.16         
+[25] compiler_4.0.3     httr_1.4.2         backports_1.1.10   assertthat_0.2.1  
+[29] lazyeval_0.2.2     cli_2.1.0          later_1.1.0.1      tweenr_1.0.1      
+[33] htmltools_0.5.0    tools_4.0.3        igraph_1.2.6       gtable_0.3.0      
+[37] glue_1.4.2         Rcpp_1.0.5         carData_3.0-4      cellranger_1.1.0  
+[41] RNetCDF_2.3-1      vctrs_0.3.4        insight_0.9.0      xfun_0.16         
 [45] openxlsx_4.1.5     rvest_0.3.6        lifecycle_0.2.0    ncmeta_0.2.5      
-[49] rstatix_0.6.0      MASS_7.3-51.6      scales_1.1.1       tidygraph_1.2.0   
+[49] rstatix_0.6.0      MASS_7.3-53        scales_1.1.1       tidygraph_1.2.0   
 [53] hms_0.5.3          promises_1.1.1     yaml_2.2.1         curl_4.3          
-[57] stringi_1.4.6      highr_0.8          bayestestR_0.7.2   zip_2.0.4         
-[61] rlang_0.4.7        pkgconfig_2.0.3    evaluate_0.14      labeling_0.3      
-[65] htmlwidgets_1.5.1  tidyselect_1.1.0   magrittr_1.5       R6_2.4.1          
-[69] generics_0.0.2     DBI_1.1.0          pillar_1.4.6       haven_2.3.1       
-[73] whisker_0.4        foreign_0.8-79     withr_2.2.0        abind_1.4-5       
+[57] stringi_1.5.3      highr_0.8          bayestestR_0.7.2   zip_2.0.4         
+[61] rlang_0.4.8        pkgconfig_2.0.3    evaluate_0.14      labeling_0.4.2    
+[65] htmlwidgets_1.5.2  tidyselect_1.1.0   magrittr_1.5       R6_2.5.0          
+[69] generics_0.1.0     DBI_1.1.0          pillar_1.4.6       haven_2.3.1       
+[73] whisker_0.4        foreign_0.8-79     withr_2.3.0        abind_1.4-5       
 [77] modelr_0.1.8       crayon_1.3.4       car_3.0-8          utf8_1.1.4        
-[81] plotly_4.9.2.1     rmarkdown_2.3      viridis_0.5.1      grid_4.0.2        
+[81] plotly_4.9.2.1     rmarkdown_2.3      viridis_0.5.1      grid_4.0.3        
 [85] readxl_1.3.1       blob_1.2.1         git2r_0.27.1       reprex_0.3.0      
-[89] digest_0.6.25      httpuv_1.5.4       munsell_0.5.0      viridisLite_0.3.0 </code></pre>
+[89] digest_0.6.27      httpuv_1.5.4       munsell_0.5.0      viridisLite_0.3.0 </code></pre>
 </div>
 </div>
 

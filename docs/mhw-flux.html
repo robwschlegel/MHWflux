@@ -355,7 +355,7 @@ div.tocify {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">MHW heat flux</a>
+      <a class="navbar-brand" href="index.html">MHW air-sea heat flux</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
@@ -431,7 +431,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2020-09-03
+<strong>Last updated:</strong> 2020-11-10
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -522,16 +522,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtreed1c9bad99578db1209cfc5bac4d417abfca33f85targetblankd1c9bada"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/robwschlegel/MHWflux/tree/d1c9bad99578db1209cfc5bac4d417abfca33f85" target="_blank">d1c9bad</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtreecbc5b749020fe72d28ecead35adc45c7734aaff3targetblankcbc5b74a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/robwschlegel/MHWflux/tree/cbc5b749020fe72d28ecead35adc45c7734aaff3" target="_blank">cbc5b74</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtreed1c9bad99578db1209cfc5bac4d417abfca33f85targetblankd1c9bada" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtreecbc5b749020fe72d28ecead35adc45c7734aaff3targetblankcbc5b74a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/robwschlegel/MHWflux/tree/d1c9bad99578db1209cfc5bac4d417abfca33f85" target="_blank">d1c9bad</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/robwschlegel/MHWflux/tree/cbc5b749020fe72d28ecead35adc45c7734aaff3" target="_blank">cbc5b74</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -543,6 +543,8 @@ Ignored files:
     Ignored:    data/ALL_anom.Rda
     Ignored:    data/ALL_other.Rda
     Ignored:    data/ALL_ts_anom.Rda
+    Ignored:    data/ERA5_down.Rda
+    Ignored:    data/ERA5_down_anom.Rda
     Ignored:    data/ERA5_evp_anom.Rda
     Ignored:    data/ERA5_lhf_anom.Rda
     Ignored:    data/ERA5_lwr_anom.Rda
@@ -550,6 +552,7 @@ Ignored files:
     Ignored:    data/ERA5_pcp_anom.Rda
     Ignored:    data/ERA5_qnet_anom.Rda
     Ignored:    data/ERA5_shf_anom.Rda
+    Ignored:    data/ERA5_swr_MLD.Rda
     Ignored:    data/ERA5_swr_anom.Rda
     Ignored:    data/ERA5_t2m_anom.Rda
     Ignored:    data/ERA5_tcc_anom.Rda
@@ -564,10 +567,10 @@ Ignored files:
 
 Unstaged changes:
     Modified:   analysis/_site.yml
-    Modified:   analysis/node-summary.Rmd
+    Modified:   code/figures.R
+    Modified:   code/functions.R
     Modified:   code/workflow.R
-    Modified:   output/NWA_product_regions.pdf
-    Modified:   talk/WHOI_talk.Rmd
+    Modified:   shiny/app.R
 
 </code></pre>
 <p>
@@ -606,6 +609,312 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/cbc5b749020fe72d28ecead35adc45c7734aaff3/analysis/mhw-flux.Rmd" target="_blank">cbc5b74</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-11-10
+</td>
+<td>
+Re-built site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/2e73a82555f15fcb9238a2e3cf8469157851bcba/analysis/mhw-flux.Rmd" target="_blank">2e73a82</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-11-05
+</td>
+<td>
+Changed how magnitude and RMSE calculations were made
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/abed6b295e91d58b13e35285ca59138f8912cfce/analysis/mhw-flux.Rmd" target="_blank">abed6b2</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-11-05
+</td>
+<td>
+Changing the way in which cumulative values are calculated
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/ffc39b717b32c62e07377353e2fd9f7999cfce22/analysis/mhw-flux.Rmd" target="_blank">ffc39b7</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-10-14
+</td>
+<td>
+New figure 2
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/06c5c5276be78747464147ccaa7d725fbf33c1d6/analysis/mhw-flux.Rmd" target="_blank">06c5c52</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-10-09
+</td>
+<td>
+Figure 2 shown in 1 row
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/a980353da28e356ddc4a8da5768704cd1975b312/analysis/mhw-flux.Rmd" target="_blank">a980353</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-10-09
+</td>
+<td>
+Beginning to change figures and tables to match tweak to methodology
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/e513e01a44c26f3daeeaa5ba098ab810a30a58f0/analysis/mhw-flux.Rmd" target="_blank">e513e01</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-10-09
+</td>
+<td>
+Added Qsw* to the SOM data and removed the SOM correlation figure
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/eab9ad0e6867be26b0a01e0c8dab4516f4731131/analysis/mhw-flux.Rmd" target="_blank">eab9ad0</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-10-08
+</td>
+<td>
+First full run through the tweaks to the methodology.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/fdc115cce37cb92da773e0cb9c09ff4d92b07f25/analysis/mhw-flux.Rmd" target="_blank">fdc115c</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-10-08
+</td>
+<td>
+Propogated the swr down values through the results
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/2fe1e9a0444ea2ef04c1081d34755fb92233c1ee/analysis/mhw-flux.Rmd" target="_blank">2fe1e9a</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-09-29
+</td>
+<td>
+Rearranged the tables and figures with the introduction of the magnitude results.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/54144a7c30d7c6248923c2ac6e5cf0582399f35a/analysis/mhw-flux.Rmd" target="_blank">54144a7</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-09-28
+</td>
+<td>
+Working on non-numeric node labels
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/e53eb2c90f4d9e5942de09d22edd60756b88dcbe/analysis/mhw-flux.Rmd" target="_blank">e53eb2c</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-09-28
+</td>
+<td>
+Push before deleting old figure 2: RMSE boxplots
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/d067646b335b5ccef3c04204e9004af6c42511b5/analysis/mhw-flux.Rmd" target="_blank">d067646</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-09-24
+</td>
+<td>
+Update to magnitude shcematic and improved tables
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/88e25d893c2c0f4df813636b3b69cdeb52db7b9c/analysis/mhw-flux.Rmd" target="_blank">88e25d8</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-09-24
+</td>
+<td>
+Tweak to magnitude schematic
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/ebd14def998e825a9c0c27c310cca2c621409ba2/analysis/mhw-flux.Rmd" target="_blank">ebd14de</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-09-24
+</td>
+<td>
+Completed the magnitude analysis.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/f6b315cd0e4f874448f3bb928485fcf82e6ecf94/analysis/mhw-flux.Rmd" target="_blank">f6b315c</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-09-24
+</td>
+<td>
+Working on magnitude analysis
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/83b91f87b7e62831935ae1e161e15568e47d89c6/analysis/mhw-flux.Rmd" target="_blank">83b91f8</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-09-03
+</td>
+<td>
+More work towards getting all the last little bits of info for the first draft of the manuscript and the WHOI talk
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/robwschlegel/MHWflux/8d657581062aa4f04ebb53fd75a7cd27dc1fd62d/docs/mhw-flux.html" target="_blank">8d65758</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-09-03
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1686,48 +1995,47 @@ Adding the foundational content to the site
 </div>
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
-<p>This vignette will walk through the thinking and the process for how to link physical variables to their potential effect on driving or dissipating MHWs. The primary source that inspired this work was <span class="citation">Chen et al. (2016)</span>. In this paper the authors were able to illustrate which parts of the heat budget were most likely driving the anomalous heat content in the surface of the ocean. What this analysis seeks to do is to build on this methodology by applying the fundamental concept to ALL of the MHWs detected in the NW Atlantic. Fundamentally we are running thousands of correlations between SST anomalies and the co-occurring anomalies for a range of physical variables. The stronger the correlation (both positive and negative) the more of an indication this is to us that these phenomena are related.</p>
+<p>This vignette will walk through the thinking and the process for how to link physical variables to their potential effect on driving the onset and/or decline of MHWs. The primary source that inspired this work was <span class="citation">Chen et al. (2016)</span>. In this paper the authors were able to illustrate which parts of the heat budget were most likely driving the anomalous heat content in the surface of the ocean. What this analysis seeks to do is to build on this methodology by applying the fundamental concept to ALL of the MHWs detected in the NW Atlantic. Fundamentally we are running thousands of RMSE and correlation calculations between SST anomalies and the co-occurring anomalies for a range of physical variables. The lower the RMSE and the stronger the correlation (both positive and negative) the more of an indication this is to us that these phenomena are related. We will also be comparing the magnitude of change for T_Qnet and SSTa during the onset and decline of MHWs to see how much of these events can be attributed to heat flux.</p>
 <pre class="r"><code># All of the libraries and objects used in the project
 # Note that this also loads the data we will be using in this vignette
 source(&quot;code/functions.R&quot;)</code></pre>
 </div>
 <div id="relating-ssta-to-physical-variables" class="section level2">
 <h2>Relating SSTa to physical variables</h2>
-<p>We know when MHWs occurred, and our physical data are prepped, so what we need to do is run RMSE and correlations between SSTa from the start to peak and peak to end of each event for the full suite of variables. This will show us for each event which values related the best for the onset AND decline of the events. We will run RMSE and correlations on the full time series, too.</p>
-<p>Running correlations is useful to see how well certain variables change in relation to SSTa, but these do not show how similar those proportions of change are. In order to do this we need to calculate the RMSE between the SST anomalies and the Qx terms. This may only be done with the Qx terms because they are in the same units as SST. One additional tweak we will need here is to add the cumulative Qx term for the following day to the SST anomaly from the first day of the MHW. This is done so that we may see more closely how the developing Qx term matches to the development of the SST anomaly. Effectively this tells us how much the Qx term may be driving SSTa.</p>
-<pre class="r"><code># Extract just the event info
+<p>We know when MHWs occurred, and our physical data are prepped, so what we need to do is run magnitude comparisons, RMSE, and correlations between SSTa from the start to peak and peak to end of each event for the full suite of variables. This will show us for each event which values related the best for the onset AND decline of the events. We will run RMSE and correlations on the full time series, but these were decided not to be included in the final manuscript as they don’t add much other than to show how much better the calculations for onset or decline alone are.</p>
+<p>The magnitude of change in SSTa and T_Qnet for the onset and decline of MHWs will be calculated by finding how much SSTa and T_Qnet increase from the onset to the peak of a MHW, and how much SSTa and T_Qnet decrease on the decline of the same event. The thinking here is that if SSTa exceeds the T_Qnet increase for the onset, this will indicate that some advective process is aiding the development of the SSTa, but if T_Qnet exceeds SSTa, this indicates that the heat flux term is responsible for the creation of the event. Likewise for the decline of events, if the T_Qnet value decreases more than SSTa this would mean that negative heat flux into the ocean was terminating the event, whereas a greater decrease in SSTa would imply that advection was primarily terminating the event.</p>
+<p>Running correlations is useful to see how well certain variables change in relation to SSTa, but these do not show how similar those proportions of change are. In order to do this we need to calculate the RMSE between SSTa and the T_Qx variables. This may only be done with the T_Qx variables because they are in the same units as SST. One additional tweak we will need here is to add the cumulative T_Qx term for the following day to the SSTa from the first day of the MHW. This is done so that we may see more closely how the developing T_Qx term matches to the development of the SSTa. Effectively this tells us how much the T_Qx term may be driving SSTa.</p>
+<pre class="r"><code># Event index used for calculations
 OISST_MHW_event_index &lt;- OISST_MHW_event %&gt;% 
-  select(event_no, region, season) %&gt;% 
   ungroup() %&gt;% 
   mutate(row_index = 1:n())
 
 # Run all the stats
-ALL_cor &lt;- plyr::ddply(OISST_MHW_event_index, .parallel = T,
-                       .variables = c(&quot;row_index&quot;), .fun = cor_all,
-                       df_event = OISST_MHW_event) %&gt;% 
-  left_join(OISST_MHW_event_index, by = &quot;row_index&quot;) %&gt;% 
-  select(region, season, event_no, ts, everything()) %&gt;%
+ALL_cor &lt;- plyr::ddply(OISST_MHW_event_index, c(&quot;row_index&quot;), stats_all, .parallel = T) %&gt;% 
+  dplyr::select(-row_index) %&gt;% 
   arrange(region, event_no) %&gt;% 
   mutate(Parameter2 = factor(Parameter2))
 
 # Save
 saveRDS(ALL_cor, &quot;data/ALL_cor.Rda&quot;)
 saveRDS(ALL_cor, &quot;shiny/ALL_cor.Rda&quot;)</code></pre>
-<p>What we have now is a long dataframe containing the RMSE and correlations of different variables with SSTa. It must be pointed out that the correlations for the non-Qx terms are for the same day, there is no time lag introduced, which may be important. Below we are going to visualise the range of correlations for each variable to see how much each distribution is skewed. This skewness could probably be quantified in a meaningful way… but let’s look at the data first.</p>
+<p>What we have now is a long dataframe containing the magnitude of change, RMSE, and correlations of different variables with SSTa. It must be pointed out that the correlations for the non-Qx terms are for the same day, there is no time lag introduced, which may be important. Below we are going to visualise the range of correlations for each variable to see how much each distribution is skewed. This skewness could probably be quantified in a meaningful way… but let’s look at the data first.</p>
 <pre class="r"><code># source(&quot;shiny/app.R&quot;)
 # Or it is live here:
 # https://robert-schlegel.shinyapps.io/MHWflux/</code></pre>
-<p>There are some really clear patterns coming through in the data. In particular SSS seems to be strongly related to the onset of MHWs. There are a lot of nuances in these data and so I think this is actually an example of where a Shiny app is useful to interrogate the data.</p>
+<p>There are some really clear patterns coming through in the data. In particular SSS seems to be strongly related to the onset of MHWs. There are a lot of nuances in these data and so I think this is actually an example of where a shiny app is useful to interrogate the data.</p>
 <p>In the shiny app it also comes out that the longer events tend not to correlate strongly with a single variable. This is to be expected and supports the argument that very persistent MHWs are supported by a confluence of variables. How to parse that out is an interesting challenge.</p>
 </div>
 <div id="results" class="section level2">
 <h2>Results</h2>
 <div id="hour-offset" class="section level3">
 <h3>12 hour offset</h3>
-<p>While going through the data it was discovered that the OISST temperature values represent an average from midnight to midnight. This therefore puts them off set to the Qx terms, which were also being calculated over the same time period. But to compare the Qx terms to SST there should be a 12 hour offset. So 12 hours were added to the terms before re-running the pipeline and recalculating all of the correlations and RMSE. In the code chunk below we compare the stats pre-12 hour shift and afterwards.</p>
+<p>While going through the data it was discovered that the OISST temperature values represent an average from midnight to midnight. This therefore puts them offset to the Qx variables, which were also being calculated over the same time period. But to compare the Qx terms to SST there should be a 12 hour offset, with the Qx variables preceding the SST, thereby representing the integral of time between daily SST values. So 12 hours were added to the heat flux variables before re-running the pipeline and recalculating all of the magnitude, RMSE, and correlation stats. In the code chunk below we compare the RMSE stats pre-12 hour shift and afterwards.</p>
 <pre class="r"><code># Load old and new data
 ALL_cor_old &lt;- readRDS(&quot;data/ALL_cor_old.Rda&quot;) %&gt;% 
-  mutate(run = &quot;old&quot;)
+  mutate(region = toupper(region)) %&gt;% 
+  mutate(run = &quot;old&quot;) %&gt;% 
+  dplyr::select(-row_index)
 ALL_cor &lt;- readRDS(&quot;data/ALL_cor.Rda&quot;) %&gt;% 
   dplyr::select(region:n_Obs, rmse) %&gt;% 
   mutate(run = &quot;new&quot;)
@@ -1758,16 +2066,16 @@ ALL_cor_stack %&gt;%
 # Groups:   region, ts [18]
    region ts    Parameter2 q10_new q10_old q50_new q50_old q90_new q90_old
    &lt;chr&gt;  &lt;fct&gt; &lt;chr&gt;        &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
- 1 cbs    onset lhf         0.0806   0.172   0.231   0.352   0.748   0.755
- 2 cbs    onset lwr         0.115    0.215   0.311   0.378   0.829   0.880
- 3 cbs    onset qnet        0.0694   0.115   0.297   0.318   0.692   0.712
- 4 cbs    onset shf         0.0795   0.163   0.270   0.4     0.843   0.876
- 5 cbs    onset swr         0.0833   0.173   0.245   0.344   0.912   0.899
- 6 cbs    full  lhf         0.0810   0.153   0.223   0.297   0.626   0.752
- 7 cbs    full  lwr         0.0863   0.186   0.270   0.349   0.79    0.887
- 8 cbs    full  qnet        0.104    0.112   0.295   0.283   0.642   0.718
- 9 cbs    full  shf         0.0915   0.150   0.219   0.326   0.646   0.780
-10 cbs    full  swr         0.112    0.182   0.261   0.356   0.912   0.825
+ 1 CBS    onset lhf         0.0806   0.172   0.231   0.352   0.748   0.755
+ 2 CBS    onset lwr         0.115    0.215   0.311   0.378   0.829   0.880
+ 3 CBS    onset qnet        0.0697   0.115   0.263   0.318   0.716   0.712
+ 4 CBS    onset shf         0.0795   0.163   0.270   0.4     0.843   0.876
+ 5 CBS    onset swr         0.0738   0.173   0.267   0.344   0.895   0.899
+ 6 CBS    full  lhf         0.0810   0.153   0.223   0.297   0.626   0.752
+ 7 CBS    full  lwr         0.0863   0.186   0.270   0.349   0.79    0.887
+ 8 CBS    full  qnet        0.105    0.112   0.311   0.283   0.580   0.718
+ 9 CBS    full  shf         0.0915   0.150   0.219   0.326   0.646   0.780
+10 CBS    full  swr         0.106    0.182   0.252   0.356   0.774   0.825
 # … with 80 more rows</code></pre>
 <pre class="r"><code># Plot difference
 ALL_cor_stack %&gt;% 
@@ -1798,6 +2106,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/8d657581062aa4f04ebb53fd75a7cd27dc1fd62d/docs/figure/mhw-flux.Rmd/shift-compare-1.png" target="_blank">8d65758</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-09-03
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/robwschlegel/MHWflux/blob/9304ba024770f98f060c655036c671d542ca05f6/docs/figure/mhw-flux.Rmd/shift-compare-1.png" target="_blank">9304ba0</a>
@@ -1838,27 +2157,555 @@ robwschlegel
 <pre class="r"><code>  # scale_y_continuous(limits = c(0, 2))</code></pre>
 <p>The new an improved method that correctly integrates Qx into SSTa creates much lower RMSE values for almost every variable and region. A smashing success.</p>
 </div>
+<div id="magnitude-of-change-summary" class="section level3">
+<h3>Magnitude of change summary</h3>
+<p>In this sub-section we will look at how the different magnitudes of change for onset and decline of the T_Qnet terms compare to the same changes in SSTa.</p>
+<pre class="r"><code># Load magnitude data
+ALL_mag &lt;- readRDS(&quot;data/ALL_cor.Rda&quot;) %&gt;% 
+  dplyr::select(region:ts, Parameter2, n_Obs, mag) %&gt;% 
+  na.omit()
+
+# Calculate the proportions of change in magnitudes
+ALL_mag_prop &lt;- ALL_mag %&gt;% 
+  filter(Parameter2 != &quot;sst&quot;) %&gt;% 
+  left_join(filter(ALL_mag, Parameter2 == &quot;sst&quot;), 
+            by = c(&quot;region&quot;, &quot;season&quot;, &quot;event_no&quot;, &quot;ts&quot;, &quot;n_Obs&quot;)) %&gt;% 
+  filter(ts != &quot;full&quot;) %&gt;% 
+  dplyr::select(-Parameter2.y) %&gt;% 
+  dplyr::rename(var = Parameter2.x, mag_Qx = mag.x, mag_SSTa = mag.y) %&gt;% 
+  mutate(prop = mag_Qx/mag_SSTa) %&gt;% 
+  mutate(var = as.character(var),
+         var = case_when(var == &quot;lwr_budget&quot; ~ &quot;Qlw&quot;,
+                         var == &quot;swr_budget&quot; ~ &quot;Qsw&quot;,
+                         var == &quot;lhf_budget&quot; ~ &quot;Qlh&quot;,
+                         var == &quot;shf_budget&quot; ~ &quot;Qsh&quot;,
+                         var == &quot;qnet_budget&quot; ~ &quot;Qnet&quot;,
+                         TRUE ~ var),
+         var = factor(var, levels = c(&quot;Qnet&quot;, &quot;Qlh&quot;, &quot;Qsh&quot;, &quot;Qlw&quot;, &quot;Qsw&quot;)),
+         region = toupper(region))
+
+# Find an event with good onset and decline match
+ALL_mag_prop %&gt;% filter(var == &quot;Qnet&quot;, prop &gt;= 1, prop &lt;= 2)</code></pre>
+<pre><code>   region season event_no      ts  var n_Obs      mag_Qx    mag_SSTa     prop
+1     CBS Winter        2   onset Qnet    20  0.63649297  0.44739441 1.422666
+2     CBS Spring        7   onset Qnet     8  0.57527849  0.56663655 1.015251
+3     CBS Autumn        9   onset Qnet    11  1.32363504  0.87287571 1.516407
+4     CBS Autumn       10   onset Qnet     4  0.61669651  0.34188554 1.803810
+5     CBS Summer       11   onset Qnet    15  0.58627169  0.52283736 1.121327
+6     CBS Spring       23   onset Qnet    14  1.50567247  0.87550729 1.719771
+7     CBS Spring       24 decline Qnet    11 -0.61486410 -0.58549202 1.050166
+8     CBS Summer       25 decline Qnet    18 -0.74251689 -0.68569922 1.082861
+9     CBS Summer       27   onset Qnet     7  1.01903078  1.01389261 1.005068
+10    CBS Summer       27 decline Qnet    18 -1.18218360 -1.07928439 1.095340
+11    CBS Autumn       50   onset Qnet     4  0.18317564  0.16876718 1.085375
+12     GM Summer        2   onset Qnet    14  1.02631304  0.58907332 1.742250
+13     GM Summer        3   onset Qnet    10  0.67764963  0.34956369 1.938558
+14     GM Spring        8   onset Qnet     5  0.52867026  0.37336097 1.415976
+15     GM Autumn       28   onset Qnet     5  0.62647421  0.33913813 1.847254
+16     GM Winter       29 decline Qnet     4 -0.21700063 -0.15318765 1.416567
+17     GM Autumn       33   onset Qnet     8  0.27448122  0.25142655 1.091695
+18     GM Winter       36   onset Qnet     5  0.22075553  0.16177895 1.364550
+19     GM Summer       39 decline Qnet     9 -0.53629652 -0.49158990 1.090943
+20     GM Autumn       43   onset Qnet    15  0.55935148  0.53217193 1.051073
+21     GM Autumn       44 decline Qnet     4 -0.24527824 -0.23779489 1.031470
+22     GM Winter       45   onset Qnet    18  0.74442410  0.38883269 1.914510
+23    GSL Summer        3   onset Qnet     5  0.54442864  0.54134207 1.005702
+24    GSL Summer        9   onset Qnet     5  0.14784691  0.11522789 1.283083
+25    GSL Autumn       10   onset Qnet     3  0.35649717  0.23121691 1.541830
+26    GSL Winter       15   onset Qnet     6  0.11259675  0.09486033 1.186974
+27    GSL Summer       17   onset Qnet     9  0.42307270  0.32204591 1.313703
+28    GSL Winter       21   onset Qnet    32  1.54802506  1.18151078 1.310208
+29    GSL Autumn       32   onset Qnet     8  1.02254597  0.95379261 1.072084
+30    GSL Autumn       32 decline Qnet    13 -0.83597005 -0.80540865 1.037945
+31    GSL Winter       35   onset Qnet     4  0.18358330  0.16318501 1.125001
+32    GSL Winter       36   onset Qnet     5  0.09702077  0.07600872 1.276443
+33    MAB Autumn        1   onset Qnet     4  0.40452813  0.29639064 1.364848
+34    MAB Winter        5   onset Qnet     9  0.51087227  0.35076031 1.456471
+35    MAB Summer        7   onset Qnet     3  0.38355752  0.22581522 1.698546
+36    MAB Winter        8 decline Qnet     9 -0.87544168 -0.82063566 1.066785
+37    MAB Summer       27   onset Qnet     7  0.32998874  0.32811381 1.005714
+38    MAB Spring       28   onset Qnet     5  0.58401304  0.33186445 1.759794
+39    MAB Summer       30   onset Qnet     6  0.67703554  0.64178920 1.054919
+40    MAB Spring       50   onset Qnet     3  0.40339434  0.39490038 1.021509
+41    MAB Autumn       51   onset Qnet     3  0.38863084  0.32326054 1.202222
+42    MAB Summer       56   onset Qnet    10  1.19591161  0.88742963 1.347613
+43    NFS Winter        1   onset Qnet    13  0.53448116  0.52745972 1.013312
+44    NFS Spring        3   onset Qnet    17  0.48890672  0.47847078 1.021811
+45    NFS Autumn        9   onset Qnet     8  1.02754758  0.91084833 1.128122
+46    NFS Spring       11   onset Qnet     5  0.29422076  0.15742727 1.868931
+47    NFS Spring       14   onset Qnet    22  1.41299484  1.12830017 1.252322
+48    NFS Summer       19 decline Qnet     6 -0.44163771 -0.39255431 1.125036
+49    NFS Winter       22   onset Qnet    36  1.10536304  0.65793776 1.680042
+50    NFS Winter       24 decline Qnet     4 -0.17600001 -0.17316882 1.016349
+51    NFS Winter       27   onset Qnet     7  0.21691586  0.10896060 1.990773
+52    NFS Winter       37   onset Qnet     4  0.05434176  0.03863288 1.406619
+53    NFS Spring       38   onset Qnet     4  0.50339694  0.31074462 1.619970
+54     SS Spring        3   onset Qnet     4  0.55254553  0.38893326 1.420669
+55     SS Summer        5   onset Qnet    12  1.22226202  1.15627750 1.057066
+56     SS Summer        6   onset Qnet     4  0.51398728  0.42612588 1.206186
+57     SS Spring       13   onset Qnet    10  0.95810997  0.80106148 1.196050
+58     SS Summer       17   onset Qnet     3  0.49127621  0.48415425 1.014710
+59     SS Autumn       26   onset Qnet     3  0.28698888  0.21094822 1.360471
+60     SS Summer       35   onset Qnet     4  0.61936000  0.46289489 1.338014
+61     SS Summer       37 decline Qnet     6 -0.50665876 -0.37869774 1.337898
+62     SS Autumn       38 decline Qnet    49 -2.50176804 -1.55544938 1.608389
+63     SS Spring       40   onset Qnet    24  1.46876337  1.40408507 1.046064
+64     SS Summer       41 decline Qnet     6 -1.12735714 -1.09602209 1.028590</code></pre>
+<pre class="r"><code># Create schematic figure showing how magnitudes are calculated
+p1 &lt;- fig_mag_func(2, &quot;GSL&quot;) +
+  ggtitle(&quot;Good onset, bad decline&quot;)
+p2 &lt;- fig_mag_func(44, &quot;GM&quot;) +
+  ggtitle(&quot;Bad onset, good decline&quot;)
+p3 &lt;- fig_mag_func(32, &quot;GSL&quot;) +
+  ggtitle(&quot;Good onset, good decline&quot;)
+mag_schematic &lt;- ggpubr::ggarrange(p1, p2, p3, ncol = 3, nrow = 1, common.legend = TRUE)
+# mag_schematic
+
+# Scatterplot of SSTa vs SST_Qx (facets per variable)
+mag_scatter &lt;- ALL_mag_prop %&gt;% 
+  ggplot(aes(x = mag_SSTa, y = mag_Qx)) +
+  geom_point(aes(colour = n_Obs, shape = ts)) +
+  geom_smooth(aes(linetype = ts), method = &quot;lm&quot;, colour = &quot;black&quot;) +
+  scale_colour_gradientn(colours = rainbow(10)) +
+  facet_wrap(~var, nrow = 1) +
+  labs(x = &quot;ΔSSTa&quot;, y = &quot;ΔSST_Qx&quot;, shape = &quot;Time series&quot;, linetype = &quot;Time series&quot;) +
+  theme(legend.position = &quot;top&quot;)
+# mag_scatter
+
+# Boxplots of proportions of change for SST_Qx for onset/decline
+mag_box &lt;- ALL_mag_prop %&gt;% 
+  ggplot(aes(x = ts, y = prop)) +
+  geom_hline(aes(yintercept = 0), colour = &quot;red&quot;) +
+    geom_boxplot(aes(fill = season), outlier.shape = NA) +
+  # geom_boxplot(aes(fill = region), outlier.shape = NA) +
+  scale_y_continuous(limits = c(-2, 2)) +
+  facet_wrap(~var, nrow = 1) +
+  labs(x = NULL, y = &quot;ΔSST_Qx / ΔSSTa&quot;)
+# mag_box
+
+# Combine for one massive display
+mag_full &lt;- ggpubr::ggarrange(mag_schematic, mag_scatter, mag_box, ncol = 1, nrow = 3, labels = c(&quot;A)&quot;, &quot;B)&quot;, &quot;C)&quot;))
+ggsave(&quot;output/magnitude_schematic.png&quot;, height = 8, width = 10)
+ggsave(&quot;output/magnitude_schematic.pdf&quot;, height = 8, width = 10)
+mag_full</code></pre>
+<p><img src="figure/mhw-flux.Rmd/mag-summary-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>The first thing we want to look at with these magnitude scores is how many MHWs appear to be driven or decayed by Qnet. We determine this if the proportion of change in Qnet is more than half that of the change in SSTa. But also, because the Qx variables can be greater than the sum (Qnet), we will see when individual variables are contributing more than half of the change in SSTa, too.</p>
+<pre class="r"><code># Create TRUE/FALSE table when prop is over 0.5 for any variable
+ALL_mag_TF &lt;- ALL_mag_prop %&gt;% 
+  mutate(prop_TF = ifelse(prop &gt; 0.5, TRUE, FALSE)) %&gt;% 
+  dplyr::select(region:n_Obs, prop_TF) %&gt;% 
+  pivot_wider(names_from = var, values_from = prop_TF)
+
+# Total proportion of MHWs forced by Qnet
+sum(ALL_mag_TF$Qnet)/nrow(ALL_mag_TF)</code></pre>
+<pre><code>[1] 0.3319838</code></pre>
+<pre class="r"><code># Total number of events driven by Qnet
+nrow(filter(ALL_mag_TF, ts == &quot;onset&quot;, Qnet == TRUE))</code></pre>
+<pre><code>[1] 122</code></pre>
+<pre class="r"><code># Total number of events decayed by Qnet
+nrow(filter(ALL_mag_TF, ts == &quot;decline&quot;, Qnet == TRUE))</code></pre>
+<pre><code>[1] 42</code></pre>
+<pre class="r"><code># Proportion of MHWs with Qnet inset and decline
+ALL_mag_TF %&gt;% 
+  dplyr::select(region:ts, Qnet) %&gt;% 
+  pivot_wider(names_from = ts, values_from = Qnet) %&gt;% 
+  filter(onset == TRUE, decline == TRUE)</code></pre>
+<pre><code># A tibble: 14 x 5
+   region season event_no onset decline
+   &lt;chr&gt;  &lt;fct&gt;     &lt;int&gt; &lt;lgl&gt; &lt;lgl&gt;  
+ 1 CBS    Spring       24 TRUE  TRUE   
+ 2 CBS    Summer       27 TRUE  TRUE   
+ 3 CBS    Summer       46 TRUE  TRUE   
+ 4 GSL    Winter       15 TRUE  TRUE   
+ 5 GSL    Autumn       32 TRUE  TRUE   
+ 6 GSL    Autumn       46 TRUE  TRUE   
+ 7 MAB    Winter        8 TRUE  TRUE   
+ 8 MAB    Autumn       31 TRUE  TRUE   
+ 9 MAB    Winter       40 TRUE  TRUE   
+10 MAB    Autumn       46 TRUE  TRUE   
+11 NFS    Autumn       10 TRUE  TRUE   
+12 NFS    Winter       22 TRUE  TRUE   
+13 SS     Summer       29 TRUE  TRUE   
+14 SS     Autumn       38 TRUE  TRUE   </code></pre>
+<pre class="r"><code># Counts by time series phase
+ALL_mag_count_ts &lt;- ALL_mag_prop %&gt;% 
+  group_by(ts, var) %&gt;% 
+  mutate(ts_count = n(),
+         group = &quot;Total&quot;) %&gt;% 
+  filter(prop &gt; 0.5) %&gt;% 
+  mutate(filter_count = n(),
+         filter_prop = round(filter_count/ts_count, 2)) %&gt;% 
+  dplyr::select(group, ts, var, filter_prop) %&gt;% 
+  distinct() %&gt;% 
+  mutate(var = factor(var, levels = c(&quot;Qnet&quot;, &quot;Qlh&quot;, &quot;Qsh&quot;, &quot;Qlw&quot;, &quot;Qsw&quot;))) %&gt;% 
+  pivot_wider(names_from = var, values_from = filter_prop) %&gt;% 
+  dplyr::select(group, ts, Qnet, Qlh, Qsh, Qlw, Qsw)
+# knitr::kable(ALL_mag_count_ts)
+
+# Counts by time region phase
+ALL_mag_count_region &lt;- ALL_mag_prop %&gt;% 
+  group_by(region, ts, var) %&gt;% 
+  mutate(ts_count = n()) %&gt;% 
+  filter(prop &gt; 0.5) %&gt;% 
+  mutate(filter_count = n(),
+         filter_prop = round(filter_count/ts_count, 2)) %&gt;% 
+  dplyr::select(region, ts, var, filter_prop) %&gt;% 
+  distinct() %&gt;% 
+  pivot_wider(names_from = var, values_from = filter_prop) %&gt;% 
+  dplyr::select(region, ts, Qnet, Qlh, Qsh, Qlw, Qsw) %&gt;% 
+  arrange(region, ts) %&gt;% 
+  dplyr::rename(group = region)
+# knitr::kable(ALL_mag_count_region)
+
+# Counts by time series phase
+ALL_mag_count_season &lt;- ALL_mag_prop %&gt;% 
+  group_by(season, ts, var) %&gt;% 
+  mutate(ts_count = n()) %&gt;% 
+  filter(prop &gt; 0.5) %&gt;% 
+  mutate(filter_count = n(),
+         filter_prop = round(filter_count/ts_count, 2)) %&gt;% 
+  dplyr::select(season, ts, var, filter_prop) %&gt;% 
+  distinct() %&gt;% 
+  pivot_wider(names_from = var, values_from = filter_prop) %&gt;% 
+  dplyr::select(season, ts, Qnet, Qlh, Qsh, Qlw, Qsw) %&gt;% 
+  arrange(season, ts) %&gt;% 
+  dplyr::rename(group = season)
+# knitr::kable(ALL_mag_count_season)
+ALL_mag_count_ts_region_season &lt;- rbind(ALL_mag_count_ts, ALL_mag_count_region, ALL_mag_count_season) %&gt;% 
+  dplyr::select(group:Qnet) %&gt;% 
+  pivot_wider(names_from = ts, values_from = Qnet) %&gt;% 
+  dplyr::select(group, onset, decline) %&gt;% 
+  mutate(onset = paste0(onset*100,&quot;%&quot;),
+         decline = paste0(decline*100,&quot;%&quot;))
+knitr::kable(ALL_mag_count_ts_region_season)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">group</th>
+<th align="left">onset</th>
+<th align="left">decline</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Total</td>
+<td align="left">49%</td>
+<td align="left">17%</td>
+</tr>
+<tr class="even">
+<td align="left">CBS</td>
+<td align="left">49%</td>
+<td align="left">16%</td>
+</tr>
+<tr class="odd">
+<td align="left">GM</td>
+<td align="left">49%</td>
+<td align="left">16%</td>
+</tr>
+<tr class="even">
+<td align="left">GSL</td>
+<td align="left">43%</td>
+<td align="left">10%</td>
+</tr>
+<tr class="odd">
+<td align="left">MAB</td>
+<td align="left">56%</td>
+<td align="left">14%</td>
+</tr>
+<tr class="even">
+<td align="left">NFS</td>
+<td align="left">57%</td>
+<td align="left">19%</td>
+</tr>
+<tr class="odd">
+<td align="left">SS</td>
+<td align="left">36%</td>
+<td align="left">32%</td>
+</tr>
+<tr class="even">
+<td align="left">Spring</td>
+<td align="left">51%</td>
+<td align="left">7%</td>
+</tr>
+<tr class="odd">
+<td align="left">Summer</td>
+<td align="left">40%</td>
+<td align="left">20%</td>
+</tr>
+<tr class="even">
+<td align="left">Autumn</td>
+<td align="left">61%</td>
+<td align="left">18%</td>
+</tr>
+<tr class="odd">
+<td align="left">Winter</td>
+<td align="left">46%</td>
+<td align="left">20%</td>
+</tr>
+</tbody>
+</table>
+<p>We also want a table showing the count of best magnitude match per variable per region/season.</p>
+<pre class="r"><code># Get the top results other than Qnet
+ALL_mag_top &lt;- ALL_mag_prop %&gt;% 
+  filter(var != &quot;Qnet&quot;) %&gt;% # Remove Qnet
+  group_by(region, season, event_no, ts) %&gt;% 
+  filter(prop == max(prop))
+
+# The top count by region
+ALL_mag_region &lt;- ALL_mag_top %&gt;% 
+  group_by(region, ts, var) %&gt;% 
+  summarise(count = n(), .groups = &quot;drop&quot;) %&gt;% 
+  pivot_wider(names_from = var, values_from = count) %&gt;% 
+  mutate(Qlw = replace_na(Qlw, 0)) %&gt;% 
+  left_join(count_region, by = c(&quot;region&quot;, &quot;ts&quot;)) %&gt;% 
+  dplyr::select(region, ts, count, Qlh:Qsw) %&gt;% 
+  mutate(Qlh = paste0(Qlh, &quot; (&quot;,round((Qlh/count)*100),&quot;%)&quot;),
+         Qsh = paste0(Qsh, &quot; (&quot;,round((Qsh/count)*100),&quot;%)&quot;),
+         Qlw = paste0(Qlw, &quot; (&quot;,round((Qlw/count)*100),&quot;%)&quot;),
+         Qsw = paste0(Qsw, &quot; (&quot;,round((Qsw/count)*100),&quot;%)&quot;)) %&gt;% 
+  dplyr::rename(group = region)
+# knitr::kable(ALL_mag_region)
+
+# The top count by season
+ALL_mag_season &lt;- ALL_mag_top %&gt;% 
+  group_by(season, ts, var) %&gt;% 
+  summarise(count = n(), .groups = &quot;drop&quot;) %&gt;% 
+  pivot_wider(names_from = var, values_from = count) %&gt;% 
+  mutate(Qsh = replace_na(Qsh, 0)) %&gt;%
+  left_join(count_season, by = c(&quot;season&quot;, &quot;ts&quot;)) %&gt;% 
+  dplyr::select(season, ts, count, Qlh:Qsw) %&gt;% 
+  mutate(Qlh = paste0(Qlh, &quot; (&quot;,round((Qlh/count)*100),&quot;%)&quot;),
+         Qsh = paste0(Qsh, &quot; (&quot;,round((Qsh/count)*100),&quot;%)&quot;),
+         Qlw = paste0(Qlw, &quot; (&quot;,round((Qlw/count)*100),&quot;%)&quot;),
+         Qsw = paste0(Qsw, &quot; (&quot;,round((Qsw/count)*100),&quot;%)&quot;)) %&gt;% 
+  dplyr::rename(group = season)
+# knitr::kable(ALL_mag_season)
+
+# Print table
+ALL_mag_region_season &lt;- rbind(ALL_mag_region, ALL_mag_season)
+knitr::kable(ALL_mag_region_season)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">group</th>
+<th align="left">ts</th>
+<th align="right">count</th>
+<th align="left">Qlh</th>
+<th align="left">Qsh</th>
+<th align="left">Qlw</th>
+<th align="left">Qsw</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">CBS</td>
+<td align="left">onset</td>
+<td align="right">43</td>
+<td align="left">12 (28%)</td>
+<td align="left">10 (23%)</td>
+<td align="left">6 (14%)</td>
+<td align="left">15 (35%)</td>
+</tr>
+<tr class="even">
+<td align="left">CBS</td>
+<td align="left">decline</td>
+<td align="right">43</td>
+<td align="left">10 (23%)</td>
+<td align="left">3 (7%)</td>
+<td align="left">14 (33%)</td>
+<td align="left">16 (37%)</td>
+</tr>
+<tr class="odd">
+<td align="left">GM</td>
+<td align="left">onset</td>
+<td align="right">41</td>
+<td align="left">9 (22%)</td>
+<td align="left">5 (12%)</td>
+<td align="left">9 (22%)</td>
+<td align="left">18 (44%)</td>
+</tr>
+<tr class="even">
+<td align="left">GM</td>
+<td align="left">decline</td>
+<td align="right">38</td>
+<td align="left">12 (32%)</td>
+<td align="left">3 (8%)</td>
+<td align="left">5 (13%)</td>
+<td align="left">18 (47%)</td>
+</tr>
+<tr class="odd">
+<td align="left">GSL</td>
+<td align="left">onset</td>
+<td align="right">44</td>
+<td align="left">13 (30%)</td>
+<td align="left">4 (9%)</td>
+<td align="left">4 (9%)</td>
+<td align="left">23 (52%)</td>
+</tr>
+<tr class="even">
+<td align="left">GSL</td>
+<td align="left">decline</td>
+<td align="right">41</td>
+<td align="left">9 (22%)</td>
+<td align="left">6 (15%)</td>
+<td align="left">10 (24%)</td>
+<td align="left">16 (39%)</td>
+</tr>
+<tr class="odd">
+<td align="left">MAB</td>
+<td align="left">onset</td>
+<td align="right">50</td>
+<td align="left">18 (36%)</td>
+<td align="left">8 (16%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">24 (48%)</td>
+</tr>
+<tr class="even">
+<td align="left">MAB</td>
+<td align="left">decline</td>
+<td align="right">50</td>
+<td align="left">15 (30%)</td>
+<td align="left">8 (16%)</td>
+<td align="left">15 (30%)</td>
+<td align="left">12 (24%)</td>
+</tr>
+<tr class="odd">
+<td align="left">NFS</td>
+<td align="left">onset</td>
+<td align="right">37</td>
+<td align="left">14 (38%)</td>
+<td align="left">3 (8%)</td>
+<td align="left">6 (16%)</td>
+<td align="left">14 (38%)</td>
+</tr>
+<tr class="even">
+<td align="left">NFS</td>
+<td align="left">decline</td>
+<td align="right">37</td>
+<td align="left">10 (27%)</td>
+<td align="left">2 (5%)</td>
+<td align="left">14 (38%)</td>
+<td align="left">11 (30%)</td>
+</tr>
+<tr class="odd">
+<td align="left">SS</td>
+<td align="left">onset</td>
+<td align="right">36</td>
+<td align="left">9 (25%)</td>
+<td align="left">2 (6%)</td>
+<td align="left">8 (22%)</td>
+<td align="left">17 (47%)</td>
+</tr>
+<tr class="even">
+<td align="left">SS</td>
+<td align="left">decline</td>
+<td align="right">34</td>
+<td align="left">11 (32%)</td>
+<td align="left">2 (6%)</td>
+<td align="left">6 (18%)</td>
+<td align="left">15 (44%)</td>
+</tr>
+<tr class="odd">
+<td align="left">Spring</td>
+<td align="left">onset</td>
+<td align="right">53</td>
+<td align="left">5 (9%)</td>
+<td align="left">1 (2%)</td>
+<td align="left">7 (13%)</td>
+<td align="left">40 (75%)</td>
+</tr>
+<tr class="even">
+<td align="left">Spring</td>
+<td align="left">decline</td>
+<td align="right">42</td>
+<td align="left">6 (14%)</td>
+<td align="left">10 (24%)</td>
+<td align="left">11 (26%)</td>
+<td align="left">15 (36%)</td>
+</tr>
+<tr class="odd">
+<td align="left">Summer</td>
+<td align="left">onset</td>
+<td align="right">88</td>
+<td align="left">28 (32%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">8 (9%)</td>
+<td align="left">52 (59%)</td>
+</tr>
+<tr class="even">
+<td align="left">Summer</td>
+<td align="left">decline</td>
+<td align="right">88</td>
+<td align="left">22 (25%)</td>
+<td align="left">7 (8%)</td>
+<td align="left">27 (31%)</td>
+<td align="left">32 (36%)</td>
+</tr>
+<tr class="odd">
+<td align="left">Autumn</td>
+<td align="left">onset</td>
+<td align="right">62</td>
+<td align="left">38 (61%)</td>
+<td align="left">11 (18%)</td>
+<td align="left">6 (10%)</td>
+<td align="left">7 (11%)</td>
+</tr>
+<tr class="even">
+<td align="left">Autumn</td>
+<td align="left">decline</td>
+<td align="right">62</td>
+<td align="left">26 (42%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">16 (26%)</td>
+<td align="left">20 (32%)</td>
+</tr>
+<tr class="odd">
+<td align="left">Winter</td>
+<td align="left">onset</td>
+<td align="right">48</td>
+<td align="left">4 (8%)</td>
+<td align="left">20 (42%)</td>
+<td align="left">12 (25%)</td>
+<td align="left">12 (25%)</td>
+</tr>
+<tr class="even">
+<td align="left">Winter</td>
+<td align="left">decline</td>
+<td align="right">51</td>
+<td align="left">13 (25%)</td>
+<td align="left">7 (14%)</td>
+<td align="left">10 (20%)</td>
+<td align="left">21 (41%)</td>
+</tr>
+</tbody>
+</table>
+<p>These tables help to reiterate how much more important Qlh is for the onset and decline of MHWs over the other variables, and that Qsw often comes in second. For the seasons though we see a much more complex relationship that I won’t go into here.</p>
+</div>
 <div id="rmse-summary" class="section level3">
 <h3>RMSE summary</h3>
 <p>Here we will go about summarising the RMSE results. We will also create some boxplots to help with the process.</p>
 <pre class="r"><code># The base RMSE results
 ALL_RMSE &lt;- ALL_cor %&gt;% 
   filter(rmse &gt; 0 ) %&gt;% 
-  dplyr::select(region:ts, Parameter2, n_Obs, rmse) %&gt;% 
-    mutate(Parameter2 = as.character(Parameter2),
-           Parameter2 = case_when(Parameter2 == &quot;lwr_budget&quot; ~ &quot;Qlw&quot;,
-                                  Parameter2 == &quot;swr_budget&quot; ~ &quot;Qsw&quot;,
-                                  Parameter2 == &quot;lhf_budget&quot; ~ &quot;Qlh&quot;,
-                                  Parameter2 == &quot;shf_budget&quot; ~ &quot;Qsh&quot;,
-                                  Parameter2 == &quot;qnet_budget&quot; ~ &quot;Qnet&quot;,
-                                  TRUE ~ Parameter2),
-           Parameter2 = factor(Parameter2, levels = c(&quot;Qnet&quot;, &quot;Qlh&quot;, &quot;Qsh&quot;, &quot;Qlw&quot;, &quot;Qsw&quot;)),
-           region = toupper(region))
+  dplyr::rename(var = Parameter2) %&gt;% 
+  dplyr::select(region:ts, var, n_Obs, rmse) %&gt;% 
+  mutate(var = as.character(var),
+         var = case_when(var == &quot;lwr_budget&quot; ~ &quot;Qlw&quot;,
+                         var == &quot;swr_budget&quot; ~ &quot;Qsw&quot;,
+                         var == &quot;lhf_budget&quot; ~ &quot;Qlh&quot;,
+                         var == &quot;shf_budget&quot; ~ &quot;Qsh&quot;,
+                         var == &quot;qnet_budget&quot; ~ &quot;Qnet&quot;,
+                         TRUE ~ var),
+         var = factor(var, levels = c(&quot;Qnet&quot;, &quot;Qlh&quot;, &quot;Qsh&quot;, &quot;Qlw&quot;, &quot;Qsw&quot;)),
+         region = toupper(region)) %&gt;% 
+  # filter out events where Qnet is not a primary drivers
+  left_join(ALL_mag_TF, by = c(&quot;region&quot;, &quot;season&quot;, &quot;event_no&quot;, &quot;ts&quot;, &quot;n_Obs&quot;)) %&gt;% 
+  filter(Qnet == TRUE)
 
 # Summaries by region
 ALL_RMSE_region &lt;- ALL_RMSE %&gt;% 
   dplyr::select(-season, -event_no, -n_Obs) %&gt;% 
-  group_by(region, ts, Parameter2) %&gt;% 
+  group_by(region, ts, var) %&gt;% 
   summarise(rmse_min = min(rmse),
            rmse_mean = mean(rmse),
            rmse_max = max(rmse), .groups = &quot;drop&quot;)
@@ -1866,16 +2713,53 @@ ALL_RMSE_region &lt;- ALL_RMSE %&gt;%
 # Boxplot of region summaries
 ALL_RMSE %&gt;% 
   dplyr::select(-season, -event_no, -n_Obs) %&gt;% 
-  ggplot(aes(x = Parameter2, y = rmse)) +
+  ggplot(aes(x = var, y = rmse)) +
   geom_boxplot(aes(fill = ts)) +
   facet_wrap(~region) #+</code></pre>
 <p><img src="figure/mhw-flux.Rmd/RMSE-boxplot-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-RMSE-boxplot-1">
+Past versions of RMSE-boxplot-1.png
+</button>
+</p>
+<div id="fig-RMSE-boxplot-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/8d657581062aa4f04ebb53fd75a7cd27dc1fd62d/docs/figure/mhw-flux.Rmd/RMSE-boxplot-1.png" target="_blank">8d65758</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-09-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>  # theme(axis.text.x = element_text(angle = 45))
 
 # Summaries by season
 ALL_RMSE_season &lt;- ALL_RMSE %&gt;% 
   dplyr::select(-region, -event_no, -n_Obs) %&gt;% 
-  group_by(season, ts, Parameter2) %&gt;% 
+  group_by(season, ts, var) %&gt;% 
   summarise(rmse_min = min(rmse),
            rmse_mean = mean(rmse),
            rmse_max = max(rmse), .groups = &quot;drop&quot;)
@@ -1883,60 +2767,127 @@ ALL_RMSE_season &lt;- ALL_RMSE %&gt;%
 # Boxplot of season results
 ALL_RMSE %&gt;% 
   dplyr::select(-region, -event_no, -n_Obs) %&gt;% 
-  ggplot(aes(x = Parameter2, y = rmse)) +
+  ggplot(aes(x = var, y = rmse)) +
   geom_boxplot(aes(fill = ts)) +
   facet_wrap(~season)</code></pre>
 <p><img src="figure/mhw-flux.Rmd/RMSE-boxplot-2.png" width="768" style="display: block; margin: auto;" /></p>
-<p>These boxplots help to tell a high level story about the importance of the Qx terms with SSTa, but I want a slightly more fine-grain level of results. To do this I am going to count which of the Qx terms has the lowest RMSE per MHW. These will then be grouped by region and season to provide an understanding for how this may vary.</p>
-<pre class="r"><code># Need a column showing total count of events and a column showing count of Qnet apart from the other variables.
-RMSE_region_count &lt;- ALL_RMSE %&gt;% 
-  dplyr::select(region:ts, n_Obs) %&gt;% 
-  unique() %&gt;% 
-  group_by(region, ts) %&gt;% 
-  summarise(count = n())
-RMSE_season_count &lt;- ALL_RMSE %&gt;% 
-  dplyr::select(region:ts, n_Obs) %&gt;% 
-  unique() %&gt;% 
-  group_by(season, ts) %&gt;% 
-  summarise(count = n())
-
-# Get the top RMSE results (i.e. the lowest RMSE scores)
-ALL_RMSE_Qnet &lt;- ALL_RMSE %&gt;% 
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-RMSE-boxplot-2">
+Past versions of RMSE-boxplot-2.png
+</button>
+</p>
+<div id="fig-RMSE-boxplot-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/8d657581062aa4f04ebb53fd75a7cd27dc1fd62d/docs/figure/mhw-flux.Rmd/RMSE-boxplot-2.png" target="_blank">8d65758</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-09-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code># Boxplot by variable
+ALL_RMSE %&gt;% 
+  filter(var != &quot;Qnet&quot;) %&gt;% 
+  ggplot(aes(x = region, y = rmse)) +
+  geom_boxplot(aes(fill = ts)) +
+  facet_wrap(~var)</code></pre>
+<p><img src="figure/mhw-flux.Rmd/RMSE-boxplot-3.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ALL_RMSE %&gt;% 
+    filter(var != &quot;Qnet&quot;) %&gt;% 
+  ggplot(aes(x = season, y = rmse)) +
+  geom_boxplot(aes(fill = ts)) +
+  facet_wrap(~var)</code></pre>
+<p><img src="figure/mhw-flux.Rmd/RMSE-boxplot-4.png" width="768" style="display: block; margin: auto;" /></p>
+<p>These boxplots help to tell a high level story about the importance of the Qx variables with SSTa, but I want a slightly more fine-grain level of results. To do this I am going to count which of the Qx variables has the lowest RMSE per MHW. These will then be grouped by region and season to provide an understanding for how this may vary.</p>
+<pre class="r"><code># Get the top results other than Qnet
+ALL_RMSE_top &lt;- ALL_RMSE %&gt;% 
+  filter(var != &quot;Qnet&quot;) %&gt;% # Remove Qnet
   group_by(region, season, event_no, ts) %&gt;% 
   filter(rmse == min(rmse))
 
-# Get the top results other than Qnet
-ALL_RMSE_other &lt;- ALL_RMSE %&gt;% 
-  filter(Parameter2 != &quot;Qnet&quot;) %&gt;% # Remove Qnet
-  group_by(region, season, event_no, ts) %&gt;% 
-  filter(rmse == min(rmse))
+# The top count overall
+ALL_RMSE_ts &lt;- ALL_RMSE_top %&gt;%
+  group_by(ts) %&gt;%
+  mutate(total_count = n(),
+         group = &quot;Total&quot;) %&gt;% 
+  group_by(group, ts, total_count, var) %&gt;% 
+  summarise(count = n(), .groups = &quot;drop&quot;) %&gt;% 
+  pivot_wider(names_from = var, values_from = count) %&gt;% 
+  replace_na(list(Qlh = 0, Qsh = 0, Qlw = 0, Qsw = 0)) %&gt;% 
+  dplyr::select(group, ts, total_count, Qlh:Qsw) %&gt;% 
+  filter(ts != &quot;full&quot;) %&gt;% 
+  mutate(Qlh = paste0(Qlh, &quot; (&quot;,round((Qlh/total_count)*100),&quot;%)&quot;),
+         Qsh = paste0(Qsh, &quot; (&quot;,round((Qsh/total_count)*100),&quot;%)&quot;),
+         Qlw = paste0(Qlw, &quot; (&quot;,round((Qlw/total_count)*100),&quot;%)&quot;),
+         Qsw = paste0(Qsw, &quot; (&quot;,round((Qsw/total_count)*100),&quot;%)&quot;))
 
 # The top count by region
-ALL_RMSE_Qnet_region &lt;- ALL_RMSE_Qnet %&gt;% 
-  group_by(region, ts, Parameter2) %&gt;% 
+ALL_RMSE_region &lt;- ALL_RMSE_top %&gt;%
+  group_by(region, ts) %&gt;%
+  mutate(total_count = n()) %&gt;% 
+  group_by(region, ts, total_count, var) %&gt;% 
   summarise(count = n(), .groups = &quot;drop&quot;) %&gt;% 
-  filter(Parameter2 == &quot;Qnet&quot;)
-ALL_RMSE_region &lt;- ALL_RMSE_other %&gt;% 
-  group_by(region, ts, Parameter2) %&gt;% 
+  pivot_wider(names_from = var, values_from = count) %&gt;% 
+  replace_na(list(Qlh = 0, Qsh = 0, Qlw = 0, Qsw = 0)) %&gt;% 
+  dplyr::select(region, ts, total_count, Qlh:Qlw) %&gt;% 
+  filter(ts != &quot;full&quot;) %&gt;% 
+  mutate(Qlh = paste0(Qlh, &quot; (&quot;,round((Qlh/total_count)*100),&quot;%)&quot;),
+         Qsh = paste0(Qsh, &quot; (&quot;,round((Qsh/total_count)*100),&quot;%)&quot;),
+         Qlw = paste0(Qlw, &quot; (&quot;,round((Qlw/total_count)*100),&quot;%)&quot;),
+         Qsw = paste0(Qsw, &quot; (&quot;,round((Qsw/total_count)*100),&quot;%)&quot;)) %&gt;% 
+  dplyr::rename(group = region)
+# knitr::kable(ALL_RMSE_region)
+
+# The top count by season
+ALL_RMSE_season &lt;- ALL_RMSE_top %&gt;% 
+  group_by(season, ts) %&gt;%
+  mutate(total_count = n()) %&gt;% 
+  group_by(season, ts, total_count, var) %&gt;% 
   summarise(count = n(), .groups = &quot;drop&quot;) %&gt;% 
-  rbind(ALL_RMSE_Qnet_region) %&gt;% 
-  pivot_wider(names_from = Parameter2, values_from = count) %&gt;% 
-  mutate(Qlw = replace_na(Qlw, 0)) %&gt;% 
-  left_join(RMSE_region_count, by = c(&quot;region&quot;, &quot;ts&quot;)) %&gt;% 
-  dplyr::select(region, ts, count, Qnet, Qlh:Qsw) %&gt;% 
-  mutate(Qnet = paste0(Qnet, &quot; (&quot;,round((Qnet/count)*100),&quot;%)&quot;),
-         Qlh = paste0(Qlh, &quot; (&quot;,round((Qlh/count)*100),&quot;%)&quot;),
-         Qsh = paste0(Qsh, &quot; (&quot;,round((Qsh/count)*100),&quot;%)&quot;),
-         Qlw = paste0(Qlw, &quot; (&quot;,round((Qlw/count)*100),&quot;%)&quot;),
-         Qsw = paste0(Qsw, &quot; (&quot;,round((Qsw/count)*100),&quot;%)&quot;))
-knitr::kable(ALL_RMSE_region)</code></pre>
+  pivot_wider(names_from = var, values_from = count) %&gt;% 
+  replace_na(list(Qlh = 0, Qsh = 0, Qlw = 0, Qsw = 0)) %&gt;% 
+  dplyr::select(season, ts, total_count, Qlh:Qlw) %&gt;% 
+  filter(ts != &quot;full&quot;) %&gt;% 
+  mutate(Qlh = paste0(Qlh, &quot; (&quot;,round((Qlh/total_count)*100),&quot;%)&quot;),
+         Qsh = paste0(Qsh, &quot; (&quot;,round((Qsh/total_count)*100),&quot;%)&quot;),
+         Qlw = paste0(Qlw, &quot; (&quot;,round((Qlw/total_count)*100),&quot;%)&quot;),
+         Qsw = paste0(Qsw, &quot; (&quot;,round((Qsw/total_count)*100),&quot;%)&quot;)) %&gt;% 
+  dplyr::rename(group = season)
+# knitr::kable(ALL_RMSE_season)
+
+# Print table
+ALL_RMSE_ts_region_season &lt;- rbind(ALL_RMSE_ts, ALL_RMSE_region, ALL_RMSE_season) %&gt;% 
+  dplyr::rename(count = total_count)
+knitr::kable(ALL_RMSE_ts_region_season)</code></pre>
 <table>
 <thead>
 <tr class="header">
-<th align="left">region</th>
+<th align="left">group</th>
 <th align="left">ts</th>
 <th align="right">count</th>
-<th align="left">Qnet</th>
 <th align="left">Qlh</th>
 <th align="left">Qsh</th>
 <th align="left">Qlw</th>
@@ -1945,352 +2896,215 @@ knitr::kable(ALL_RMSE_region)</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">CBS</td>
+<td align="left">Total</td>
 <td align="left">onset</td>
-<td align="right">43</td>
-<td align="left">19 (44%)</td>
-<td align="left">11 (26%)</td>
-<td align="left">10 (23%)</td>
-<td align="left">6 (14%)</td>
-<td align="left">16 (37%)</td>
+<td align="right">122</td>
+<td align="left">57 (47%)</td>
+<td align="left">22 (18%)</td>
+<td align="left">2 (2%)</td>
+<td align="left">41 (34%)</td>
 </tr>
 <tr class="even">
-<td align="left">CBS</td>
-<td align="left">full</td>
-<td align="right">53</td>
-<td align="left">12 (23%)</td>
-<td align="left">15 (28%)</td>
-<td align="left">15 (28%)</td>
-<td align="left">9 (17%)</td>
-<td align="left">15 (28%)</td>
-</tr>
-<tr class="odd">
-<td align="left">CBS</td>
-<td align="left">decline</td>
-<td align="right">43</td>
-<td align="left">13 (30%)</td>
-<td align="left">14 (33%)</td>
-<td align="left">14 (33%)</td>
-<td align="left">6 (14%)</td>
-<td align="left">9 (21%)</td>
-</tr>
-<tr class="even">
-<td align="left">GM</td>
-<td align="left">onset</td>
-<td align="right">41</td>
-<td align="left">12 (29%)</td>
-<td align="left">9 (22%)</td>
-<td align="left">6 (15%)</td>
-<td align="left">11 (27%)</td>
-<td align="left">15 (37%)</td>
-</tr>
-<tr class="odd">
-<td align="left">GM</td>
-<td align="left">full</td>
-<td align="right">47</td>
-<td align="left">8 (17%)</td>
-<td align="left">9 (19%)</td>
-<td align="left">8 (17%)</td>
-<td align="left">14 (30%)</td>
-<td align="left">16 (34%)</td>
-</tr>
-<tr class="even">
-<td align="left">GM</td>
-<td align="left">decline</td>
-<td align="right">38</td>
-<td align="left">7 (18%)</td>
-<td align="left">7 (18%)</td>
-<td align="left">8 (21%)</td>
-<td align="left">9 (24%)</td>
-<td align="left">14 (37%)</td>
-</tr>
-<tr class="odd">
-<td align="left">GSL</td>
-<td align="left">onset</td>
-<td align="right">44</td>
-<td align="left">16 (36%)</td>
-<td align="left">13 (30%)</td>
-<td align="left">5 (11%)</td>
-<td align="left">4 (9%)</td>
-<td align="left">22 (50%)</td>
-</tr>
-<tr class="even">
-<td align="left">GSL</td>
-<td align="left">full</td>
-<td align="right">49</td>
-<td align="left">15 (31%)</td>
-<td align="left">14 (29%)</td>
-<td align="left">6 (12%)</td>
-<td align="left">7 (14%)</td>
-<td align="left">22 (45%)</td>
-</tr>
-<tr class="odd">
-<td align="left">GSL</td>
-<td align="left">decline</td>
-<td align="right">41</td>
-<td align="left">12 (29%)</td>
-<td align="left">9 (22%)</td>
-<td align="left">7 (17%)</td>
-<td align="left">6 (15%)</td>
-<td align="left">19 (46%)</td>
-</tr>
-<tr class="even">
-<td align="left">MAB</td>
-<td align="left">onset</td>
-<td align="right">50</td>
-<td align="left">31 (62%)</td>
-<td align="left">13 (26%)</td>
-<td align="left">8 (16%)</td>
-<td align="left">0 (0%)</td>
-<td align="left">29 (58%)</td>
-</tr>
-<tr class="odd">
-<td align="left">MAB</td>
-<td align="left">full</td>
-<td align="right">57</td>
-<td align="left">12 (21%)</td>
-<td align="left">18 (32%)</td>
-<td align="left">10 (18%)</td>
-<td align="left">3 (5%)</td>
-<td align="left">26 (46%)</td>
-</tr>
-<tr class="even">
-<td align="left">MAB</td>
-<td align="left">decline</td>
-<td align="right">50</td>
-<td align="left">8 (16%)</td>
-<td align="left">13 (26%)</td>
-<td align="left">13 (26%)</td>
-<td align="left">3 (6%)</td>
-<td align="left">21 (42%)</td>
-</tr>
-<tr class="odd">
-<td align="left">NFS</td>
-<td align="left">onset</td>
-<td align="right">37</td>
-<td align="left">15 (41%)</td>
-<td align="left">14 (38%)</td>
-<td align="left">6 (16%)</td>
-<td align="left">6 (16%)</td>
-<td align="left">11 (30%)</td>
-</tr>
-<tr class="even">
-<td align="left">NFS</td>
-<td align="left">full</td>
-<td align="right">44</td>
-<td align="left">7 (16%)</td>
-<td align="left">14 (32%)</td>
-<td align="left">7 (16%)</td>
-<td align="left">11 (25%)</td>
-<td align="left">12 (27%)</td>
-</tr>
-<tr class="odd">
-<td align="left">NFS</td>
-<td align="left">decline</td>
-<td align="right">37</td>
-<td align="left">5 (14%)</td>
-<td align="left">10 (27%)</td>
-<td align="left">4 (11%)</td>
-<td align="left">11 (30%)</td>
-<td align="left">12 (32%)</td>
-</tr>
-<tr class="even">
-<td align="left">SS</td>
-<td align="left">onset</td>
-<td align="right">36</td>
-<td align="left">13 (36%)</td>
-<td align="left">11 (31%)</td>
-<td align="left">2 (6%)</td>
-<td align="left">7 (19%)</td>
-<td align="left">16 (44%)</td>
-</tr>
-<tr class="odd">
-<td align="left">SS</td>
-<td align="left">full</td>
-<td align="right">41</td>
-<td align="left">8 (20%)</td>
-<td align="left">10 (24%)</td>
-<td align="left">6 (15%)</td>
-<td align="left">11 (27%)</td>
-<td align="left">14 (34%)</td>
-</tr>
-<tr class="even">
-<td align="left">SS</td>
-<td align="left">decline</td>
-<td align="right">34</td>
-<td align="left">6 (18%)</td>
-<td align="left">10 (29%)</td>
-<td align="left">7 (21%)</td>
-<td align="left">8 (24%)</td>
-<td align="left">9 (26%)</td>
-</tr>
-</tbody>
-</table>
-<pre class="r"><code># The top count by season
-ALL_RMSE_Qnet_season &lt;- ALL_RMSE_Qnet %&gt;% 
-  group_by(season, ts, Parameter2) %&gt;% 
-  summarise(count = n(), .groups = &quot;drop&quot;) %&gt;% 
-  filter(Parameter2 == &quot;Qnet&quot;)
-ALL_RMSE_season &lt;- ALL_RMSE_other %&gt;% 
-  group_by(season, ts, Parameter2) %&gt;% 
-  summarise(count = n(), .groups = &quot;drop&quot;) %&gt;% 
-  rbind(ALL_RMSE_Qnet_season) %&gt;% 
-  pivot_wider(names_from = Parameter2, values_from = count) %&gt;% 
-  # mutate(Qlw = replace_na(Qlw, 0)) %&gt;% 
-  left_join(RMSE_season_count, by = c(&quot;season&quot;, &quot;ts&quot;)) %&gt;% 
-  dplyr::select(season, ts, count, Qnet, Qlh:Qsw) %&gt;% 
-    mutate(Qnet = paste0(Qnet, &quot; (&quot;,round((Qnet/count)*100),&quot;%)&quot;),
-         Qlh = paste0(Qlh, &quot; (&quot;,round((Qlh/count)*100),&quot;%)&quot;),
-         Qsh = paste0(Qsh, &quot; (&quot;,round((Qsh/count)*100),&quot;%)&quot;),
-         Qlw = paste0(Qlw, &quot; (&quot;,round((Qlw/count)*100),&quot;%)&quot;),
-         Qsw = paste0(Qsw, &quot; (&quot;,round((Qsw/count)*100),&quot;%)&quot;))
-knitr::kable(ALL_RMSE_season)</code></pre>
-<table>
-<thead>
-<tr class="header">
-<th align="left">season</th>
-<th align="left">ts</th>
-<th align="right">count</th>
-<th align="left">Qnet</th>
-<th align="left">Qlh</th>
-<th align="left">Qsh</th>
-<th align="left">Qlw</th>
-<th align="left">Qsw</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">Spring</td>
-<td align="left">onset</td>
-<td align="right">53</td>
-<td align="left">20 (38%)</td>
-<td align="left">9 (17%)</td>
-<td align="left">6 (11%)</td>
-<td align="left">5 (9%)</td>
-<td align="left">33 (62%)</td>
-</tr>
-<tr class="even">
-<td align="left">Spring</td>
-<td align="left">full</td>
-<td align="right">58</td>
-<td align="left">20 (34%)</td>
-<td align="left">15 (26%)</td>
-<td align="left">8 (14%)</td>
-<td align="left">7 (12%)</td>
-<td align="left">28 (48%)</td>
-</tr>
-<tr class="odd">
-<td align="left">Spring</td>
+<td align="left">Total</td>
 <td align="left">decline</td>
 <td align="right">42</td>
-<td align="left">16 (38%)</td>
-<td align="left">10 (24%)</td>
+<td align="left">26 (62%)</td>
+<td align="left">3 (7%)</td>
+<td align="left">6 (14%)</td>
 <td align="left">7 (17%)</td>
-<td align="left">5 (12%)</td>
-<td align="left">20 (48%)</td>
+</tr>
+<tr class="odd">
+<td align="left">CBS</td>
+<td align="left">onset</td>
+<td align="right">21</td>
+<td align="left">9 (43%)</td>
+<td align="left">3 (14%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">9 (43%)</td>
 </tr>
 <tr class="even">
-<td align="left">Summer</td>
+<td align="left">CBS</td>
+<td align="left">decline</td>
+<td align="right">7</td>
+<td align="left">2 (29%)</td>
+<td align="left">1 (14%)</td>
+<td align="left">4 (57%)</td>
+<td align="left">0 (0%)</td>
+</tr>
+<tr class="odd">
+<td align="left">GM</td>
 <td align="left">onset</td>
-<td align="right">88</td>
-<td align="left">38 (43%)</td>
-<td align="left">28 (32%)</td>
-<td align="left">2 (2%)</td>
-<td align="left">9 (10%)</td>
-<td align="left">49 (56%)</td>
+<td align="right">20</td>
+<td align="left">6 (30%)</td>
+<td align="left">4 (20%)</td>
+<td align="left">1 (5%)</td>
+<td align="left">9 (45%)</td>
+</tr>
+<tr class="even">
+<td align="left">GM</td>
+<td align="left">decline</td>
+<td align="right">6</td>
+<td align="left">3 (50%)</td>
+<td align="left">1 (17%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">2 (33%)</td>
+</tr>
+<tr class="odd">
+<td align="left">GSL</td>
+<td align="left">onset</td>
+<td align="right">19</td>
+<td align="left">10 (53%)</td>
+<td align="left">3 (16%)</td>
+<td align="left">1 (5%)</td>
+<td align="left">5 (26%)</td>
+</tr>
+<tr class="even">
+<td align="left">GSL</td>
+<td align="left">decline</td>
+<td align="right">4</td>
+<td align="left">3 (75%)</td>
+<td align="left">1 (25%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">0 (0%)</td>
+</tr>
+<tr class="odd">
+<td align="left">MAB</td>
+<td align="left">onset</td>
+<td align="right">28</td>
+<td align="left">14 (50%)</td>
+<td align="left">6 (21%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">8 (29%)</td>
+</tr>
+<tr class="even">
+<td align="left">MAB</td>
+<td align="left">decline</td>
+<td align="right">7</td>
+<td align="left">7 (100%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">0 (0%)</td>
+</tr>
+<tr class="odd">
+<td align="left">NFS</td>
+<td align="left">onset</td>
+<td align="right">21</td>
+<td align="left">11 (52%)</td>
+<td align="left">5 (24%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">5 (24%)</td>
+</tr>
+<tr class="even">
+<td align="left">NFS</td>
+<td align="left">decline</td>
+<td align="right">7</td>
+<td align="left">5 (71%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">2 (29%)</td>
+</tr>
+<tr class="odd">
+<td align="left">SS</td>
+<td align="left">onset</td>
+<td align="right">13</td>
+<td align="left">7 (54%)</td>
+<td align="left">1 (8%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">5 (38%)</td>
+</tr>
+<tr class="even">
+<td align="left">SS</td>
+<td align="left">decline</td>
+<td align="right">11</td>
+<td align="left">6 (55%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">2 (18%)</td>
+<td align="left">3 (27%)</td>
+</tr>
+<tr class="odd">
+<td align="left">Spring</td>
+<td align="left">onset</td>
+<td align="right">27</td>
+<td align="left">7 (26%)</td>
+<td align="left">3 (11%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">17 (63%)</td>
+</tr>
+<tr class="even">
+<td align="left">Spring</td>
+<td align="left">decline</td>
+<td align="right">3</td>
+<td align="left">2 (67%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">1 (33%)</td>
+<td align="left">0 (0%)</td>
 </tr>
 <tr class="odd">
 <td align="left">Summer</td>
-<td align="left">full</td>
-<td align="right">105</td>
-<td align="left">20 (19%)</td>
-<td align="left">26 (25%)</td>
-<td align="left">20 (19%)</td>
-<td align="left">13 (12%)</td>
-<td align="left">46 (44%)</td>
+<td align="left">onset</td>
+<td align="right">35</td>
+<td align="left">20 (57%)</td>
+<td align="left">2 (6%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">13 (37%)</td>
 </tr>
 <tr class="even">
 <td align="left">Summer</td>
 <td align="left">decline</td>
-<td align="right">88</td>
-<td align="left">17 (19%)</td>
-<td align="left">21 (24%)</td>
-<td align="left">19 (22%)</td>
-<td align="left">8 (9%)</td>
-<td align="left">40 (45%)</td>
+<td align="right">18</td>
+<td align="left">10 (56%)</td>
+<td align="left">1 (6%)</td>
+<td align="left">4 (22%)</td>
+<td align="left">3 (17%)</td>
 </tr>
 <tr class="odd">
 <td align="left">Autumn</td>
 <td align="left">onset</td>
-<td align="right">62</td>
-<td align="left">34 (55%)</td>
-<td align="left">28 (45%)</td>
-<td align="left">15 (24%)</td>
-<td align="left">7 (11%)</td>
-<td align="left">12 (19%)</td>
+<td align="right">38</td>
+<td align="left">24 (63%)</td>
+<td align="left">9 (24%)</td>
+<td align="left">1 (3%)</td>
+<td align="left">4 (11%)</td>
 </tr>
 <tr class="even">
-<td align="left">Autumn</td>
-<td align="left">full</td>
-<td align="right">70</td>
-<td align="left">17 (24%)</td>
-<td align="left">25 (36%)</td>
-<td align="left">12 (17%)</td>
-<td align="left">15 (21%)</td>
-<td align="left">19 (27%)</td>
-</tr>
-<tr class="odd">
 <td align="left">Autumn</td>
 <td align="left">decline</td>
-<td align="right">62</td>
-<td align="left">11 (18%)</td>
-<td align="left">21 (34%)</td>
-<td align="left">11 (18%)</td>
-<td align="left">14 (23%)</td>
-<td align="left">16 (26%)</td>
+<td align="right">11</td>
+<td align="left">10 (91%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">1 (9%)</td>
+<td align="left">0 (0%)</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Winter</td>
 <td align="left">onset</td>
-<td align="right">48</td>
-<td align="left">14 (29%)</td>
-<td align="left">6 (12%)</td>
-<td align="left">14 (29%)</td>
-<td align="left">13 (27%)</td>
-<td align="left">15 (31%)</td>
-</tr>
-<tr class="odd">
-<td align="left">Winter</td>
-<td align="left">full</td>
-<td align="right">58</td>
-<td align="left">5 (9%)</td>
-<td align="left">14 (24%)</td>
-<td align="left">12 (21%)</td>
-<td align="left">20 (34%)</td>
-<td align="left">12 (21%)</td>
+<td align="right">22</td>
+<td align="left">6 (27%)</td>
+<td align="left">8 (36%)</td>
+<td align="left">1 (5%)</td>
+<td align="left">7 (32%)</td>
 </tr>
 <tr class="even">
 <td align="left">Winter</td>
 <td align="left">decline</td>
-<td align="right">51</td>
-<td align="left">7 (14%)</td>
-<td align="left">11 (22%)</td>
-<td align="left">16 (31%)</td>
-<td align="left">16 (31%)</td>
-<td align="left">8 (16%)</td>
+<td align="right">10</td>
+<td align="left">4 (40%)</td>
+<td align="left">2 (20%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">4 (40%)</td>
 </tr>
 </tbody>
 </table>
-<p>I’m pretty happy with how these results are displayed. But I think it would be better to show the regions and seasons in separate tables just to keep them more manageable. In the last chunk in this sub-section we will grab some specific summary stats that are used in the publication.</p>
+<p>I’m pretty happy with how these results are displayed. In the last chunk in this sub-section we will grab some specific summary stats that are used in the publication.</p>
 <pre class="r"><code># Short event best fits
 ALL_RMSE_short &lt;- ALL_RMSE %&gt;% 
-  filter(n_Obs &lt;= 14, Parameter2 != &quot;Qnet&quot;) %&gt;% 
+  filter(n_Obs &lt;= 14, var != &quot;Qnet&quot;) %&gt;% 
   group_by(region, season, event_no, ts) %&gt;% 
   filter(rmse == min(rmse))
 
 # Short event index
 ALL_RMSE_long &lt;- ALL_RMSE %&gt;% 
-  filter(n_Obs &gt; 14, Parameter2 != &quot;Qnet&quot;) %&gt;% 
+  filter(n_Obs &gt; 14, var != &quot;Qnet&quot;) %&gt;% 
   group_by(region, season, event_no, ts) %&gt;% 
   filter(rmse == min(rmse))
 
@@ -2298,11 +3112,11 @@ ALL_RMSE_long &lt;- ALL_RMSE %&gt;%
 ALL_RMSE_short_region &lt;- ALL_RMSE_short %&gt;%
   group_by(region, ts) %&gt;% 
   mutate(count = n()) %&gt;% 
-  group_by(region, ts, count, Parameter2) %&gt;% 
+  group_by(region, ts, count, var) %&gt;% 
   summarise(count_Q = n(), .groups = &quot;drop&quot;) %&gt;% 
-  pivot_wider(names_from = Parameter2, values_from = count_Q) %&gt;% 
-  mutate(Qlw = replace_na(Qlw, 0)) %&gt;%
-  dplyr::select(region, ts, count, Qlh:Qsw) %&gt;% 
+  pivot_wider(names_from = var, values_from = count_Q) %&gt;% 
+  replace_na(list(Qlh = 0, Qsh = 0, Qlw = 0, Qsw = 0)) %&gt;% 
+  dplyr::select(region, ts, count, Qlh:Qlw) %&gt;% 
   mutate(Qlh = paste0(Qlh, &quot; (&quot;,round((Qlh/count)*100),&quot;%)&quot;),
          Qsh = paste0(Qsh, &quot; (&quot;,round((Qsh/count)*100),&quot;%)&quot;),
          Qlw = paste0(Qlw, &quot; (&quot;,round((Qlw/count)*100),&quot;%)&quot;),
@@ -2316,172 +3130,118 @@ knitr::kable(ALL_RMSE_short_region)</code></pre>
 <th align="right">count</th>
 <th align="left">Qlh</th>
 <th align="left">Qsh</th>
-<th align="left">Qlw</th>
 <th align="left">Qsw</th>
+<th align="left">Qlw</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td align="left">CBS</td>
 <td align="left">onset</td>
-<td align="right">37</td>
-<td align="left">9 (24%)</td>
-<td align="left">9 (24%)</td>
-<td align="left">4 (11%)</td>
-<td align="left">15 (41%)</td>
-</tr>
-<tr class="even">
-<td align="left">CBS</td>
-<td align="left">full</td>
-<td align="right">36</td>
-<td align="left">7 (19%)</td>
-<td align="left">11 (31%)</td>
-<td align="left">7 (19%)</td>
-<td align="left">11 (31%)</td>
-</tr>
-<tr class="odd">
-<td align="left">CBS</td>
-<td align="left">decline</td>
-<td align="right">36</td>
-<td align="left">10 (28%)</td>
-<td align="left">13 (36%)</td>
-<td align="left">6 (17%)</td>
-<td align="left">7 (19%)</td>
-</tr>
-<tr class="even">
-<td align="left">GM</td>
-<td align="left">onset</td>
-<td align="right">33</td>
-<td align="left">6 (18%)</td>
-<td align="left">5 (15%)</td>
-<td align="left">7 (21%)</td>
-<td align="left">15 (45%)</td>
-</tr>
-<tr class="odd">
-<td align="left">GM</td>
-<td align="left">full</td>
-<td align="right">26</td>
-<td align="left">3 (12%)</td>
-<td align="left">5 (19%)</td>
-<td align="left">8 (31%)</td>
-<td align="left">10 (38%)</td>
-</tr>
-<tr class="even">
-<td align="left">GM</td>
-<td align="left">decline</td>
-<td align="right">31</td>
-<td align="left">5 (16%)</td>
-<td align="left">7 (23%)</td>
-<td align="left">8 (26%)</td>
-<td align="left">11 (35%)</td>
-</tr>
-<tr class="odd">
-<td align="left">GSL</td>
-<td align="left">onset</td>
-<td align="right">41</td>
-<td align="left">12 (29%)</td>
-<td align="left">4 (10%)</td>
-<td align="left">4 (10%)</td>
-<td align="left">21 (51%)</td>
-</tr>
-<tr class="even">
-<td align="left">GSL</td>
-<td align="left">full</td>
-<td align="right">36</td>
-<td align="left">8 (22%)</td>
-<td align="left">6 (17%)</td>
-<td align="left">5 (14%)</td>
-<td align="left">17 (47%)</td>
-</tr>
-<tr class="odd">
-<td align="left">GSL</td>
-<td align="left">decline</td>
-<td align="right">37</td>
-<td align="left">7 (19%)</td>
-<td align="left">7 (19%)</td>
-<td align="left">5 (14%)</td>
-<td align="left">18 (49%)</td>
-</tr>
-<tr class="even">
-<td align="left">MAB</td>
-<td align="left">onset</td>
-<td align="right">43</td>
-<td align="left">11 (26%)</td>
-<td align="left">6 (14%)</td>
+<td align="right">18</td>
+<td align="left">7 (39%)</td>
+<td align="left">3 (17%)</td>
+<td align="left">8 (44%)</td>
 <td align="left">0 (0%)</td>
-<td align="left">26 (60%)</td>
+</tr>
+<tr class="even">
+<td align="left">CBS</td>
+<td align="left">decline</td>
+<td align="right">4</td>
+<td align="left">1 (25%)</td>
+<td align="left">1 (25%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">2 (50%)</td>
+</tr>
+<tr class="odd">
+<td align="left">GM</td>
+<td align="left">onset</td>
+<td align="right">16</td>
+<td align="left">4 (25%)</td>
+<td align="left">3 (19%)</td>
+<td align="left">9 (56%)</td>
+<td align="left">0 (0%)</td>
+</tr>
+<tr class="even">
+<td align="left">GM</td>
+<td align="left">decline</td>
+<td align="right">5</td>
+<td align="left">2 (40%)</td>
+<td align="left">1 (20%)</td>
+<td align="left">2 (40%)</td>
+<td align="left">0 (0%)</td>
+</tr>
+<tr class="odd">
+<td align="left">GSL</td>
+<td align="left">onset</td>
+<td align="right">17</td>
+<td align="left">10 (59%)</td>
+<td align="left">2 (12%)</td>
+<td align="left">4 (24%)</td>
+<td align="left">1 (6%)</td>
+</tr>
+<tr class="even">
+<td align="left">GSL</td>
+<td align="left">decline</td>
+<td align="right">3</td>
+<td align="left">2 (67%)</td>
+<td align="left">1 (33%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">0 (0%)</td>
 </tr>
 <tr class="odd">
 <td align="left">MAB</td>
-<td align="left">full</td>
-<td align="right">41</td>
-<td align="left">12 (29%)</td>
-<td align="left">6 (15%)</td>
-<td align="left">2 (5%)</td>
-<td align="left">21 (51%)</td>
-</tr>
-<tr class="even">
-<td align="left">MAB</td>
-<td align="left">decline</td>
-<td align="right">44</td>
-<td align="left">12 (27%)</td>
-<td align="left">12 (27%)</td>
-<td align="left">2 (5%)</td>
-<td align="left">18 (41%)</td>
-</tr>
-<tr class="odd">
-<td align="left">NFS</td>
 <td align="left">onset</td>
-<td align="right">31</td>
-<td align="left">11 (35%)</td>
-<td align="left">5 (16%)</td>
-<td align="left">4 (13%)</td>
-<td align="left">11 (35%)</td>
-</tr>
-<tr class="even">
-<td align="left">NFS</td>
-<td align="left">full</td>
-<td align="right">29</td>
-<td align="left">10 (34%)</td>
-<td align="left">4 (14%)</td>
-<td align="left">7 (24%)</td>
-<td align="left">8 (28%)</td>
-</tr>
-<tr class="odd">
-<td align="left">NFS</td>
-<td align="left">decline</td>
-<td align="right">30</td>
-<td align="left">9 (30%)</td>
-<td align="left">3 (10%)</td>
-<td align="left">9 (30%)</td>
-<td align="left">9 (30%)</td>
-</tr>
-<tr class="even">
-<td align="left">SS</td>
-<td align="left">onset</td>
-<td align="right">26</td>
-<td align="left">7 (27%)</td>
-<td align="left">1 (4%)</td>
-<td align="left">6 (23%)</td>
-<td align="left">12 (46%)</td>
-</tr>
-<tr class="odd">
-<td align="left">SS</td>
-<td align="left">full</td>
 <td align="right">24</td>
-<td align="left">3 (12%)</td>
-<td align="left">3 (12%)</td>
+<td align="left">12 (50%)</td>
+<td align="left">4 (17%)</td>
 <td align="left">8 (33%)</td>
-<td align="left">10 (42%)</td>
+<td align="left">0 (0%)</td>
+</tr>
+<tr class="even">
+<td align="left">MAB</td>
+<td align="left">decline</td>
+<td align="right">3</td>
+<td align="left">3 (100%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">0 (0%)</td>
+</tr>
+<tr class="odd">
+<td align="left">NFS</td>
+<td align="left">onset</td>
+<td align="right">17</td>
+<td align="left">8 (47%)</td>
+<td align="left">4 (24%)</td>
+<td align="left">5 (29%)</td>
+<td align="left">0 (0%)</td>
+</tr>
+<tr class="even">
+<td align="left">NFS</td>
+<td align="left">decline</td>
+<td align="right">5</td>
+<td align="left">3 (60%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">2 (40%)</td>
+<td align="left">0 (0%)</td>
+</tr>
+<tr class="odd">
+<td align="left">SS</td>
+<td align="left">onset</td>
+<td align="right">10</td>
+<td align="left">6 (60%)</td>
+<td align="left">1 (10%)</td>
+<td align="left">3 (30%)</td>
+<td align="left">0 (0%)</td>
 </tr>
 <tr class="even">
 <td align="left">SS</td>
 <td align="left">decline</td>
-<td align="right">23</td>
-<td align="left">4 (17%)</td>
-<td align="left">6 (26%)</td>
-<td align="left">7 (30%)</td>
-<td align="left">6 (26%)</td>
+<td align="right">7</td>
+<td align="left">4 (57%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">1 (14%)</td>
+<td align="left">2 (29%)</td>
 </tr>
 </tbody>
 </table>
@@ -2489,13 +3249,11 @@ knitr::kable(ALL_RMSE_short_region)</code></pre>
 ALL_RMSE_long_region &lt;- ALL_RMSE_long %&gt;%
   group_by(region, ts) %&gt;% 
   mutate(count = n()) %&gt;% 
-  group_by(region, ts, count, Parameter2) %&gt;% 
+  group_by(region, ts, count, var) %&gt;% 
   summarise(count_Q = n(), .groups = &quot;drop&quot;) %&gt;% 
-  pivot_wider(names_from = Parameter2, values_from = count_Q) %&gt;% 
-  mutate(Qsh = replace_na(Qsh, 0),
-         Qsw = replace_na(Qsw, 0),
-         Qlw = replace_na(Qlw, 0)) %&gt;%
-  dplyr::select(region, ts, count, Qlh:Qsw) %&gt;% 
+  pivot_wider(names_from = var, values_from = count_Q) %&gt;% 
+  replace_na(list(Qlh = 0, Qsh = 0, Qlw = 0, Qsw = 0)) %&gt;% 
+  dplyr::select(region, ts, count, Qlh:Qsh) %&gt;% 
   mutate(Qlh = paste0(Qlh, &quot; (&quot;,round((Qlh/count)*100),&quot;%)&quot;),
          Qsh = paste0(Qsh, &quot; (&quot;,round((Qsh/count)*100),&quot;%)&quot;),
          Qlw = paste0(Qlw, &quot; (&quot;,round((Qlw/count)*100),&quot;%)&quot;),
@@ -2508,87 +3266,33 @@ knitr::kable(ALL_RMSE_long_region)</code></pre>
 <th align="left">ts</th>
 <th align="right">count</th>
 <th align="left">Qlh</th>
-<th align="left">Qsh</th>
-<th align="left">Qlw</th>
 <th align="left">Qsw</th>
+<th align="left">Qlw</th>
+<th align="left">Qsh</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td align="left">CBS</td>
 <td align="left">onset</td>
-<td align="right">6</td>
-<td align="left">2 (33%)</td>
-<td align="left">1 (17%)</td>
-<td align="left">2 (33%)</td>
-<td align="left">1 (17%)</td>
+<td align="right">3</td>
+<td align="left">2 (67%)</td>
+<td align="left">1 (33%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">0 (0%)</td>
 </tr>
 <tr class="even">
 <td align="left">CBS</td>
-<td align="left">full</td>
-<td align="right">18</td>
-<td align="left">8 (44%)</td>
-<td align="left">4 (22%)</td>
-<td align="left">2 (11%)</td>
-<td align="left">4 (22%)</td>
-</tr>
-<tr class="odd">
-<td align="left">CBS</td>
 <td align="left">decline</td>
-<td align="right">7</td>
-<td align="left">4 (57%)</td>
-<td align="left">1 (14%)</td>
-<td align="left">0 (0%)</td>
-<td align="left">2 (29%)</td>
-</tr>
-<tr class="even">
-<td align="left">GM</td>
-<td align="left">onset</td>
-<td align="right">8</td>
-<td align="left">3 (38%)</td>
-<td align="left">1 (12%)</td>
-<td align="left">4 (50%)</td>
-<td align="left">0 (0%)</td>
-</tr>
-<tr class="odd">
-<td align="left">GM</td>
-<td align="left">full</td>
-<td align="right">21</td>
-<td align="left">6 (29%)</td>
-<td align="left">3 (14%)</td>
-<td align="left">6 (29%)</td>
-<td align="left">6 (29%)</td>
-</tr>
-<tr class="even">
-<td align="left">GM</td>
-<td align="left">decline</td>
-<td align="right">7</td>
-<td align="left">2 (29%)</td>
-<td align="left">1 (14%)</td>
-<td align="left">1 (14%)</td>
-<td align="left">3 (43%)</td>
-</tr>
-<tr class="odd">
-<td align="left">GSL</td>
-<td align="left">onset</td>
 <td align="right">3</td>
 <td align="left">1 (33%)</td>
-<td align="left">1 (33%)</td>
 <td align="left">0 (0%)</td>
-<td align="left">1 (33%)</td>
-</tr>
-<tr class="even">
-<td align="left">GSL</td>
-<td align="left">full</td>
-<td align="right">13</td>
-<td align="left">6 (46%)</td>
+<td align="left">2 (67%)</td>
 <td align="left">0 (0%)</td>
-<td align="left">2 (15%)</td>
-<td align="left">5 (38%)</td>
 </tr>
 <tr class="odd">
-<td align="left">GSL</td>
-<td align="left">decline</td>
+<td align="left">GM</td>
+<td align="left">onset</td>
 <td align="right">4</td>
 <td align="left">2 (50%)</td>
 <td align="left">0 (0%)</td>
@@ -2596,85 +3300,85 @@ knitr::kable(ALL_RMSE_long_region)</code></pre>
 <td align="left">1 (25%)</td>
 </tr>
 <tr class="even">
-<td align="left">MAB</td>
-<td align="left">onset</td>
-<td align="right">7</td>
-<td align="left">2 (29%)</td>
-<td align="left">2 (29%)</td>
-<td align="left">0 (0%)</td>
-<td align="left">3 (43%)</td>
-</tr>
-<tr class="odd">
-<td align="left">MAB</td>
-<td align="left">full</td>
-<td align="right">16</td>
-<td align="left">6 (38%)</td>
-<td align="left">4 (25%)</td>
-<td align="left">1 (6%)</td>
-<td align="left">5 (31%)</td>
-</tr>
-<tr class="even">
-<td align="left">MAB</td>
+<td align="left">GM</td>
 <td align="left">decline</td>
-<td align="right">6</td>
-<td align="left">1 (17%)</td>
-<td align="left">1 (17%)</td>
-<td align="left">1 (17%)</td>
-<td align="left">3 (50%)</td>
-</tr>
-<tr class="odd">
-<td align="left">NFS</td>
-<td align="left">onset</td>
-<td align="right">6</td>
-<td align="left">3 (50%)</td>
-<td align="left">1 (17%)</td>
-<td align="left">2 (33%)</td>
+<td align="right">1</td>
+<td align="left">1 (100%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">0 (0%)</td>
 <td align="left">0 (0%)</td>
 </tr>
+<tr class="odd">
+<td align="left">GSL</td>
+<td align="left">onset</td>
+<td align="right">2</td>
+<td align="left">0 (0%)</td>
+<td align="left">1 (50%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">1 (50%)</td>
+</tr>
 <tr class="even">
-<td align="left">NFS</td>
-<td align="left">full</td>
-<td align="right">15</td>
-<td align="left">4 (27%)</td>
-<td align="left">3 (20%)</td>
-<td align="left">4 (27%)</td>
-<td align="left">4 (27%)</td>
+<td align="left">GSL</td>
+<td align="left">decline</td>
+<td align="right">1</td>
+<td align="left">1 (100%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">0 (0%)</td>
+</tr>
+<tr class="odd">
+<td align="left">MAB</td>
+<td align="left">onset</td>
+<td align="right">4</td>
+<td align="left">2 (50%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">2 (50%)</td>
+</tr>
+<tr class="even">
+<td align="left">MAB</td>
+<td align="left">decline</td>
+<td align="right">4</td>
+<td align="left">4 (100%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">0 (0%)</td>
 </tr>
 <tr class="odd">
 <td align="left">NFS</td>
-<td align="left">decline</td>
-<td align="right">7</td>
-<td align="left">1 (14%)</td>
-<td align="left">1 (14%)</td>
-<td align="left">2 (29%)</td>
-<td align="left">3 (43%)</td>
+<td align="left">onset</td>
+<td align="right">4</td>
+<td align="left">3 (75%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">1 (25%)</td>
 </tr>
 <tr class="even">
+<td align="left">NFS</td>
+<td align="left">decline</td>
+<td align="right">2</td>
+<td align="left">2 (100%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">0 (0%)</td>
+</tr>
+<tr class="odd">
 <td align="left">SS</td>
 <td align="left">onset</td>
-<td align="right">10</td>
-<td align="left">4 (40%)</td>
-<td align="left">1 (10%)</td>
-<td align="left">1 (10%)</td>
-<td align="left">4 (40%)</td>
-</tr>
-<tr class="odd">
-<td align="left">SS</td>
-<td align="left">full</td>
-<td align="right">17</td>
-<td align="left">7 (41%)</td>
-<td align="left">3 (18%)</td>
-<td align="left">3 (18%)</td>
-<td align="left">4 (24%)</td>
+<td align="right">3</td>
+<td align="left">1 (33%)</td>
+<td align="left">2 (67%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">0 (0%)</td>
 </tr>
 <tr class="even">
 <td align="left">SS</td>
 <td align="left">decline</td>
-<td align="right">11</td>
-<td align="left">6 (55%)</td>
-<td align="left">1 (9%)</td>
-<td align="left">1 (9%)</td>
-<td align="left">3 (27%)</td>
+<td align="right">4</td>
+<td align="left">2 (50%)</td>
+<td align="left">2 (50%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">0 (0%)</td>
 </tr>
 </tbody>
 </table>
@@ -2682,11 +3386,11 @@ knitr::kable(ALL_RMSE_long_region)</code></pre>
 ALL_RMSE_short_season &lt;- ALL_RMSE_short %&gt;%
   group_by(season, ts) %&gt;% 
   mutate(count = n()) %&gt;% 
-  group_by(season, ts, count, Parameter2) %&gt;% 
+  group_by(season, ts, count, var) %&gt;% 
   summarise(count_Q = n(), .groups = &quot;drop&quot;) %&gt;% 
-  pivot_wider(names_from = Parameter2, values_from = count_Q) %&gt;% 
-  mutate(Qlw = replace_na(Qlw, 0)) %&gt;%
-  dplyr::select(season, ts, count, Qlh:Qsw) %&gt;% 
+  pivot_wider(names_from = var, values_from = count_Q) %&gt;% 
+  replace_na(list(Qlh = 0, Qsh = 0, Qlw = 0, Qsw = 0)) %&gt;% 
+  dplyr::select(season, ts, count, Qlh:Qlw) %&gt;% 
   mutate(Qlh = paste0(Qlh, &quot; (&quot;,round((Qlh/count)*100),&quot;%)&quot;),
          Qsh = paste0(Qsh, &quot; (&quot;,round((Qsh/count)*100),&quot;%)&quot;),
          Qlw = paste0(Qlw, &quot; (&quot;,round((Qlw/count)*100),&quot;%)&quot;),
@@ -2700,118 +3404,82 @@ knitr::kable(ALL_RMSE_short_season)</code></pre>
 <th align="right">count</th>
 <th align="left">Qlh</th>
 <th align="left">Qsh</th>
-<th align="left">Qlw</th>
 <th align="left">Qsw</th>
+<th align="left">Qlw</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td align="left">Spring</td>
 <td align="left">onset</td>
-<td align="right">47</td>
-<td align="left">8 (17%)</td>
-<td align="left">5 (11%)</td>
-<td align="left">5 (11%)</td>
-<td align="left">29 (62%)</td>
+<td align="right">22</td>
+<td align="left">6 (27%)</td>
+<td align="left">2 (9%)</td>
+<td align="left">14 (64%)</td>
+<td align="left">0 (0%)</td>
 </tr>
 <tr class="even">
 <td align="left">Spring</td>
-<td align="left">full</td>
-<td align="right">42</td>
-<td align="left">11 (26%)</td>
-<td align="left">4 (10%)</td>
-<td align="left">7 (17%)</td>
-<td align="left">20 (48%)</td>
+<td align="left">decline</td>
+<td align="right">1</td>
+<td align="left">0 (0%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">1 (100%)</td>
 </tr>
 <tr class="odd">
-<td align="left">Spring</td>
-<td align="left">decline</td>
-<td align="right">37</td>
-<td align="left">10 (27%)</td>
-<td align="left">6 (16%)</td>
-<td align="left">5 (14%)</td>
-<td align="left">16 (43%)</td>
-</tr>
-<tr class="even">
 <td align="left">Summer</td>
 <td align="left">onset</td>
-<td align="right">78</td>
-<td align="left">23 (29%)</td>
-<td align="left">2 (3%)</td>
-<td align="left">6 (8%)</td>
-<td align="left">47 (60%)</td>
-</tr>
-<tr class="odd">
-<td align="left">Summer</td>
-<td align="left">full</td>
-<td align="right">70</td>
-<td align="left">14 (20%)</td>
-<td align="left">15 (21%)</td>
-<td align="left">8 (11%)</td>
-<td align="left">33 (47%)</td>
+<td align="right">33</td>
+<td align="left">18 (55%)</td>
+<td align="left">2 (6%)</td>
+<td align="left">13 (39%)</td>
+<td align="left">0 (0%)</td>
 </tr>
 <tr class="even">
 <td align="left">Summer</td>
 <td align="left">decline</td>
-<td align="right">75</td>
-<td align="left">18 (24%)</td>
-<td align="left">18 (24%)</td>
-<td align="left">6 (8%)</td>
-<td align="left">33 (44%)</td>
+<td align="right">14</td>
+<td align="left">7 (50%)</td>
+<td align="left">1 (7%)</td>
+<td align="left">3 (21%)</td>
+<td align="left">3 (21%)</td>
 </tr>
 <tr class="odd">
 <td align="left">Autumn</td>
 <td align="left">onset</td>
-<td align="right">49</td>
-<td align="left">22 (45%)</td>
-<td align="left">12 (24%)</td>
-<td align="left">5 (10%)</td>
-<td align="left">10 (20%)</td>
+<td align="right">29</td>
+<td align="left">19 (66%)</td>
+<td align="left">6 (21%)</td>
+<td align="left">3 (10%)</td>
+<td align="left">1 (3%)</td>
 </tr>
 <tr class="even">
-<td align="left">Autumn</td>
-<td align="left">full</td>
-<td align="right">42</td>
-<td align="left">11 (26%)</td>
-<td align="left">9 (21%)</td>
-<td align="left">9 (21%)</td>
-<td align="left">13 (31%)</td>
-</tr>
-<tr class="odd">
 <td align="left">Autumn</td>
 <td align="left">decline</td>
-<td align="right">47</td>
-<td align="left">13 (28%)</td>
-<td align="left">11 (23%)</td>
-<td align="left">11 (23%)</td>
-<td align="left">12 (26%)</td>
+<td align="right">7</td>
+<td align="left">7 (100%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">0 (0%)</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Winter</td>
 <td align="left">onset</td>
-<td align="right">37</td>
-<td align="left">3 (8%)</td>
-<td align="left">11 (30%)</td>
-<td align="left">9 (24%)</td>
-<td align="left">14 (38%)</td>
-</tr>
-<tr class="odd">
-<td align="left">Winter</td>
-<td align="left">full</td>
-<td align="right">38</td>
-<td align="left">7 (18%)</td>
-<td align="left">7 (18%)</td>
-<td align="left">13 (34%)</td>
-<td align="left">11 (29%)</td>
+<td align="right">18</td>
+<td align="left">4 (22%)</td>
+<td align="left">7 (39%)</td>
+<td align="left">7 (39%)</td>
+<td align="left">0 (0%)</td>
 </tr>
 <tr class="even">
 <td align="left">Winter</td>
 <td align="left">decline</td>
-<td align="right">42</td>
-<td align="left">6 (14%)</td>
-<td align="left">13 (31%)</td>
-<td align="left">15 (36%)</td>
-<td align="left">8 (19%)</td>
+<td align="right">5</td>
+<td align="left">1 (20%)</td>
+<td align="left">2 (40%)</td>
+<td align="left">2 (40%)</td>
+<td align="left">0 (0%)</td>
 </tr>
 </tbody>
 </table>
@@ -2819,17 +3487,14 @@ knitr::kable(ALL_RMSE_short_season)</code></pre>
 ALL_RMSE_long_season &lt;- ALL_RMSE_long %&gt;%
   group_by(season, ts) %&gt;% 
   mutate(count = n()) %&gt;% 
-  group_by(season, ts, count, Parameter2) %&gt;% 
+  group_by(season, ts, count, var) %&gt;% 
   summarise(count_Q = n(), .groups = &quot;drop&quot;) %&gt;% 
-  pivot_wider(names_from = Parameter2, values_from = count_Q) %&gt;% 
-  mutate(Qsh = replace_na(Qsh, 0),
-         Qsw = replace_na(Qsw, 0),
-         Qlw = replace_na(Qlw, 0),
-         Qlh = replace_na(Qlh, 0)) %&gt;%
-  dplyr::select(season, ts, count, Qlh:Qsw) %&gt;% 
+  pivot_wider(names_from = var, values_from = count_Q) %&gt;% 
+  replace_na(list(Qlh = 0, Qsh = 0, Qlw = 0, Qsw = 0)) %&gt;% 
+  dplyr::select(season, ts, count, Qlh:Qlw) %&gt;% 
   mutate(Qlh = paste0(Qlh, &quot; (&quot;,round((Qlh/count)*100),&quot;%)&quot;),
          Qsh = paste0(Qsh, &quot; (&quot;,round((Qsh/count)*100),&quot;%)&quot;),
-         # Qlw = paste0(Qlw, &quot; (&quot;,round((Qlw/count)*100),&quot;%)&quot;), # Qlw is never the most important for any of the seasons
+         Qlw = paste0(Qlw, &quot; (&quot;,round((Qlw/count)*100),&quot;%)&quot;),
          Qsw = paste0(Qsw, &quot; (&quot;,round((Qsw/count)*100),&quot;%)&quot;))
 knitr::kable(ALL_RMSE_long_season)</code></pre>
 <table>
@@ -2841,124 +3506,175 @@ knitr::kable(ALL_RMSE_long_season)</code></pre>
 <th align="left">Qlh</th>
 <th align="left">Qsh</th>
 <th align="left">Qsw</th>
+<th align="left">Qlw</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td align="left">Spring</td>
 <td align="left">onset</td>
-<td align="right">6</td>
-<td align="left">1 (17%)</td>
-<td align="left">1 (17%)</td>
-<td align="left">4 (67%)</td>
-</tr>
-<tr class="even">
-<td align="left">Spring</td>
-<td align="left">full</td>
-<td align="right">16</td>
-<td align="left">4 (25%)</td>
-<td align="left">4 (25%)</td>
-<td align="left">8 (50%)</td>
-</tr>
-<tr class="odd">
-<td align="left">Spring</td>
-<td align="left">decline</td>
 <td align="right">5</td>
-<td align="left">0 (0%)</td>
 <td align="left">1 (20%)</td>
-<td align="left">4 (80%)</td>
-</tr>
-<tr class="even">
-<td align="left">Summer</td>
-<td align="left">onset</td>
-<td align="right">10</td>
-<td align="left">5 (50%)</td>
+<td align="left">1 (20%)</td>
+<td align="left">3 (60%)</td>
 <td align="left">0 (0%)</td>
-<td align="left">2 (20%)</td>
-</tr>
-<tr class="odd">
-<td align="left">Summer</td>
-<td align="left">full</td>
-<td align="right">35</td>
-<td align="left">12 (34%)</td>
-<td align="left">5 (14%)</td>
-<td align="left">13 (37%)</td>
 </tr>
 <tr class="even">
-<td align="left">Summer</td>
+<td align="left">Spring</td>
 <td align="left">decline</td>
-<td align="right">13</td>
-<td align="left">3 (23%)</td>
-<td align="left">1 (8%)</td>
-<td align="left">7 (54%)</td>
-</tr>
-<tr class="odd">
-<td align="left">Autumn</td>
-<td align="left">onset</td>
-<td align="right">13</td>
-<td align="left">6 (46%)</td>
-<td align="left">3 (23%)</td>
-<td align="left">2 (15%)</td>
-</tr>
-<tr class="even">
-<td align="left">Autumn</td>
-<td align="left">full</td>
-<td align="right">29</td>
-<td align="left">14 (48%)</td>
-<td align="left">3 (10%)</td>
-<td align="left">6 (21%)</td>
-</tr>
-<tr class="odd">
-<td align="left">Autumn</td>
-<td align="left">decline</td>
-<td align="right">15</td>
-<td align="left">8 (53%)</td>
+<td align="right">2</td>
+<td align="left">2 (100%)</td>
 <td align="left">0 (0%)</td>
-<td align="left">4 (27%)</td>
-</tr>
-<tr class="even">
-<td align="left">Winter</td>
-<td align="left">onset</td>
-<td align="right">11</td>
-<td align="left">3 (27%)</td>
-<td align="left">3 (27%)</td>
-<td align="left">1 (9%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">0 (0%)</td>
 </tr>
 <tr class="odd">
-<td align="left">Winter</td>
-<td align="left">full</td>
-<td align="right">20</td>
-<td align="left">7 (35%)</td>
-<td align="left">5 (25%)</td>
-<td align="left">1 (5%)</td>
+<td align="left">Summer</td>
+<td align="left">onset</td>
+<td align="right">2</td>
+<td align="left">2 (100%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">0 (0%)</td>
 </tr>
 <tr class="even">
-<td align="left">Winter</td>
+<td align="left">Summer</td>
 <td align="left">decline</td>
+<td align="right">4</td>
+<td align="left">3 (75%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">1 (25%)</td>
+</tr>
+<tr class="odd">
+<td align="left">Autumn</td>
+<td align="left">onset</td>
 <td align="right">9</td>
 <td align="left">5 (56%)</td>
 <td align="left">3 (33%)</td>
+<td align="left">1 (11%)</td>
+<td align="left">0 (0%)</td>
+</tr>
+<tr class="even">
+<td align="left">Autumn</td>
+<td align="left">decline</td>
+<td align="right">4</td>
+<td align="left">3 (75%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">1 (25%)</td>
+</tr>
+<tr class="odd">
+<td align="left">Winter</td>
+<td align="left">onset</td>
+<td align="right">4</td>
+<td align="left">2 (50%)</td>
+<td align="left">1 (25%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">1 (25%)</td>
+</tr>
+<tr class="even">
+<td align="left">Winter</td>
+<td align="left">decline</td>
+<td align="right">5</td>
+<td align="left">3 (60%)</td>
+<td align="left">0 (0%)</td>
+<td align="left">2 (40%)</td>
 <td align="left">0 (0%)</td>
 </tr>
 </tbody>
 </table>
-<p>We also want to see how RMSE scores change the shorter the time series portion of the MHW is.</p>
+<p>We also want to see how RMSE scores change the shorter the phase of the MHW is.</p>
 <pre class="r"><code># Faceted scatter plot showing how RMSE changes based on ts length
 ggplot(ALL_RMSE, aes(x = n_Obs, y = rmse)) +
   geom_point(aes(colour = ts)) +
   geom_smooth(aes(colour = ts), method = &quot;lm&quot;) +
   facet_wrap(~region)</code></pre>
 <p><img src="figure/mhw-flux.Rmd/RMSE-short-change-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-RMSE-short-change-1">
+Past versions of RMSE-short-change-1.png
+</button>
+</p>
+<div id="fig-RMSE-short-change-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/8d657581062aa4f04ebb53fd75a7cd27dc1fd62d/docs/figure/mhw-flux.Rmd/RMSE-short-change-1.png" target="_blank">8d65758</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-09-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code># Faceted scatter plot showing how RMSE changes based on ts length
 ggplot(ALL_RMSE, aes(x = n_Obs, y = rmse)) +
   geom_point(aes(colour = ts)) +
   geom_smooth(aes(colour = ts), method = &quot;lm&quot;) +
   facet_wrap(~season)</code></pre>
 <p><img src="figure/mhw-flux.Rmd/RMSE-short-change-2.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-RMSE-short-change-2">
+Past versions of RMSE-short-change-2.png
+</button>
+</p>
+<div id="fig-RMSE-short-change-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/8d657581062aa4f04ebb53fd75a7cd27dc1fd62d/docs/figure/mhw-flux.Rmd/RMSE-short-change-2.png" target="_blank">8d65758</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-09-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="correlations-summary-regions-seasons" class="section level3">
 <h3>Correlations: summary, regions, seasons</h3>
-<p>With the correlations calculated for the onset, decline, and full extent of each MHW, we want to know if any signals emerge from the regions and/or seasons of occurrence of these events. Is the relationship between SSS and MHW onset stronger in the winter? Stronger in certain region? Having manually looked through the Shiny app it does look like there are some patterns. Below is the code used to determine the stats referred to in the paper.</p>
+<p>With the correlations calculated for the onset, decline, and full extent of each MHW, we want to know if any signals emerge from the regions and/or seasons of occurrence of these events. Is the relationship between SSS and MHW onset stronger in the winter? Stronger in certain region? Having manually looked through the shiny app it does look like there are some patterns. Below is the code used to determine the stats referred to in the paper.</p>
 <pre class="r"><code># Overall correlation results
 cor_summary_all &lt;- ALL_cor %&gt;% 
   filter(Parameter1 == &quot;sst&quot;,
@@ -2989,26 +3705,109 @@ cor_negative_all &lt;- ALL_cor %&gt;%
   summarise(q10_r = quantile(r, 0.1),
             mean_r = mean(r, na.rm = T),
             q90_r = quantile(r, 0.9),
-            mean_rmse = mean(rmse, na.rm = T))</code></pre>
+            mean_rmse = mean(rmse, na.rm = T))
+
+# region correlation results
+cor_summary_region &lt;- ALL_cor %&gt;% 
+  filter(Parameter1 == &quot;sst&quot;,
+         Parameter2 != &quot;sst&quot;) %&gt;% 
+  group_by(ts, region, Parameter2) %&gt;% 
+  summarise(q10_r = quantile(r, 0.1),
+            mean_r = mean(r, na.rm = T),
+            q90_r = quantile(r, 0.9),
+            mean_rmse = mean(rmse, na.rm = T))
+
+# Look at specific results
+cor_summary_region %&gt;% 
+  filter(Parameter2 == &quot;mld_cum&quot;)</code></pre>
+<pre><code># A tibble: 18 x 7
+# Groups:   ts, region [18]
+   ts      region Parameter2  q10_r  mean_r  q90_r mean_rmse
+   &lt;fct&gt;   &lt;chr&gt;  &lt;fct&gt;       &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;
+ 1 onset   CBS    mld_cum    -0.986 -0.578   0.39        NaN
+ 2 onset   GM     mld_cum    -0.96  -0.413   0.74        NaN
+ 3 onset   GSL    mld_cum    -0.99  -0.641   0.396       NaN
+ 4 onset   MAB    mld_cum    -0.981 -0.784  -0.595       NaN
+ 5 onset   NFS    mld_cum    -0.97  -0.652  -0.182       NaN
+ 6 onset   SS     mld_cum    -0.98  -0.584   0.535       NaN
+ 7 full    CBS    mld_cum    -0.76  -0.0602  0.568       NaN
+ 8 full    GM     mld_cum    -0.676 -0.0589  0.704       NaN
+ 9 full    GSL    mld_cum    -0.762 -0.170   0.356       NaN
+10 full    MAB    mld_cum    -0.774 -0.225   0.416       NaN
+11 full    NFS    mld_cum    -0.79  -0.0909  0.567       NaN
+12 full    SS     mld_cum    -0.79  -0.153   0.54        NaN
+13 decline CBS    mld_cum    -0.85   0.400   0.976       NaN
+14 decline GM     mld_cum    -0.916  0.247   0.94        NaN
+15 decline GSL    mld_cum    -0.86   0.517   0.98        NaN
+16 decline MAB    mld_cum    -0.671  0.358   0.99        NaN
+17 decline NFS    mld_cum    -0.67   0.517   0.974       NaN
+18 decline SS     mld_cum    -0.797  0.227   0.99        NaN</code></pre>
+<pre class="r"><code># region correlation results
+cor_summary_season &lt;- ALL_cor %&gt;% 
+  filter(Parameter1 == &quot;sst&quot;,
+         Parameter2 != &quot;sst&quot;) %&gt;% 
+  group_by(ts, season, Parameter2) %&gt;% 
+  summarise(q10_r = quantile(r, 0.1),
+            mean_r = mean(r, na.rm = T),
+            q90_r = quantile(r, 0.9),
+            mean_rmse = mean(rmse, na.rm = T))
+
+# Look at specific results
+cor_summary_season %&gt;% 
+  filter(Parameter2 == &quot;mld&quot;)</code></pre>
+<pre><code># A tibble: 12 x 7
+# Groups:   ts, season [12]
+   ts      season Parameter2  q10_r   mean_r  q90_r mean_rmse
+   &lt;fct&gt;   &lt;fct&gt;  &lt;fct&gt;       &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;
+ 1 onset   Spring mld        -0.89   0.196   0.95         NaN
+ 2 onset   Summer mld        -0.98  -0.469   0.78         NaN
+ 3 onset   Autumn mld        -0.96  -0.391   0.348        NaN
+ 4 onset   Winter mld        -0.866 -0.151   0.813        NaN
+ 5 full    Spring mld        -0.678 -0.0955  0.509        NaN
+ 6 full    Summer mld        -0.69  -0.186   0.552        NaN
+ 7 full    Autumn mld        -0.811 -0.367   0.094        NaN
+ 8 full    Winter mld        -0.708 -0.184   0.441        NaN
+ 9 decline Spring mld        -0.959 -0.583   0.646        NaN
+10 decline Summer mld        -0.889 -0.00443 0.953        NaN
+11 decline Autumn mld        -0.94  -0.472   0.0630       NaN
+12 decline Winter mld        -0.92  -0.331   0.74         NaN</code></pre>
+<pre class="r"><code># Test for normality of r distributions</code></pre>
 </div>
 <div id="relationships" class="section level3">
 <h3>Relationships</h3>
-<p>With patterns pulled out by region and season, we want to see if there are any relationships between MHWs that show strong correlations at onset/decline with a particular QX term and strong correlations at onset/decline with an air/sea variable. We will look for this within regions and seasons as well. For example, do MHWs that correlate well with an increase in SSS also correlate well with a decrease in long-wave radiation during the decline of the event? I’m not sure how best to go about this in a clean manner.</p>
+<p>With patterns pulled out by region and season, we want to see if there are any relationships between MHWs that show strong correlations at onset/decline with a particular Qx variable and strong correlations at onset/decline with an air/sea variable. We will look for this within regions and seasons as well. For example, do MHWs that correlate well with an increase in SSS also correlate well with a decrease in long-wave radiation during the decline of the event? I’m not sure how best to go about this in a clean manner.</p>
 <p>Another thing to consider would be if fast onset slow decline (and vice versa) events have different characteristics to slower evolving events. The same question could be posed to long vs short events and those with high intensities vs low. In order to begin this investigation we must join the MHW results to the correlation results. We will visualise these patterns with heatmaps.</p>
-<pre class="r"><code>ALL_cor_wide &lt;- readRDS(&quot;data/ALL_cor.Rda&quot;) %&gt;% 
+<pre class="r"><code># Strong positive correlation at onset and strong positive and decline and vice versa
+ALL_cor_wide &lt;- readRDS(&quot;data/ALL_cor.Rda&quot;) %&gt;% 
+  dplyr::rename(var = Parameter2) %&gt;% 
   ungroup() %&gt;% 
   filter(Parameter1 == &quot;sst&quot;) %&gt;% 
-  dplyr::select(region:ts, Parameter2, r, n_Obs) %&gt;% 
-  pivot_wider(values_from = r, names_from = Parameter2)
+  dplyr::select(region:ts, var, r, n_Obs) %&gt;% 
+  mutate(var = as.character(var)) %&gt;% 
+  mutate(var = case_when(var == &quot;sst&quot; ~ &quot;SST&quot;,
+                         var == &quot;bottomT&quot; ~ &quot;SBT&quot;,
+                         var == &quot;sss&quot; ~ &quot;SSS&quot;,
+                         var == &quot;mld_cum&quot; ~ &quot;MLD_c&quot;,
+                         var == &quot;mld_1_cum&quot; ~ &quot;MLD_1_c&quot;,
+                         var == &quot;t2m&quot; ~ &quot;Air_temp&quot;,
+                         var == &quot;tcc_cum&quot; ~ &quot;Cloud_cover_c&quot;,
+                         var == &quot;p_e_cum&quot; ~ &quot;Precip_Evap_c&quot;,
+                         var == &quot;mslp_cum&quot; ~ &quot;MSLP_c&quot;,
+                         var == &quot;lwr_budget&quot; ~ &quot;Qlw&quot;,
+                         var == &quot;swr_budget&quot; ~ &quot;Qsw&quot;,
+                         var == &quot;lhf_budget&quot; ~ &quot;Qlh&quot;,
+                         var == &quot;shf_budget&quot; ~ &quot;Qsh&quot;,
+                         var == &quot;qnet_budget&quot; ~ &quot;Qnet&quot;,
+                         TRUE ~ var)) %&gt;% 
+  filter(var %in% c(&quot;SST&quot;, &quot;SSS&quot;, &quot;SBT&quot;, &quot;MLD_c&quot;, &quot;MLD_1_c&quot;, &quot;Air_temp&quot;, &quot;Cloud_cover_c&quot;,
+                           &quot;Precip_Evap_c&quot;, &quot;MSLP_c&quot;, &quot;Qlw&quot;, &quot;Qsw&quot;, &quot;Qlh&quot;, &quot;Qsh&quot;, &quot;Qnet&quot;)) %&gt;% 
+  pivot_wider(values_from = r, names_from = var)
 
 # Combine MHW metrics and correlation results
 events_cor_prep &lt;- OISST_MHW_event %&gt;% 
   dplyr::select(region, season, event_no, duration, intensity_mean, intensity_max, 
                 intensity_cumulative, rate_onset, rate_decline) %&gt;% 
-  left_join(ALL_cor_wide, by = c(&quot;region&quot;, &quot;season&quot;, &quot;event_no&quot;)) %&gt;% 
-  # ungroup() %&gt;% 
-  dplyr::select(region:n_Obs, sst, bottomT, sss, mld_cum, mld_1_cum, t2m, tcc_cum, p_e_cum, mslp_cum,
-                 lwr_mld_cum, swr_mld_cum, lhf_mld_cum, shf_mld_cum, qnet_mld_cum)
+  left_join(ALL_cor_wide, by = c(&quot;region&quot;, &quot;season&quot;, &quot;event_no&quot;))
 
 # Heatmap showing average correlations by MHW duration
 events_cor_prep %&gt;% 
@@ -3016,7 +3815,7 @@ events_cor_prep %&gt;%
   group_by(ts, duration) %&gt;% 
   mutate(count = n()) %&gt;% 
   summarise_if(is.numeric, mean) %&gt;% 
-  pivot_longer(cols = sst:qnet_mld_cum) %&gt;% 
+  pivot_longer(cols = Air_temp:Qsw) %&gt;% 
   filter(name != &quot;sst&quot;,
          ts != &quot;full&quot;,
          duration &lt;= 50) %&gt;% # Only 1 event is longer than this 
@@ -3051,6 +3850,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/8d657581062aa4f04ebb53fd75a7cd27dc1fd62d/docs/figure/mhw-flux.Rmd/metrics_cor-1.png" target="_blank">8d65758</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-09-03
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/robwschlegel/MHWflux/blob/cf24288b882546ae3ed88dbd9260fdec86a16520/docs/figure/mhw-flux.Rmd/metrics_cor-1.png" target="_blank">cf24288</a>
@@ -3105,7 +3915,7 @@ events_cor_prep %&gt;%
   group_by(ts, intensity_max) %&gt;%
   mutate(count = n()) %&gt;% 
   summarise_if(is.numeric, mean) %&gt;% 
-  pivot_longer(cols = sst:qnet_mld_cum) %&gt;% 
+  pivot_longer(cols = Air_temp:Qsw) %&gt;% 
   filter(name != &quot;sst&quot;,
          ts != &quot;full&quot;) %&gt;% 
   ggplot(aes(x = intensity_max, y = name)) +
@@ -3139,6 +3949,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/8d657581062aa4f04ebb53fd75a7cd27dc1fd62d/docs/figure/mhw-flux.Rmd/metrics_cor-2.png" target="_blank">8d65758</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-09-03
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/robwschlegel/MHWflux/blob/cf24288b882546ae3ed88dbd9260fdec86a16520/docs/figure/mhw-flux.Rmd/metrics_cor-2.png" target="_blank">cf24288</a>
@@ -3193,7 +4014,7 @@ events_cor_prep %&gt;%
   group_by(ts, rate_onset) %&gt;% 
   mutate(count = n()) %&gt;% 
   summarise_if(is.numeric, mean) %&gt;% 
-  pivot_longer(cols = sst:qnet_mld_cum) %&gt;% 
+  pivot_longer(cols = Air_temp:Qsw) %&gt;% 
   filter(name != &quot;sst&quot;,
          ts != &quot;full&quot;,
          rate_onset &lt;= 0.75) %&gt;% # Only two is faster than this 
@@ -3228,6 +4049,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/8d657581062aa4f04ebb53fd75a7cd27dc1fd62d/docs/figure/mhw-flux.Rmd/metrics_cor-3.png" target="_blank">8d65758</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-09-03
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/robwschlegel/MHWflux/blob/cf24288b882546ae3ed88dbd9260fdec86a16520/docs/figure/mhw-flux.Rmd/metrics_cor-3.png" target="_blank">cf24288</a>
@@ -3283,7 +4115,7 @@ events_cor_prep %&gt;%
   group_by(ts, rate_decline) %&gt;% 
   mutate(count = n()) %&gt;% 
   summarise_if(is.numeric, mean) %&gt;% 
-  pivot_longer(cols = sst:qnet_mld_cum) %&gt;% 
+  pivot_longer(cols = Air_temp:Qsw) %&gt;% 
   filter(name != &quot;sst&quot;,
          ts != &quot;full&quot;) %&gt;% 
   ggplot(aes(x = rate_decline, y = name)) +
@@ -3317,6 +4149,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/8d657581062aa4f04ebb53fd75a7cd27dc1fd62d/docs/figure/mhw-flux.Rmd/metrics_cor-4.png" target="_blank">8d65758</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-09-03
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/robwschlegel/MHWflux/blob/cf24288b882546ae3ed88dbd9260fdec86a16520/docs/figure/mhw-flux.Rmd/metrics_cor-4.png" target="_blank">cf24288</a>
@@ -3368,7 +4211,7 @@ robwschlegel
 </div>
 <div id="linearity-of-events" class="section level3">
 <h3>Linearity of events</h3>
-<p>Another observation I made while going through the results in the app was how the onset and decline of events tend to have a better RMSE when the SSTa trend is more linear. My hypothesis is that this is because there is less advective pressure on the dispersion of the heat anomaly, therefore more of the heatflux is responsible for the temperature anomaly. THis is a pretty straight forward statement, but I think it is useful in that one may be able to take linearity of SSTa as a proxy for the proportion of heat flux that is responsible for it. So in the chunk below I use simple linear models to create an R2 value for each onset and decline portion of an event. Then I find how close to 1.0 that R2 value is (meaning more linear SSTa) and I see how RMSE changes as R2 improves. I hypothesised that more linear SSTa onset will provide better (lower) RMSE values. The same is likely true for decline but I’m not certain.</p>
+<p>Another observation I made while going through the results in the shiny app was how the onset and decline of events tend to have a better RMSE when the SSTa trend is more linear. My hypothesis is that this is because there is less advective pressure on the dispersion of the heat anomaly, therefore more of the heatflux is responsible for the temperature anomaly. This is a pretty straight forward statement, but I think it is useful in that one may be able to take linearity of SSTa as a proxy for the proportion of heat flux that is responsible for it. So in the chunk below I use simple linear models to create an R2 value for each onset and decline portion of an event. Then I find how close to 1.0 that R2 value is (meaning more linear SSTa) and I see how RMSE changes as R2 improves. I hypothesised that more linear SSTa onset will provide better (lower) RMSE values. The same is likely true for decline but I’m not certain.</p>
 <pre class="r"><code># R2 for RMSE vs R2
 ALL_cor_R2 &lt;- readRDS(&quot;data/ALL_cor.Rda&quot;) %&gt;% 
   ungroup() %&gt;% 
@@ -3385,6 +4228,43 @@ readRDS(&quot;data/ALL_cor.Rda&quot;) %&gt;%
   geom_smooth(method = &quot;lm&quot;) +
   facet_grid(region ~ Parameter2)</code></pre>
 <p><img src="figure/mhw-flux.Rmd/linearity-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-linearity-1">
+Past versions of linearity-1.png
+</button>
+</p>
+<div id="fig-linearity-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/8d657581062aa4f04ebb53fd75a7cd27dc1fd62d/docs/figure/mhw-flux.Rmd/linearity-1.png" target="_blank">8d65758</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-09-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code># Boxplots
 readRDS(&quot;data/ALL_cor.Rda&quot;) %&gt;% 
   ungroup() %&gt;% 
@@ -3395,12 +4275,49 @@ readRDS(&quot;data/ALL_cor.Rda&quot;) %&gt;%
   geom_boxplot() +
   facet_grid(region ~ Parameter2)</code></pre>
 <p><img src="figure/mhw-flux.Rmd/linearity-2.png" width="768" style="display: block; margin: auto;" /></p>
-<p>Nope. If there is any relationship it is incredibly noisey. I’ll not be pursuing this further for this project, but I’m not entirely dissuaded from pursuing this avenue of research in the future with a deeper learning approach.</p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-linearity-2">
+Past versions of linearity-2.png
+</button>
+</p>
+<div id="fig-linearity-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/8d657581062aa4f04ebb53fd75a7cd27dc1fd62d/docs/figure/mhw-flux.Rmd/linearity-2.png" target="_blank">8d65758</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-09-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Nope. If there is any relationship it is incredibly noisy. I’ll not be pursuing this further for this project, but I’m not entirely dissuaded from pursuing this avenue of research in the future with a deeper learning approach.</p>
 </div>
 <div id="choice-events" class="section level3">
 <h3>Choice events</h3>
-<p>There are a lot of results to wade through and though it is clear there are important signals in the results, it is proving difficult to distill them. One thought is that we don’t need to look at all of the events, just the longest/most intense events with strong r values. This is first done by cutting out all Cat. I events. We then find strong correlations with long events. There should just be a few.</p>
-<p>Once this has been done we group events by their strongest Qx relationship. Then find their strongest relationship with the next level of variables (e.g. MLD, MSLP, and so on). Ideally one may find the top four flavours.</p>
+<p>There are a lot of results to wade through and though it is clear there are important signals in the results, but it is proving difficult to distill them. One thought is that we don’t need to look at all of the events, just the longest/most intense events with strong r values. This is first done by cutting out all Category I events. We then find strong correlations with long events. There should just be a few.</p>
+<p>Once this has been done we group events by their strongest Qx relationship, then find their strongest relationship with the next level of variables (e.g. MLD, MSLP, and so on). Ideally one may find the top four flavours.</p>
 <pre class="r"><code># Filter out smol events
 events_cor_cat &lt;- events_cor_prep %&gt;% 
   left_join(OISST_MHW_cats[,c(&quot;region&quot;, &quot;event_no&quot;, &quot;category&quot;)], by = c(&quot;region&quot;, &quot;event_no&quot;)) %&gt;% 
@@ -3408,39 +4325,37 @@ events_cor_cat &lt;- events_cor_prep %&gt;%
 
 # Events with high Qlw correlations at onset
 events_cor_cat %&gt;% 
-  filter(ts == &quot;onset&quot;, lwr_mld_cum &gt;= 0.7)</code></pre>
-<pre><code># A tibble: 5 x 26
-# Groups:   region [4]
+  filter(ts == &quot;onset&quot;, Qlw &gt;= 0.7)</code></pre>
+<pre><code># A tibble: 3 x 26
+# Groups:   region [3]
   region season event_no duration intensity_mean intensity_max intensity_cumul…
   &lt;chr&gt;  &lt;fct&gt;     &lt;int&gt;    &lt;dbl&gt;          &lt;dbl&gt;         &lt;dbl&gt;            &lt;dbl&gt;
-1 gsl    Winter       21       69           1.52          2.47            105. 
-2 mab    Autumn       39       28           2.39          3.30             67.0
-3 mab    Winter       40       32           2.03          2.86             65.1
-4 nfs    Summer       34       89           2.25          3.37            200. 
-5 ss     Winter       39       66           1.93          2.71            128. 
+1 CBS    Summer       36       24           2.71          3.88             65.1
+2 GSL    Winter       21       69           1.52          2.47            105. 
+3 MAB    Autumn       39       28           2.39          3.30             67.0
 # … with 19 more variables: rate_onset &lt;dbl&gt;, rate_decline &lt;dbl&gt;, ts &lt;fct&gt;,
-#   n_Obs &lt;int&gt;, sst &lt;dbl&gt;, bottomT &lt;dbl&gt;, sss &lt;dbl&gt;, mld_cum &lt;dbl&gt;,
-#   mld_1_cum &lt;dbl&gt;, t2m &lt;dbl&gt;, tcc_cum &lt;dbl&gt;, p_e_cum &lt;dbl&gt;, mslp_cum &lt;dbl&gt;,
-#   lwr_mld_cum &lt;dbl&gt;, swr_mld_cum &lt;dbl&gt;, lhf_mld_cum &lt;dbl&gt;, shf_mld_cum &lt;dbl&gt;,
-#   qnet_mld_cum &lt;dbl&gt;, category &lt;chr&gt;</code></pre>
+#   n_Obs &lt;int&gt;, Air_temp &lt;dbl&gt;, SBT &lt;dbl&gt;, SSS &lt;dbl&gt;, SST &lt;dbl&gt;,
+#   Cloud_cover_c &lt;dbl&gt;, MSLP_c &lt;dbl&gt;, Precip_Evap_c &lt;dbl&gt;, MLD_c &lt;dbl&gt;,
+#   MLD_1_c &lt;dbl&gt;, Qnet &lt;dbl&gt;, Qlh &lt;dbl&gt;, Qsh &lt;dbl&gt;, Qlw &lt;dbl&gt;, Qsw &lt;dbl&gt;,
+#   category &lt;chr&gt;</code></pre>
 <pre class="r"><code># Melt the data frame and find the q term with the highest correlation
 # Those are then used to separate events into groups
 events_q_onset &lt;- events_cor_cat %&gt;% 
   filter(ts == &quot;onset&quot;) %&gt;% 
-  dplyr::select(region:event_no, ts, lwr_mld_cum:shf_mld_cum) %&gt;% 
-  pivot_longer(cols = lwr_mld_cum:shf_mld_cum, names_to = &quot;var&quot;, values_to = &quot;val&quot;) %&gt;% 
+  dplyr::select(region:event_no, ts, Qnet:Qsh) %&gt;% 
+  pivot_longer(cols = Qnet:Qsh, names_to = &quot;var&quot;, values_to = &quot;val&quot;) %&gt;% 
   group_by(region, season, event_no) %&gt;% 
   filter(abs(val) == max(abs(val)))
 
 # With this guide one may then parse out the q groups
 events_lhf_p_onset &lt;- events_q_onset %&gt;% 
-  filter(val &gt;= 0, var == &quot;lhf_mld_cum&quot;) %&gt;% 
+  filter(val &gt;= 0, var == &quot;Qlh&quot;) %&gt;% 
   left_join(events_cor_cat) %&gt;% 
   ungroup() %&gt;% 
   # unite(region, season, event_no, sep = &quot;_&quot;)
   mutate(event_no = as.factor(event_no)) %&gt;% 
-  dplyr::select(region:ts, bottomT:qnet_mld_cum, -mld_1_cum) %&gt;% 
-  pivot_longer(bottomT:qnet_mld_cum) %&gt;% 
+  dplyr::select(region:ts, Air_temp:Qsw) %&gt;% 
+  pivot_longer(Air_temp:Qsw) %&gt;% 
   ggplot(aes(x = event_no, y = name)) +
   geom_tile(aes(fill = value)) +
   # facet_wrap(~name, scales = &quot;free&quot;) +
@@ -3472,6 +4387,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/8d657581062aa4f04ebb53fd75a7cd27dc1fd62d/docs/figure/mhw-flux.Rmd/choice-events-1.png" target="_blank">8d65758</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-09-03
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/robwschlegel/MHWflux/blob/cf24288b882546ae3ed88dbd9260fdec86a16520/docs/figure/mhw-flux.Rmd/choice-events-1.png" target="_blank">cf24288</a>
@@ -3806,11 +4732,6 @@ robwschlegel
 </tr>
 </tbody>
 </table>
-<p>With a table organised by each variable, it makes sense to also create a table organised by season, and another by region.</p>
-</div>
-<div id="nwa-2012" class="section level3">
-<h3>NWA 2012</h3>
-<p>From Chen et al. 2016 (JGR) Such an extreme event in the MAB was attributed to the anomalous atmospheric forcing, which was linked to the northward shift in the jet stream position [Chen et al., 2014a, 2015]. The anomalously warm atmospheric conditions in the winter of 2011–2012 increased the ocean heat content (increased the ocean heat content anomaly) and facilitated the extreme warm ocean temperature in spring 2012 [Chen et al., 2014a, 2015]. On the other hand, the ocean advection played a secondary role, which partially damped the heat content anomaly created by the air-sea heat flux [Chen et al., 2015]. In both cases, initial temperature and ocean advection are not sufficient to describe the seasonal mean temperature. Additional cooling (warming) in addition to ocean advection is needed to further describe the winter (spring) temperature. In comparison, using the sum of the initial temperature and air-sea flux yields a much better description of seasonal mean temperatures (Figures 5c and 5f) While the overall role of ocean advection is smaller than that of air-sea flux in determining the winter and spring temperatures, the year-to-year changes in the relative importance is worth investigating. Normally, given anomalous initial temperature, air will act to damp the temperature anomaly, as in winter 2007 or 2011, or even 2005 to some extent. However, in winter 2012, the air continued to increase the temperature anomaly. Out of the 12 years 2003–2014, the air-sea flux normally dominated the temperature anomaly in the MAB during winter. In only 3 years was the winter time temperature anomaly primarily controlled by ocean advection. For spring, ocean advection has more control on the temperature anomalies than air-sea flux does, although the difference is smaller (Table 2). In both seasons, the relative importance of air-sea flux and ocean advection does not seem to be related to either the initial or seasonal mean thermal condition of the shelf water (fourth and fifth columns of Tables 1 and 2). The correlation coefficients increase from 0.66 in the first half of February to 0.91 in the second half of March. This suggests that estimation of spring temperature anomaly in the MAB based on the thermal condition 2 months before spring is statistically possible. This suggests that more northerly jet stream positions result in larger heatflux from the atmosphere into the ocean in the MAB. This is likely due to warmer and more humid air overlying the continental shelf, which reduces the heat loss from the ocean during the cooling seasons [Chenet al., 2014a]. In spring and summer, the air-sea flux may be less correlated with the air temperature due to the shallowness of the surface mixed layer, and thus may be disconnected from large-scale atmospheric circulation, i.e., jet stream variability.</p>
 </div>
 </div>
 <div id="references" class="section level2">
@@ -3828,13 +4749,13 @@ robwschlegel
 </p>
 <div id="workflowr-sessioninfo" class="collapse">
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>R version 4.0.2 (2020-06-22)
+<pre><code>R version 4.0.3 (2020-10-10)
 Platform: x86_64-pc-linux-gnu (64-bit)
-Running under: Ubuntu 16.04.6 LTS
+Running under: Ubuntu 20.04.1 LTS
 
 Matrix products: default
-BLAS:   /usr/lib/openblas-base/libblas.so.3
-LAPACK: /usr/lib/libopenblasp-r0.2.18.so
+BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3
+LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/liblapack.so.3
 
 locale:
  [1] LC_CTYPE=en_CA.UTF-8       LC_NUMERIC=C              
@@ -3852,36 +4773,47 @@ other attached packages:
  [1] doParallel_1.0.15    iterators_1.0.12     foreach_1.5.0       
  [4] Metrics_0.1.4        yasomi_0.3           proxy_0.4-24        
  [7] e1071_1.7-3          ggraph_2.0.3         correlation_0.3.0   
-[10] tidync_0.2.4         heatwaveR_0.4.4.9000 lubridate_1.7.9     
-[13] data.table_1.13.0    forcats_0.5.0        stringr_1.4.0       
-[16] dplyr_1.0.1          purrr_0.3.4          readr_1.3.1         
-[19] tidyr_1.1.1          tibble_3.0.3         ggplot2_3.3.2       
+[10] tidync_0.2.4         heatwaveR_0.4.4.9001 lubridate_1.7.9     
+[13] data.table_1.13.2    forcats_0.5.0        stringr_1.4.0       
+[16] dplyr_1.0.2          purrr_0.3.4          readr_1.3.1         
+[19] tidyr_1.1.2          tibble_3.0.4         ggplot2_3.3.2       
 [22] tidyverse_1.3.0     
 
 loaded via a namespace (and not attached):
- [1] colorspace_1.4-1   ellipsis_0.3.1     class_7.3-17       rprojroot_1.3-2   
- [5] parameters_0.8.2   fs_1.5.0           rstudioapi_0.11    farver_2.0.3      
- [9] graphlayouts_0.7.0 ggrepel_0.8.2      fansi_0.4.1        xml2_1.3.2        
-[13] codetools_0.2-16   splines_4.0.2      ncdf4_1.17         knitr_1.29        
-[17] polyclip_1.10-0    jsonlite_1.7.0     workflowr_1.6.2    broom_0.7.0       
-[21] dbplyr_1.4.4       ggforce_0.3.2      effectsize_0.3.2   compiler_4.0.2    
-[25] httr_1.4.2         backports_1.1.8    assertthat_0.2.1   Matrix_1.2-18     
-[29] lazyeval_0.2.2     cli_2.0.2          later_1.1.0.1      tweenr_1.0.1      
-[33] htmltools_0.5.0    tools_4.0.2        igraph_1.2.5       gtable_0.3.0      
-[37] glue_1.4.1         Rcpp_1.0.5         cellranger_1.1.0   RNetCDF_2.3-1     
-[41] vctrs_0.3.2        nlme_3.1-147       insight_0.9.0      xfun_0.16         
-[45] rvest_0.3.6        lifecycle_0.2.0    ncmeta_0.2.5       MASS_7.3-51.6     
-[49] scales_1.1.1       tidygraph_1.2.0    hms_0.5.3          promises_1.1.1    
-[53] yaml_2.2.1         gridExtra_2.3      stringi_1.4.6      highr_0.8         
-[57] bayestestR_0.7.2   rlang_0.4.7        pkgconfig_2.0.3    evaluate_0.14     
-[61] lattice_0.20-41    htmlwidgets_1.5.1  labeling_0.3       tidyselect_1.1.0  
-[65] plyr_1.8.6         magrittr_1.5       R6_2.4.1           generics_0.0.2    
-[69] DBI_1.1.0          pillar_1.4.6       haven_2.3.1        whisker_0.4       
-[73] withr_2.2.0        mgcv_1.8-31        modelr_0.1.8       crayon_1.3.4      
-[77] utf8_1.1.4         plotly_4.9.2.1     rmarkdown_2.3      viridis_0.5.1     
-[81] grid_4.0.2         readxl_1.3.1       blob_1.2.1         git2r_0.27.1      
-[85] reprex_0.3.0       digest_0.6.25      httpuv_1.5.4       munsell_0.5.0     
-[89] viridisLite_0.3.0 </code></pre>
+  [1] colorspace_1.4-1   ggsignif_0.6.0     ellipsis_0.3.1    
+  [4] class_7.3-17       rio_0.5.16         rprojroot_1.3-2   
+  [7] parameters_0.8.2   fs_1.5.0           rstudioapi_0.11   
+ [10] ggpubr_0.4.0       farver_2.0.3       graphlayouts_0.7.0
+ [13] ggrepel_0.8.2      fansi_0.4.1        xml2_1.3.2        
+ [16] splines_4.0.3      codetools_0.2-16   ncdf4_1.17        
+ [19] knitr_1.29         polyclip_1.10-0    jsonlite_1.7.1    
+ [22] workflowr_1.6.2    broom_0.7.0        dbplyr_1.4.4      
+ [25] ggforce_0.3.2      effectsize_0.3.2   compiler_4.0.3    
+ [28] httr_1.4.2         backports_1.1.10   Matrix_1.2-18     
+ [31] assertthat_0.2.1   lazyeval_0.2.2     cli_2.1.0         
+ [34] later_1.1.0.1      tweenr_1.0.1       htmltools_0.5.0   
+ [37] tools_4.0.3        igraph_1.2.6       gtable_0.3.0      
+ [40] glue_1.4.2         Rcpp_1.0.5         carData_3.0-4     
+ [43] cellranger_1.1.0   RNetCDF_2.3-1      vctrs_0.3.4       
+ [46] nlme_3.1-150       insight_0.9.0      xfun_0.16         
+ [49] openxlsx_4.1.5     rvest_0.3.6        lifecycle_0.2.0   
+ [52] ncmeta_0.2.5       rstatix_0.6.0      MASS_7.3-53       
+ [55] scales_1.1.1       tidygraph_1.2.0    hms_0.5.3         
+ [58] promises_1.1.1     yaml_2.2.1         curl_4.3          
+ [61] gridExtra_2.3      stringi_1.5.3      highr_0.8         
+ [64] bayestestR_0.7.2   zip_2.0.4          rlang_0.4.8       
+ [67] pkgconfig_2.0.3    lattice_0.20-41    evaluate_0.14     
+ [70] htmlwidgets_1.5.2  labeling_0.4.2     cowplot_1.0.0     
+ [73] tidyselect_1.1.0   plyr_1.8.6         magrittr_1.5      
+ [76] R6_2.5.0           generics_0.1.0     DBI_1.1.0         
+ [79] mgcv_1.8-33        foreign_0.8-79     pillar_1.4.6      
+ [82] haven_2.3.1        whisker_0.4        withr_2.3.0       
+ [85] abind_1.4-5        modelr_0.1.8       crayon_1.3.4      
+ [88] car_3.0-8          utf8_1.1.4         plotly_4.9.2.1    
+ [91] rmarkdown_2.3      viridis_0.5.1      grid_4.0.3        
+ [94] readxl_1.3.1       blob_1.2.1         git2r_0.27.1      
+ [97] reprex_0.3.0       digest_0.6.27      httpuv_1.5.4      
+[100] munsell_0.5.0      viridisLite_0.3.0 </code></pre>
 </div>
 </div>
 

@@ -355,7 +355,7 @@ div.tocify {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">MHW heat flux</a>
+      <a class="navbar-brand" href="index.html">MHW air-sea heat flux</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
@@ -431,7 +431,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2020-09-03
+<strong>Last updated:</strong> 2020-11-10
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -522,16 +522,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtreed1c9bad99578db1209cfc5bac4d417abfca33f85targetblankd1c9bada"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/robwschlegel/MHWflux/tree/d1c9bad99578db1209cfc5bac4d417abfca33f85" target="_blank">d1c9bad</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtreecbc5b749020fe72d28ecead35adc45c7734aaff3targetblankcbc5b74a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/robwschlegel/MHWflux/tree/cbc5b749020fe72d28ecead35adc45c7734aaff3" target="_blank">cbc5b74</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtreed1c9bad99578db1209cfc5bac4d417abfca33f85targetblankd1c9bada" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtreecbc5b749020fe72d28ecead35adc45c7734aaff3targetblankcbc5b74a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/robwschlegel/MHWflux/tree/d1c9bad99578db1209cfc5bac4d417abfca33f85" target="_blank">d1c9bad</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/robwschlegel/MHWflux/tree/cbc5b749020fe72d28ecead35adc45c7734aaff3" target="_blank">cbc5b74</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -543,6 +543,8 @@ Ignored files:
     Ignored:    data/ALL_anom.Rda
     Ignored:    data/ALL_other.Rda
     Ignored:    data/ALL_ts_anom.Rda
+    Ignored:    data/ERA5_down.Rda
+    Ignored:    data/ERA5_down_anom.Rda
     Ignored:    data/ERA5_evp_anom.Rda
     Ignored:    data/ERA5_lhf_anom.Rda
     Ignored:    data/ERA5_lwr_anom.Rda
@@ -550,6 +552,7 @@ Ignored files:
     Ignored:    data/ERA5_pcp_anom.Rda
     Ignored:    data/ERA5_qnet_anom.Rda
     Ignored:    data/ERA5_shf_anom.Rda
+    Ignored:    data/ERA5_swr_MLD.Rda
     Ignored:    data/ERA5_swr_anom.Rda
     Ignored:    data/ERA5_t2m_anom.Rda
     Ignored:    data/ERA5_tcc_anom.Rda
@@ -564,9 +567,10 @@ Ignored files:
 
 Unstaged changes:
     Modified:   analysis/_site.yml
-    Modified:   analysis/node-summary.Rmd
+    Modified:   code/figures.R
+    Modified:   code/functions.R
     Modified:   code/workflow.R
-    Modified:   talk/WHOI_talk.Rmd
+    Modified:   shiny/app.R
 
 </code></pre>
 <p>
@@ -610,6 +614,74 @@ Message
 Rmd
 </td>
 <td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/cbc5b749020fe72d28ecead35adc45c7734aaff3/analysis/polygon-prep.Rmd" target="_blank">cbc5b74</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-11-10
+</td>
+<td>
+Re-built site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/54144a7c30d7c6248923c2ac6e5cf0582399f35a/analysis/polygon-prep.Rmd" target="_blank">54144a7</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-09-28
+</td>
+<td>
+Working on non-numeric node labels
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/0447e0e64c8e32f46489b033ccfd077bf19c61ad/analysis/polygon-prep.Rmd" target="_blank">0447e0e</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-09-28
+</td>
+<td>
+More updates to figures and earlier region capitalisation in workflow
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/robwschlegel/MHWflux/8d657581062aa4f04ebb53fd75a7cd27dc1fd62d/docs/polygon-prep.html" target="_blank">8d65758</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-09-03
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
 <a href="https://github.com/robwschlegel/MHWflux/blob/fd8772fa52ca70d116949ae870974a065c81b043/analysis/polygon-prep.Rmd" target="_blank">fd8772f</a>
 </td>
 <td>
@@ -648,7 +720,7 @@ Combining the MHWNWA and MHWflux code bases
 </div>
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
-<p>This markdown file contains all of the code that prepares the polygons used to define the different regions in the Northwest Atlantic. The pixels for each variable from the NOAA OISST, ERA5, and GLORYS found within each region are then spatially averaged in the <a href="https://robwschlegel.github.io/MHWflux/data-prep.html">data preparation</a> vignette. The MHW detection algorithm is run on the individual SST time series as a general representation of the MHWs in those regions, rather than running the algorithm on each individual pixel, which would introduce a host of technical and philosophical problems that I won’t go into here.</p>
+<p>This vignette contains all of the code that prepares the polygons used to define the different regions in the Northwest Atlantic. The pixels for each variable from the NOAA OISST, ERA5, and GLORYS products found within each region are then spatially averaged in the <a href="https://robwschlegel.github.io/MHWflux/data-prep.html">data preparation</a> vignette. The MHW detection algorithm is run on the individual SST time series as a general representation of the MHWs in those regions, rather than running the algorithm on each individual pixel, which would introduce a host of technical and philosophical problems that I won’t go into here.</p>
 <pre class="r"><code># Packages used in this vignette
 .libPaths(c(&quot;~/R-packages&quot;, .libPaths()))
 library(tidyverse) # Base suite of functions
@@ -657,7 +729,7 @@ library(R.matlab) # For dealing with MATLAB files
 </div>
 <div id="coastal-region-polygons" class="section level2">
 <h2>Coastal region polygons</h2>
-<p>The first step in this analysis is to broadly define the coastal regions based on previous research into thermally relevant boundaries. We have chosen to use a paper by <span class="citation">Richaud et al. (2016)</span> to do this (<a href="https://www.sciencedirect.com/science/article/pii/S0278434316303181#f0010" class="uri">https://www.sciencedirect.com/science/article/pii/S0278434316303181#f0010</a>). Being the wonderful person that he is, Benjamin forwarded us the polygons [<span class="citation">Richaud et al. (2016)</span>; Figure 2] from this paper. The only hiccup being that they are a MATLAB file so we must convert them to an R format. It should be noted that these areas were designed to not encompass depths deeper than 600 m as the investigators were interested in characterising the climatologies for the shelf and upper slope regions of the north east coast of North America. This works for our research purposes as well.</p>
+<p>The first step in this analysis is to broadly define the coastal regions based on previous research into thermally relevant boundaries. We have chosen to use the paper by <span class="citation">Richaud et al. (2016)</span> to do this (<a href="https://www.sciencedirect.com/science/article/pii/S0278434316303181#f0010" class="uri">https://www.sciencedirect.com/science/article/pii/S0278434316303181#f0010</a>). Being the wonderful person that he is, Benjamin forwarded us the polygons [<span class="citation">Richaud et al. (2016)</span>; Figure 2] from this paper. The only hiccup being that they are a MATLAB file so we must convert them to an R format. It should be noted that these areas were designed to not encompass depths deeper than 600 m as the investigators were interested in characterising the climatologies for the shelf and upper slope regions of the north east coast of North America. This works for our research purposes as well.</p>
 <pre class="r"><code># Load the MATLAB file
 NWA_polygons &lt;- readMat(&quot;metadata/boundaries.mat&quot;)
 
@@ -684,7 +756,8 @@ coords_6 &lt;- cbind(mat_col(NWA_polygons[11]), mat_col(NWA_polygons[12])[2])
 
 # Combine them into one full dataframe
 NWA_coords_base &lt;- rbind(coords_1, coords_2, coords_3, coords_4, coords_5, coords_6)
-colnames(NWA_coords_base) &lt;- c(&quot;region&quot;, &quot;lon&quot;, &quot;lat&quot;)</code></pre>
+colnames(NWA_coords_base) &lt;- c(&quot;region&quot;, &quot;lon&quot;, &quot;lat&quot;)
+NWA_coords_base$region &lt;- toupper(NWA_coords_base$region)</code></pre>
 <p>With our polygons switched over from MATLAB to R we now want to visualise them to ensure that everything has gone smoothly.</p>
 <pre class="r"><code># The base map
 map_base &lt;- ggplot2::fortify(maps::map(fill = TRUE, col = &quot;grey80&quot;, plot = FALSE)) %&gt;%
@@ -703,12 +776,49 @@ ggplot(data = NWA_coords_base, aes(x = lon, y = lat)) +
   labs(x = NULL, y = NULL, colour = &quot;Region&quot;, fill = &quot;Region&quot;) +
   theme(legend.position = &quot;bottom&quot;)</code></pre>
 <p><img src="figure/polygon-prep.Rmd/poly-vis-1.png" width="768" style="display: block; margin: auto;" /></p>
-<p>The region abbreviations are: “gm” for Gulf of Maine, “gls” for Gulf of St. Lawrence, “ls” for Labrador Shelf, “mab” for Mid-Atlantic Bight, “nfs” for Newfoundland Shelf and “ss” for Scotian Shelf.</p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-poly-vis-1">
+Past versions of poly-vis-1.png
+</button>
+</p>
+<div id="fig-poly-vis-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/8d657581062aa4f04ebb53fd75a7cd27dc1fd62d/docs/figure/polygon-prep.Rmd/poly-vis-1.png" target="_blank">8d65758</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-09-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The region abbreviations are: “GM” for Gulf of Maine, “GLS” for Gulf of St. Lawrence, “LS” for Labrador Shelf, “MAB” for Mid-Atlantic Bight, “NFS” for Newfoundland Shelf, and “SS” for Scotian Shelf.</p>
 <div id="cabot-strait" class="section level3">
 <h3>Cabot Strait</h3>
-<p>It was decided that because we are interested in the geography of the regions, and not just their temperature regimes, the Cabot Strait needed to be defined apart from the Gulf of St. Lawrence region. To do this we will simply snip the “gsl” polygon into two pieces at its narrowest point.</p>
+<p>It was decided that because we are interested in the geography of the regions, and not just their temperature regimes, the Cabot Strait needed to be defined apart from the Gulf of St. Lawrence region. To do this we will simply snip the “GSL” polygon into two pieces at its narrowest point.</p>
 <pre class="r"><code># Extract the gsl region only
-gsl_sub &lt;- NWA_coords_base[NWA_coords_base$region == &quot;gsl&quot;,]
+gsl_sub &lt;- NWA_coords_base[NWA_coords_base$region == &quot;GSL&quot;,]
 
 # Add a simple integer column for ease of plotting
 gsl_sub$row_count &lt;- 1:nrow(gsl_sub)
@@ -718,19 +828,56 @@ ggplot(data = gsl_sub, aes(x = lon, y = lat)) +
   geom_label(aes(label = row_count)) +
   labs(x = NULL, y = NULL)</code></pre>
 <p><img src="figure/polygon-prep.Rmd/cabot-strait-1-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cabot-strait-1-1">
+Past versions of cabot-strait-1-1.png
+</button>
+</p>
+<div id="fig-cabot-strait-1-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/8d657581062aa4f04ebb53fd75a7cd27dc1fd62d/docs/figure/polygon-prep.Rmd/cabot-strait-1-1.png" target="_blank">8d65758</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-09-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>It appears from the crude figure above that we should pinch the polygon off into two separate shapes at row 6 and 10.</p>
 <pre class="r"><code># Create smaller gsl polygon
-gsl_new &lt;- NWA_coords_base[NWA_coords_base$region == &quot;gsl&quot;,] %&gt;% 
+gsl_new &lt;- NWA_coords_base[NWA_coords_base$region == &quot;GSL&quot;,] %&gt;% 
   slice(-c(7:9))
 
 # Create new cbs (Cabot Strait) polygon
-cbs &lt;- NWA_coords_base[NWA_coords_base$region == &quot;gsl&quot;,] %&gt;% 
+cbs &lt;- NWA_coords_base[NWA_coords_base$region == &quot;GSL&quot;,] %&gt;% 
   slice(6:10) %&gt;% 
-  mutate(region = &quot;cbs&quot;)
+  mutate(region = &quot;CBS&quot;)
 
 # Attach the new polygons to the original polygons
 NWA_coords_cabot &lt;- NWA_coords_base %&gt;% 
-  filter(region != &quot;gsl&quot;) %&gt;% 
+  filter(region != &quot;GSL&quot;) %&gt;% 
   rbind(., gsl_new, cbs)
 
 # Plot the new areas to ensure everything worked
@@ -742,16 +889,53 @@ ggplot(data = NWA_coords_cabot, aes(x = lon, y = lat)) +
   labs(x = NULL, y = NULL, colour = &quot;Region&quot;, fill = &quot;Region&quot;) +
   theme(legend.position = &quot;bottom&quot;)</code></pre>
 <p><img src="figure/polygon-prep.Rmd/cabot-strait-2-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cabot-strait-2-1">
+Past versions of cabot-strait-2-1.png
+</button>
+</p>
+<div id="fig-cabot-strait-2-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/8d657581062aa4f04ebb53fd75a7cd27dc1fd62d/docs/figure/polygon-prep.Rmd/cabot-strait-2-1.png" target="_blank">8d65758</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-09-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="labrador-shelf" class="section level3">
 <h3>Labrador Shelf</h3>
-<p>After running through a series of self-organising map (SOM) experiments in an earlier version of this project it was decided that the Labrador Shelf (ls) region needs to be excluded from the study. This is predominantly because the inclusion of this region into the SOM study makes it too difficult for the machine to make sense of the patterns it is seeing. We concluded that this was because of the strong, sometimes unrelated processes happening in the Gulf Stream vs. the Labrador Sea. Because we are primarily concerned with the Atlantic coast, we prioritised the more southern regions over the Labrador shelf region. The code below shows what these final regions look like.</p>
-<pre class="r"><code># FIlter out the ls region
+<p>After running through a series of self-organising map (SOM) experiments in an earlier version of this project it was decided that the Labrador Shelf (LS) region needs to be excluded from the study. This is predominantly because the inclusion of this region into the SOM study makes it too difficult for the machine to make sense of the patterns it is seeing. We concluded that this was because of the strong, sometimes unrelated processes happening in the Gulf Stream vs. the Labrador Sea. Because we are primarily concerned with the Atlantic coast, we prioritised the more southern regions over the Labrador shelf region. The code below shows what these final regions look like.</p>
+<pre class="r"><code># Filter out the ls region
 NWA_coords &lt;- NWA_coords_cabot %&gt;% 
-  filter(region != &quot;ls&quot;)
+  filter(region != &quot;LS&quot;)
 
 # Save these final study region coordinates
-# saveRDS(NWA_coords, &quot;data/NWA_coords.Rda&quot;)
+# saveRDS(NWA_coords, &quot;metadata/NWA_coords.Rda&quot;)
 
 # Plot the new areas to ensure everything worked
 NWA_study_area &lt;- ggplot(data = NWA_coords, aes(x = lon, y = lat)) +
@@ -772,13 +956,49 @@ NWA_study_area &lt;- ggplot(data = NWA_coords, aes(x = lon, y = lat)) +
   theme(legend.position = c(0.6, 0.2),
         legend.background = element_rect(colour = &quot;black&quot;),
         legend.direction = &quot;horizontal&quot;)
-# save(NWA_study_area, file = &quot;output/NWA_study_area.Rdata&quot;)
 # ggsave(NWA_study_area, filename = &quot;output/NWA_study_area.pdf&quot;, height = 5, width = 6)
 # ggsave(NWA_study_area, filename = &quot;output/NWA_study_area.png&quot;, height = 5, width = 6)
 
 # Visualise
 NWA_study_area</code></pre>
 <p><img src="figure/polygon-prep.Rmd/no-ls-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-no-ls-1">
+Past versions of no-ls-1.png
+</button>
+</p>
+<div id="fig-no-ls-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/8d657581062aa4f04ebb53fd75a7cd27dc1fd62d/docs/figure/polygon-prep.Rmd/no-ls-1.png" target="_blank">8d65758</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-09-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="study-area-extent" class="section level2">
@@ -814,13 +1034,13 @@ NWA_corners</code></pre>
 </p>
 <div id="workflowr-sessioninfo" class="collapse">
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>R version 4.0.2 (2020-06-22)
+<pre><code>R version 4.0.3 (2020-10-10)
 Platform: x86_64-pc-linux-gnu (64-bit)
-Running under: Ubuntu 16.04.6 LTS
+Running under: Ubuntu 20.04.1 LTS
 
 Matrix products: default
-BLAS:   /usr/lib/openblas-base/libblas.so.3
-LAPACK: /usr/lib/libopenblasp-r0.2.18.so
+BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3
+LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/liblapack.so.3
 
 locale:
  [1] LC_CTYPE=en_CA.UTF-8       LC_NUMERIC=C              
@@ -834,26 +1054,26 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
- [1] R.matlab_3.6.2  forcats_0.5.0   stringr_1.4.0   dplyr_1.0.1    
- [5] purrr_0.3.4     readr_1.3.1     tidyr_1.1.1     tibble_3.0.3   
+ [1] R.matlab_3.6.2  forcats_0.5.0   stringr_1.4.0   dplyr_1.0.2    
+ [5] purrr_0.3.4     readr_1.3.1     tidyr_1.1.2     tibble_3.0.4   
  [9] ggplot2_3.3.2   tidyverse_1.3.0
 
 loaded via a namespace (and not attached):
  [1] Rcpp_1.0.5         lubridate_1.7.9    assertthat_0.2.1   rprojroot_1.3-2   
- [5] digest_0.6.25      R6_2.4.1           cellranger_1.1.0   backports_1.1.8   
+ [5] digest_0.6.27      R6_2.5.0           cellranger_1.1.0   backports_1.1.10  
  [9] reprex_0.3.0       evaluate_0.14      httr_1.4.2         pillar_1.4.6      
-[13] rlang_0.4.7        readxl_1.3.1       rstudioapi_0.11    whisker_0.4       
+[13] rlang_0.4.8        readxl_1.3.1       rstudioapi_0.11    whisker_0.4       
 [17] blob_1.2.1         R.utils_2.9.2      R.oo_1.23.0        rmarkdown_2.3     
-[21] labeling_0.3       munsell_0.5.0      broom_0.7.0        compiler_4.0.2    
+[21] labeling_0.4.2     munsell_0.5.0      broom_0.7.0        compiler_4.0.3    
 [25] httpuv_1.5.4       modelr_0.1.8       xfun_0.16          pkgconfig_2.0.3   
 [29] htmltools_0.5.0    tidyselect_1.1.0   workflowr_1.6.2    fansi_0.4.1       
-[33] crayon_1.3.4       dbplyr_1.4.4       withr_2.2.0        later_1.1.0.1     
-[37] R.methodsS3_1.8.0  grid_4.0.2         jsonlite_1.7.0     gtable_0.3.0      
+[33] crayon_1.3.4       dbplyr_1.4.4       withr_2.3.0        later_1.1.0.1     
+[37] R.methodsS3_1.8.0  grid_4.0.3         jsonlite_1.7.1     gtable_0.3.0      
 [41] lifecycle_0.2.0    DBI_1.1.0          git2r_0.27.1       magrittr_1.5      
-[45] scales_1.1.1       cli_2.0.2          stringi_1.4.6      farver_2.0.3      
+[45] scales_1.1.1       cli_2.1.0          stringi_1.5.3      farver_2.0.3      
 [49] fs_1.5.0           promises_1.1.1     xml2_1.3.2         ellipsis_0.3.1    
-[53] generics_0.0.2     vctrs_0.3.2        RColorBrewer_1.1-2 tools_4.0.2       
-[57] glue_1.4.1         maps_3.3.0         hms_0.5.3          yaml_2.2.1        
+[53] generics_0.1.0     vctrs_0.3.4        RColorBrewer_1.1-2 tools_4.0.3       
+[57] glue_1.4.2         maps_3.3.0         hms_0.5.3          yaml_2.2.1        
 [61] colorspace_1.4-1   rvest_0.3.6        knitr_1.29         haven_2.3.1       </code></pre>
 </div>
 </div>
