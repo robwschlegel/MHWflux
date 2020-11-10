@@ -17,6 +17,7 @@ library(ggplot2)
 library(ggraph)
 library(plotly)
 library(see)
+library(ggtext)
 # setwd("shiny")
 
 
@@ -34,7 +35,8 @@ NWA_corners <- readRDS("NWA_corners.Rda")
 # Individual regions
 # Created in 'MHWNWA/analysis/polygon-prep.Rmd'
 NWA_coords <- readRDS("NWA_coords.Rda") %>% 
-  mutate(region = factor(region, levels = c("mab", "gm", "ss", "cbs", "gsl", "nfs")))
+  mutate(region = toupper(region)) %>% 
+  mutate(region = factor(region, levels = c("MAB", "GM", "SS", "CBS", "GSL", "NFS")))
 
 # MHW Clims
 MHW_clim <- region_MHW %>%
@@ -99,27 +101,13 @@ ALL_ts_anom <- readRDS("ALL_ts_anom.Rda") %>%
                          var == "sss" ~ "SSS",
                          var == "t2m" ~ "T_air",
                          TRUE ~ var))
-  # mutate(ts = "full") %>% 
-  # left_join(MHW_clim[c("region", "t", "event_no")], by = c("region", "t"))
 ALL_ts_anom_wide <- ALL_ts_anom %>% 
   dplyr::select(region, var, t, anom) %>% 
   pivot_wider(values_from = anom, names_from = var)
-ALL_ts_anom_cum <- readRDS("ALL_ts_anom_cum.Rda")
-ALL_ts_anom_cum_wide <- ALL_ts_anom_cum %>% 
-  pivot_wider(values_from = anom, names_from = var)
-  
-
-# Combine the anomaly dataframes into one
-ALL_ts_anom_full <- rbind(ALL_ts_anom[,c("region", "var", "t", "ts", "event_no", "anom")], 
-                          ALL_ts_anom_cum[,c("region", "var", "t", "ts", "event_no", "anom")]) %>%
+ALL_ts_anom_cum <- readRDS("ALL_ts_anom_cum.Rda") %>% 
   filter(var %in% choose_vars) %>% 
-  mutate(region = factor(region, levels = c("MAB", "GM", "SS", "CBS", "GSL", "NFS")),
-         var = case_when(var == "sst" ~ "SST",
-                         var == "bottomT" ~ "T_bottom",
-                         var == "sss" ~ "SSS",
-                         var == "mld_cum" ~ "MLD_cum",
+  mutate(var = case_when(var == "mld_cum" ~ "MLD_cum",
                          var == "mld_1_cum" ~ "MLD_1_cum",
-                         var == "t2m" ~ "T_air",
                          var == "tcc_cum" ~ "TCC_cum",
                          var == "p_e_cum" ~ "P-E_cum",
                          var == "mslp_cum" ~ "MSLP_cum",
@@ -128,14 +116,21 @@ ALL_ts_anom_full <- rbind(ALL_ts_anom[,c("region", "var", "t", "ts", "event_no",
                          var == "lhf_mld_cum" ~ "Qlh",
                          var == "shf_mld_cum" ~ "Qsh",
                          var == "qnet_mld_cum" ~ "Qnet",
-                         var == "lwr_budget" ~ "T_Qlw",
-                         var == "swr_budget" ~ "T_Qsw",
-                         var == "lhf_budget" ~ "T_Qlh",
-                         var == "shf_budget" ~ "T_Qsh",
-                         var == "qnet_budget" ~ "T_Qnet",
                          TRUE ~ var))
-ALL_ts_anom_full_wide <- ALL_ts_anom_full %>% 
-    pivot_wider(values_from = anom, names_from = var)
+ALL_ts_anom_cum_wide <- ALL_ts_anom_cum %>% 
+  pivot_wider(values_from = anom, names_from = var)
+  
+# Combine the wide anomaly dataframes into one
+ALL_ts_anom_full_wide <- ALL_ts_anom_cum_wide %>% 
+  left_join(ALL_ts_anom_wide, by = c("region", "t")) %>% 
+  mutate(region = factor(region, levels = c("MAB", "GM", "SS", "CBS", "GSL", "NFS"))) %>% 
+  group_by(region, event_no, ts) %>% 
+  mutate(T_Qnet = c(0, Qnet[1:n()-1]) + SST[1],
+         T_Qlh = c(0, Qlh[1:n()-1]) + SST[1],
+         T_Qsh = c(0, Qsh[1:n()-1]) + SST[1],
+         T_Qlw = c(0, Qlw[1:n()-1]) + SST[1],
+         T_Qsw = c(0, Qsw[1:n()-1]) + SST[1]) %>% 
+  ungroup()
 
 # The correlations
 ALL_cor <- readRDS("ALL_cor.Rda") %>% 
@@ -184,7 +179,6 @@ ALL_cor <- readRDS("ALL_cor.Rda") %>%
                                 Parameter2 == "shf_budget" ~ "T_Qsh",
                                 Parameter2 == "qnet_budget" ~ "T_Qnet",
                                 TRUE ~ Parameter2))
-
 ALL_cor_wide <- ALL_cor %>% 
   filter(Parameter1 == "SST",
          Parameter2 %in% c("SST", "SSS", "T_bottom", "MLD_cum", "MLD_1_cum", "T_air", "TCC_cum", "P-E_cum", 
@@ -197,6 +191,10 @@ ALL_cor_wide <- ALL_cor %>%
 # Create RMSE data.frame
 ALL_RMSE <- ALL_cor %>% 
   filter(rmse > 0)
+
+# Create magnitude data.frame
+ALL_mag <- ALL_cor %>% 
+  filter(!is.na(mag))
 
 # The base land polygon
 # Created in 'MHWNWA/analysis/polygon-prep.Rmd'
@@ -216,14 +214,9 @@ frame_base <- ggplot(map_base, aes(x = lon, y = lat)) +
           axis.text = element_text(size = 12, colour = "black"),
           axis.ticks = element_line(colour = "black"))
 
-# Establish the vector scalar for the currents
-# current_uv_scalar <- 4
-
-# Establish the vector scalar for the wind
-# wind_uv_scalar <- 0.5
-
-# The results text table
-# res_table <- read_csv("res_table.csv")
+# tester...
+# input <- data.frame(ts_single = "decline",
+#                     vars_rmse = "T_Qlw")
 
 
 # UI ----------------------------------------------------------------------
@@ -242,12 +235,9 @@ ui <- dashboardPage(
                 # The various menus
                 menuItem("Map", tabName = "map", icon = icon("map"), selected = TRUE),
                 menuItem("Events", tabName = "event", icon = icon("chart-pie")),
-                # menuItem("Magnitude", tabName = "rmse", icon = icon("chart-bar")),
+                menuItem("Magnitude", tabName = "magnitude", icon = icon("chart-bar")),
                 menuItem("RMSE", tabName = "rmse", icon = icon("chart-bar")),
                 menuItem("Correlations", tabName = "correlations", icon = icon("chart-bar")),
-                # menuItem("SOM", tabName = "som", icon = icon("table")),
-                # menuItem("Flavours", tabName = "flavours", icon = icon("adjust")),
-                # menuItem("Tables", tabname = "tables", icon = icon("table")),
                 menuItem("About", tabName = "about", icon = icon("question")),
                 
                 # The reactive controls based on the primary option chosen
@@ -262,9 +252,9 @@ ui <- dashboardPage(
       # Map figures -------------------------------------------------------------
       
       tabItem(tabName = "map",
-              fluidRow(box(plotOutput("mapRegions", height = "740px"), width = 6, height = "800px", title = "Region map",
+              fluidRow(box(plotOutput("mapRegions", height = "680px"), width = 6, height = "740px", title = "Region map",
                            status = "primary", solidHeader = TRUE, collapsible = TRUE),
-                       box(plotlyOutput("eventLolli", height = "740px"), width = 6, height = "800px", title = "MHW Lollis",
+                       box(plotlyOutput("eventLolli", height = "680px"), width = 6, height = "740px", title = "MHW Lollis",
                            status = "primary", solidHeader = TRUE, collapsible = TRUE))),
       
       
@@ -274,82 +264,69 @@ ui <- dashboardPage(
               # The event metric table
               fluidRow(box(dataTableOutput("eventTable"), width = 12, title = "Event metrics", 
                            status = "primary", solidHeader = TRUE, collapsible = TRUE)),
-              # The correlation plot
-              fluidRow(box(width = 3, title = "Magnitude plot", status = "primary", solidHeader = TRUE, collapsible = TRUE,
-                           dropdownButton(
-                             h4("Magnitude controls:"),
-                             # These inputs need to be ordered by category
-                             selectInput(inputId = "mag_x", label = "X axis:",
-                                         choices = unique(ALL_cor$Parameter2),
-                                         selected = "SST"),
-                             selectInput(inputId = "mag_y", label = "Y axis:",
-                                         choices = unique(ALL_cor$Parameter2),
-                                         selected = "T_qnet"),
-                             circle = TRUE, status = "danger", icon = icon("gear")),
-                           plotOutput("magnitudePlot")),
-                       box(width = 3, title = "Correlation plot", status = "primary", solidHeader = TRUE, collapsible = TRUE,
-                           dropdownButton(
-                             h4("Correlation controls:"),
-                             selectInput(inputId = "vars2", label = "Variables:",
-                                         # choices = list(
-                                         #   Flux = c("Qnet", "Qlw", "Qsw", "Qlh", "Qsh"),
-                                         #   Air = c("Air temp", "Cloud cover (c)", "Precip-Evap (c)", "MSLP (c)"),
-                                         #   Sea = c("SST", "SSS", "MLD", "MLD_1", "SBT")
-                                         # ), 
-                                         choices = unique(ALL_cor$Parameter2), 
-                                         multiple = TRUE, 
-                                         selected = c("SST", "T_Qlw", "T_Qsw", "T_Qlh", "T_Qsh", "T_Qnet")),
-                             circle = TRUE, status = "danger", icon = icon("gear")),
-                           plotOutput("correlationPlot")),
-                       # The scatterplot
-                       box(width = 3, title = "Scatterplot", status = "primary", solidHeader = TRUE, collapsible = TRUE,
-                           dropdownButton(
-                             h4("Scatter controls:"),
-                             # These inputs need to be ordered by category
-                             selectInput(inputId = "scat_x", label = "X axis:",
-                                         choices = unique(ALL_ts_anom_full$var),
-                                         selected = "T_Qnet"),
-                             selectInput(inputId = "scat_y", label = "Y axis:",
-                                         choices = unique(ALL_ts_anom_full$var),
-                                         selected = "SST"),
-                             circle = TRUE, status = "danger", icon = icon("gear")),
-                           plotOutput("scatterPlot")),
-                       box(width = 3, title = "RMSE plot", status = "primary", solidHeader = TRUE, collapsible = TRUE,
-                           dropdownButton(
-                             h4("RMSE controls:"),
-                             selectInput(inputId = "rmse_var", label = "Qx:",
-                                         choices = c("T_Qnet", "T_Qlw", "T_Qsw", "T_Qlh", "T_Qsh"),
-                                         selected = "T_Qnet"),
-                             circle = TRUE, status = "danger", icon = icon("gear")),
-                           plotOutput("rmsePlot")))),
+              
+              fluidRow(
+                # The Magnitude/RMSE plot
+                box(width = 4, title = "Magnitude/RMSE plot", status = "primary", solidHeader = TRUE, collapsible = TRUE,
+                    dropdownButton(
+                      h4("RMSE controls:"),
+                      selectInput(inputId = "rmse_var", label = "Qx:",
+                                  choices = c("T_Qnet", "T_Qlw", "T_Qsw", "T_Qlh", "T_Qsh"),
+                                  selected = "T_Qnet"),
+                      circle = TRUE, status = "danger", icon = icon("gear")),
+                    plotOutput("rmsePlot")),
+                # The correlation plot
+                box(width = 4, title = "Correlation plot", status = "primary", solidHeader = TRUE, collapsible = TRUE,
+                    dropdownButton(
+                      h4("Correlation controls:"),
+                      selectInput(inputId = "vars2", label = "Variables:",
+                                  # choices = list(
+                                  #   Flux = c("Qnet", "Qlw", "Qsw", "Qlh", "Qsh"),
+                                  #   Air = c("Air temp", "Cloud cover (c)", "Precip-Evap (c)", "MSLP (c)"),
+                                  #   Sea = c("SST", "SSS", "MLD", "MLD_1", "SBT")
+                                  # ), 
+                                  choices = unique(ALL_cor$Parameter2), 
+                                  multiple = TRUE, 
+                                  selected = c("SST", "T_bottom", "SSS", "MLD_cum", "T_air", "MSLP_cum")),
+                      circle = TRUE, status = "danger", icon = icon("gear")),
+                    plotOutput("correlationPlot")),
+                # The scatterplot
+                box(width = 4, title = "Scatterplot", status = "primary", solidHeader = TRUE, collapsible = TRUE,
+                    dropdownButton(
+                      h4("Scatter controls:"),
+                      # These inputs need to be ordered by category
+                      selectInput(inputId = "scat_x", label = "X axis:",
+                                  choices = unique(ALL_cor$Parameter2),
+                                  selected = "T_Qnet"),
+                      selectInput(inputId = "scat_y", label = "Y axis:",
+                                  choices = unique(ALL_cor$Parameter2),
+                                  selected = "SST"),
+                      circle = TRUE, status = "danger", icon = icon("gear")),
+                    plotOutput("scatterPlot")),
+              )),
       # Test box
       # fluidRow(box(verbatimTextOutput("devel")))),
       
       # Magnitude figures -------------------------------------------------------
       
-      # tabItem(tabName = "magnitude", 
-      #        fluidRow(
-      #          # Histogram box
-      #          box(width = 6, title = "Scatterplot - time series portion", status = "primary", solidHeader = TRUE, collapsible = TRUE,
-      #              dropdownButton(
-      #                h4("Scatterplot controls:"),
-      #                radioButtons(inputId = "notch_ts", label = "Notches:", 
-      #                             choices = c(TRUE, FALSE),
-      #                             selected = TRUE, inline = T),
-      #                circle = TRUE, status = "danger", icon = icon("gear")),
-      #              plotOutput("scatterPlotMag")),
-      #          # Boxplot box
-      #          box(width = 6, title = "Boxplot - variable", status = "primary", solidHeader = TRUE, collapsible = TRUE,
-      #              dropdownButton(
-      #                h4("Boxplot controls:"),
-      #                radioButtons(inputId = "notch_var", label = "Notches:", 
-      #                             choices = c(TRUE, FALSE),
-      #                             selected = TRUE, inline = T),
-      #                circle = TRUE, status = "danger", icon = icon("gear")),
-      #              plotOutput("boxPlotMag"))),
-      #        # Lineplot box
-      #        fluidRow(box(plotOutput("linePlotRMSE"), width = 12, title = "Lineplot", status = "primary", 
-      #                     solidHeader = TRUE, collapsible = TRUE, collapsed = TRUE))),
+      tabItem(tabName = "magnitude",
+              fluidRow(
+                # Scatterplot box
+                box(width = 6, title = "Scatterplot - proportion", status = "primary", solidHeader = TRUE, collapsible = TRUE,
+                    dropdownButton(
+                      h4("Scatterplot controls:"),
+                      h5("No one here but us chickens."),
+                      circle = TRUE, status = "danger", icon = icon("gear")),
+                    plotOutput("scatterPlotMag")),
+                # Boxplot box
+                box(width = 6, title = "Boxplot - phase", status = "primary", solidHeader = TRUE, collapsible = TRUE,
+                    dropdownButton(
+                      h4("Boxplot controls:"),
+                      radioButtons(inputId = "notch_mag", label = "Notches:",
+                                   choices = c(TRUE, FALSE),
+                                   selected = TRUE, inline = T),
+                      circle = TRUE, status = "danger", icon = icon("gear")),
+                    plotOutput("boxPlotMag")))),
       
       
       # RMSE figures ------------------------------------------------------------
@@ -357,7 +334,7 @@ ui <- dashboardPage(
       tabItem(tabName = "rmse", 
               fluidRow(
                 # Histogram box
-                box(width = 6, title = "Boxplot - time series portion", status = "primary", solidHeader = TRUE, collapsible = TRUE,
+                box(width = 6, title = "Boxplot - phase", status = "primary", solidHeader = TRUE, collapsible = TRUE,
                     dropdownButton(
                       h4("Boxplot controls:"),
                       radioButtons(inputId = "notch_ts", label = "Notches:", 
@@ -406,36 +383,7 @@ ui <- dashboardPage(
               # Lineplot box
               fluidRow(box(plotOutput("linePlotCor"), width = 12, title = "Lineplot", status = "primary", 
                            solidHeader = TRUE, collapsible = TRUE, collapsed = TRUE))),
-      
-      
-      # SOM figures -------------------------------------------------------------
-      
-      # tabItem(tabName = "som",
-      #         fluidRow(box(width = 12, height = "800px", title = "Nodes", status = "primary", 
-      #                      solidHeader = TRUE, collapsible = TRUE,
-      #                      shinycssloaders::withSpinner(plotOutput("somPlot", height = "740px"), type = 6, color = "#b0b7be") ))),
-      
-      
-      # Flavour figures ---------------------------------------------------------
-      
-      # Show ow the proportion of the mix of seasons and regions changes when selecting for
-      # the most dominant Q variables, and then down the list
-      # These would be visualised by growing or shrinking balls of colour.
-      # Each representing a region or season. Within each ball would be the count of events.
-      # These would be arranged to look like an ice cream cone.
-      
-      # tabItem(tabName = "flavours",
-      #         fluidRow(box(width = 6, title = "Flavourtown", status = "primary", solidHeader = TRUE, collapsible = TRUE,
-      #                      uiOutput("flux", inline = T), uiOutput("air", inline = T), uiOutput("sea", inline = T),
-      #                      plotlyOutput("flavourPlot")))),
-      
-      
-      # Tables ------------------------------------------------------------------
-      
-      # tabItem(tabname = "tables",
-      #         # tableOutput("resultsKable"),
-      #         h2("test")),
-      
+
       
       # App explanation ---------------------------------------------------------
       
@@ -473,8 +421,15 @@ ui <- dashboardPage(
                                one to select a different Qx term. Note that the SST values shown here are the real SST, and not SST - seasonal
                                climatology, as seen throughout the rest of the project. The blue line shows the SST value from day 1 of the time series, with the
                                cumulative seasonal anomaly Qx term added to it for each time step."),
+                       h2(tags$b("Magnitude")),
+                       p("This tab contains two plots. The first is a scatterplot that shows the relationship between SSTa and T_Qnet. This allows the user to 
+                         look at how the relationship between these two variables may change when filtering the data. The second is a boxplot that shows
+                         the proportions of T_Qnet/SSTa. It may also be filtered and grouped to explore how this affects the results."),
                        h2(tags$b("RMSE")),
-                       p("Text to come..."),
+                       p("This tab contains the RMSE results. These are shown here as two different boxplot options. The first is faceted by the phase(s)
+                         chosen from the results. The second boxplot shows the same as the first, but faceted by variable. Both of these boxplots respond to the
+                         same filtering and grouping as all of the other plots in this shiny app. Between these two different faceting approaches one is able to
+                         arrive at a deeper understanding of the results and how they realte to one anther."),
                        h2(tags$b("Correlations")),
                        p("The summary tab shows a higher level report on the correlations between variables and SST. The left panel shows the correlation results
                                via histograms. The X-axes in the histogram show the strength of the correlations between SST and the given variable. These will range
@@ -489,24 +444,12 @@ ui <- dashboardPage(
                                that show the relationship between the duration of a MHW (X-axis) and the correlation strength (Y-axis) of variables. It basically shows
                                that there isn't much of a pattern. That longer MHWs tend to be more unique in their drivers so any relationship with the duration of an
                                event and physical drivers tends to break down after 30 days or so."),
-                       h2(tags$b("SOM")),
-                       p("Text to come..."),
-                       h2(tags$b("Flavours")),
-                       p("Welcome to flavourtown! This was my failed attempt at creating some sort of visualisation that looked like ice-cream cones. The
-                               idea was that there appear to be different 'flavours' of MHWs. For example, events whose onset coincides with strong latent heatflux
-                               and low high cloud cover. What I was left with here is a sort of game in which the user may click on either of the three icons at the top
-                               of the panel to move sliders for Qx, atmosphere, or ocean variables to see if one can find a strong fingerprint of events the all share
-                               something in common. The balls themselves show the total number of events per region and season that meet the criteria in the sliders. The
-                               sliders go from -1 to 1 for each variable and show the acceptable range of correlations that the user will take. So if one wanted to filter
-                               out events that had a correlation of at least 0.7 with shortwave radiation,click on the red icon and slide the Qsw slider accordingly. To filter
-                               out events with mixed layer depth correlation less greater than -0.7, click on the dark blus icon and slide that little guy over to -0.7.
-                               It's actually quite a lot of fun to play around with. If you're into that sort of thing.")
+                       )
                 )
               )
       )
     )
   )
-)
 
 
 # Server ------------------------------------------------------------------
@@ -520,18 +463,18 @@ server <- function(input, output, session) {
     # Select variables from a dropdown
     picker_vars <- pickerInput(inputId = "vars", label = "Variables:",
                                choices = list(
-                                 Flux = c("Qnet", "Qlw", "Qsw", "Qlh", "Qsh"),
-                                 Air = c("Air_temp", "Cloud_cover_c", "Precip_Evap_c", "MSLP_c"),
-                                 Sea = c("SST", "SSS", "MLD_c", "MLD_1_c", "SBT")
+                                 Flux = c("T_Qnet", "T_Qlw", "T_Qsw", "T_Qlh", "T_Qsh"),
+                                 Air = c("T_air", "TCC_cum", "P-E_cum", "MSLP_cum"),
+                                 Sea = c("SST", "SSS", "MLD_cum", "MLD_1_cum", "T_bottom")
                                  ),
                                multiple = TRUE,
                                options = list(size = 6),
-                               selected = c("Qnet", "Qlw", "Qsw", "Qlh", "Qsh"))
+                               selected = c("T_air", "MLD_cum"))
     # Select variables from a dropdown for RMSE only
     picker_vars_rmse <- pickerInput(inputId = "vars_rmse", label = "Variables:",
-                                    choices = c("Qnet", "Qlw", "Qsw", "Qlh", "Qsh"), multiple = TRUE,
+                                    choices = c("T_Qnet", "T_Qlw", "T_Qsw", "T_Qlh", "T_Qsh"), multiple = TRUE,
                                     options = list(`actions-box` = TRUE, size = 6),
-                                    selected = c("Qnet", "Qlw", "Qsw", "Qlh", "Qsh"))
+                                    selected = c("T_Qlw", "T_Qsw", "T_Qlh", "T_Qsh"))
     # picker_vars_rmse <- selectInput(inputId = "vars_rmse", label = "Variables:",
     #                                 multiple = TRUE,
     #                                 choices = c("Qnet_budget", "Qlw_budget", "Qsw_budget", "Qlh_budget", "Qsh_budget"),
@@ -550,11 +493,11 @@ server <- function(input, output, session) {
                                   selected = levels(ALL_cor$season))
     
     # Select parts of a time series
-    picker_ts_multiple <- pickerInput(inputId = "ts_multiple", label = "MHW sections:",
+    picker_ts_multiple <- pickerInput(inputId = "ts_multiple", label = "MHW phases:",
                                       choices = levels(ALL_cor$ts), multiple = TRUE,
                                       options = list(`actions-box` = TRUE, size = 3),
                                       selected = c("onset", "decline"))
-    picker_ts_single <- pickerInput(inputId = "ts_single", label = "MHW section:",
+    picker_ts_single <- pickerInput(inputId = "ts_single", label = "MHW phase:",
                                     choices = levels(ALL_cor$ts), multiple = FALSE,
                                     selected = "onset")
     
@@ -576,55 +519,6 @@ server <- function(input, output, session) {
     slider_p_val <- sliderInput(inputId = "p_val", label = "Max p:",
                                 min = 0, max = 1, value = 1)
     
-    # Filter events by heat flux terms
-    slider_Qlh <- sliderInput(inputId = "Qlh", label = "Qlh:",
-                              min = -1, max = 1, value = c(-1, 1), step = 0.1)
-    slider_Qsh <- sliderInput(inputId = "Qsh", label = "Qsh:",
-                              min = -1, max = 1, value = c(-1, 1), step = 0.1)
-    slider_Qlw <- sliderInput(inputId = "Qlw", label = "Qlw:",
-                              min = -1, max = 1, value = c(-1, 1), step = 0.1)
-    slider_Qsw <- sliderInput(inputId = "Qsw", label = "Qsw:",
-                              min = -1, max = 1, value = c(-1, 1), step = 0.1)
-    slider_Qnet <- sliderInput(inputId = "Qnet", label = "Qnet:",
-                              min = -1, max = 1, value = c(-1, 1), step = 0.1)
-    
-    # Filter events by sea variables
-    slider_SBT <- sliderInput(inputId = "SBT", label = "SBT:",
-                              min = -1, max = 1, value = c(-1, 1), step = 0.1)
-    slider_SSS <- sliderInput(inputId = "SSS", label = "SSS:",
-                              min = -1, max = 1, value = c(-1, 1), step = 0.1)
-    slider_MLD <- sliderInput(inputId = "MLD", label = "MLD (c):",
-                              min = -1, max = 1, value = c(-1, 1), step = 0.1)
-    slider_MLD_1 <- sliderInput(inputId = "MLD_1", label = "1/MLD (c):",
-                                min = -1, max = 1, value = c(-1, 1), step = 0.1)
-    
-    # Filter events by air variables
-    slider_air <- sliderInput(inputId = "air", label = "Air temp:",
-                              min = -1, max = 1, value = c(-1, 1), step = 0.1)
-    slider_cloud <- sliderInput(inputId = "cloud", label = "Cloud cover (c):",
-                                min = -1, max = 1, value = c(-1, 1), step = 0.1)
-    slider_p_e <- sliderInput(inputId = "p_e", label = "Precip-Evap (c):",
-                              min = -1, max = 1, value = c(-1, 1), step = 0.1)
-    slider_MSLP <- sliderInput(inputId = "MSLP", label = "MSLP (c):",
-                               min = -1, max = 1, value = c(-1, 1), step = 0.1)
-    
-    # Render dropdown buttons
-    output$flux <- renderUI({
-      dropdownButton(status = "danger", icon = icon("fire"), circle = TRUE, 
-                     tooltip = TRUE, label = "Flux", inline = T,
-                     slider_Qnet, slider_Qlw, slider_Qsw, slider_Qlh, slider_Qsh)
-    })
-    output$air <- renderUI({
-      dropdownButton(status = "info", icon = icon("cloud"), circle = TRUE, 
-                     tooltip = TRUE, label = "Air", inline = T,
-                     slider_air, slider_cloud, slider_p_e, slider_MSLP)
-    })
-    output$sea <- renderUI({
-      dropdownButton(status = "primary", icon = icon("tint"), circle = TRUE, 
-                     tooltip = TRUE, label = "Sea", inline = T,
-                     slider_SBT, slider_SSS, slider_MLD, slider_MLD_1)
-    })
-    
     # The chosen controls per tab
     output$sidebar_controls <- renderUI({
       if(input$mainMenu == "correlations"){
@@ -637,8 +531,9 @@ server <- function(input, output, session) {
         sidebarMenu(picker_regions, picker_seasons, picker_ts_single, slider_duration)
       } else if(input$mainMenu == "map"){
         sidebarMenu(picker_regions, picker_seasons, slider_duration)
-      } else if(input$mainMenu == "flavours"){
-        sidebarMenu(picker_ts_single, slider_duration)
+      } else if(input$mainMenu == "magnitude"){
+        sidebarMenu(picker_regions, picker_seasons, radio_fill,
+                    picker_ts_multiple, slider_duration)
       } else {
         # Intentionally empty
       }
@@ -662,10 +557,28 @@ server <- function(input, output, session) {
         return(ALL_cor_sub)
     })
     
+    # The magnitude results
+    mag_data <- reactive({
+      req(input$ts_multiple)#; req(input$p_val)
+      ALL_mag_sub <- ALL_mag %>% 
+        filter(Parameter1 == "SST",
+               Parameter2 %in% c("SST", "T_Qnet"),
+               region %in% input$regions,
+               ts %in% input$ts_multiple,
+               season %in% input$seasons,
+               # p <= input$p_val,
+               n_Obs >= input$duration[1],
+               n_Obs <= input$duration[2]) %>% 
+        dplyr::select(region:ts, Parameter2, mag) %>% 
+        pivot_wider(names_from = Parameter2, values_from = mag) %>% 
+        mutate(prop = T_Qnet/SST)
+      return(ALL_mag_sub)
+    })
+    
     # The RMSE results
     rmse_data <- reactive({
       req(input$vars_rmse)#; req(input$p_val)
-      ALL_cor_sub <- ALL_cor %>% 
+      ALL_RMSE_sub <- ALL_RMSE %>% 
         filter(Parameter1 == "SST",
                Parameter2 %in% input$vars_rmse,
                region %in% input$regions,
@@ -674,7 +587,7 @@ server <- function(input, output, session) {
                # p <= input$p_val,
                n_Obs >= input$duration[1],
                n_Obs <= input$duration[2])
-      return(ALL_cor_sub)
+      return(ALL_RMSE_sub)
     })
     
     # The OISST MHW metrics
@@ -706,59 +619,8 @@ server <- function(input, output, session) {
           filter(t >= event_sub$start,
                  t <= event_sub$end,
                  region == event_sub$region,
-                 ts == input$ts_single) %>% 
-          mutate(T_Qnet = c(0, Qnet[1:event_sub$duration-1]) + SST[1],
-                 T_Qlh = c(0, Qlh[1:event_sub$duration-1]) + SST[1],
-                 T_Qsh = c(0, Qsh[1:event_sub$duration-1]) + SST[1],
-                 T_Qlw = c(0, Qlw[1:event_sub$duration-1]) + SST[1],
-                 T_Qsw = c(0, Qsw[1:event_sub$duration-1]) + SST[1])
-        
-        # Filter accordingly
-        if(input$ts_single == "full"){
-            ts_wide <- ALL_ts_anom_full_wide %>% 
-              filter(t >= event_sub$start,
-                     t <= event_sub$end,
-                     region == event_sub$region)
-        } else if(input$ts_single == "onset"){
-            ts_wide <- ts_full %>%
-                filter(t >= event_sub$start,
-                       t <= event_sub$peak)
-        } else if(input$ts_single == "decline"){
-            ts_wide <- ts_full %>%
-                filter(t >= event_sub$peak,
-                       t <= event_sub$end)
-        }
-        
+                 ts == input$ts_single)
         return(ts_wide)
-    })
-    
-    # Data for the flavour figure
-    flavour_data <- reactive({
-      req(input$ts_single)#; req(input$Qlh)
-      flavour_data <- ALL_cor %>% 
-        filter(Parameter1 == "SST",
-               ts %in% input$ts_single,
-               n_Obs >= input$duration[1],
-               n_Obs <= input$duration[2]) %>%
-        dplyr::select(region:ts, Parameter2, r, n_Obs) %>% 
-        pivot_wider(names_from = Parameter2, values_from = r) %>% 
-               # Heat flux filters
-        filter(Qnet >= input$Qnet[1], Qnet <= input$Qnet[2],
-               Qlh >= input$Qlh[1], Qlh <= input$Qlh[2],
-               Qsh >= input$Qsh[1], Qsh <= input$Qsh[2],
-               Qlw >= input$Qlw[1], Qlw <= input$Qlw[2],
-               Qsw >= input$Qsw[1], Qsw <= input$Qsw[2],
-               # Air filters
-               Air_temp >= input$air[1], Air_temp <= input$air[2],
-               Cloud_cover_c >= input$cloud[1], Cloud_cover_c <= input$cloud[2],
-               Precip_Evap_c >= input$p_e[1], Precip_Evap_c <= input$p_e[2],
-               MSLP_c >= input$MSLP[1], MSLP_c <= input$MSLP[2],
-               # Sea filters
-               SBT >= input$SBT[1], SBT <= input$SBT[2],
-               SSS >= input$SSS[1], SSS <= input$SSS[2],
-               MLD_c >= input$MLD[1], MLD_c <= input$MLD[2],
-               MLD_1_c >= input$MLD_1[1], MLD_1_c <= input$MLD_1[2])
-      return(flavour_data)
     })
     
     
@@ -786,13 +648,13 @@ server <- function(input, output, session) {
             group_by(region) %>%
             mutate(lon_center = mean(lon), lat_center = mean(lat)) %>%
             na.omit() %>% 
-            mutate(lon_center = case_when(region == "gsl" ~ lon_center+2,
-                                          region == "ss" ~ lon_center+1,
-                                          region == "gm" ~ lon_center-1,
-                                          region == "mab" ~ lon_center+1.8,
+            mutate(lon_center = case_when(region == "GSL" ~ lon_center+2,
+                                          region == "SS" ~ lon_center+1,
+                                          region == "GM" ~ lon_center-1,
+                                          region == "MAB" ~ lon_center+1.8,
                                           TRUE ~ lon_center),
-                   lat_center = case_when(region == "gm" ~ lat_center-1.5,
-                                          region == "mab" ~ lat_center+0.8,
+                   lat_center = case_when(region == "GM" ~ lat_center-1.5,
+                                          region == "MAB" ~ lat_center+0.8,
                                           TRUE ~ lat_center)) %>%
             ungroup()
         
@@ -862,22 +724,21 @@ server <- function(input, output, session) {
     # Table showing filtered events from sidebar controls
     # Add a title explicitly stating what this shows
     output$eventTable = renderDataTable({
-        MHW_data() %>% 
+      MHW_data() %>% 
         left_join(ALL_cor_wide, by = c("region", "season", "event"))
     }, selection = 'single', server = TRUE, options = list(scrollX = TRUE))
     
     # Correlation plot for single figure
     output$correlationPlot <- renderPlot({
-        req(input$vars2)
-        MHW_single() %>%
-            pivot_longer(cols = c(-region, -t)) %>% 
-            filter(name %in% input$vars2) %>%
-            pivot_wider(names_from = name, values_from = value) %>% 
-            correlation() %>%
-            plot()
+      req(input$vars2)
+      MHW_single() %>%
+        dplyr::select(-event_no, -ts) %>% 
+        pivot_longer(cols = c(-region, -t)) %>% 
+        filter(name %in% input$vars2) %>%
+        pivot_wider(names_from = name, values_from = value) %>% 
+        correlation() %>%
+        plot()
     })
-    
-    # This needs to be fixed
     
     # Scatterplot of two variable during onset, full, or decline of a single event
     output$scatterPlot <- renderPlot({
@@ -897,15 +758,6 @@ server <- function(input, output, session) {
       # Prep ts data
       MHW_single <- MHW_single()
       
-      # Get the full time series back out in order to get the correct second half
-      
-      # Get Q column
-      # q_col <- c(0, MHW_single[[input$rmse_var]])[1:nrow(MHW_single)]
-      
-      # Add needed columns
-      MHW_temp <- MHW_single #%>%
-        # mutate(Qx = q_col + SST[1])
-      
       # Find RMSE value
       MHW_data <- MHW_data()
       event_sub <- MHW_data[input$eventTable_cell_clicked$row,]
@@ -916,20 +768,32 @@ server <- function(input, output, session) {
                Parameter2 == input$rmse_var) %>% 
         na.omit()
       
+      # Find magnitude values
+      MHW_mag <- ALL_cor %>% 
+        filter(region == event_sub$region,
+               event_no == event_sub$event,
+               ts == input$ts_single,
+               Parameter2 %in% c(input$rmse_var, "SST")) %>%
+        filter(!is.na(mag)) %>% 
+        mutate(mag = round(mag, 2)) %>% 
+        arrange(Parameter2)
+      
       # Label coordinates for Qx term
-      Qx_x <- MHW_temp$t[nrow(MHW_temp)]
-      Qx_y <- MHW_temp[[nrow(MHW_temp), input$rmse_var]]
+      Qx_x <- MHW_single$t[nrow(MHW_single)]
+      Qx_y <- MHW_single[[nrow(MHW_single), input$rmse_var]]
       
       # The plot
-      rp <- ggplot(data = MHW_temp, aes(x = t)) +
+      rp <- ggplot(data = MHW_single, aes(x = t)) +
         geom_point(aes(y = SST), colour = "red") +
         geom_line(aes(y = SST), colour = "red") +
         geom_point(aes_string(y = input$rmse_var), colour = "blue") +
         geom_line(aes_string(y = input$rmse_var), colour = "blue") +
-        geom_label(aes(x = t[nrow(MHW_temp)], y = SST[nrow(MHW_temp)],
-                       label = "SST"), colour = "red") +
+        geom_label(aes(x = t[nrow(MHW_single)], y = SST[nrow(MHW_single)],
+                       label = paste0("SST\n",MHW_mag$mag[1])), colour = "red") +
         geom_label(aes(x = Qx_x, y = Qx_y,
-                       label = input$rmse_var), colour = "blue") +
+                       label = paste0(input$rmse_var,"\n",MHW_mag$mag[2])), colour = "blue") +
+        geom_label(aes(x = mean(t), y = quantile(SST, 0.2),
+                       label = paste0("Mag. Prop. = ",round(MHW_mag$mag[2]/MHW_mag$mag[1], 2)))) +
         geom_label(aes(x = mean(t), y = quantile(SST, 0.1),
                        label = paste0("RMSE = ",MHW_rmse$rmse[1]))) +
         labs(x = NULL, y = "SSTa (°C) || SSTa[1] + Qx/MLD[cum] (°C)")
@@ -943,6 +807,51 @@ server <- function(input, output, session) {
     #     MHW_single()
     # })
     
+
+    # Magnitude figures -------------------------------------------------------
+
+    # Scatterplot of T_Qnet vs. SSTa
+    output$scatterPlotMag <- renderPlot({
+      req(input$ts_multiple)#; req(input$p_val)
+      
+      mag_data <- mag_data()
+      
+      sp <- mag_data %>% 
+        filter(prop >= -2, prop <= 2) %>% 
+        ggplot(aes(x = SST, y = T_Qnet)) +
+        # geom_smooth(method = "lm", formula = 'y ~ x') +
+        geom_point(aes(colour = prop)) +
+        scale_colour_gradient2(low = "blue", high = "yellow") +
+        labs(colour = "T_Qnet/SST")
+      sp
+      # ggplotly(sp, tooltip = "text", dynamicTicks = F) %>% 
+      #   layout(showlegend = FALSE)
+    })
+    
+    # Boxplot faceted by ts
+    output$boxPlotMag <- renderPlot({
+      req(input$ts_multiple)#; req(input$p_val)
+      
+      mag_data <- mag_data()
+      
+      if(input$fill != "none"){
+        ggplot(data = mag_data, aes(x = ts, y = prop)) +
+          # geom_hline(aes(yintercept = 0), colour = "red", size = 1) +
+          geom_boxplot(aes_string(fill = input$fill), notch = input$notch_mag) +
+          coord_cartesian(ylim = c(-2, 2)) +
+          labs(x = "Phase",
+               y = "𝚫T<sub>Qnet</sub> / 𝚫SSTa") +
+          theme(axis.title.y = ggtext::element_markdown())
+      } else {
+        ggplot(data = mag_data, aes(x = ts, y = prop)) +
+          # geom_hline(aes(yintercept = 0), colour = "red", size = 1) +
+          geom_boxplot(notch = input$notch_mag) +
+          coord_cartesian(ylim = c(-2, 2)) +
+          labs(x = "Phase", 
+               y = "𝚫T<sub>Qnet</sub> / 𝚫SSTa") +
+          theme(axis.title.y = ggtext::element_markdown())
+      }
+    })
 
     # RMSE figures ------------------------------------------------------------
 
@@ -1057,103 +966,7 @@ server <- function(input, output, session) {
                 facet_wrap(~Parameter2)
         }
     })
-    
 
-    # SOM figures -------------------------------------------------------------
-
-    # Nothing here yet
-    # On the fence about whether to include static figures or allow users to generate
-    # their own figures based on variable preference.
-    # e.g. They could choose which values are shown as fill, contours, and vectors
-    
-    # Faceted node plot
-    output$somPlot <- renderPlot({
-      # req(input$vars); req(input$p_val); req(input$ts_multiple)
-      frame_base +
-        # The air temperature
-        geom_raster(data = som_data_wide, aes(fill = anom_t2m)) +
-        # The land mass
-        geom_polygon(data = map_base, aes(group = group), alpha = 1,
-                     fill = NA, colour = "black", size = 0.5, show.legend = FALSE) +
-        # The mean sea level pressure contours
-        geom_contour(data = som_other_wide, binwidth = 100,
-                     # breaks = c(-2000, -1500, -1000, -500, 0, 500, 1000),
-                     aes(z = anom_mslp, colour = stat(level)), size = 2) +
-        # The wind vectors
-        geom_segment(data = som_data_sub,
-                     aes(xend = lon + anom_u10 * wind_uv_scalar,
-                         yend = lat + anom_v10 * wind_uv_scalar),
-                     arrow = arrow(angle = 40, length = unit(0.1, "cm"), type = "open"),
-                     linejoin = "mitre", size = 0.4, alpha = 0.4) +
-        # Colour scale
-        scale_fill_gradient2(name = "Air temp.\nanom. (°C)", low = "blue", high = "red") +
-        scale_colour_gradient2("MSLP anom.\n(hPa)",# guide = "legend",
-                               low = "green", mid = "grey", high = "yellow") +
-        # scale_colour_gradientn("MSLP anom.\n(hPa)",# guide = "legend",
-        #                        colours = c("green1", "green2", "green3", "green4", #"grey", 
-        #                                    "yellow4", "yellow3", "yellow2", "yellow1"), 
-        #                        values = c(0, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 1.0)) +
-        theme(legend.position = "bottom") +
-        facet_wrap(~node)
-    })
-    
-    # Flavour figures ---------------------------------------------------------
-
-    # Flavourplot
-    output$flavourPlot <- renderPlotly({
-      req(input$ts_single); req(input$Qnet)
-      
-      flavour_data <- flavour_data()
-      
-      flavour_count <- flavour_data %>%
-        dplyr::select(region, season, event_no) %>% 
-        unique() %>% 
-        group_by(region, season) %>% 
-        summarise(sub_count = n()) %>% 
-        ungroup() %>% 
-        left_join(region_season_count, by = c("region", "season"))
-      
-      fp <- ggplot(data = flavour_count, aes(x = region, y = season)) +
-        geom_point(aes(colour = region, size = sub_count,
-                       text = paste0(sub_count,"/",count))) +
-        # geom_label(aes(label = paste0(sub_count,"/",count))) +
-        scale_size(range = c(1, 30), limits = c(1, 19)) +
-        # scale_y_reverse() +
-        # ylim(breaks = c("Spring", "Summer", "Autumn", "Winter")) +
-        ylim(breaks = c("Winter", "Spring", "Summer", "Autumn")) +
-        labs(x = NULL, y = NULL)
-      # fp
-      ggplotly(fp, tooltip = "text", dynamicTicks = F) %>%
-        layout(showlegend = FALSE)
-    })
-
-    # Tables ------------------------------------------------------------------
-
-    # output$resultsKable <- function() {
-    #     res_table %>% 
-    #         knitr::kable(format = "html", caption = "Most of the variables that have been 
-    #         correlated against the temperature anomalies during the onset, 
-    #                                     decline, and full duration of MHWs. The cumulative heat flux terms 
-    #                                     were corrected for by the daily MLD (Q/(rho x Cp x hmld)) before 
-    #                                     the correlations were calculated. Correlations were also run on the 
-    #                                     cumulative flux terms without correcting for MLD, but there was little 
-    #                                     difference so the results are not itemised here. This table shows the 
-    #                                     full names of the variables, as well as the abbreviations used in the code. 
-    #                                     The 'onset' column describes (in shorthand) what the tendency of correlations 
-    #                                     for the MHWs is during the onset of events. This is repeated for the 'full' 
-    #                                     and 'decline' columns respectively. The 'season' column briefly states the 
-    #                                     most clear/notewrothy pattern(s) when looking at how the correlations are 
-    #                                     divided up by season. The same is done in the 'region' column. The last column, 
-    #                                     'story', gives a TRUE/FALSE if I think the variable has a story to tell. 
-    #                                     Something worth pursuing further. Particularly to see if the variables realte 
-    #                                     strongly to other variables, not just temperature. This then could provide a 
-    #                                     framework for determining 'types' of MHWs (e.g. strong SSS change with 
-    #                                     strong latent heat flux).") #%>% 
-    #         # kable_styling("striped", full_width = T) #%>%
-    #         # add_header_above(c(" ", "Group 1" = 5, "Group 2" = 6))
-    # }
-
-    
     # This automatically ends the session when the app is closed
     session$onSessionEnded(stopApp)
 }
