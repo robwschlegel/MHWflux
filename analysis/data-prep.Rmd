@@ -17,7 +17,7 @@ knitr::opts_chunk$set(fig.width = 8, fig.align = 'center',
 
 ## Introduction
 
-The purpose of this vignette is to walk through the steps taken to prepare the data from the NOAA OISST, ERA5, and GLORYS products for the following analyses. The statistical analyses may be found in the [MHWs vs. heat flux]() vignette, and the SOM analysis may be found in the [SOM]() vignette. 
+The purpose of this vignette is to walk through the steps taken to prepare the data from the NOAA OISST, ERA5, and GLORYS products for the following analyses. The statistical analyses may be found in the [MHWs vs. heat flux](https://robwschlegel.github.io/MHWflux/mhw-flux.html) vignette, and the SOM analysis may be found in the [SOM](https://robwschlegel.github.io/MHWflux/som.html) vignette. 
 
 All of the libraries and functions used in this vignette, and the project more broadly, may be found [here](https://github.com/robwschlegel/MHWflux/blob/master/code/functions.R).
 
@@ -42,7 +42,7 @@ frame_base +
 
 ## Pixels per region
 
-In this study it was decided to use the higher resolution 1/12th degree GLORYS data. This means we will need to re-calculate which pixels fall within which region so we can later determine how to create our average SST time series per region as well as the other averaged heat flux term time series.
+We will now calculate which pixels fall within which region so we can later determine how to create our average SST time series per region as well as the other averaged heat flux, atmospheric, and oceanic time series.
 
 For the SOM we will want to have everything on the same 1/4 degree grid. For the ERA5 data this is an easy shift to make, but for the GLORYS 1/12 degree data we want to ensure that these smaller pixels are being matched correctly to the nearest centre of an OISST pixels. To do this we will create an index of pairings using a fastest nearest neighbour search.
 
@@ -295,7 +295,7 @@ GLORYS_all_anom %>%
 
 ## ERA5 data processing
 
-Note that the ERA5 data are on an hourly 0.25 degree spatiotemporal grid. This loading process constrains them to a daily 0.25 degree grid that matches the OISST data before finally converting them to a single time series per region.
+Note that the ERA5 data are on an hourly 1/4 degree spatiotemporal grid. This loading process constrains them to a daily 1/4 degree grid that matches the OISST data before finally converting them to a single time series per region.
 
 ```{r ERA5-prep, eval=FALSE}
 # See the code/workflow script for the code used for ERA5 data prep
@@ -304,7 +304,7 @@ Note that the ERA5 data are on an hourly 0.25 degree spatiotemporal grid. This l
 
 ## MHWs per region
 
-We will be using the SST values from GLORYS for calculating the MHWs and will use the standard Hobday definition with a base period of 1993-01-01 to 2018-12-25. We are using an uneven length year as the data do not quite extend to the end of December. It was decided that the increased accuracy of the climatology from the 2018 year outweighed the negative consideration of having a clim period that excludes a few days of winter.
+We will be using the SST values from OISST for calculating the MHWs and will use the standard Hobday definition with a base period of 1993-01-01 to 2018-12-25. We are using an uneven length year as the GLORYS data do not quite extend to the end of December. It was decided that the increased accuracy of the climatology from the 2018 year outweighed the negative consideration of having a clim period that excludes a few days of winter.
 
 ```{r MHW-calc, eval=FALSE}
 # Load the data
@@ -423,7 +423,7 @@ knitr::kable(summary_region_season)
 
 ## Region clims + anoms per variable
 
-The analyses to come are going to be performed on anomaly values, not the original time series. In order to calculate the anomalies we are first going to need the climatologies for each variable. We will use the Hobday definition of climatology creation and then subtract the expected climatology from the observed values. We are again using the 1993-01-01 to 2018-12-25 base period for these calculations to ensure consistency throughout the project.
+The analyses to come are going to be performed on anomaly values, not the original time series. In order to calculate the anomalies we are first going to need the climatologies for each variable. We will use the Hobday definition of climatology creation and then subtract the expected climatology from the observed values. We are again using the 1993-01-01 to 2018-12-25 base period for these calculations to ensure consistency throughout the project. The daily air-sea heat flux values are first divided by the MLD on that day. The MLD value used to divide the daily variables accounts for the water density and specific heat constant: Q/(rho x Cp x hmld), where rho = 1024 and Cp ~= 4000. The Qnet term calculated this way approximates the air-sea flux term.
 
 ```{r clims, eval=FALSE}
 # Load the data
@@ -435,7 +435,7 @@ ALL_ts <- left_join(ERA5_all_ts, GLORYS_all_ts, by = c("region", "t")) %>%
   filter(t <= "2018-12-31") %>% 
   mutate(region = toupper(region))
 
-# Calculate GLORYS clims and anoms
+# Calculate all clims and anoms
   # Also give better names to the variables
   # Also convert the Qx terms from seconds to days by multiplying by 86,400
 ALL_ts_anom <- ALL_ts %>%
@@ -465,7 +465,7 @@ saveRDS(ALL_ts_anom, "shiny/ALL_ts_anom.Rda")
 
 ## Cumulative heat flux terms
 
-We also need to create cumulative heatflux terms as well as a few other choice variables. This is done by taking the first day during a phase of a MHW and adding the daily values together cumulatively until the end of that phase. The daily values are first divided by the MLD on that day as seen above. The MLD value used to divide the daily variables accounts for the water density and specific heat constant: Q/(rho x Cp x hmld), where rho = 1042 and Cp ~= 4000. The Qnet term calculated this way approximates the air-sea flux term.
+We also need to create cumulative air-sea heat flux terms as well as a few other choice variables. This is done by taking the first day during a phase of a MHW and adding the daily values together cumulatively until the end of that phase.
 
 The movement terms aren't very useful and may not be worth including as they don't really show advection. So rather one can say that the parts of the heating that aren't explained by anything else could be attributed to advection through the process of elimination. For the moment they are still left in here.
 

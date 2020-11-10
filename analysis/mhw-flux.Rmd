@@ -17,7 +17,7 @@ knitr::opts_chunk$set(fig.width = 8, fig.align = 'center',
 
 ## Introduction
 
-This vignette will walk through the thinking and the process for how to link physical variables to their potential effect on driving or dissipating MHWs. The primary source that inspired this work was @Chen2016. In this paper the authors were able to illustrate which parts of the heat budget were most likely driving the anomalous heat content in the surface of the ocean. What this analysis seeks to do is to build on this methodology by applying the fundamental concept to ALL of the MHWs detected in the NW Atlantic. Fundamentally we are running thousands of RMSE and correlation calculations between SST anomalies and the co-occurring anomalies for a range of physical variables. The lower the RMSE and the stronger the correlation (both positive and negative) the more of an indication this is to us that these phenomena are related. We will also be comparing the magnitude of change for Qx terms and SSTa during the onset and decline of MHWs to see how much of these events can be attributed to heat flux.
+This vignette will walk through the thinking and the process for how to link physical variables to their potential effect on driving the onset and/or decline of MHWs. The primary source that inspired this work was @Chen2016. In this paper the authors were able to illustrate which parts of the heat budget were most likely driving the anomalous heat content in the surface of the ocean. What this analysis seeks to do is to build on this methodology by applying the fundamental concept to ALL of the MHWs detected in the NW Atlantic. Fundamentally we are running thousands of RMSE and correlation calculations between SST anomalies and the co-occurring anomalies for a range of physical variables. The lower the RMSE and the stronger the correlation (both positive and negative) the more of an indication this is to us that these phenomena are related. We will also be comparing the magnitude of change for T_Qnet and SSTa during the onset and decline of MHWs to see how much of these events can be attributed to heat flux.
 
 ```{r startup}
 # All of the libraries and objects used in the project
@@ -27,11 +27,11 @@ source("code/functions.R")
 
 ## Relating SSTa to physical variables
 
-We know when MHWs occurred, and our physical data are prepped, so what we need to do is run magnitude comparisons, RMSE, and correlations between SSTa from the start to peak and peak to end of each event for the full suite of variables. This will show us for each event which values related the best for the onset AND decline of the events. We will run RMSE and correlations on the full time series, but these were decided not to be included in the final manuscript as they don't add much other than to show how much better the calculations for onset or decline are.
+We know when MHWs occurred, and our physical data are prepped, so what we need to do is run magnitude comparisons, RMSE, and correlations between SSTa from the start to peak and peak to end of each event for the full suite of variables. This will show us for each event which values related the best for the onset AND decline of the events. We will run RMSE and correlations on the full time series, but these were decided not to be included in the final manuscript as they don't add much other than to show how much better the calculations for onset or decline alone are.
 
-The magnitude of change in SSTa and SST_Qx for the onset and decline of MHWs will be calculated by finding how much SSTa and SST_Qx increase from the onset to the peak of a MHW, and how much SSTa and SST_Qx decrease on the decline of the same event. The thinking here is that if SSTa exceeds the SST_Qx increase for the onset, this will indicate that some advective process is aiding the development of the SSTa, but if SST_Qx exceeds SSTa, this indicates that the heat flux term is responsible for the creation of the event. Likewise for the decline of events, if the SST_Qx value decreases more than SSTa this would mean that negative heat flux into the ocean was terminating the event, whereas a greater decrease in SSTa would imply that advection was primarily terminating the event.
+The magnitude of change in SSTa and T_Qnet for the onset and decline of MHWs will be calculated by finding how much SSTa and T_Qnet increase from the onset to the peak of a MHW, and how much SSTa and T_Qnet decrease on the decline of the same event. The thinking here is that if SSTa exceeds the T_Qnet increase for the onset, this will indicate that some advective process is aiding the development of the SSTa, but if T_Qnet exceeds SSTa, this indicates that the heat flux term is responsible for the creation of the event. Likewise for the decline of events, if the T_Qnet value decreases more than SSTa this would mean that negative heat flux into the ocean was terminating the event, whereas a greater decrease in SSTa would imply that advection was primarily terminating the event.
 
-Running correlations is useful to see how well certain variables change in relation to SSTa, but these do not show how similar those proportions of change are. In order to do this we need to calculate the RMSE between the SST anomalies and the SST_Qx terms. This may only be done with the SST_Qx terms because they are in the same units as SST. One additional tweak we will need here is to add the cumulative Qx term for the following day to the SSTa from the first day of the MHW. This is done so that we may see more closely how the developing Qx term matches to the development of the SSTa. Effectively this tells us how much the Qx term may be driving SSTa.
+Running correlations is useful to see how well certain variables change in relation to SSTa, but these do not show how similar those proportions of change are. In order to do this we need to calculate the RMSE between SSTa and the T_Qx variables. This may only be done with the T_Qx variables because they are in the same units as SST. One additional tweak we will need here is to add the cumulative T_Qx term for the following day to the SSTa from the first day of the MHW. This is done so that we may see more closely how the developing T_Qx term matches to the development of the SSTa. Effectively this tells us how much the T_Qx term may be driving SSTa.
 
 ```{r MHW-var-cor, eval=FALSE}
 # Event index used for calculations
@@ -58,7 +58,7 @@ What we have now is a long dataframe containing the magnitude of change, RMSE, a
 # https://robert-schlegel.shinyapps.io/MHWflux/
 ```
 
-There are some really clear patterns coming through in the data. In particular SSS seems to be strongly related to the onset of MHWs. There are a lot of nuances in these data and so I think this is actually an example of where a Shiny app is useful to interrogate the data.
+There are some really clear patterns coming through in the data. In particular SSS seems to be strongly related to the onset of MHWs. There are a lot of nuances in these data and so I think this is actually an example of where a shiny app is useful to interrogate the data.
 
 In the shiny app it also comes out that the longer events tend not to correlate strongly with a single variable. This is to be expected and supports the argument that very persistent MHWs are supported by a confluence of variables. How to parse that out is an interesting challenge.
 
@@ -66,7 +66,7 @@ In the shiny app it also comes out that the longer events tend not to correlate 
 
 ### 12 hour offset
 
-While going through the data it was discovered that the OISST temperature values represent an average from midnight to midnight. This therefore puts them off set to the Qx terms, which were also being calculated over the same time period. But to compare the Qx terms to SST there should be a 12 hour offset. So 12 hours were added to the terms before re-running the pipeline and recalculating all of the correlations and RMSE. In the code chunk below we compare the stats pre-12 hour shift and afterwards.
+While going through the data it was discovered that the OISST temperature values represent an average from midnight to midnight. This therefore puts them offset to the Qx variables, which were also being calculated over the same time period. But to compare the Qx terms to SST there should be a 12 hour offset, with the Qx variables preceding the SST, thereby representing the integral of time between daily SST values. So 12 hours were added to the heat flux variables before re-running the pipeline and recalculating all of the magnitude, RMSE, and correlation stats. In the code chunk below we compare the RMSE stats pre-12 hour shift and afterwards.
 
 ```{r shift-compare}
 # Load old and new data
@@ -114,7 +114,7 @@ The new an improved method that correctly integrates Qx into SSTa creates much l
 
 ### Magnitude of change summary
 
-In this sub-section we will look at how the different magnitudes of change for onset and decline of the SST_Qx terms compare to the same changes in SSTa.
+In this sub-section we will look at how the different magnitudes of change for onset and decline of the T_Qnet terms compare to the same changes in SSTa.
 
 ```{r mag-summary}
 # Load magnitude data
@@ -304,7 +304,7 @@ ALL_mag_region_season <- rbind(ALL_mag_region, ALL_mag_season)
 knitr::kable(ALL_mag_region_season)
 ```
 
-These tables help to reiterate how much more important Qsw is for the onset and decline of MHWs over the other variables, and that Qlh often comes in second. For the seasons though we see a much more complex relationship that I won't go into here.
+These tables help to reiterate how much more important Qlh is for the onset and decline of MHWs over the other variables, and that Qsw often comes in second. For the seasons though we see a much more complex relationship that I won't go into here.
 
 ### RMSE summary
 
@@ -373,7 +373,7 @@ ALL_RMSE %>%
   facet_wrap(~var)
 ```
 
-These boxplots help to tell a high level story about the importance of the Qx terms with SSTa, but I want a slightly more fine-grain level of results. To do this I am going to count which of the Qx terms has the lowest RMSE per MHW. These will then be grouped by region and season to provide an understanding for how this may vary.
+These boxplots help to tell a high level story about the importance of the Qx variables with SSTa, but I want a slightly more fine-grain level of results. To do this I am going to count which of the Qx variables has the lowest RMSE per MHW. These will then be grouped by region and season to provide an understanding for how this may vary.
 
 ```{r RMSE-table}
 # Get the top results other than Qnet
@@ -438,7 +438,7 @@ ALL_RMSE_ts_region_season <- rbind(ALL_RMSE_ts, ALL_RMSE_region, ALL_RMSE_season
 knitr::kable(ALL_RMSE_ts_region_season)
 ```
 
-I'm pretty happy with how these results are displayed. But I think it would be better to show the regions and seasons in separate tables just to keep them more manageable. In the last chunk in this sub-section we will grab some specific summary stats that are used in the publication.
+I'm pretty happy with how these results are displayed. In the last chunk in this sub-section we will grab some specific summary stats that are used in the publication.
 
 ```{r RMSE-stats}
 # Short event best fits
@@ -514,7 +514,7 @@ ALL_RMSE_long_season <- ALL_RMSE_long %>%
 knitr::kable(ALL_RMSE_long_season)
 ```
 
-We also want to see how RMSE scores change the shorter the time series portion of the MHW is.
+We also want to see how RMSE scores change the shorter the phase of the MHW is.
 
 ```{r RMSE-short-change}
 # Faceted scatter plot showing how RMSE changes based on ts length
@@ -532,7 +532,7 @@ ggplot(ALL_RMSE, aes(x = n_Obs, y = rmse)) +
 
 ### Correlations: summary, regions, seasons
 
-With the correlations calculated for the onset, decline, and full extent of each MHW, we want to know if any signals emerge from the regions and/or seasons of occurrence of these events. Is the relationship between SSS and MHW onset stronger in the winter? Stronger in certain region? Having manually looked through the Shiny app it does look like there are some patterns. Below is the code used to determine the stats referred to in the paper.
+With the correlations calculated for the onset, decline, and full extent of each MHW, we want to know if any signals emerge from the regions and/or seasons of occurrence of these events. Is the relationship between SSS and MHW onset stronger in the winter? Stronger in certain region? Having manually looked through the shiny app it does look like there are some patterns. Below is the code used to determine the stats referred to in the paper.
 
 ```{r}
 # Overall correlation results
@@ -599,17 +599,9 @@ cor_summary_season %>%
 
 ```
 
-### Lead or lag of heat flux
-
-Also could look into lead or lag of Qnet etc.
-
-### Variability in Qx during regins and seasons
-
-See if there is more variance in Qx during certain seasons or regions.
-
 ### Relationships
 
-With patterns pulled out by region and season, we want to see if there are any relationships between MHWs that show strong correlations at onset/decline with a particular QX term and strong correlations at onset/decline with an air/sea variable. We will look for this within regions and seasons as well. For example, do MHWs that correlate well with an increase in SSS also correlate well with a decrease in long-wave radiation during the decline of the event? I'm not sure how best to go about this in a clean manner.
+With patterns pulled out by region and season, we want to see if there are any relationships between MHWs that show strong correlations at onset/decline with a particular Qx variable and strong correlations at onset/decline with an air/sea variable. We will look for this within regions and seasons as well. For example, do MHWs that correlate well with an increase in SSS also correlate well with a decrease in long-wave radiation during the decline of the event? I'm not sure how best to go about this in a clean manner.
 
 Another thing to consider would be if fast onset slow decline (and vice versa) events have different characteristics to slower evolving events. The same question could be posed to long vs short events and those with high intensities vs low. In order to begin this investigation we must join the MHW results to the correlation results. We will visualise these patterns with heatmaps.
 
@@ -724,7 +716,7 @@ events_cor_prep %>%
 
 ### Linearity of events
 
-Another observation I made while going through the results in the app was how the onset and decline of events tend to have a better RMSE when the SSTa trend is more linear. My hypothesis is that this is because there is less advective pressure on the dispersion of the heat anomaly, therefore more of the heatflux is responsible for the temperature anomaly. THis is a pretty straight forward statement, but I think it is useful in that one may be able to take linearity of SSTa as a proxy for the proportion of heat flux that is responsible for it. So in the chunk below I use simple linear models to create an R2 value for each onset and decline portion of an event. Then I find how close to 1.0 that R2 value is (meaning more linear SSTa) and I see how RMSE changes as R2 improves. I hypothesised that more linear SSTa onset will provide better (lower) RMSE values. The same is likely true for decline but I'm not certain.
+Another observation I made while going through the results in the shiny app was how the onset and decline of events tend to have a better RMSE when the SSTa trend is more linear. My hypothesis is that this is because there is less advective pressure on the dispersion of the heat anomaly, therefore more of the heatflux is responsible for the temperature anomaly. This is a pretty straight forward statement, but I think it is useful in that one may be able to take linearity of SSTa as a proxy for the proportion of heat flux that is responsible for it. So in the chunk below I use simple linear models to create an R2 value for each onset and decline portion of an event. Then I find how close to 1.0 that R2 value is (meaning more linear SSTa) and I see how RMSE changes as R2 improves. I hypothesised that more linear SSTa onset will provide better (lower) RMSE values. The same is likely true for decline but I'm not certain.
 
 ```{r linearity}
 # R2 for RMSE vs R2
@@ -754,13 +746,13 @@ readRDS("data/ALL_cor.Rda") %>%
   facet_grid(region ~ Parameter2)
 ```
 
-Nope. If there is any relationship it is incredibly noisey. I'll not be pursuing this further for this project, but I'm not entirely dissuaded from pursuing this avenue of research in the future with a deeper learning approach.
+Nope. If there is any relationship it is incredibly noisy. I'll not be pursuing this further for this project, but I'm not entirely dissuaded from pursuing this avenue of research in the future with a deeper learning approach.
 
 ### Choice events
 
-There are a lot of results to wade through and though it is clear there are important signals in the results, it is proving difficult to distill them. One thought is that we don't need to look at all of the events, just the longest/most intense events with strong r values. This is first done by cutting out all Cat. I events. We then find strong correlations with long events. There should just be a few.
+There are a lot of results to wade through and though it is clear there are important signals in the results, but it is proving difficult to distill them. One thought is that we don't need to look at all of the events, just the longest/most intense events with strong r values. This is first done by cutting out all Category I events. We then find strong correlations with long events. There should just be a few.
 
-Once this has been done we group events by their strongest Qx relationship. Then find their strongest relationship with the next level of variables (e.g. MLD, MSLP, and so on). Ideally one may find the top four flavours.
+Once this has been done we group events by their strongest Qx relationship, then find their strongest relationship with the next level of variables (e.g. MLD, MSLP, and so on). Ideally one may find the top four flavours.
 
 ```{r choice-events}
 # Filter out smol events
@@ -808,12 +800,6 @@ In the following table a more concise summary of the results is presented.
 # NB: This table was created manually by going through the Shiny app one variable at a time.
 res_table <- read_csv("data/res_table.csv")
 knitr::kable(res_table, caption = "Most of the variables that have been correlated against the temperature anomalies during the onset, decline, and full duration of MHWs. The cumulative heat flux terms were corrected for by the daily MLD (Q/(rho x Cp x hmld)) before the correlations were calculated. Correlations were also run on the cumulative flux terms without correcting for MLD, but there was little difference so the results are not itemised here. This table shows the full names of the variables, as well as the abbreviations used in the code. The 'onset' column describes (in shorthand) what the tendency of correlations for the MHWs is during the onset of events. This is repeated for the 'full' and 'decline' columns respectively. The 'season' column briefly states the most clear/noteworthy pattern(s) when looking at how the correlations are divided up by season. The same is done in the 'region' column. The last column, 'story', gives a TRUE/FALSE if I think the variable has a story to tell. Something worth pursuing further. Particularly to see if the variables relate strongly to other variables, not just temperature. This then could provide a framework for determining 'types' of MHWs (e.g. strong SSS change with strong latent heat flux).")
-```
-
-With a table organised by each variable, it makes sense to also create a table organised by season, and another by region.
-
-```{r}
-
 ```
 
 ## References

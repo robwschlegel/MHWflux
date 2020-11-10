@@ -1,5 +1,5 @@
 ---
-title: "Heat flux and MHWs in the NW Atlantic"
+title: "Drivers of Marine Heatwaves in the Northwest Atlantic: physical processes of onset and decline"
 site: workflowr::wflow_site
 output:
   workflowr::wflow_html:
@@ -8,7 +8,8 @@ editor_options:
   chunk_output_type: console
 ---
 
-This website contains the version controlled analyses used to determine the relationship between heat flux terms and marine heatwaves (MHWs) in the Northwest Atlantic Ocean.
+This website contains the version controlled analyses used to determine the relationship between air-sea heat flux and marine heatwaves (MHWs) in the Northwest Atlantic Ocean.
   
-Please use the tabs above to navigate the site. The "Analyses" tabs contains discrete steps in the workflow. To see the raw code used for the workflow/pipeline of this project please follow the link in the top right of this page to the `source code` for this project. Once there the raw workflow code may be found in the `code/workflow.R` script. The functions etc. may be found in the `code/functions.R` script. Please note that note all of the objects used in these scripts are saved in the GitHub repo for this project as many of them are far too large. All necessary objects can be created by following the steps as laid out in the analyses.
+Please use the tabs above to navigate the site. The "Analyses" tabs contains discrete steps in the workflow. To see the raw code used for the workflow/pipeline of this project please follow the link in the top right of this page to the `source code` for this project. Once there the raw workflow code may be found in the `code/workflow.R` script. The functions etc. may be found in the `code/functions.R` script. The code used to create the figures and tables may be found in the `code/figures.R` script. Please note that not all of the objects used in these scripts are saved in the GitHub repo for this project as many of them are far too large. All necessary objects can be created by following the steps as laid out in the analyses.
 
+An interactive shiny application that allows one to explore the results may be found [here](https://robert-schlegel.shinyapps.io/MHWflux/).
