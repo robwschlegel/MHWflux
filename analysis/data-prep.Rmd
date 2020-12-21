@@ -653,7 +653,7 @@ OISST_MHW_event_index <- OISST_MHW_event %>%
 ALL_ts_anom_wide <- ALL_ts_anom %>%
   dplyr::select(region, var, t, anom) %>% 
   pivot_wider(id_cols = c("region", "t"), names_from = var, values_from = anom) %>% 
-  dplyr::select(region:tcc, mslp, qnet, p_e, mld, mld_1, qnet_mld:shf_mld)
+  dplyr::select(region:tcc, mslp, qnet, p_e, mld, mld_1, qnet_mld:shf_mld, wind_spd)
 
 # Calculate cumulative values based on MHW phases
 ALL_ts_anom_cum <- plyr::ddply(OISST_MHW_event_index, c("row_index"), cum_phase, 
