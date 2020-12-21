@@ -421,7 +421,7 @@ summary_region_season <- rbind(summary_region, summary_season)
 knitr::kable(summary_region_season)
 ```
 
-## Comparing OISST and GLORYS MHW results
+## MHWs from OISST vs. GLORYS
 
 In an earlier version of this analysis we had opted to use the GLORYS SST layer, but Ke pointed out that it may be better to use the NOAA OISST data. The reasoning being that because we are not fully closing the heat budget with GLORYS, there is no particular benefit to using the SST data from that modelled ensemble product. Rather it would be better to use the remotely observed NOAA OISST product as this is a more direct measure of the surface temperature of the ocean. Then again, there is a lot of benefit to just using two products instead of three. Particularly considering that all of the marine variables used here come from the GLORYS product. To that end the GLORYS and OISST MHWs must be compared to see if they are markedly different. If not, we will use the GLORYS SST data.
 
