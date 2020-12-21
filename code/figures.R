@@ -126,8 +126,10 @@ NWA_study_area <- ggplot(data = NWA_coords, aes(x = lon, y = lat)) +
 # NWA_study_area
 
 # Lollis
-MHW_lolli_plot <- ggplot(data = OISST_MHW_event , aes(x = date_peak, y = intensity_cumulative)) +
-  geom_lolli(aes(colour = region), colour_n = "red", n = 0, size = 1.0, show.legend = F) +
+MHW_lolli_plot <- ggplot(data = OISST_MHW_event, aes(x = date_peak, y = intensity_cumulative)) +
+  # geom_lolli(aes(colour = region), colour_n = "red", n = 0, size = 0.1, show.legend = F) +
+  geom_segment(aes(xend = date_peak, yend = 0), colour = "black", size = 0.3, show.legend = F) +
+  geom_point(aes(fill = region), shape = 21, colour = "black", size = 0.5, show.legend = F) +
   labs(x = "Peak Date", y = "Cumulative Intensity (°C days)") +
   scale_colour_manual(values = RColorBrewer::brewer.pal(n = 6, name = 'Dark2')[c(1,2,5,4,3,6)]) +
   scale_y_continuous(limits = c(0, 250), breaks = seq(50, 200, 50), expand = c(0,0)) +
@@ -144,6 +146,25 @@ fig_1 <- cowplot::plot_grid(NWA_study_area, MHW_lolli_plot, labels = c('A)', 'B)
 ggsave("figures/fig_1.jpg", fig_1, height = 90, width = 180, units = "mm", dpi = 300)
 ggsave("figures/fig_1.png", fig_1, height = 90, width = 180, units = "mm", dpi = 300)
 ggsave("figures/fig_1.pdf", fig_1, height = 90, width = 180, units = "mm")
+
+# Find the distance in days between consecutive events
+dist_days <- function(df){
+  res_df <- data.frame()
+  for(i in 1:nrow(df)-1){
+    df_sub <- df[c(i,i+1),]
+    df_res <- data.frame(event_1 = df_sub$event_no[1],
+                         event_2 = df_sub$event_no[2],
+                         days = df_sub$date_start[2] - df_sub$date_end[1])
+    res_df <- rbind(res_df, df_res)
+  }
+  res_df <- na.omit(res_df)
+  return(res_df)
+}
+
+event_day_dist <- plyr::ddply(OISST_MHW_event, c("region"), dist_days)
+median(event_day_dist$days)
+min(event_day_dist$days)
+sd(event_day_dist$days)
 
 
 # Table 1 -----------------------------------------------------------------
