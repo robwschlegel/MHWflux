@@ -533,16 +533,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtree0ab0ac64cd0809688faace11e05c3c514f39d9a1targetblank0ab0ac6a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/robwschlegel/MHWflux/tree/0ab0ac64cd0809688faace11e05c3c514f39d9a1" target="_blank">0ab0ac6</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtree949244ef8a7608b4e621d35d5738e4be958e9eebtargetblank949244ea"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/robwschlegel/MHWflux/tree/949244ef8a7608b4e621d35d5738e4be958e9eeb" target="_blank">949244e</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtree0ab0ac64cd0809688faace11e05c3c514f39d9a1targetblank0ab0ac6a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtree949244ef8a7608b4e621d35d5738e4be958e9eebtargetblank949244ea" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/robwschlegel/MHWflux/tree/0ab0ac64cd0809688faace11e05c3c514f39d9a1" target="_blank">0ab0ac6</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/robwschlegel/MHWflux/tree/949244ef8a7608b4e621d35d5738e4be958e9eeb" target="_blank">949244e</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -575,6 +575,14 @@ Ignored files:
     Ignored:    data/som.Rda
     Ignored:    data/synoptic_states.Rda
     Ignored:    data/synoptic_states_other.Rda
+
+Unstaged changes:
+    Modified:   code/functions.R
+    Modified:   data/ALL_cor.Rda
+    Modified:   data/ALL_ts_anom_cum.Rda
+    Modified:   shiny/ALL_cor.Rda
+    Modified:   shiny/ALL_ts_anom_cum.Rda
+    Modified:   shiny/app.R
 
 </code></pre>
 <p>
@@ -613,6 +621,57 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/949244ef8a7608b4e621d35d5738e4be958e9eeb/analysis/data-prep.Rmd" target="_blank">949244e</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-12-21
+</td>
+<td>
+Re-built site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/c921da2e03875a665ad9757ac84b87d2df0390db/analysis/data-prep.Rmd" target="_blank">c921da2</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-12-21
+</td>
+<td>
+Created Figure S3 to respond to a reviewers comments
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/robwschlegel/MHWflux/4a00400e48547b38143afcd0902428f869b59fbb/docs/data-prep.html" target="_blank">4a00400</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-12-21
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -3755,8 +3814,8 @@ ALL_ts_anom &lt;- ALL_ts %&gt;%
 saveRDS(ALL_ts_anom, &quot;data/ALL_ts_anom.Rda&quot;)
 saveRDS(ALL_ts_anom, &quot;shiny/ALL_ts_anom.Rda&quot;)</code></pre>
 </div>
-<div id="cumulative-heat-flux-terms" class="section level2">
-<h2>Cumulative heat flux terms</h2>
+<div id="cumulative-variables" class="section level2">
+<h2>Cumulative variables</h2>
 <p>We also need to create cumulative air-sea heat flux terms as well as a few other choice variables. This is done by taking the first day during a phase of a MHW and adding the daily values together cumulatively until the end of that phase.</p>
 <p>The movement terms aren’t very useful and may not be worth including as they don’t really show advection. So rather one can say that the parts of the heating that aren’t explained by anything else could be attributed to advection through the process of elimination. For the moment they are still left in here.</p>
 <pre class="r"><code># Event index used for calculations
@@ -3768,7 +3827,7 @@ OISST_MHW_event_index &lt;- OISST_MHW_event %&gt;%
 ALL_ts_anom_wide &lt;- ALL_ts_anom %&gt;%
   dplyr::select(region, var, t, anom) %&gt;% 
   pivot_wider(id_cols = c(&quot;region&quot;, &quot;t&quot;), names_from = var, values_from = anom) %&gt;% 
-  dplyr::select(region:tcc, mslp, qnet, p_e, mld, mld_1, qnet_mld:shf_mld)
+  dplyr::select(region:tcc, mslp, qnet, p_e, mld, mld_1, qnet_mld:shf_mld, wind_spd)
 
 # Calculate cumulative values based on MHW phases
 ALL_ts_anom_cum &lt;- plyr::ddply(OISST_MHW_event_index, c(&quot;row_index&quot;), cum_phase, 
