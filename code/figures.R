@@ -128,8 +128,8 @@ NWA_study_area <- ggplot(data = NWA_coords, aes(x = lon, y = lat)) +
 # Lollis
 MHW_lolli_plot <- ggplot(data = OISST_MHW_event, aes(x = date_peak, y = intensity_cumulative)) +
   # geom_lolli(aes(colour = region), colour_n = "red", n = 0, size = 0.1, show.legend = F) +
-  geom_segment(aes(xend = date_peak, yend = 0), colour = "black", size = 0.3, show.legend = F) +
-  geom_point(aes(fill = region), shape = 21, colour = "black", size = 0.5, show.legend = F) +
+  geom_segment(aes(colour = region, xend = date_peak, yend = 0), size = 0.3, show.legend = F) +
+  geom_point(aes(colour = region), shape = 21, fill = "white", size = 0.5, show.legend = F) +
   labs(x = "Peak Date", y = "Cumulative Intensity (°C days)") +
   scale_colour_manual(values = RColorBrewer::brewer.pal(n = 6, name = 'Dark2')[c(1,2,5,4,3,6)]) +
   scale_y_continuous(limits = c(0, 250), breaks = seq(50, 200, 50), expand = c(0,0)) +
