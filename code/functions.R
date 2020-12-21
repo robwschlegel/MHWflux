@@ -381,7 +381,7 @@ cum_phase <- function(event_index, df){
     mutate_if(is.numeric, cumsum) %>% 
     mutate(ts = "decline")
   ts_ALL <- rbind(ts_full, ts_onset, ts_decline) %>% 
-    pivot_longer(lwr:shf_mld, names_to = "var", values_to = "anom") %>% 
+    pivot_longer(lwr:wind_spd, names_to = "var", values_to = "anom") %>% 
     mutate(event_no = event_index$event_no[1],
            var = paste0(var,"_cum")) %>% 
     dplyr::select(region, event_no, var, ts, t, anom)

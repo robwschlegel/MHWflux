@@ -85,12 +85,12 @@ region_season_count <- MHW_event %>%
     summarise(count = n(), .groups = "drop")
 
 # List of desired variables
-choose_vars <- c("sst", "bottomT", "sss", "mld_cum", "mld_1_cum", "t2m", "tcc_cum", "p_e_cum", "mslp_cum",
+choose_vars <- c("sst", "bottomT", "sss", "mld_cum", "mld_1_cum", "t2m", "tcc_cum", "p_e_cum", "mslp_cum", "wind_spd_cum",
                  "lwr_mld_cum", "swr_mld_cum", "lhf_mld_cum", "shf_mld_cum", "qnet_mld_cum",
                  "lwr_budget", "swr_budget", "lhf_budget", "shf_budget", "qnet_budget", "sst_thresh")
 
 # List of variable names used in selection widgets
-name_vars <- c("SST", "T_bottom", "SSS", "MLD_cum", "MLD_1_cum", "T_air", "TCC_cum",
+name_vars <- c("SST", "T_bottom", "SSS", "MLD_cum", "MLD_1_cum", "T_air", "TCC_cum", "Wind_cum",
                "P-E_cum", "MSLP_cum", "T_Qlw", "T_Qsw", "T_Qlh", "T_Qsh", "T_Qnet")
 
 # Physical variable anomalies
@@ -111,6 +111,7 @@ ALL_ts_anom_cum <- readRDS("ALL_ts_anom_cum.Rda") %>%
                          var == "tcc_cum" ~ "TCC_cum",
                          var == "p_e_cum" ~ "P-E_cum",
                          var == "mslp_cum" ~ "MSLP_cum",
+                         var == "wind_spd_cum" ~ "Wind_cum",
                          var == "lwr_mld_cum" ~ "Qlw",
                          var == "swr_mld_cum" ~ "Qsw",
                          var == "lhf_mld_cum" ~ "Qlh",
@@ -148,6 +149,7 @@ ALL_cor <- readRDS("ALL_cor.Rda") %>%
                                 Parameter1 == "tcc_cum" ~ "TCC_cum",
                                 Parameter1 == "p_e_cum" ~ "P-E_cum",
                                 Parameter1 == "mslp_cum" ~ "MSLP_cum",
+                                Parameter1 == "wind_spd_cum" ~ "Wind_cum",
                                 Parameter1 == "lwr_mld_cum" ~ "Qlw",
                                 Parameter1 == "swr_mld_cum" ~ "Qsw",
                                 Parameter1 == "lhf_mld_cum" ~ "Qlh",
@@ -168,6 +170,7 @@ ALL_cor <- readRDS("ALL_cor.Rda") %>%
                                 Parameter2 == "tcc_cum" ~ "TCC_cum",
                                 Parameter2 == "p_e_cum" ~ "P-E_cum",
                                 Parameter2 == "mslp_cum" ~ "MSLP_cum",
+                                Parameter2 == "wind_spd_cum" ~ "Wind_cum",
                                 Parameter2 == "lwr_mld_cum" ~ "Qlw",
                                 Parameter2 == "swr_mld_cum" ~ "Qsw",
                                 Parameter2 == "lhf_mld_cum" ~ "Qlh",
@@ -182,7 +185,7 @@ ALL_cor <- readRDS("ALL_cor.Rda") %>%
 ALL_cor_wide <- ALL_cor %>% 
   filter(Parameter1 == "SST",
          Parameter2 %in% c("SST", "SSS", "T_bottom", "MLD_cum", "MLD_1_cum", "T_air", "TCC_cum", "P-E_cum", 
-                           "MSLP_cum", "T_Qlw", "T_Qsw", "T_Qlh", "T_Qsh", "T_Qnet")) %>% 
+                           "Wind_cum", "MSLP_cum", "T_Qlw", "T_Qsw", "T_Qlh", "T_Qsh", "T_Qnet")) %>% 
   dplyr::select(region:ts, Parameter2, r, rmse) %>% 
   pivot_wider(values_from = c(r, rmse), names_from = c(Parameter2, ts)) %>% 
   select_if(~sum(!is.na(.)) > 0) %>% 
@@ -464,7 +467,7 @@ server <- function(input, output, session) {
     picker_vars <- pickerInput(inputId = "vars", label = "Variables:",
                                choices = list(
                                  Flux = c("T_Qnet", "T_Qlw", "T_Qsw", "T_Qlh", "T_Qsh"),
-                                 Air = c("T_air", "TCC_cum", "P-E_cum", "MSLP_cum"),
+                                 Air = c("T_air", "TCC_cum", "P-E_cum", "MSLP_cum", "Wind_cum"),
                                  Sea = c("SST", "SSS", "MLD_cum", "MLD_1_cum", "T_bottom")
                                  ),
                                multiple = TRUE,
