@@ -220,6 +220,38 @@ write_csv(summary_total_region_season, "figures/tab_1.csv")
 tab_1 <- knitr::kable(summary_total_region_season)
 tab_1
 
+# SST metrics by region (for Reviewer 1)
+OISST_all_ts <- readRDS("data/OISST_all_ts.Rda") %>% 
+  mutate(region = toupper(region),
+         month = lubridate::month(t, label = T),
+         season = case_when(month %in% c("Jan", "Feb", "Mar") ~ "Winter",
+                            month %in% c("Apr", "May", "Jun") ~ "Spring",
+                            month %in% c("Jul", "Aug", "Sep") ~ "Summer",
+                            month %in% c("Oct", "Nov", "Dec") ~ "Autumn")) %>%
+  select(-month)
+SST_stats <- OISST_all_ts %>% 
+  group_by(region, season) %>% 
+  summarise(temp_mean = mean(temp),
+            temp_sd = sd(temp), .groups = "drop")
+ggplot(data = SST_stats, aes(x = region, y = temp_sd)) +
+  geom_point(aes(colour = season))
+
+# Surface air temperature metrics by region (for Reviewer 1)
+GLORYS_all_ts <- readRDS("data/GLORYS_all_ts.Rda") %>% 
+  mutate(region = toupper(region),
+         month = lubridate::month(t, label = T),
+         season = case_when(month %in% c("Jan", "Feb", "Mar") ~ "Winter",
+                            month %in% c("Apr", "May", "Jun") ~ "Spring",
+                            month %in% c("Jul", "Aug", "Sep") ~ "Summer",
+                            month %in% c("Oct", "Nov", "Dec") ~ "Autumn")) %>%
+  select(-month)
+AirT_stats <- GLORYS_all_ts %>% 
+  group_by(region, season) %>% 
+  summarise(temp_mean = mean(temp),
+            temp_sd = sd(temp), .groups = "drop")
+ggplot(data = AirT_stats, aes(x = region, y = temp_sd)) +
+  geom_point(aes(colour = season))
+
 
 # Figure 2 ----------------------------------------------------------------
 
@@ -705,4 +737,37 @@ fig_S2_cap <- ggpubr::ggarrange(fig_S2, fig_S2_cap, heights = c(1, 0.15), nrow =
 ggsave("figures/fig_S2.jpg", fig_S2_cap, height = 207, width = 180, units = "mm", dpi = 300)
 ggsave("figures/fig_S2.png", fig_S2_cap, height = 207, width = 180, units = "mm", dpi = 300)
 ggsave("figures/fig_S2.pdf", fig_S2_cap, height = 207, width = 180, units = "mm")
+
+
+# Figure S3 ---------------------------------------------------------------
+
+# SOM duration/max int panels
+fig_S3 <- fig_lolli_func("duration_max_int", base_data, 1, 9, 13) +
+  facet_wrap(~node, labeller = labeller(node = node_labeller)) +
+  scale_x_date(breaks = c(as.Date("1995-01-01"), as.Date("2000-01-01"), as.Date("2005-01-01"),
+                          as.Date("2010-01-01"), as.Date("2015-01-01")), 
+               labels = c(1995, 2000, 2005, 2010, 2015)) +
+  labs(x = "Peak Date", y = "Duration (days)") +
+  theme_bw() +
+  theme(legend.position = "bottom",
+        panel.border = element_rect(fill = NA, colour = "black", size = 1),
+        axis.text = element_text(size = 12, colour = "black"),
+        axis.text.x = element_text( angle = 30),
+        axis.ticks = element_line(colour = "black"))
+# fig_S3
+
+# The caption
+fig_cap_S3 <- as.character("Figure S3: Lolliplots showing the peak date of occurrence of the marine heatwaves (MHWs) clustered into each node. 
+                           The height of the lolli shows duration (days), and the colour shows the maximum intensity (°C) of the event.
+                           Note how different nodes have a tendency towards longer more intense, shorter less intense events, or how 
+                           some nodes have a tendency towards containing events that occurred in the second half of the time series. 
+                           The dashed line shows the mean duration per node, and the dotted line shows the median.")
+
+# Attach the caption and save
+fig_S3_cap <-  grid::textGrob(paste0(strwrap(fig_cap_S3, 110), sep = "", collapse = "\n"),
+                              x = 0.01, just = "left", gp = grid::gpar(fontsize = 10))
+fig_S3_cap <- ggpubr::ggarrange(fig_S3, fig_S3_cap, heights = c(1, 0.2), nrow = 2)
+ggsave("figures/fig_S3.jpg", fig_S3_cap, height = 160, width = 180, units = "mm", dpi = 300)
+ggsave("figures/fig_S3.png", fig_S3_cap, height = 207, width = 180, units = "mm", dpi = 300)
+ggsave("figures/fig_S3.pdf", fig_S3_cap, height = 207, width = 180, units = "mm")
 

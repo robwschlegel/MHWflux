@@ -1149,7 +1149,7 @@ fig_single_node <- function(node_number, fig_packet, fig_height, fig_width){
   max_int_region_sub <- fig_lolli_func("max_int_region", fig_packet, 1, fig_height, fig_width)
   
   # Lollis showing duration + rate onset
-  duration_rate_onset_sub <- fig_lolli_func("duration_rate_onset", fig_packet, 1, fig_height, fig_width)
+  duration_rate_onset_sub <- fig_lolli_func("duration_max_int", fig_packet, 1, fig_height, fig_width)
   
   # Create title
   title <- cowplot::ggdraw() + cowplot::draw_label(paste0("Node: ",node_number), fontface = 'bold')
@@ -1415,17 +1415,17 @@ fig_lolli_func <- function(lolli_var, fig_data, col_num, fig_height, fig_width){
       labs(x = "", y = "Max. intensity (°C)", colour = "Region") +
       theme(legend.position = "bottom",
             axis.text.x = element_text(angle = 30))
-  } else if(lolli_var == "duration_rate_onset"){
+  } else if(lolli_var == "duration_max_int"){
     fig_res <- ggplot(data = fig_data$region_MHW_meta,
                                   aes(x = date_peak, y = duration)) +
-      geom_lolli(aes(colour = rate_onset), size = 2) +
+      geom_lolli(aes(colour = intensity_max), size = 1) +
       # geom_point() +
       geom_hline(data = fig_data$node_h_lines, aes(yintercept = mean_dur), linetype = "dashed") +
       geom_hline(data = fig_data$node_h_lines, aes(yintercept = median_dur), linetype = "dotted") +
       scale_x_date(labels = scales::date_format("%Y"),
                    date_breaks = "2 years", date_minor_breaks = "1 year") +
-      scale_colour_gradient(low = "white", high = "darkorange") +
-      labs(x = "", y = "Duration (days)", colour = "Rate onset (°C x days)") +
+      scale_colour_gradient(low = "grey", high = "red") +
+      labs(x = "", y = "Duration (days)", colour = "Max. intensity (°C)") +
       theme(legend.position = "bottom",
             axis.text.x = element_text(angle = 30))
   }

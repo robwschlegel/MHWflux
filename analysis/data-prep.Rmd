@@ -637,7 +637,7 @@ saveRDS(ALL_ts_anom, "data/ALL_ts_anom.Rda")
 saveRDS(ALL_ts_anom, "shiny/ALL_ts_anom.Rda")
 ```
 
-## Cumulative heat flux terms
+## Cumulative variables
 
 We also need to create cumulative air-sea heat flux terms as well as a few other choice variables. This is done by taking the first day during a phase of a MHW and adding the daily values together cumulatively until the end of that phase.
 
