@@ -27,6 +27,8 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
@@ -37,6 +39,15 @@ div.section {
   padding-top: 12px;
 }
 </style>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -431,7 +442,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2020-11-10
+<strong>Last updated:</strong> 2020-12-21
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -522,16 +533,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtree888b803617b39985052a42c9b0682ec8faddb3c0targetblank888b803a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/robwschlegel/MHWflux/tree/888b803617b39985052a42c9b0682ec8faddb3c0" target="_blank">888b803</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtreeb742b28cdb9a27ca944ce5ece9ad58e2d8f8e19dtargetblankb742b28a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/robwschlegel/MHWflux/tree/b742b28cdb9a27ca944ce5ece9ad58e2d8f8e19d" target="_blank">b742b28</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtree888b803617b39985052a42c9b0682ec8faddb3c0targetblank888b803a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtreeb742b28cdb9a27ca944ce5ece9ad58e2d8f8e19dtargetblankb742b28a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/robwschlegel/MHWflux/tree/888b803617b39985052a42c9b0682ec8faddb3c0" target="_blank">888b803</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/robwschlegel/MHWflux/tree/b742b28cdb9a27ca944ce5ece9ad58e2d8f8e19d" target="_blank">b742b28</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -567,8 +578,10 @@ Ignored files:
 
 Unstaged changes:
     Modified:   README.md
-    Modified:   _workflowr.yml
-    Modified:   analysis/_site.yml
+    Modified:   code/figures.R
+    Modified:   figures/fig_1.jpg
+    Modified:   figures/fig_1.pdf
+    Modified:   figures/fig_1.png
     Modified:   output/magnitude_schematic.pdf
 
 </code></pre>
@@ -608,6 +621,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/robwschlegel/MHWflux/33f45959a9fe249be64a308272b3af8fc4337d3b/docs/som.html" target="_blank">33f4595</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-11-10
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -875,36 +905,36 @@ attached base packages:
 [8] base     
 
 other attached packages:
- [1] doParallel_1.0.15    iterators_1.0.12     foreach_1.5.0       
+ [1] doParallel_1.0.16    iterators_1.0.13     foreach_1.5.1       
  [4] Metrics_0.1.4        yasomi_0.3           proxy_0.4-24        
- [7] e1071_1.7-3          ggraph_2.0.3         correlation_0.4.0   
-[10] tidync_0.2.4         heatwaveR_0.4.4.9001 lubridate_1.7.9     
+ [7] e1071_1.7-4          ggraph_2.0.3         correlation_0.4.0   
+[10] tidync_0.2.4         heatwaveR_0.4.4.9004 lubridate_1.7.9.2   
 [13] data.table_1.13.2    forcats_0.5.0        stringr_1.4.0       
-[16] dplyr_1.0.2          purrr_0.3.4          readr_1.3.1         
+[16] dplyr_1.0.2          purrr_0.3.4          readr_1.4.0         
 [19] tidyr_1.1.2          tibble_3.0.4         ggplot2_3.3.2       
 [22] tidyverse_1.3.0     
 
 loaded via a namespace (and not attached):
- [1] fs_1.5.0           insight_0.9.0      httr_1.4.2         rprojroot_1.3-2   
- [5] tools_4.0.3        backports_1.1.10   R6_2.5.0           DBI_1.1.0         
- [9] lazyeval_0.2.2     colorspace_1.4-1   withr_2.3.0        gridExtra_2.3     
+ [1] fs_1.5.0           insight_0.10.0     httr_1.4.2         rprojroot_2.0.2   
+ [5] tools_4.0.3        backports_1.2.0    R6_2.5.0           DBI_1.1.0         
+ [9] lazyeval_0.2.2     colorspace_2.0-0   withr_2.3.0        gridExtra_2.3     
 [13] tidyselect_1.1.0   compiler_4.0.3     git2r_0.27.1       cli_2.1.0         
-[17] rvest_0.3.6        RNetCDF_2.3-1      xml2_1.3.2         plotly_4.9.2.1    
-[21] bayestestR_0.7.2   scales_1.1.1       digest_0.6.27      rmarkdown_2.3     
-[25] pkgconfig_2.0.3    htmltools_0.5.0    dbplyr_1.4.4       htmlwidgets_1.5.2 
-[29] rlang_0.4.8        readxl_1.3.1       rstudioapi_0.11    generics_0.1.0    
-[33] farver_2.0.3       jsonlite_1.7.1     magrittr_1.5       ncmeta_0.2.5      
-[37] parameters_0.8.2   Rcpp_1.0.5         munsell_0.5.0      fansi_0.4.1       
+[17] rvest_0.3.6        RNetCDF_2.4-2      xml2_1.3.2         plotly_4.9.2.1    
+[21] bayestestR_0.7.5   scales_1.1.1       digest_0.6.27      rmarkdown_2.5     
+[25] pkgconfig_2.0.3    htmltools_0.5.0    dbplyr_2.0.0       htmlwidgets_1.5.2 
+[29] rlang_0.4.8        readxl_1.3.1       rstudioapi_0.13    generics_0.1.0    
+[33] farver_2.0.3       jsonlite_1.7.1     magrittr_2.0.1     ncmeta_0.3.0      
+[37] parameters_0.9.0   Rcpp_1.0.5         munsell_0.5.0      fansi_0.4.1       
 [41] viridis_0.5.1      lifecycle_0.2.0    stringi_1.5.3      whisker_0.4       
-[45] yaml_2.2.1         MASS_7.3-53        grid_4.0.3         blob_1.2.1        
-[49] promises_1.1.1     ggrepel_0.8.2      crayon_1.3.4       graphlayouts_0.7.0
-[53] haven_2.3.1        hms_0.5.3          knitr_1.29         pillar_1.4.6      
-[57] igraph_1.2.6       effectsize_0.3.2   codetools_0.2-16   reprex_0.3.0      
-[61] glue_1.4.2         evaluate_0.14      modelr_0.1.8       vctrs_0.3.4       
-[65] tweenr_1.0.1       httpuv_1.5.4       cellranger_1.1.0   gtable_0.3.0      
-[69] polyclip_1.10-0    assertthat_0.2.1   xfun_0.16          ggforce_0.3.2     
-[73] broom_0.7.0        tidygraph_1.2.0    later_1.1.0.1      class_7.3-17      
-[77] ncdf4_1.17         viridisLite_0.3.0  workflowr_1.6.2    ellipsis_0.3.1    </code></pre>
+[45] yaml_2.2.1         MASS_7.3-53        grid_4.0.3         promises_1.1.1    
+[49] ggrepel_0.8.2      crayon_1.3.4       graphlayouts_0.7.1 haven_2.3.1       
+[53] hms_0.5.3          knitr_1.30         pillar_1.4.6       igraph_1.2.6      
+[57] effectsize_0.4.0   codetools_0.2-18   reprex_0.3.0       glue_1.4.2        
+[61] evaluate_0.14      modelr_0.1.8       vctrs_0.3.5        tweenr_1.0.1      
+[65] httpuv_1.5.4       cellranger_1.1.0   gtable_0.3.0       polyclip_1.10-0   
+[69] assertthat_0.2.1   xfun_0.19          ggforce_0.3.2      broom_0.7.2       
+[73] tidygraph_1.2.0    later_1.1.0.1      class_7.3-17       ncdf4_1.17        
+[77] viridisLite_0.3.0  workflowr_1.6.2    ellipsis_0.3.1    </code></pre>
 </div>
 </div>
 
@@ -931,7 +961,7 @@ footer is added to webpages before the MathJax javascript. -->
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
 }
 $(document).ready(function () {
   bootstrapStylePandocTables();

@@ -27,6 +27,8 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
@@ -37,6 +39,15 @@ div.section {
   padding-top: 12px;
 }
 </style>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -431,7 +442,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2020-11-10
+<strong>Last updated:</strong> 2020-12-21
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -522,16 +533,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtree888b803617b39985052a42c9b0682ec8faddb3c0targetblank888b803a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/robwschlegel/MHWflux/tree/888b803617b39985052a42c9b0682ec8faddb3c0" target="_blank">888b803</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtreeb742b28cdb9a27ca944ce5ece9ad58e2d8f8e19dtargetblankb742b28a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/robwschlegel/MHWflux/tree/b742b28cdb9a27ca944ce5ece9ad58e2d8f8e19d" target="_blank">b742b28</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtree888b803617b39985052a42c9b0682ec8faddb3c0targetblank888b803a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtreeb742b28cdb9a27ca944ce5ece9ad58e2d8f8e19dtargetblankb742b28a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/robwschlegel/MHWflux/tree/888b803617b39985052a42c9b0682ec8faddb3c0" target="_blank">888b803</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/robwschlegel/MHWflux/tree/b742b28cdb9a27ca944ce5ece9ad58e2d8f8e19d" target="_blank">b742b28</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -567,8 +578,10 @@ Ignored files:
 
 Unstaged changes:
     Modified:   README.md
-    Modified:   _workflowr.yml
-    Modified:   analysis/_site.yml
+    Modified:   code/figures.R
+    Modified:   figures/fig_1.jpg
+    Modified:   figures/fig_1.pdf
+    Modified:   figures/fig_1.png
 
 </code></pre>
 <p>
@@ -607,6 +620,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/b742b28cdb9a27ca944ce5ece9ad58e2d8f8e19d/analysis/data-prep.Rmd" target="_blank">b742b28</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-12-21
+</td>
+<td>
+Re-built site.
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/robwschlegel/MHWflux/33f45959a9fe249be64a308272b3af8fc4337d3b/docs/data-prep.html" target="_blank">33f4595</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-11-10
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -1969,8 +2016,9 @@ OISST_region_MHW &lt;- OISST_all_ts %&gt;%
 # Save
 saveRDS(OISST_region_MHW, &quot;data/OISST_region_MHW.Rda&quot;)
 saveRDS(OISST_region_MHW, &quot;shiny/OISST_region_MHW.Rda&quot;)</code></pre>
-<div id="mhw-results" class="section level3">
-<h3>MHW results</h3>
+</div>
+<div id="mhw-results" class="section level2">
+<h2>MHW results</h2>
 <p>There were some minor changes between the OISST grid used for the original SOM work and this version of the project. So first we want to compare the results of both to see by how much they differ. It should be very little.</p>
 <pre class="r"><code># New and old MHW results
 OISST_MHW_new &lt;- readRDS(&quot;data/OISST_region_MHW.Rda&quot;) %&gt;% 
@@ -2016,7 +2064,7 @@ OISST_MHW_old %&gt;%
 OISST_MHW_new %&gt;% 
   dplyr::select(region, duration, intensity_mean, intensity_max, intensity_cumulative, rate_onset, rate_decline) %&gt;% 
   group_by(region) %&gt;% 
-  summarise_all(&quot;mean&quot;, na.rm = T)</code></pre>
+  summarise_all(&quot;mean&quot;, na.rm = T, .groups = &quot;drop&quot;)</code></pre>
 <pre><code># A tibble: 6 x 7
   region duration intensity_mean intensity_max intensity_cumul… rate_onset
   &lt;chr&gt;     &lt;dbl&gt;          &lt;dbl&gt;         &lt;dbl&gt;            &lt;dbl&gt;      &lt;dbl&gt;
@@ -2031,7 +2079,7 @@ OISST_MHW_new %&gt;%
 OISST_MHW_old %&gt;% 
   dplyr::select(region, duration, intensity_mean, intensity_max, intensity_cumulative, rate_onset, rate_decline) %&gt;% 
   group_by(region) %&gt;% 
-  summarise_all(&quot;mean&quot;, na.rm = T)</code></pre>
+  summarise_all(&quot;mean&quot;, na.rm = T, .groups = &quot;drop&quot;)</code></pre>
 <pre><code># A tibble: 6 x 7
   region duration intensity_mean intensity_max intensity_cumul… rate_onset
   &lt;chr&gt;     &lt;dbl&gt;          &lt;dbl&gt;         &lt;dbl&gt;            &lt;dbl&gt;      &lt;dbl&gt;
@@ -2048,7 +2096,7 @@ OISST_MHW_old %&gt;%
 OISST_MHW_event %&gt;%
   mutate(year = year(date_peak)) %&gt;% 
   group_by(year) %&gt;% 
-  summarise(count = n()) %&gt;% 
+  summarise(count = n(), .groups = &quot;drop&quot;) %&gt;% 
   data.frame()</code></pre>
 <pre><code>   year count
 1  1994     4
@@ -2220,6 +2268,1404 @@ knitr::kable(summary_region_season)</code></pre>
 </tbody>
 </table>
 </div>
+<div id="comparing-oisst-and-glorys-mhw-results" class="section level2">
+<h2>Comparing OISST and GLORYS MHW results</h2>
+<p>In an earlier version of this analysis we had opted to use the GLORYS SST layer, but Ke pointed out that it may be better to use the NOAA OISST data. The reasoning being that because we are not fully closing the heat budget with GLORYS, there is no particular benefit to using the SST data from that modelled ensemble product. Rather it would be better to use the remotely observed NOAA OISST product as this is a more direct measure of the surface temperature of the ocean. Then again, there is a lot of benefit to just using two products instead of three. Particularly considering that all of the marine variables used here come from the GLORYS product. To that end the GLORYS and OISST MHWs must be compared to see if they are markedly different. If not, we will use the GLORYS SST data.</p>
+<pre class="r"><code># Load the MHW calculations from the NOAA OISST data
+OISST_region_MHW &lt;- readRDS(&quot;data/OISST_region_MHW.Rda&quot;)
+
+# Load the GLORYS MHW data
+GLORYS_region_MHW &lt;- readRDS(&quot;data/GLORYS_region_MHW.Rda&quot;)
+
+# Extract the time series
+OISST_MHW_clim &lt;- OISST_region_MHW %&gt;%
+  select(-cats) %&gt;%
+  unnest(events) %&gt;%
+  filter(row_number() %% 2 == 1) %&gt;%
+  unnest(events) %&gt;% 
+  mutate(product = &quot;OISST&quot;)
+GLORYS_MHW_clim &lt;- GLORYS_region_MHW %&gt;%
+  select(-cats) %&gt;%
+  unnest(events) %&gt;%
+  filter(row_number() %% 2 == 1) %&gt;%
+  unnest(events) %&gt;% 
+  mutate(product = &quot;GLORYS&quot;,
+         region = toupper(region))
+MHW_clim &lt;- rbind(OISST_MHW_clim, GLORYS_MHW_clim) %&gt;% 
+  mutate(anom = temp-seas)
+
+# Extract the events
+OISST_MHW_event &lt;- OISST_region_MHW %&gt;%
+  select(-cats) %&gt;%
+  unnest(events) %&gt;%
+  filter(row_number() %% 2 == 0) %&gt;%
+  unnest(events) %&gt;% 
+  mutate(product = &quot;OISST&quot;)
+GLORYS_MHW_event &lt;- GLORYS_region_MHW %&gt;%
+  select(-cats) %&gt;%
+  unnest(events) %&gt;%
+  filter(row_number() %% 2 == 0) %&gt;%
+  unnest(events) %&gt;% 
+  mutate(product = &quot;GLORYS&quot;,
+         region = toupper(region))
+MHW_event &lt;- rbind(OISST_MHW_event, GLORYS_MHW_event) %&gt;% 
+  mutate(month_peak = lubridate::month(date_peak, label = T),
+         season = case_when(month_peak %in% c(&quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;) ~ &quot;Winter&quot;,
+                            month_peak %in% c(&quot;Apr&quot;, &quot;May&quot;, &quot;Jun&quot;) ~ &quot;Spring&quot;,
+                            month_peak %in% c(&quot;Jul&quot;, &quot;Aug&quot;, &quot;Sep&quot;) ~ &quot;Summer&quot;,
+                            month_peak %in% c(&quot;Oct&quot;, &quot;Nov&quot;, &quot;Dec&quot;) ~ &quot;Autumn&quot;),
+         season = factor(season, levels = c(&quot;Spring&quot;, &quot;Summer&quot;, &quot;Autumn&quot;, &quot;Winter&quot;))) %&gt;%
+  select(-month_peak)
+
+# Compare time series
+MHW_clim_wide &lt;- MHW_clim %&gt;% 
+  dplyr::select(product, region, doy, t, anom) %&gt;% 
+  pivot_wider(names_from = product, values_from = anom) %&gt;% 
+  mutate(t_diff = OISST-GLORYS)
+MHW_clim_wide_monthly &lt;- MHW_clim_wide %&gt;% 
+  mutate(t = round_date(t, unit = &quot;month&quot;)) %&gt;%
+  group_by(region, t) %&gt;% 
+  summarise(t_diff = mean(t_diff, na.rm = T), .groups = &quot;drop&quot;)
+
+# Plot regional anomaly comparison
+ts_comp &lt;- ggplot(data = MHW_clim_wide, aes(x = t, y = t_diff)) +
+  geom_line(aes(colour = region), alpha = 0.5, show.legend = F) +
+  geom_line(data = MHW_clim_wide_monthly, show.legend = F,
+            aes(colour = region)) +
+  geom_smooth(method = &quot;lm&quot;, show.legend = F) +
+  facet_wrap(~region) +
+  labs(x = &quot;Date&quot;, y = &quot;OISST anom. - GLORYS anom.&quot;, 
+       title = &quot;Daily anomaly comparisons&quot;, 
+       subtitle = paste0(&quot;Faint line shows daily differences, bold line shows monthly.&quot;,
+                         &quot;\nStraight blue line shows linear trend in daily differences.&quot;))
+
+# Plot the comparison of the seasonal and threshold signals
+seas_thresh_comp &lt;- MHW_clim %&gt;% 
+  dplyr::select(product, region, doy, seas, thresh) %&gt;%
+  unique() %&gt;% 
+  pivot_wider(names_from = product, values_from = c(seas, thresh)) %&gt;% 
+  mutate(seas_diff = seas_OISST-seas_GLORYS,
+         thresh_diff = thresh_OISST-thresh_GLORYS) %&gt;% 
+  ggplot(aes(x = doy)) +
+  geom_line(aes(y = seas_diff, colour = region), linetype = &quot;solid&quot;, show.legend = F) +
+  geom_line(aes(y = thresh_diff, colour = region), linetype = &quot;dashed&quot;, show.legend = F) +
+  facet_wrap(~region) +
+  labs(x = &quot;Day-of-year (doy)&quot;, y = &quot;OISST clim. - GLORYS clim.&quot;,
+       title = &quot;Difference per day-of-year (doy)&quot;,
+       subtitle = paste0(&quot;Solid line shows seasonal climatology,&quot;,
+                         &quot;\ndashed line shows threshold.&quot;))
+
+# Plot average doy difference histogram
+doy_comp &lt;- MHW_clim_wide %&gt;%
+  group_by(region, doy) %&gt;% 
+  summarise(doy_diff = mean(t_diff), .groups = &quot;drop&quot;) %&gt;% 
+  ggplot(aes(x = doy_diff)) +
+  geom_histogram(aes(fill = region), bins = 20, show.legend = F) +
+  facet_wrap(~region) +
+  labs(x = &quot;Mean difference (OISST - GLORYS) per doy&quot;,
+       title = &quot;Distribution of mean differences per doy&quot;)
+
+# Combine
+OISST_GLORYS_ts_comp &lt;- ggarrange(ts_comp,
+                                  ggarrange(seas_thresh_comp, doy_comp, ncol = 2, nrow = 1, align = &quot;hv&quot;, labels = c(&quot;B&quot;, &quot;C&quot;)),
+                                  nrow = 2, labels = &quot;A&quot;, align = &quot;hv&quot;)
+OISST_GLORYS_ts_comp</code></pre>
+<p><img src="figure/data-prep.Rmd/GLORYS-OISST-comp-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-GLORYS-OISST-comp-1">
+Past versions of GLORYS-OISST-comp-1.png
+</button>
+</p>
+<div id="fig-GLORYS-OISST-comp-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/8d657581062aa4f04ebb53fd75a7cd27dc1fd62d/docs/figure/data-prep.Rmd/GLORYS-OISST-comp-1.png" target="_blank">8d65758</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-09-03
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/c6087d9b0fc349e3e566290d3406147941b13a73/docs/figure/data-prep.Rmd/GLORYS-OISST-comp-1.png" target="_blank">c6087d9</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-06-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code># ggsave(plot = OISST_GLORYS_ts_comp, filename = &quot;output/OISST_GLORYS_ts_comp.png&quot;, height = 8, width = 10)
+
+# Compare MHW results
+MHW_event_comp &lt;- MHW_event %&gt;% 
+  group_by(product, region) %&gt;% 
+  summarise(event_count = n(),
+            dur = mean(duration),
+            int_mean = mean(intensity_mean),
+            int_cum_mean = mean(intensity_cumulative),
+            int_max = max(intensity_max),
+            onset = mean(rate_onset),
+            decline = mean(rate_decline), .groups = &quot;drop&quot;) %&gt;% 
+  ungroup() %&gt;%
+  arrange(region, product) %&gt;% 
+  mutate_if(is.numeric, round, 2) #%&gt;% 
+  # pivot_wider(names_from = product, values_from = c(event_count:decline))
+  # tableGrob(rows = NULL)
+
+event_count_table &lt;- MHW_event_comp %&gt;% 
+  dplyr::select(product:event_count) %&gt;% 
+  pivot_wider(names_from = region, values_from = event_count) %&gt;% 
+  tableGrob(rows = NULL)
+
+# Boxplot of key variables
+box_comp &lt;- MHW_event %&gt;% 
+  dplyr::select(product, region, duration, intensity_mean,
+                intensity_cumulative, intensity_max, rate_onset, rate_decline) %&gt;% 
+  pivot_longer(cols = duration:rate_decline) %&gt;% 
+  ggplot(aes(x = region, y = value, fill = region)) +
+  geom_boxplot(aes(colour = product), notch = TRUE) +
+  scale_colour_manual(values = c(&quot;black&quot;, &quot;red&quot;)) +
+  facet_wrap(~name, scales = &quot;free_y&quot;) +
+  labs(fill = &quot;Region&quot;, colour = &quot;Product&quot;, x = NULL, y = &quot;Value for given facet&quot;,
+       title = &quot;Boxplots showing range of values for MHWs in each region&quot;)
+# box_comp
+
+OISST_GLORYS_MHW_comp &lt;- ggarrange(box_comp, event_count_table, ncol = 1, nrow = 2, 
+                                   heights = c(8, 1), labels = c(&quot;A&quot;, &quot;B&quot;), align = &quot;hv&quot;)
+OISST_GLORYS_MHW_comp</code></pre>
+<p><img src="figure/data-prep.Rmd/GLORYS-OISST-comp-2.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-GLORYS-OISST-comp-2">
+Past versions of GLORYS-OISST-comp-2.png
+</button>
+</p>
+<div id="fig-GLORYS-OISST-comp-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/8d657581062aa4f04ebb53fd75a7cd27dc1fd62d/docs/figure/data-prep.Rmd/GLORYS-OISST-comp-2.png" target="_blank">8d65758</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-09-03
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/c6087d9b0fc349e3e566290d3406147941b13a73/docs/figure/data-prep.Rmd/GLORYS-OISST-comp-2.png" target="_blank">c6087d9</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2020-06-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code># ggsave(plot = OISST_GLORYS_MHW_comp, filename = &quot;output/OISST_GLORYS_MHW_comp.png&quot;, height = 8, width = 10)
+
+# Seasons within regions
+MHW_event_season_comp &lt;- MHW_event %&gt;% 
+  group_by(product, region, season) %&gt;% 
+  summarise(event_count = n(),
+            dur = mean(duration),
+            int_mean = mean(intensity_mean),
+            int_cum_mean = mean(intensity_cumulative),
+            int_max = max(intensity_max),
+            onset = mean(rate_onset),
+            decline = mean(rate_decline), .groups = &quot;drop&quot;) %&gt;% 
+  ungroup() %&gt;%
+  arrange(region, season, product) %&gt;% 
+  mutate_if(is.numeric, round, 2)
+knitr::kable(MHW_event_season_comp)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">product</th>
+<th align="left">region</th>
+<th align="left">season</th>
+<th align="right">event_count</th>
+<th align="right">dur</th>
+<th align="right">int_mean</th>
+<th align="right">int_cum_mean</th>
+<th align="right">int_max</th>
+<th align="right">onset</th>
+<th align="right">decline</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">GLORYS</td>
+<td align="left">CBS</td>
+<td align="left">Spring</td>
+<td align="right">10</td>
+<td align="right">17.00</td>
+<td align="right">1.64</td>
+<td align="right">31.58</td>
+<td align="right">3.33</td>
+<td align="right">0.15</td>
+<td align="right">0.17</td>
+</tr>
+<tr class="even">
+<td align="left">OISST</td>
+<td align="left">CBS</td>
+<td align="left">Spring</td>
+<td align="right">7</td>
+<td align="right">18.86</td>
+<td align="right">1.76</td>
+<td align="right">38.76</td>
+<td align="right">4.58</td>
+<td align="right">0.12</td>
+<td align="right">0.29</td>
+</tr>
+<tr class="odd">
+<td align="left">GLORYS</td>
+<td align="left">CBS</td>
+<td align="left">Summer</td>
+<td align="right">16</td>
+<td align="right">13.81</td>
+<td align="right">2.02</td>
+<td align="right">29.01</td>
+<td align="right">3.55</td>
+<td align="right">0.23</td>
+<td align="right">0.25</td>
+</tr>
+<tr class="even">
+<td align="left">OISST</td>
+<td align="left">CBS</td>
+<td align="left">Summer</td>
+<td align="right">20</td>
+<td align="right">11.00</td>
+<td align="right">2.08</td>
+<td align="right">24.58</td>
+<td align="right">3.88</td>
+<td align="right">0.25</td>
+<td align="right">0.27</td>
+</tr>
+<tr class="odd">
+<td align="left">GLORYS</td>
+<td align="left">CBS</td>
+<td align="left">Autumn</td>
+<td align="right">11</td>
+<td align="right">18.64</td>
+<td align="right">1.59</td>
+<td align="right">30.09</td>
+<td align="right">2.41</td>
+<td align="right">0.09</td>
+<td align="right">0.10</td>
+</tr>
+<tr class="even">
+<td align="left">OISST</td>
+<td align="left">CBS</td>
+<td align="left">Autumn</td>
+<td align="right">17</td>
+<td align="right">13.71</td>
+<td align="right">1.69</td>
+<td align="right">23.88</td>
+<td align="right">2.86</td>
+<td align="right">0.14</td>
+<td align="right">0.13</td>
+</tr>
+<tr class="odd">
+<td align="left">GLORYS</td>
+<td align="left">CBS</td>
+<td align="left">Winter</td>
+<td align="right">7</td>
+<td align="right">16.14</td>
+<td align="right">1.07</td>
+<td align="right">17.68</td>
+<td align="right">1.60</td>
+<td align="right">0.04</td>
+<td align="right">0.04</td>
+</tr>
+<tr class="even">
+<td align="left">OISST</td>
+<td align="left">CBS</td>
+<td align="left">Winter</td>
+<td align="right">9</td>
+<td align="right">13.33</td>
+<td align="right">1.20</td>
+<td align="right">15.68</td>
+<td align="right">1.89</td>
+<td align="right">0.09</td>
+<td align="right">0.12</td>
+</tr>
+<tr class="odd">
+<td align="left">GLORYS</td>
+<td align="left">GM</td>
+<td align="left">Spring</td>
+<td align="right">9</td>
+<td align="right">12.22</td>
+<td align="right">1.54</td>
+<td align="right">21.41</td>
+<td align="right">3.61</td>
+<td align="right">0.17</td>
+<td align="right">0.16</td>
+</tr>
+<tr class="even">
+<td align="left">OISST</td>
+<td align="left">GM</td>
+<td align="left">Spring</td>
+<td align="right">7</td>
+<td align="right">17.43</td>
+<td align="right">1.87</td>
+<td align="right">35.40</td>
+<td align="right">3.56</td>
+<td align="right">0.16</td>
+<td align="right">0.13</td>
+</tr>
+<tr class="odd">
+<td align="left">GLORYS</td>
+<td align="left">GM</td>
+<td align="left">Summer</td>
+<td align="right">15</td>
+<td align="right">17.33</td>
+<td align="right">1.99</td>
+<td align="right">36.49</td>
+<td align="right">2.88</td>
+<td align="right">0.15</td>
+<td align="right">0.25</td>
+</tr>
+<tr class="even">
+<td align="left">OISST</td>
+<td align="left">GM</td>
+<td align="left">Summer</td>
+<td align="right">15</td>
+<td align="right">12.73</td>
+<td align="right">2.07</td>
+<td align="right">26.93</td>
+<td align="right">3.39</td>
+<td align="right">0.20</td>
+<td align="right">0.27</td>
+</tr>
+<tr class="odd">
+<td align="left">GLORYS</td>
+<td align="left">GM</td>
+<td align="left">Autumn</td>
+<td align="right">12</td>
+<td align="right">21.92</td>
+<td align="right">1.74</td>
+<td align="right">38.70</td>
+<td align="right">2.44</td>
+<td align="right">0.06</td>
+<td align="right">0.10</td>
+</tr>
+<tr class="even">
+<td align="left">OISST</td>
+<td align="left">GM</td>
+<td align="left">Autumn</td>
+<td align="right">12</td>
+<td align="right">16.92</td>
+<td align="right">1.69</td>
+<td align="right">29.16</td>
+<td align="right">2.34</td>
+<td align="right">0.10</td>
+<td align="right">0.11</td>
+</tr>
+<tr class="odd">
+<td align="left">GLORYS</td>
+<td align="left">GM</td>
+<td align="left">Winter</td>
+<td align="right">7</td>
+<td align="right">20.14</td>
+<td align="right">1.41</td>
+<td align="right">29.58</td>
+<td align="right">2.30</td>
+<td align="right">0.04</td>
+<td align="right">0.06</td>
+</tr>
+<tr class="even">
+<td align="left">OISST</td>
+<td align="left">GM</td>
+<td align="left">Winter</td>
+<td align="right">13</td>
+<td align="right">13.00</td>
+<td align="right">1.50</td>
+<td align="right">20.29</td>
+<td align="right">2.97</td>
+<td align="right">0.12</td>
+<td align="right">0.08</td>
+</tr>
+<tr class="odd">
+<td align="left">GLORYS</td>
+<td align="left">GSL</td>
+<td align="left">Spring</td>
+<td align="right">10</td>
+<td align="right">18.30</td>
+<td align="right">1.89</td>
+<td align="right">30.65</td>
+<td align="right">3.10</td>
+<td align="right">0.20</td>
+<td align="right">0.22</td>
+</tr>
+<tr class="even">
+<td align="left">OISST</td>
+<td align="left">GSL</td>
+<td align="left">Spring</td>
+<td align="right">12</td>
+<td align="right">11.92</td>
+<td align="right">1.98</td>
+<td align="right">22.20</td>
+<td align="right">3.91</td>
+<td align="right">0.20</td>
+<td align="right">0.33</td>
+</tr>
+<tr class="odd">
+<td align="left">GLORYS</td>
+<td align="left">GSL</td>
+<td align="left">Summer</td>
+<td align="right">18</td>
+<td align="right">14.67</td>
+<td align="right">1.78</td>
+<td align="right">27.19</td>
+<td align="right">3.11</td>
+<td align="right">0.16</td>
+<td align="right">0.23</td>
+</tr>
+<tr class="even">
+<td align="left">OISST</td>
+<td align="left">GSL</td>
+<td align="left">Summer</td>
+<td align="right">19</td>
+<td align="right">11.89</td>
+<td align="right">1.96</td>
+<td align="right">24.15</td>
+<td align="right">3.57</td>
+<td align="right">0.19</td>
+<td align="right">0.32</td>
+</tr>
+<tr class="odd">
+<td align="left">GLORYS</td>
+<td align="left">GSL</td>
+<td align="left">Autumn</td>
+<td align="right">9</td>
+<td align="right">22.22</td>
+<td align="right">1.47</td>
+<td align="right">33.79</td>
+<td align="right">2.30</td>
+<td align="right">0.08</td>
+<td align="right">0.10</td>
+</tr>
+<tr class="even">
+<td align="left">OISST</td>
+<td align="left">GSL</td>
+<td align="left">Autumn</td>
+<td align="right">9</td>
+<td align="right">14.22</td>
+<td align="right">1.48</td>
+<td align="right">22.14</td>
+<td align="right">2.30</td>
+<td align="right">0.13</td>
+<td align="right">0.13</td>
+</tr>
+<tr class="odd">
+<td align="left">GLORYS</td>
+<td align="left">GSL</td>
+<td align="left">Winter</td>
+<td align="right">3</td>
+<td align="right">6.33</td>
+<td align="right">0.63</td>
+<td align="right">3.85</td>
+<td align="right">0.90</td>
+<td align="right">0.05</td>
+<td align="right">0.04</td>
+</tr>
+<tr class="even">
+<td align="left">OISST</td>
+<td align="left">GSL</td>
+<td align="left">Winter</td>
+<td align="right">9</td>
+<td align="right">14.11</td>
+<td align="right">0.63</td>
+<td align="right">15.10</td>
+<td align="right">2.47</td>
+<td align="right">0.11</td>
+<td align="right">0.07</td>
+</tr>
+<tr class="odd">
+<td align="left">GLORYS</td>
+<td align="left">MAB</td>
+<td align="left">Spring</td>
+<td align="right">11</td>
+<td align="right">14.73</td>
+<td align="right">1.91</td>
+<td align="right">28.88</td>
+<td align="right">3.43</td>
+<td align="right">0.20</td>
+<td align="right">0.19</td>
+</tr>
+<tr class="even">
+<td align="left">OISST</td>
+<td align="left">MAB</td>
+<td align="left">Spring</td>
+<td align="right">11</td>
+<td align="right">8.91</td>
+<td align="right">2.16</td>
+<td align="right">20.02</td>
+<td align="right">3.85</td>
+<td align="right">0.26</td>
+<td align="right">0.26</td>
+</tr>
+<tr class="odd">
+<td align="left">GLORYS</td>
+<td align="left">MAB</td>
+<td align="left">Summer</td>
+<td align="right">19</td>
+<td align="right">13.00</td>
+<td align="right">1.40</td>
+<td align="right">18.85</td>
+<td align="right">2.41</td>
+<td align="right">0.12</td>
+<td align="right">0.15</td>
+</tr>
+<tr class="even">
+<td align="left">OISST</td>
+<td align="left">MAB</td>
+<td align="left">Summer</td>
+<td align="right">21</td>
+<td align="right">11.38</td>
+<td align="right">1.65</td>
+<td align="right">19.47</td>
+<td align="right">3.30</td>
+<td align="right">0.18</td>
+<td align="right">0.21</td>
+</tr>
+<tr class="odd">
+<td align="left">GLORYS</td>
+<td align="left">MAB</td>
+<td align="left">Autumn</td>
+<td align="right">10</td>
+<td align="right">19.00</td>
+<td align="right">1.63</td>
+<td align="right">35.26</td>
+<td align="right">3.28</td>
+<td align="right">0.08</td>
+<td align="right">0.10</td>
+</tr>
+<tr class="even">
+<td align="left">OISST</td>
+<td align="left">MAB</td>
+<td align="left">Autumn</td>
+<td align="right">14</td>
+<td align="right">13.71</td>
+<td align="right">1.62</td>
+<td align="right">23.57</td>
+<td align="right">3.30</td>
+<td align="right">0.09</td>
+<td align="right">0.16</td>
+</tr>
+<tr class="odd">
+<td align="left">GLORYS</td>
+<td align="left">MAB</td>
+<td align="left">Winter</td>
+<td align="right">12</td>
+<td align="right">17.08</td>
+<td align="right">1.81</td>
+<td align="right">33.39</td>
+<td align="right">3.96</td>
+<td align="right">0.10</td>
+<td align="right">0.14</td>
+</tr>
+<tr class="even">
+<td align="left">OISST</td>
+<td align="left">MAB</td>
+<td align="left">Winter</td>
+<td align="right">11</td>
+<td align="right">21.55</td>
+<td align="right">1.74</td>
+<td align="right">42.50</td>
+<td align="right">4.16</td>
+<td align="right">0.12</td>
+<td align="right">0.10</td>
+</tr>
+<tr class="odd">
+<td align="left">GLORYS</td>
+<td align="left">NFS</td>
+<td align="left">Spring</td>
+<td align="right">10</td>
+<td align="right">17.00</td>
+<td align="right">1.75</td>
+<td align="right">30.26</td>
+<td align="right">3.16</td>
+<td align="right">0.17</td>
+<td align="right">0.15</td>
+</tr>
+<tr class="even">
+<td align="left">OISST</td>
+<td align="left">NFS</td>
+<td align="left">Spring</td>
+<td align="right">11</td>
+<td align="right">12.27</td>
+<td align="right">1.83</td>
+<td align="right">23.10</td>
+<td align="right">3.31</td>
+<td align="right">0.20</td>
+<td align="right">0.16</td>
+</tr>
+<tr class="odd">
+<td align="left">GLORYS</td>
+<td align="left">NFS</td>
+<td align="left">Summer</td>
+<td align="right">14</td>
+<td align="right">19.86</td>
+<td align="right">1.96</td>
+<td align="right">40.57</td>
+<td align="right">3.41</td>
+<td align="right">0.15</td>
+<td align="right">0.16</td>
+</tr>
+<tr class="even">
+<td align="left">OISST</td>
+<td align="left">NFS</td>
+<td align="left">Summer</td>
+<td align="right">14</td>
+<td align="right">17.79</td>
+<td align="right">2.01</td>
+<td align="right">37.60</td>
+<td align="right">3.64</td>
+<td align="right">0.20</td>
+<td align="right">0.27</td>
+</tr>
+<tr class="odd">
+<td align="left">GLORYS</td>
+<td align="left">NFS</td>
+<td align="left">Autumn</td>
+<td align="right">7</td>
+<td align="right">20.71</td>
+<td align="right">1.52</td>
+<td align="right">33.26</td>
+<td align="right">2.27</td>
+<td align="right">0.09</td>
+<td align="right">0.09</td>
+</tr>
+<tr class="even">
+<td align="left">OISST</td>
+<td align="left">NFS</td>
+<td align="left">Autumn</td>
+<td align="right">10</td>
+<td align="right">15.80</td>
+<td align="right">1.65</td>
+<td align="right">26.90</td>
+<td align="right">2.74</td>
+<td align="right">0.14</td>
+<td align="right">0.12</td>
+</tr>
+<tr class="odd">
+<td align="left">GLORYS</td>
+<td align="left">NFS</td>
+<td align="left">Winter</td>
+<td align="right">8</td>
+<td align="right">30.25</td>
+<td align="right">1.03</td>
+<td align="right">36.61</td>
+<td align="right">2.00</td>
+<td align="right">0.04</td>
+<td align="right">0.03</td>
+</tr>
+<tr class="even">
+<td align="left">OISST</td>
+<td align="left">NFS</td>
+<td align="left">Winter</td>
+<td align="right">9</td>
+<td align="right">17.11</td>
+<td align="right">1.06</td>
+<td align="right">22.29</td>
+<td align="right">2.06</td>
+<td align="right">0.05</td>
+<td align="right">0.10</td>
+</tr>
+<tr class="odd">
+<td align="left">GLORYS</td>
+<td align="left">SS</td>
+<td align="left">Spring</td>
+<td align="right">7</td>
+<td align="right">21.43</td>
+<td align="right">1.72</td>
+<td align="right">42.00</td>
+<td align="right">3.46</td>
+<td align="right">0.14</td>
+<td align="right">0.29</td>
+</tr>
+<tr class="even">
+<td align="left">OISST</td>
+<td align="left">SS</td>
+<td align="left">Spring</td>
+<td align="right">10</td>
+<td align="right">14.00</td>
+<td align="right">1.92</td>
+<td align="right">29.25</td>
+<td align="right">3.38</td>
+<td align="right">0.20</td>
+<td align="right">0.23</td>
+</tr>
+<tr class="odd">
+<td align="left">GLORYS</td>
+<td align="left">SS</td>
+<td align="left">Summer</td>
+<td align="right">17</td>
+<td align="right">13.88</td>
+<td align="right">1.88</td>
+<td align="right">27.68</td>
+<td align="right">3.46</td>
+<td align="right">0.15</td>
+<td align="right">0.19</td>
+</tr>
+<tr class="even">
+<td align="left">OISST</td>
+<td align="left">SS</td>
+<td align="left">Summer</td>
+<td align="right">16</td>
+<td align="right">15.25</td>
+<td align="right">2.15</td>
+<td align="right">33.19</td>
+<td align="right">3.13</td>
+<td align="right">0.22</td>
+<td align="right">0.25</td>
+</tr>
+<tr class="odd">
+<td align="left">GLORYS</td>
+<td align="left">SS</td>
+<td align="left">Autumn</td>
+<td align="right">8</td>
+<td align="right">26.12</td>
+<td align="right">1.87</td>
+<td align="right">52.53</td>
+<td align="right">2.75</td>
+<td align="right">0.08</td>
+<td align="right">0.07</td>
+</tr>
+<tr class="even">
+<td align="left">OISST</td>
+<td align="left">SS</td>
+<td align="left">Autumn</td>
+<td align="right">8</td>
+<td align="right">24.38</td>
+<td align="right">2.04</td>
+<td align="right">52.39</td>
+<td align="right">3.17</td>
+<td align="right">0.16</td>
+<td align="right">0.12</td>
+</tr>
+<tr class="odd">
+<td align="left">GLORYS</td>
+<td align="left">SS</td>
+<td align="left">Winter</td>
+<td align="right">8</td>
+<td align="right">23.50</td>
+<td align="right">1.62</td>
+<td align="right">40.92</td>
+<td align="right">3.05</td>
+<td align="right">0.10</td>
+<td align="right">0.07</td>
+</tr>
+<tr class="even">
+<td align="left">OISST</td>
+<td align="left">SS</td>
+<td align="left">Winter</td>
+<td align="right">7</td>
+<td align="right">23.43</td>
+<td align="right">1.71</td>
+<td align="right">43.03</td>
+<td align="right">2.71</td>
+<td align="right">0.15</td>
+<td align="right">0.08</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code># Compare top 3 events per region
+MHW_event_top &lt;- MHW_event %&gt;% 
+  dplyr::select(product, everything()) %&gt;% 
+  group_by(product, region) %&gt;% 
+  dplyr::top_n(3, intensity_cumulative) %&gt;% 
+  ungroup() %&gt;% 
+  arrange(region, product) %&gt;% 
+    dplyr::select(product, region, event_no, date_start, date_peak, date_end, duration, 
+                  intensity_mean, intensity_cumulative, intensity_max, rate_onset, rate_decline)
+knitr::kable(MHW_event_top)</code></pre>
+<table style="width:100%;">
+<colgroup>
+<col width="5%" />
+<col width="5%" />
+<col width="6%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="6%" />
+<col width="10%" />
+<col width="15%" />
+<col width="10%" />
+<col width="7%" />
+<col width="9%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">product</th>
+<th align="left">region</th>
+<th align="right">event_no</th>
+<th align="left">date_start</th>
+<th align="left">date_peak</th>
+<th align="left">date_end</th>
+<th align="right">duration</th>
+<th align="right">intensity_mean</th>
+<th align="right">intensity_cumulative</th>
+<th align="right">intensity_max</th>
+<th align="right">rate_onset</th>
+<th align="right">rate_decline</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">GLORYS</td>
+<td align="left">CBS</td>
+<td align="right">8</td>
+<td align="left">1999-05-18</td>
+<td align="left">1999-05-24</td>
+<td align="left">1999-07-11</td>
+<td align="right">55</td>
+<td align="right">2.3509</td>
+<td align="right">129.2968</td>
+<td align="right">3.3311</td>
+<td align="right">0.3042</td>
+<td align="right">0.0358</td>
+</tr>
+<tr class="even">
+<td align="left">GLORYS</td>
+<td align="left">CBS</td>
+<td align="right">22</td>
+<td align="left">2010-12-14</td>
+<td align="left">2010-12-28</td>
+<td align="left">2011-02-13</td>
+<td align="right">62</td>
+<td align="right">1.4210</td>
+<td align="right">88.1017</td>
+<td align="right">1.7336</td>
+<td align="right">0.0387</td>
+<td align="right">0.0165</td>
+</tr>
+<tr class="odd">
+<td align="left">GLORYS</td>
+<td align="left">CBS</td>
+<td align="right">27</td>
+<td align="left">2012-04-15</td>
+<td align="left">2012-05-25</td>
+<td align="left">2012-06-05</td>
+<td align="right">52</td>
+<td align="right">1.7086</td>
+<td align="right">88.8481</td>
+<td align="right">2.2792</td>
+<td align="right">0.0309</td>
+<td align="right">0.0667</td>
+</tr>
+<tr class="even">
+<td align="left">OISST</td>
+<td align="left">CBS</td>
+<td align="right">4</td>
+<td align="left">1999-05-16</td>
+<td align="left">1999-06-14</td>
+<td align="left">1999-07-04</td>
+<td align="right">50</td>
+<td align="right">2.5021</td>
+<td align="right">125.1048</td>
+<td align="right">3.1152</td>
+<td align="right">0.0596</td>
+<td align="right">0.0622</td>
+</tr>
+<tr class="odd">
+<td align="left">OISST</td>
+<td align="left">CBS</td>
+<td align="right">18</td>
+<td align="left">2010-12-16</td>
+<td align="left">2010-12-22</td>
+<td align="left">2011-02-09</td>
+<td align="right">56</td>
+<td align="right">1.4371</td>
+<td align="right">80.4803</td>
+<td align="right">1.9617</td>
+<td align="right">0.1028</td>
+<td align="right">0.0223</td>
+</tr>
+<tr class="even">
+<td align="left">OISST</td>
+<td align="left">CBS</td>
+<td align="right">26</td>
+<td align="left">2012-08-04</td>
+<td align="left">2012-08-28</td>
+<td align="left">2012-08-31</td>
+<td align="right">28</td>
+<td align="right">2.5840</td>
+<td align="right">72.3513</td>
+<td align="right">3.2618</td>
+<td align="right">0.0637</td>
+<td align="right">0.4501</td>
+</tr>
+<tr class="odd">
+<td align="left">GLORYS</td>
+<td align="left">GM</td>
+<td align="right">16</td>
+<td align="left">2012-04-11</td>
+<td align="left">2012-05-28</td>
+<td align="left">2012-06-04</td>
+<td align="right">55</td>
+<td align="right">1.9869</td>
+<td align="right">109.2778</td>
+<td align="right">3.6064</td>
+<td align="right">0.0511</td>
+<td align="right">0.3032</td>
+</tr>
+<tr class="even">
+<td align="left">GLORYS</td>
+<td align="left">GM</td>
+<td align="right">32</td>
+<td align="left">2015-12-07</td>
+<td align="left">2015-12-27</td>
+<td align="left">2016-02-12</td>
+<td align="right">68</td>
+<td align="right">1.6870</td>
+<td align="right">114.7178</td>
+<td align="right">2.0200</td>
+<td align="right">0.0262</td>
+<td align="right">0.0163</td>
+</tr>
+<tr class="odd">
+<td align="left">GLORYS</td>
+<td align="left">GM</td>
+<td align="right">42</td>
+<td align="left">2018-08-05</td>
+<td align="left">2018-08-17</td>
+<td align="left">2018-09-23</td>
+<td align="right">50</td>
+<td align="right">2.2495</td>
+<td align="right">112.4762</td>
+<td align="right">2.8637</td>
+<td align="right">0.1101</td>
+<td align="right">0.0303</td>
+</tr>
+<tr class="even">
+<td align="left">OISST</td>
+<td align="left">GM</td>
+<td align="right">17</td>
+<td align="left">2012-06-19</td>
+<td align="left">2012-06-22</td>
+<td align="left">2012-07-23</td>
+<td align="right">35</td>
+<td align="right">2.0946</td>
+<td align="right">73.3107</td>
+<td align="right">2.9133</td>
+<td align="right">0.3867</td>
+<td align="right">0.0448</td>
+</tr>
+<tr class="odd">
+<td align="left">OISST</td>
+<td align="left">GM</td>
+<td align="right">34</td>
+<td align="left">2015-12-12</td>
+<td align="left">2015-12-27</td>
+<td align="left">2016-01-18</td>
+<td align="right">38</td>
+<td align="right">1.7600</td>
+<td align="right">66.8781</td>
+<td align="right">2.3284</td>
+<td align="right">0.0693</td>
+<td align="right">0.0463</td>
+</tr>
+<tr class="even">
+<td align="left">OISST</td>
+<td align="left">GM</td>
+<td align="right">43</td>
+<td align="left">2017-10-09</td>
+<td align="left">2017-10-23</td>
+<td align="left">2017-11-19</td>
+<td align="right">42</td>
+<td align="right">1.8962</td>
+<td align="right">79.6388</td>
+<td align="right">2.3393</td>
+<td align="right">0.0530</td>
+<td align="right">0.0350</td>
+</tr>
+<tr class="odd">
+<td align="left">GLORYS</td>
+<td align="left">GSL</td>
+<td align="right">6</td>
+<td align="left">2006-05-02</td>
+<td align="left">2006-05-16</td>
+<td align="left">2006-06-08</td>
+<td align="right">38</td>
+<td align="right">2.0900</td>
+<td align="right">79.4199</td>
+<td align="right">3.0976</td>
+<td align="right">0.1162</td>
+<td align="right">0.0598</td>
+</tr>
+<tr class="even">
+<td align="left">GLORYS</td>
+<td align="left">GSL</td>
+<td align="right">15</td>
+<td align="left">2010-02-19</td>
+<td align="left">2010-04-26</td>
+<td align="left">2010-05-06</td>
+<td align="right">77</td>
+<td align="right">1.2746</td>
+<td align="right">98.1421</td>
+<td align="right">2.3029</td>
+<td align="right">0.0274</td>
+<td align="right">0.0765</td>
+</tr>
+<tr class="odd">
+<td align="left">GLORYS</td>
+<td align="left">GSL</td>
+<td align="right">18</td>
+<td align="left">2010-12-03</td>
+<td align="left">2010-12-24</td>
+<td align="left">2011-03-08</td>
+<td align="right">96</td>
+<td align="right">1.4750</td>
+<td align="right">141.6043</td>
+<td align="right">2.3004</td>
+<td align="right">0.0571</td>
+<td align="right">0.0249</td>
+</tr>
+<tr class="even">
+<td align="left">OISST</td>
+<td align="left">GSL</td>
+<td align="right">21</td>
+<td align="left">2010-12-03</td>
+<td align="left">2011-01-03</td>
+<td align="left">2011-02-09</td>
+<td align="right">69</td>
+<td align="right">1.5174</td>
+<td align="right">104.7007</td>
+<td align="right">2.4713</td>
+<td align="right">0.0401</td>
+<td align="right">0.0564</td>
+</tr>
+<tr class="odd">
+<td align="left">OISST</td>
+<td align="left">GSL</td>
+<td align="right">29</td>
+<td align="left">2012-07-28</td>
+<td align="left">2012-08-27</td>
+<td align="left">2012-08-31</td>
+<td align="right">35</td>
+<td align="right">2.3871</td>
+<td align="right">83.5492</td>
+<td align="right">3.3643</td>
+<td align="right">0.0654</td>
+<td align="right">0.4422</td>
+</tr>
+<tr class="even">
+<td align="left">OISST</td>
+<td align="left">GSL</td>
+<td align="right">46</td>
+<td align="left">2016-11-14</td>
+<td align="left">2016-11-20</td>
+<td align="left">2016-12-12</td>
+<td align="right">29</td>
+<td align="right">1.8367</td>
+<td align="right">53.2636</td>
+<td align="right">2.2982</td>
+<td align="right">0.1520</td>
+<td align="right">0.0532</td>
+</tr>
+<tr class="odd">
+<td align="left">GLORYS</td>
+<td align="left">MAB</td>
+<td align="right">23</td>
+<td align="left">2012-02-18</td>
+<td align="left">2012-03-24</td>
+<td align="left">2012-04-11</td>
+<td align="right">54</td>
+<td align="right">2.2572</td>
+<td align="right">121.8880</td>
+<td align="right">3.9615</td>
+<td align="right">0.0718</td>
+<td align="right">0.1235</td>
+</tr>
+<tr class="even">
+<td align="left">GLORYS</td>
+<td align="left">MAB</td>
+<td align="right">24</td>
+<td align="left">2012-04-16</td>
+<td align="left">2012-04-21</td>
+<td align="left">2012-06-04</td>
+<td align="right">50</td>
+<td align="right">2.0551</td>
+<td align="right">102.7560</td>
+<td align="right">2.7504</td>
+<td align="right">0.1934</td>
+<td align="right">0.0296</td>
+</tr>
+<tr class="odd">
+<td align="left">GLORYS</td>
+<td align="left">MAB</td>
+<td align="right">38</td>
+<td align="left">2015-11-03</td>
+<td align="left">2015-12-31</td>
+<td align="left">2016-01-19</td>
+<td align="right">78</td>
+<td align="right">2.1563</td>
+<td align="right">168.1888</td>
+<td align="right">3.2791</td>
+<td align="right">0.0351</td>
+<td align="right">0.0867</td>
+</tr>
+<tr class="even">
+<td align="left">OISST</td>
+<td align="left">MAB</td>
+<td align="right">23</td>
+<td align="left">2012-02-17</td>
+<td align="left">2012-03-22</td>
+<td align="left">2012-06-03</td>
+<td align="right">108</td>
+<td align="right">2.1561</td>
+<td align="right">232.8615</td>
+<td align="right">4.1560</td>
+<td align="right">0.0819</td>
+<td align="right">0.0309</td>
+</tr>
+<tr class="odd">
+<td align="left">OISST</td>
+<td align="left">MAB</td>
+<td align="right">37</td>
+<td align="left">2015-08-16</td>
+<td align="left">2015-09-10</td>
+<td align="left">2015-09-25</td>
+<td align="right">41</td>
+<td align="right">1.8399</td>
+<td align="right">75.4360</td>
+<td align="right">2.5657</td>
+<td align="right">0.0566</td>
+<td align="right">0.0792</td>
+</tr>
+<tr class="even">
+<td align="left">OISST</td>
+<td align="left">MAB</td>
+<td align="right">39</td>
+<td align="left">2015-12-10</td>
+<td align="left">2015-12-30</td>
+<td align="left">2016-01-06</td>
+<td align="right">28</td>
+<td align="right">2.3940</td>
+<td align="right">67.0311</td>
+<td align="right">3.2992</td>
+<td align="right">0.0972</td>
+<td align="right">0.2332</td>
+</tr>
+<tr class="odd">
+<td align="left">GLORYS</td>
+<td align="left">NFS</td>
+<td align="right">18</td>
+<td align="left">2006-04-16</td>
+<td align="left">2006-05-09</td>
+<td align="left">2006-06-16</td>
+<td align="right">62</td>
+<td align="right">1.7691</td>
+<td align="right">109.6832</td>
+<td align="right">3.0425</td>
+<td align="right">0.0906</td>
+<td align="right">0.0393</td>
+</tr>
+<tr class="even">
+<td align="left">GLORYS</td>
+<td align="left">NFS</td>
+<td align="right">26</td>
+<td align="left">2010-12-15</td>
+<td align="left">2011-01-10</td>
+<td align="left">2011-03-25</td>
+<td align="right">101</td>
+<td align="right">1.4222</td>
+<td align="right">143.6379</td>
+<td align="right">1.9973</td>
+<td align="right">0.0353</td>
+<td align="right">0.0157</td>
+</tr>
+<tr class="odd">
+<td align="left">GLORYS</td>
+<td align="left">NFS</td>
+<td align="right">33</td>
+<td align="left">2012-07-30</td>
+<td align="left">2012-08-12</td>
+<td align="left">2012-11-19</td>
+<td align="right">113</td>
+<td align="right">2.0479</td>
+<td align="right">231.4079</td>
+<td align="right">3.0709</td>
+<td align="right">0.0941</td>
+<td align="right">0.0183</td>
+</tr>
+<tr class="even">
+<td align="left">OISST</td>
+<td align="left">NFS</td>
+<td align="right">22</td>
+<td align="left">2010-12-05</td>
+<td align="left">2011-01-09</td>
+<td align="left">2011-02-13</td>
+<td align="right">71</td>
+<td align="right">1.6389</td>
+<td align="right">116.3617</td>
+<td align="right">2.0624</td>
+<td align="right">0.0216</td>
+<td align="right">0.0384</td>
+</tr>
+<tr class="odd">
+<td align="left">OISST</td>
+<td align="left">NFS</td>
+<td align="right">34</td>
+<td align="left">2012-07-25</td>
+<td align="left">2012-08-08</td>
+<td align="left">2012-10-21</td>
+<td align="right">89</td>
+<td align="right">2.2454</td>
+<td align="right">199.8377</td>
+<td align="right">3.3696</td>
+<td align="right">0.1215</td>
+<td align="right">0.0294</td>
+</tr>
+<tr class="even">
+<td align="left">OISST</td>
+<td align="left">NFS</td>
+<td align="right">41</td>
+<td align="left">2014-07-26</td>
+<td align="left">2014-07-31</td>
+<td align="left">2014-08-28</td>
+<td align="right">34</td>
+<td align="right">2.1607</td>
+<td align="right">73.4632</td>
+<td align="right">3.6401</td>
+<td align="right">0.3917</td>
+<td align="right">0.0916</td>
+</tr>
+<tr class="odd">
+<td align="left">GLORYS</td>
+<td align="left">SS</td>
+<td align="right">13</td>
+<td align="left">2012-04-15</td>
+<td align="left">2012-05-28</td>
+<td align="left">2012-06-26</td>
+<td align="right">73</td>
+<td align="right">1.9321</td>
+<td align="right">141.0404</td>
+<td align="right">3.3902</td>
+<td align="right">0.0503</td>
+<td align="right">0.0700</td>
+</tr>
+<tr class="even">
+<td align="left">GLORYS</td>
+<td align="left">SS</td>
+<td align="right">36</td>
+<td align="left">2017-10-25</td>
+<td align="left">2017-11-07</td>
+<td align="left">2017-12-21</td>
+<td align="right">58</td>
+<td align="right">2.2008</td>
+<td align="right">127.6466</td>
+<td align="right">2.7477</td>
+<td align="right">0.0797</td>
+<td align="right">0.0271</td>
+</tr>
+<tr class="odd">
+<td align="left">GLORYS</td>
+<td align="left">SS</td>
+<td align="right">37</td>
+<td align="left">2018-02-19</td>
+<td align="left">2018-03-08</td>
+<td align="left">2018-04-20</td>
+<td align="right">61</td>
+<td align="right">2.0423</td>
+<td align="right">124.5817</td>
+<td align="right">3.0536</td>
+<td align="right">0.1007</td>
+<td align="right">0.0439</td>
+</tr>
+<tr class="even">
+<td align="left">OISST</td>
+<td align="left">SS</td>
+<td align="right">38</td>
+<td align="left">2017-10-15</td>
+<td align="left">2017-11-09</td>
+<td align="left">2017-12-27</td>
+<td align="right">74</td>
+<td align="right">2.2502</td>
+<td align="right">166.5145</td>
+<td align="right">3.1673</td>
+<td align="right">0.0561</td>
+<td align="right">0.0337</td>
+</tr>
+<tr class="odd">
+<td align="left">OISST</td>
+<td align="left">SS</td>
+<td align="right">39</td>
+<td align="left">2018-02-12</td>
+<td align="left">2018-03-16</td>
+<td align="left">2018-04-18</td>
+<td align="right">66</td>
+<td align="right">1.9329</td>
+<td align="right">127.5724</td>
+<td align="right">2.7081</td>
+<td align="right">0.0424</td>
+<td align="right">0.0439</td>
+</tr>
+<tr class="even">
+<td align="left">OISST</td>
+<td align="left">SS</td>
+<td align="right">41</td>
+<td align="left">2018-08-06</td>
+<td align="left">2018-09-19</td>
+<td align="left">2018-09-24</td>
+<td align="right">50</td>
+<td align="right">2.1982</td>
+<td align="right">109.9079</td>
+<td align="right">2.8985</td>
+<td align="right">0.0321</td>
+<td align="right">0.2148</td>
+</tr>
+</tbody>
+</table>
+<p>From the figures and tables output from this comparison analysis we may see that there are some larger differences than were expected. Most importantly perhaps is the the MHWs in the OISST data are more numerous, intense, and shorter in duration. It appears that the GLORYS data assimilation methodology smooths the data more than what we see in the remotely sensed SST. In the peer-reviewed write-up this difference between OISST and GLORYS smoothness will need to be discussed. I think it still best to use the GLORYS data as the SST should match more closely to the flux terms considering they are also likely smoothed more than a different more direct sensing would report. There are arguments for and against the use of the SST from GLORYS or NOAA but looking at the SOM results with the different SST products it appears that the OISST allows for more meaningful nodes. So I’m now swapping out the GLORYS SST for NOAA and will see if the correlation results still hold up. (They did)</p>
 </div>
 <div id="region-clims-anoms-per-variable" class="section level2">
 <h2>Region clims + anoms per variable</h2>
@@ -2322,39 +3768,41 @@ attached base packages:
 
 other attached packages:
  [1] FNN_1.1.3            gridExtra_2.3        ggpubr_0.4.0        
- [4] doParallel_1.0.15    iterators_1.0.12     foreach_1.5.0       
+ [4] doParallel_1.0.16    iterators_1.0.13     foreach_1.5.1       
  [7] Metrics_0.1.4        yasomi_0.3           proxy_0.4-24        
-[10] e1071_1.7-3          ggraph_2.0.3         correlation_0.4.0   
-[13] tidync_0.2.4         heatwaveR_0.4.4.9001 lubridate_1.7.9     
+[10] e1071_1.7-4          ggraph_2.0.3         correlation_0.4.0   
+[13] tidync_0.2.4         heatwaveR_0.4.4.9004 lubridate_1.7.9.2   
 [16] data.table_1.13.2    forcats_0.5.0        stringr_1.4.0       
-[19] dplyr_1.0.2          purrr_0.3.4          readr_1.3.1         
+[19] dplyr_1.0.2          purrr_0.3.4          readr_1.4.0         
 [22] tidyr_1.1.2          tibble_3.0.4         ggplot2_3.3.2       
 [25] tidyverse_1.3.0     
 
 loaded via a namespace (and not attached):
- [1] colorspace_1.4-1   ggsignif_0.6.0     ellipsis_0.3.1     class_7.3-17      
- [5] rio_0.5.16         rprojroot_1.3-2    parameters_0.8.2   fs_1.5.0          
- [9] rstudioapi_0.11    farver_2.0.3       graphlayouts_0.7.0 ggrepel_0.8.2     
-[13] fansi_0.4.1        xml2_1.3.2         codetools_0.2-16   ncdf4_1.17        
-[17] knitr_1.29         polyclip_1.10-0    jsonlite_1.7.1     workflowr_1.6.2   
-[21] broom_0.7.0        dbplyr_1.4.4       ggforce_0.3.2      effectsize_0.3.2  
-[25] compiler_4.0.3     httr_1.4.2         backports_1.1.10   assertthat_0.2.1  
-[29] lazyeval_0.2.2     cli_2.1.0          later_1.1.0.1      tweenr_1.0.1      
-[33] htmltools_0.5.0    tools_4.0.3        igraph_1.2.6       gtable_0.3.0      
-[37] glue_1.4.2         Rcpp_1.0.5         carData_3.0-4      cellranger_1.1.0  
-[41] RNetCDF_2.3-1      vctrs_0.3.4        insight_0.9.0      xfun_0.16         
-[45] openxlsx_4.1.5     rvest_0.3.6        lifecycle_0.2.0    ncmeta_0.2.5      
-[49] rstatix_0.6.0      MASS_7.3-53        scales_1.1.1       tidygraph_1.2.0   
-[53] hms_0.5.3          promises_1.1.1     yaml_2.2.1         curl_4.3          
-[57] stringi_1.5.3      highr_0.8          bayestestR_0.7.2   zip_2.0.4         
-[61] rlang_0.4.8        pkgconfig_2.0.3    evaluate_0.14      labeling_0.4.2    
-[65] htmlwidgets_1.5.2  tidyselect_1.1.0   magrittr_1.5       R6_2.5.0          
-[69] generics_0.1.0     DBI_1.1.0          pillar_1.4.6       haven_2.3.1       
-[73] whisker_0.4        foreign_0.8-79     withr_2.3.0        abind_1.4-5       
-[77] modelr_0.1.8       crayon_1.3.4       car_3.0-8          utf8_1.1.4        
-[81] plotly_4.9.2.1     rmarkdown_2.3      viridis_0.5.1      grid_4.0.3        
-[85] readxl_1.3.1       blob_1.2.1         git2r_0.27.1       reprex_0.3.0      
-[89] digest_0.6.27      httpuv_1.5.4       munsell_0.5.0      viridisLite_0.3.0 </code></pre>
+ [1] colorspace_2.0-0   ggsignif_0.6.0     ellipsis_0.3.1     class_7.3-17      
+ [5] rio_0.5.16         rprojroot_2.0.2    parameters_0.9.0   fs_1.5.0          
+ [9] rstudioapi_0.13    farver_2.0.3       graphlayouts_0.7.1 ggrepel_0.8.2     
+[13] fansi_0.4.1        xml2_1.3.2         splines_4.0.3      codetools_0.2-18  
+[17] ncdf4_1.17         knitr_1.30         polyclip_1.10-0    jsonlite_1.7.1    
+[21] workflowr_1.6.2    broom_0.7.2        dbplyr_2.0.0       ggforce_0.3.2     
+[25] effectsize_0.4.0   compiler_4.0.3     httr_1.4.2         backports_1.2.0   
+[29] Matrix_1.2-18      assertthat_0.2.1   lazyeval_0.2.2     cli_2.1.0         
+[33] later_1.1.0.1      tweenr_1.0.1       htmltools_0.5.0    tools_4.0.3       
+[37] igraph_1.2.6       gtable_0.3.0       glue_1.4.2         Rcpp_1.0.5        
+[41] carData_3.0-4      cellranger_1.1.0   RNetCDF_2.4-2      vctrs_0.3.5       
+[45] nlme_3.1-150       insight_0.10.0     xfun_0.19          openxlsx_4.2.3    
+[49] rvest_0.3.6        lifecycle_0.2.0    ncmeta_0.3.0       rstatix_0.6.0     
+[53] MASS_7.3-53        scales_1.1.1       tidygraph_1.2.0    hms_0.5.3         
+[57] promises_1.1.1     yaml_2.2.1         curl_4.3           stringi_1.5.3     
+[61] highr_0.8          bayestestR_0.7.5   zip_2.1.1          rlang_0.4.8       
+[65] pkgconfig_2.0.3    lattice_0.20-41    evaluate_0.14      labeling_0.4.2    
+[69] htmlwidgets_1.5.2  cowplot_1.1.0      tidyselect_1.1.0   magrittr_2.0.1    
+[73] R6_2.5.0           generics_0.1.0     DBI_1.1.0          mgcv_1.8-33       
+[77] pillar_1.4.6       haven_2.3.1        whisker_0.4        foreign_0.8-79    
+[81] withr_2.3.0        abind_1.4-5        modelr_0.1.8       crayon_1.3.4      
+[85] car_3.0-10         utf8_1.1.4         plotly_4.9.2.1     rmarkdown_2.5     
+[89] viridis_0.5.1      grid_4.0.3         readxl_1.3.1       git2r_0.27.1      
+[93] reprex_0.3.0       digest_0.6.27      httpuv_1.5.4       munsell_0.5.0     
+[97] viridisLite_0.3.0 </code></pre>
 </div>
 </div>
 
@@ -2381,7 +3829,7 @@ footer is added to webpages before the MathJax javascript. -->
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
 }
 $(document).ready(function () {
   bootstrapStylePandocTables();
