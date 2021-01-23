@@ -88,6 +88,60 @@ saveRDS(som, file = "data/som.Rda")
 A reviewer of the manuscript noted that the MHWs appear to be clustered closely together both within and across regions. This is by design in the methodology, but just how exactly these events cluster together in the SOM nodes warrants further investigation. The answer of how closely events cluster together within each region was answered in the [MHWs vs. heat flux](https://robwschlegel.github.io/MHWflux/mhw-flux.html#Small_events_and_the_shoaling_MLD) vignette. In this section we will first create an index of MHWs that can be said to be occurring across multiple regions at once. We then look to see how often these events are clustered into the same, or different nodes.
 
 ```{r event-cluster}
+# Double for loop to crawl through events and find overlapping events
+# So hideous...
+event_overlap_res <- data.frame()
+for(i in 1:nrow(OISST_MHW_event)){
+  df1 <- OISST_MHW_event[i,]
+  df1_dates <- seq(df1$date_start, df1$date_end, by = "day")
+  OISST_MHW_event_sub <- filter(OISST_MHW_event, region != df1$region)
+  for(j in 1:nrow(OISST_MHW_event_sub)){
+    df2 <- OISST_MHW_event_sub[j,]
+    df2_dates <- seq(df2$date_start, df2$date_end, by = "day")
+    if(any(df2_dates %in% df1_dates)){
+      event_overlap <- df2 %>% 
+        dplyr::rename(region_match = region, 
+                      event_no_match = event_no,
+                      duration_match = duration) %>% 
+        mutate(region = df1$region,
+               event_no = df1$event_no,
+               duration = df1$duration,
+               date_peak_orig = df1$date_peak) %>% 
+        dplyr::select(region, event_no, duration, region_match, 
+                      event_no_match, duration_match:date_end, date_peak_orig) %>% 
+        mutate(strng1 = paste(region, event_no, region_match, event_no_match),
+               strng2 = paste(region_match, event_no_match, region, event_no))
+      
+      # Check that the pairing hasn't already been counted
+      if(!event_overlap$strng2 %in% event_overlap_res$strng1){
+        event_overlap_res <- rbind(event_overlap_res, event_overlap)
+      }
+    }
+  }
+}; rm(i, j)
+
+
+  event_overlap <- OISST_MHW_event %>% 
+    dplyr::rename(region_match = region, 
+                  event_no_match = event_no,
+                  duration_match = duration) %>% 
+    filter(date_start %in% seq(df$date_start, df$date_end, by = "day"),
+           date_end %in% seq(df$date_start, df$date_end, by = "day")) %>%
+    mutate(region = df$region,
+           event_no = df$event_no,
+           duration = df$duration,
+           date_peak_orig = df$date_peak) %>% 
+    dplyr::select(region, event_no, duration, region_match, event_no_match, duration_match:date_end, date_peak_orig) %>%
+    # Remove self-matched events
+    filter(paste(region, event_no) != paste(region_match, event_no_match)) %>% 
+    # Remove events that have already been counted
+    mutate(strng3 = paste(region, event_no, region_match, event_no_match),
+           strng4 = paste(region_match, event_no_match, region, event_no)) %>% 
+    filter(!strng4 %in% event_overlap_res$strng3)
+
+  # Combine
+  event_overlap_res <- rbind(event_overlap, event_overlap_res)
+
 # Convenience wrapper for creating index of overlapping events
 overlap_check <- function(df){
   event_overlap <- OISST_MHW_event %>% 
@@ -104,7 +158,7 @@ overlap_check <- function(df){
     # Remove self-matched events
     filter(paste(region, event_no) != paste(region_match, event_no_match))
 }
-event_overlap_res <- plyr::ddply(OISST_MHW_event, c("region", "event_no"), overlap_check, .parallel = T) %>% 
+event_overlap_tidy <- plyr::ddply(OISST_MHW_event, c("region", "event_no"), overlap_check, .parallel = T) %>% 
   # Remove duplicates
   mutate(strng1 = paste(region, event_no),
          strng2 = paste(region_match, event_no_match),
