@@ -85,9 +85,12 @@ saveRDS(som, file = "data/som.Rda")
 
 ## Investigate clustering of MHWs
 
-A reviewer of the manuscript noted that the MHWs appear to be clustered closely together both within and across regions. This is by design in the methodology, but just how exactly these events cluster together in the SOM nodes warrants further investigation. In this section we will first create an index of MHWs that can be said to be occurring across multiple regions at once. We then look to see how often these events are clustered into the same, or different nodes.
+A reviewer of the manuscript noted that the MHWs appear to be clustered closely together both within and across regions. This is by design in the methodology, but just how exactly these events cluster together in the SOM nodes warrants further investigation. The answer of how closely events cluster together within each region was answered in the [MHWs vs. heat flux]() vignette. In this section we will first create an index of MHWs that can be said to be occurring across multiple regions at once. We then look to see how often these events are clustered into the same, or different nodes.
 
 ```{r event-cluster}
+# Based on start and end dates of events, find overlap across regions
+
+
 
 ```
 
