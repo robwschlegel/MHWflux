@@ -224,19 +224,42 @@ Above we have plotted histograms of the cumulative and mean MLD anomaly on days 
 Perhaps there is a relationship between the length of the gap and the MLD anomaly?
 
 ```{r MLD-shoal-5}
-MLD_res %>% 
+trend_cum <- MLD_res %>% 
   ggplot(aes(x = as.integer(days), y = anom_cum)) +
   geom_point(aes(colour = region)) +
-  geom_smooth(method = "lm", se = F, aes(colour = region))
-  # geom_histogram(aes(x = anom_cum, fill = region), 
-                 # bins = 10, show.legend = F) +
-  # facet_wrap(~region)
+  geom_smooth(method = "lm", se = F, aes(colour = region)) +
+  labs(y = "Cumulative anomaly (°C days)", x = "Gap between MHWs (days)")
+trend_mean <- MLD_res %>% 
+  ggplot(aes(x = as.integer(days), y = anom_mean)) +
+  geom_point(aes(colour = region)) +
+  geom_smooth(method = "lm", se = F, aes(colour = region)) +
+  labs(y = "Mean anomaly (°C)", x = "Gap between MHWs (days)")
+ggpubr::ggarrange(trend_cum, trend_mean, ncol = 1, common.legend = T)
 ```
 
-But this doesn't quite answer the issue that was posed. Remember that specifically the concern was about very short event occurring close in time to each other. So as a final step we will filter the results from above to only show when at least one of the two events was shorter than 10 days (double the absolute minimum length of five days).
+Again we've shown here the cumulative and mean MLD anomalies during the gapos in events, but this time as dot plots with linear models showing the trend. The standard error of the trends has not been included here because they are so massive. It is very safe to say that none of these trends are significant. There appears to be a bit of a trend in the Gulf of Maine cumulative MLD anomalies with larger gaps between MHWs, but this would be expected by virtue of a larger sample size. The fact that not more of the regions show a trend is what is most interesting. In the mean anomalies we see almost no slope in any regions as the gaps increase or decrease. Looking at the dots in the plot we may see that this is due to the noise in the results.
+
+But this doesn't quite answer the issue that was posed. Remember that the concern specifically was about very short events occurring close in time to each other. So as a final step we will filter the results from above to only show when two events shorter than 10 days (double the absolute minimum length of five days) occur within two weeks of each other.
 
 ```{r MLD-shoal-6}
+# Cumulative values
+MLD_res %>% 
+  filter(event_1_dur <= 10 & event_2_dur <= 10) %>% 
+  pivot_longer(anom_cum:anom_mean) %>% 
+  ggplot() +
+  geom_histogram(aes(x = value, fill = region), 
+                 bins = 10, show.legend = F) +
+  facet_grid(name~region)
 
+# Mean values
+hist_mean <- MLD_res %>% 
+  ggplot() +
+  geom_histogram(aes(x = anom_mean, fill = region), 
+                 bins = 10, show.legend = F) +
+  facet_wrap(~region)
+
+# Combine intoa single plot
+ggpubr::ggarrange(hist_cum, hist_mean, ncol = 1)
 ```
 
 
