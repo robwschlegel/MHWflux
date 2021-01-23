@@ -660,7 +660,7 @@ ggsave("figures/fig_7.pdf", fig_7, height = 180, width = 180, units = "mm")
 SOM_info <- SOM$info
 
 # Assign nodes to each MHW and get mean+-sd metrics
-MHW_SOM <- left_join(OISST_MHW_event, SOM_info, by = c("region", "event_no")) %>% 
+MHW_SOM_node <- left_join(OISST_MHW_event, SOM_info, by = c("region", "event_no")) %>% 
   group_by(node) %>%
   mutate(count = n()) %>% 
   dplyr::select(node, count, duration, intensity_mean, intensity_max, intensity_cumulative) %>%
@@ -673,6 +673,24 @@ MHW_SOM <- left_join(OISST_MHW_event, SOM_info, by = c("region", "event_no")) %>
   unite("imean", intensity_mean_mean, intensity_mean_sd, sep = " ± ") %>% 
   unite("imax", intensity_max_mean, intensity_max_sd, sep = " ± ") %>% 
   unite("icum", intensity_cumulative_mean, intensity_cumulative_sd, sep = " ± ")
+
+# Get total man+-sd metrics and rbind node specific metrics
+MHW_SOM <- left_join(OISST_MHW_event, SOM_info, by = c("region", "event_no")) %>% 
+  mutate(node = 1) %>% 
+  group_by(node) %>%
+  mutate(count = n()) %>% 
+  dplyr::select(node, count, duration, intensity_mean, intensity_max, intensity_cumulative) %>%
+  summarise_all(c("mean", "sd")) %>% 
+  mutate_all(round, 1) %>% 
+  mutate(node = "Total") %>%
+  dplyr::rename(count = count_mean) %>% 
+  dplyr::select(-count_sd) %>% 
+  unite("D", duration_mean, duration_sd, sep = " ± ") %>% 
+  unite("imean", intensity_mean_mean, intensity_mean_sd, sep = " ± ") %>% 
+  unite("imax", intensity_max_mean, intensity_max_sd, sep = " ± ") %>% 
+  unite("icum", intensity_cumulative_mean, intensity_cumulative_sd, sep = " ± ") %>% 
+  rbind(MHW_SOM_node)
+
 write_csv(MHW_SOM, "figures/tab_4.csv")
 tab_4 <- knitr::kable(MHW_SOM)
 tab_4
