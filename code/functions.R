@@ -33,6 +33,7 @@ library(correlation)
 library(ggraph)
 library(yasomi)
 library(Metrics) # For RMSE calculations
+library(FNN)
 
 # Set number of cores
 library(doParallel); registerDoParallel(cores = 50)

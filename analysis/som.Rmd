@@ -120,58 +120,6 @@ for(i in 1:nrow(OISST_MHW_event)){
   }
 }; rm(i, j)
 
-
-  event_overlap <- OISST_MHW_event %>% 
-    dplyr::rename(region_match = region, 
-                  event_no_match = event_no,
-                  duration_match = duration) %>% 
-    filter(date_start %in% seq(df$date_start, df$date_end, by = "day"),
-           date_end %in% seq(df$date_start, df$date_end, by = "day")) %>%
-    mutate(region = df$region,
-           event_no = df$event_no,
-           duration = df$duration,
-           date_peak_orig = df$date_peak) %>% 
-    dplyr::select(region, event_no, duration, region_match, event_no_match, duration_match:date_end, date_peak_orig) %>%
-    # Remove self-matched events
-    filter(paste(region, event_no) != paste(region_match, event_no_match)) %>% 
-    # Remove events that have already been counted
-    mutate(strng3 = paste(region, event_no, region_match, event_no_match),
-           strng4 = paste(region_match, event_no_match, region, event_no)) %>% 
-    filter(!strng4 %in% event_overlap_res$strng3)
-
-  # Combine
-  event_overlap_res <- rbind(event_overlap, event_overlap_res)
-
-# Convenience wrapper for creating index of overlapping events
-overlap_check <- function(df){
-  event_overlap <- OISST_MHW_event %>% 
-    dplyr::rename(region_match = region, 
-                  event_no_match = event_no,
-                  duration_match = duration) %>% 
-    filter(date_start <= df$date_peak[1],
-           date_end >= df$date_peak[1]) %>%
-        mutate(region = df$region,
-               event_no = df$event_no,
-               duration = df$duration,
-               date_peak_orig = df$date_peak) %>% 
-    dplyr::select(region, event_no, duration, region_match, event_no_match, duration_match:date_end, date_peak_orig) %>% 
-    # Remove self-matched events
-    filter(paste(region, event_no) != paste(region_match, event_no_match))
-}
-event_overlap_tidy <- plyr::ddply(OISST_MHW_event, c("region", "event_no"), overlap_check, .parallel = T) %>% 
-  # Remove duplicates
-  mutate(strng1 = paste(region, event_no),
-         strng2 = paste(region_match, event_no_match),
-         strng3 = paste(region, event_no, region_match, event_no_match),
-         strng4 = paste(region_match, event_no_match, region, event_no)) %>%
-  mutate(dup_idx = case_when(strng4 %in% strng3 & strng2 == strng1  ~ "check"))
-  # filter(!strng2 %in% strng1)
-  # filter(distinct(data.frame(.$strng1, .$strng2)))
-event_overlap_res$strng1 %in% event_overlap_res$strng2
-event_overlap_res[!base::duplicated(event_overlap_res[,c('strng1','strng2')]),]
-      # filter(paste(region, event_no) != paste(region_match, event_no_match),
-             # paste(region, event_no, region_match, event_no_match) != paste(region_match, event_no_match, region, event_no))
-
 # The events per node
 SOM <- readRDS("data/som.Rda")
 SOM_info <- SOM$info %>% 
@@ -182,16 +130,20 @@ event_overlap_node <- event_overlap_res %>%
   left_join(SOM_info[,c("region", "event_no", "node")], 
             by = c("region", "event_no")) %>% 
   left_join(SOM_info[,c("region", "event_no", "node")], 
-            by = c("region_match" = "region", "event_no_match" = "event_no"))
+            by = c("region_match" = "region", "event_no_match" = "event_no")) %>% 
+  mutate(match = node.x == node.y)
 
 # Get the total count of overlapping events clustered into the same node
-paste0(sum(event_overlap_node$node.x == event_overlap_node$node.y), "/",
+paste0(sum(event_overlap_node$match), "/",
        nrow(event_overlap_node))
+
+# The number of matched events not clustered together when one event is 10 days or shorter
+nrow(filter(event_overlap_node, match == FALSE, duration <= 10 | duration_match <= 10))
 ```
 
-This result shows us that of the 27 overlapping event pairs, 19 of them are clustered into the same nodes as one another. Looking through the results manually one may see that of the eight events that are not clustered together, one of the events is very short (<= 8 days), and with one exception (11 days) the other event is much longer (>= 17 days). We can conclude from this that when synoptic scale patterns are causing multiple MHWs simultaneously across regions that the SOM clusters these correctly, with the exception of when one of the events is very short. This is likely because the cause of the much shorter event is a more transient driver that isn't resolved as clearly in the mean synoptic state for the longer event.
+This result shows us that of the 321 overlapping event pairs, 190 of them are clustered into the same nodes as one another. Looking through the results manually one may see that many of the events that are not clustered together, one of the events is short and the other is longer. Indeed, of the 131 overlapping events that are not clustered together, for 74 of these pairs at least one of the events is 10 days or shorter in duration. We can conclude from this that when synoptic scale patterns are causing multiple MHWs simultaneously across regions that the SOM clusters these correctly, with the exception of when one of the events is very short. This is likely because the cause of the much shorter event is a more transient driver that isn't resolved as clearly in the mean synoptic state for the longer event.
 
-Another minor point raised by a reviewer was that the atmospheric pattern in Node I appears to precede that of Node L, and they wanted to know if the MHWs clustered into Node I actually were coming before those events in Node L, and that these two nodes were really just a continuation of a single atmospheric pattern. To determine this we find the gaps in occurrence of the start, peak, and end dates of the MHWs between these nodes. First, we can simply look at the results from the above chunk and confirm that there are indeed no events in Node I that overlap in time with Node L. In fact, Node L is the only node with no events that overlap between regions. Meaning that the pattern in Node L has an extremely localised effect on whichever region it is triggering a MHW in.
+Another minor point raised by a reviewer was that the atmospheric pattern in Node I appears to precede that of Node L, and they wanted to know if the MHWs clustered into Node I actually were coming before those events in Node L, and that these two nodes were really just a continuation of a single atmospheric pattern. To determine this we find the gaps in occurrence of the start, peak, and end dates of the MHWs between these nodes. First, we can simply look at the results from the above chunk and confirm that there are indeed no events in Node I that overlap in time with Node L.
 
 ```{r node-I-L}
 # Prep data
@@ -199,12 +151,42 @@ OISST_MHW_event_node <- left_join(OISST_MHW_event,
                                   SOM_info[,c("region", "event_no", "season_peak", "node")], 
                                   by = c("region", "event_no", "season" = "season_peak")) %>% 
   dplyr::select(region, event_no, node, duration, date_start:date_end)
-events_I <- filter(OISST_MHW_event_node, node == "I")
+events_I <- filter(OISST_MHW_event_node, node == "I") %>% 
+  left_join(event_overlap_node)
 events_L <- filter(OISST_MHW_event_node, node == "L")
 
-# Find gaps in time between events
+# Find the nearest occurring events between nodes
+dist_days <- function(df){
+  
+  # Convert dates to integers for FNN
+  df_int <- df %>% 
+    mutate(date_start = as.integer(date_start),
+           date_peak = as.integer(date_peak),
+           date_end = as.integer(date_end))
+  events_L_int <- events_L %>% 
+    mutate(date_start = as.integer(date_start),
+           date_peak = as.integer(date_peak),
+           date_end = as.integer(date_end))
+  
+  # Find nearest event
+  res <- events_L[as.numeric(knnx.index(as.matrix(events_L_int[,c("date_start", "date_peak", "date_end")]),
+                                        as.matrix(df_int[,c("date_start", "date_peak", "date_end")]), k = 1)),] %>% 
+    mutate(region_I = df$region,
+           event_no_I = df$event_no,
+           duration_I = df$duration,
+           date_start_I = df$date_start,
+           date_peak_I = df$date_peak,
+           date_end_I = df$date_end,
+           start_diff = date_start - date_end_I)
+  return(res)
+}
+event_day_dist <- plyr::ddply(events_I, c("region", "event_no"), dist_days)
+
+# The gaps between the nearest events between the nodes
+event_day_dist$start_diff[order(event_day_dist$start_diff)]
 ```
 
+From these results we see that the events occurring in Node I and L usually occurred very far apart from one another. Nearly two years or more in most cases. Remember that the average time distance between events in the MHWs for this study is ~ two months, so this is a very large difference relative to the average. We do however see that there are four values falling within one month of each other. Looking at these values more closely one sees that these are four events from Node I relating to two events in Node L as the Node I events are in two sets of two. Surprisingly, one of these near matches shows that the Node L event occurred before the two nearby Node I events. This implies that this massive low pressure system is moving the opposite direction than expected. Indeed, one of these backward matching events is in the same region, the Gulf of Maine, for both nodes. That warrants a closer look. GOing through the real day by day steps around these events we see that... 
 
 ## References
 
