@@ -83,5 +83,20 @@ saveRDS(som, file = "data/som.Rda")
 # saveRDS(som, file = "shiny/som.Rda")
 ```
 
+## Investigate clustering of MHWs
+
+A reviewer of the manuscript noted that the MHWs appear to be clustered closely together both within and across regions. This is by design in the methodology, but just how exactly these events cluster together in the SOM nodes warrants further investigation. In this section we will first create an index of MHWs that can be said to be occurring across multiple regions at once. We then look to see how often these events are clustered into the same, or different nodes.
+
+```{r event-cluster}
+
+```
+
+Another minor point raised by a reviewer was that the atmospheric pattern in Node I appears to precede that of Node L, and they wanted to know if the MHWs clustered into Node I actually were coming before those events in Node L, and that these two nodes were really just a continuation of a single atmospheric pattern. To determine this we find the gaps in occurrence of the start, peak, and end dates of the MHWs between these nodes.
+
+```{r node-I-L}
+
+```
+
+
 ## References
 

@@ -62,9 +62,7 @@ There are some really clear patterns coming through in the data. In particular S
 
 In the shiny app it also comes out that the longer events tend not to correlate strongly with a single variable. This is to be expected and supports the argument that very persistent MHWs are supported by a confluence of variables. How to parse that out is an interesting challenge.
 
-## Results
-
-### 12 hour offset
+## 12 hour offset
 
 While going through the data it was discovered that the OISST temperature values represent an average from midnight to midnight. This therefore puts them offset to the Qx variables, which were also being calculated over the same time period. But to compare the Qx terms to SST there should be a 12 hour offset, with the Qx variables preceding the SST, thereby representing the integral of time between daily SST values. So 12 hours were added to the heat flux variables before re-running the pipeline and recalculating all of the magnitude, RMSE, and correlation stats. In the code chunk below we compare the RMSE stats pre-12 hour shift and afterwards.
 
@@ -111,6 +109,17 @@ ALL_cor_stack %>%
 ```
 
 The new an improved method that correctly integrates Qx into SSTa creates much lower RMSE values for almost every variable and region. A smashing success.
+
+## Small events and the shoaling MLD
+
+An observation was made by one of the reviewers of the manuscript that there appear to be many small MHWs that occur close together. Events that barely peak out above the 90th percentile threshold before dropping back down. More importantly, some of these events appear to be close together in time when doing this, implying that some sort of preconditioning is at play, which was hypothesised to be a continuously shoaled MLD. While we acknowledge that the methods in this manuscript do not attempt to tackle the issue of preconditioning, it is certainly worth investigating the role of the MLD with these MHWs that appear perhaps as a skipping stone, hoping shallowly and rapidly along the curve of the 90th percentile threshold. In the following code we will find these shallow rapid events and relate them to the potential ongoing presence of an anomolously shallow (shoaled) MLD.
+
+```{r MLD-shoal}
+
+```
+
+
+## Results
 
 ### Magnitude of change summary
 
