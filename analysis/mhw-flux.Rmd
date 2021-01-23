@@ -242,26 +242,16 @@ Again we've shown here the cumulative and mean MLD anomalies during the gapos in
 But this doesn't quite answer the issue that was posed. Remember that the concern specifically was about very short events occurring close in time to each other. So as a final step we will filter the results from above to only show when two events shorter than 10 days (double the absolute minimum length of five days) occur within two weeks of each other.
 
 ```{r MLD-shoal-6}
-# Cumulative values
 MLD_res %>% 
   filter(event_1_dur <= 10 & event_2_dur <= 10) %>% 
   pivot_longer(anom_cum:anom_mean) %>% 
   ggplot() +
   geom_histogram(aes(x = value, fill = region), 
                  bins = 10, show.legend = F) +
-  facet_grid(name~region)
-
-# Mean values
-hist_mean <- MLD_res %>% 
-  ggplot() +
-  geom_histogram(aes(x = anom_mean, fill = region), 
-                 bins = 10, show.legend = F) +
-  facet_wrap(~region)
-
-# Combine intoa single plot
-ggpubr::ggarrange(hist_cum, hist_mean, ncol = 1)
+  facet_grid(region~name, scales = "free_x")
 ```
 
+Now these results are interesting. With the exception of two gaps between adjacent MHWs in the Mid-Atlantic Bight, and one in the Scotian Shelf, the MLD during the gaps between these shallow rapid events is always deeper than seasonally expected, not shallower, as was hypothesised. A possible explanation for this is that these shallow rapid MHWs are actually due to rapidly evolving thermal gradients at the surface. This argument is supported by the fact that of these 25 event pairings, seven of them were recorded in the Mid-Atlantic Bight, and seven were recorded in the Cabot Straight.
 
 ## Results
 
