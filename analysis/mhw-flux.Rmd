@@ -114,7 +114,128 @@ The new an improved method that correctly integrates Qx into SSTa creates much l
 
 An observation was made by one of the reviewers of the manuscript that there appear to be many small MHWs that occur close together. Events that barely peak out above the 90th percentile threshold before dropping back down. More importantly, some of these events appear to be close together in time when doing this, implying that some sort of preconditioning is at play, which was hypothesised to be a continuously shoaled MLD. While we acknowledge that the methods in this manuscript do not attempt to tackle the issue of preconditioning, it is certainly worth investigating the role of the MLD with these MHWs that appear perhaps as a skipping stone, hoping shallowly and rapidly along the curve of the 90th percentile threshold. In the following code we will find these shallow rapid events and relate them to the potential ongoing presence of an anomolously shallow (shoaled) MLD.
 
-```{r MLD-shoal}
+```{r MLD-shoal-1}
+# Find the gaps in days between events
+dist_days <- function(df){
+  res_df <- data.frame()
+  for(i in 1:nrow(df)-1){ # A for loop? I know right... is this even tidy code anymore!?
+    df_sub <- df[c(i,i+1),]
+    df_res <- data.frame(event_1 = df_sub$event_no[1],
+                         event_2 = df_sub$event_no[2],
+                         days = df_sub$date_start[2] - df_sub$date_end[1])
+    res_df <- rbind(res_df, df_res)
+  }
+  res_df <- na.omit(res_df)
+  return(res_df)
+}
+event_day_dist <- plyr::ddply(OISST_MHW_event, c("region"), dist_days)
+
+# Plot the distribution of differences in days between events
+event_day_dist %>% 
+  group_by(region) %>% 
+  mutate(count = n()) %>% 
+  filter(days <= 366) %>% # Let's ignore events more than a year apart
+  mutate(count_filter = n()) %>%
+  ggplot() +
+  geom_histogram(aes(x = as.integer(days), fill = region), 
+                 bins = 12, show.legend = F) +
+  geom_label(aes(x = 200, y = 10, label = paste0(count_filter,"/",count))) +
+  facet_wrap(~region)
+```
+
+Of the 291 MHWs detected in the data for this study, 254 of them occur within 366 days of another MHW in the same region. As we may see from the histogram above, most of these events are occurring within two months of another event within the same region. Let's zoom in on this behaviour and visualise the distribution of gaps between events occurring not more than two months apart.
+
+```{r MLD-shoal-2}
+event_day_dist %>% 
+  group_by(region) %>% 
+  mutate(count = n()) %>% 
+  filter(days <= 62) %>% # Let's ignore events more than a year apart
+  mutate(count_filter = n()) %>%
+  ggplot() +
+  geom_histogram(aes(x = as.integer(days), fill = region), 
+                 bins = 10, show.legend = F) +
+  geom_label(aes(x = 30, y = 5, label = paste0(count_filter,"/",count))) +
+  facet_wrap(~region)
+```
+
+The above histogram shows us that for the events that are occurring within two months of another month, there is a tendency for the events to occur within one or two weeks of another event. For our main goal here of relating temporally adjacent MHWs to a shoaled MLD we will use a two week filter. This limits the sample to 83 MHWs.
+
+```{r MLD-shoal-3}
+# Subset events
+event_day_dist_sub <- event_day_dist %>% 
+  filter(days <= 14) %>% 
+  mutate(plyr_idx = 1:n()) # For parallel processing
+  # dplyr::select(-days) %>% 
+  # pivot_longer(event_1:event_2, names_to = "event_no")
+
+# Function for calculating the MLD anomaly between neighbouring MHWs
+MLD_neighbour <- function(df){
+  
+  # Filter out the two events being compared
+  event_1 <- filter(OISST_MHW_event, 
+                    region == df$region[1], event_no == df$event_1[1])
+  event_2 <- filter(OISST_MHW_event, 
+                    region == df$region[1], event_no == df$event_2[1])
+  
+  # Find the dates separating the events
+  # We are making a conscious choice to also include the last and first days of the neighbouring events
+  # This will account for the ocean state at the very end and beginning of the events
+  event_gap <- seq(event_1$date_end, event_2$date_start, by = "day")
+  
+  # Extract the MLD data and calculated the cumulative anomaly
+  MLD_cum_anom <- filter(ALL_ts_anom, var == "mld",
+                         region == df$region[1], t %in% event_gap) %>% 
+    summarise(count = n(),
+              anom_cum = sum(anom),
+              anom_mean = mean(anom))
+  
+  # Combine and exit
+  res <- cbind(df, MLD_cum_anom)
+  res$event_1_dur <- event_1$duration[1]
+  res$event_2_dur <- event_2$duration[1]
+  return(res)
+}
+MLD_res <- plyr::ddply(event_day_dist_sub, c("plyr_idx"), MLD_neighbour, .parallel = T)
+```
+
+What do the mean and cumulative MLD anomalies look like in the gaps between MHWs occurring within two weeks of each other??
+
+```{r MLD-shoal-4}
+# Cumulative values
+hist_cum <- MLD_res %>% 
+  ggplot() +
+  geom_histogram(aes(x = anom_cum, fill = region), 
+                 bins = 10, show.legend = F) +
+  facet_wrap(~region)
+
+# Mean values
+hist_mean <- MLD_res %>% 
+  ggplot() +
+  geom_histogram(aes(x = anom_mean, fill = region), 
+                 bins = 10, show.legend = F) +
+  facet_wrap(~region)
+
+# Combine intoa single plot
+ggpubr::ggarrange(hist_cum, hist_mean, ncol = 1)
+```
+
+Above we have plotted histograms of the cumulative and mean MLD anomaly on days between MHWs that occur within two weeks of each other. We have shown the mean values because the cumulative values of events with larger gaps will likely tend to be larger than shorter gaps, even if the MLD may be shoaled more in those gaps. The reader is free to draw their conclusions from either result, but they both show a similar picture, which is that the MLD anomalies during the gaps between nearby MHWs skew towards positive (deeper) depth anomalies. The exception to this being the Mid-Atlantic Bight, and the Newfoundland Shelf to a lesser extent.
+
+Perhaps there is a relationship between the length of the gap and the MLD anomaly?
+
+```{r MLD-shoal-5}
+MLD_res %>% 
+  ggplot(aes(x = as.integer(days), y = anom_cum)) +
+  geom_point(aes(colour = region)) +
+  geom_smooth(method = "lm", se = F, aes(colour = region))
+  # geom_histogram(aes(x = anom_cum, fill = region), 
+                 # bins = 10, show.legend = F) +
+  # facet_wrap(~region)
+```
+
+But this doesn't quite answer the issue that was posed. Remember that specifically the concern was about very short event occurring close in time to each other. So as a final step we will filter the results from above to only show when at least one of the two events was shorter than 10 days (double the absolute minimum length of five days).
+
+```{r MLD-shoal-6}
 
 ```
 
