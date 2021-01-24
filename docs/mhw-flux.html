@@ -441,7 +441,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2021-01-23
+<strong>Last updated:</strong> 2021-01-24
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -532,16 +532,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtree3f6b550b0f4583e7ffac985b418b93824eeae141targetblank3f6b550a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/robwschlegel/MHWflux/tree/3f6b550b0f4583e7ffac985b418b93824eeae141" target="_blank">3f6b550</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtree6554bc80ac899fca286505fa0781eeeeda6e5743targetblank6554bc8a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/robwschlegel/MHWflux/tree/6554bc80ac899fca286505fa0781eeeeda6e5743" target="_blank">6554bc8</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtree3f6b550b0f4583e7ffac985b418b93824eeae141targetblank3f6b550a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomrobwschlegelMHWfluxtree6554bc80ac899fca286505fa0781eeeeda6e5743targetblank6554bc8a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/robwschlegel/MHWflux/tree/3f6b550b0f4583e7ffac985b418b93824eeae141" target="_blank">3f6b550</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/robwschlegel/MHWflux/tree/6554bc80ac899fca286505fa0781eeeeda6e5743" target="_blank">6554bc8</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -574,6 +574,9 @@ Ignored files:
     Ignored:    data/som.Rda
     Ignored:    data/synoptic_states.Rda
     Ignored:    data/synoptic_states_other.Rda
+
+Untracked files:
+    Untracked:  data/event_overlap_res.Rda
 
 </code></pre>
 <p>
@@ -612,6 +615,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/robwschlegel/MHWflux/57e2ce3c9890cbe7e9df4b9e072571128a557900/docs/mhw-flux.html" target="_blank">57e2ce3</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2021-01-23
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -2352,6 +2372,43 @@ event_day_dist %&gt;%
   geom_label(aes(x = 200, y = 10, label = paste0(count_filter,&quot;/&quot;,count))) +
   facet_wrap(~region)</code></pre>
 <p><img src="figure/mhw-flux.Rmd/MLD-shoal-1-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-MLD-shoal-1-1">
+Past versions of MLD-shoal-1-1.png
+</button>
+</p>
+<div id="fig-MLD-shoal-1-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/57e2ce3c9890cbe7e9df4b9e072571128a557900/docs/figure/mhw-flux.Rmd/MLD-shoal-1-1.png" target="_blank">57e2ce3</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2021-01-23
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Of the 291 MHWs detected in the data for this study, 254 of them occur within 366 days of another MHW in the same region. As we may see from the histogram above, most of these events are occurring within two months of another event within the same region. Let’s zoom in on this behaviour and visualise the distribution of gaps between events occurring not more than two months apart.</p>
 <pre class="r"><code>event_day_dist %&gt;% 
   group_by(region) %&gt;% 
@@ -2364,6 +2421,43 @@ event_day_dist %&gt;%
   geom_label(aes(x = 30, y = 5, label = paste0(count_filter,&quot;/&quot;,count))) +
   facet_wrap(~region)</code></pre>
 <p><img src="figure/mhw-flux.Rmd/MLD-shoal-2-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-MLD-shoal-2-1">
+Past versions of MLD-shoal-2-1.png
+</button>
+</p>
+<div id="fig-MLD-shoal-2-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/57e2ce3c9890cbe7e9df4b9e072571128a557900/docs/figure/mhw-flux.Rmd/MLD-shoal-2-1.png" target="_blank">57e2ce3</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2021-01-23
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>The above histogram shows us that for the events that are occurring within two months of another month, there is a tendency for the events to occur within one or two weeks of another event. For our main goal here of relating temporally adjacent MHWs to a shoaled MLD we will use a two week filter. This limits the sample to 83 MHWs.</p>
 <pre class="r"><code># Subset events
 event_day_dist_sub &lt;- event_day_dist %&gt;% 
@@ -2418,6 +2512,43 @@ hist_mean &lt;- MLD_res %&gt;%
 # Combine intoa single plot
 ggpubr::ggarrange(hist_cum, hist_mean, ncol = 1)</code></pre>
 <p><img src="figure/mhw-flux.Rmd/MLD-shoal-4-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-MLD-shoal-4-1">
+Past versions of MLD-shoal-4-1.png
+</button>
+</p>
+<div id="fig-MLD-shoal-4-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/57e2ce3c9890cbe7e9df4b9e072571128a557900/docs/figure/mhw-flux.Rmd/MLD-shoal-4-1.png" target="_blank">57e2ce3</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2021-01-23
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Above we have plotted histograms of the cumulative and mean MLD anomaly on days between MHWs that occur within two weeks of each other. We have shown the mean values because the cumulative values of events with larger gaps will likely tend to be larger than shorter gaps, even if the MLD may be shoaled more in those gaps. The reader is free to draw their conclusions from either result, but they both show a similar picture, which is that the MLD anomalies during the gaps between nearby MHWs skew towards positive (deeper) depth anomalies. The exception to this being the Mid-Atlantic Bight, and the Newfoundland Shelf to a lesser extent.</p>
 <p>Perhaps there is a relationship between the length of the gap and the MLD anomaly?</p>
 <pre class="r"><code>trend_cum &lt;- MLD_res %&gt;% 
@@ -2432,6 +2563,43 @@ trend_mean &lt;- MLD_res %&gt;%
   labs(y = &quot;Mean anomaly (°C)&quot;, x = &quot;Gap between MHWs (days)&quot;)
 ggpubr::ggarrange(trend_cum, trend_mean, ncol = 1, common.legend = T)</code></pre>
 <p><img src="figure/mhw-flux.Rmd/MLD-shoal-5-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-MLD-shoal-5-1">
+Past versions of MLD-shoal-5-1.png
+</button>
+</p>
+<div id="fig-MLD-shoal-5-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/57e2ce3c9890cbe7e9df4b9e072571128a557900/docs/figure/mhw-flux.Rmd/MLD-shoal-5-1.png" target="_blank">57e2ce3</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2021-01-23
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Again we’ve shown here the cumulative and mean MLD anomalies during the gapos in events, but this time as dot plots with linear models showing the trend. The standard error of the trends has not been included here because they are so massive. It is very safe to say that none of these trends are significant. There appears to be a bit of a trend in the Gulf of Maine cumulative MLD anomalies with larger gaps between MHWs, but this would be expected by virtue of a larger sample size. The fact that not more of the regions show a trend is what is most interesting. In the mean anomalies we see almost no slope in any regions as the gaps increase or decrease. Looking at the dots in the plot we may see that this is due to the noise in the results.</p>
 <p>But this doesn’t quite answer the issue that was posed. Remember that the concern specifically was about very short events occurring close in time to each other. So as a final step we will filter the results from above to only show when two events shorter than 10 days (double the absolute minimum length of five days) occur within two weeks of each other.</p>
 <pre class="r"><code>MLD_res %&gt;% 
@@ -2442,6 +2610,43 @@ ggpubr::ggarrange(trend_cum, trend_mean, ncol = 1, common.legend = T)</code></pr
                  bins = 10, show.legend = F) +
   facet_grid(region~name, scales = &quot;free_x&quot;)</code></pre>
 <p><img src="figure/mhw-flux.Rmd/MLD-shoal-6-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-MLD-shoal-6-1">
+Past versions of MLD-shoal-6-1.png
+</button>
+</p>
+<div id="fig-MLD-shoal-6-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/robwschlegel/MHWflux/blob/57e2ce3c9890cbe7e9df4b9e072571128a557900/docs/figure/mhw-flux.Rmd/MLD-shoal-6-1.png" target="_blank">57e2ce3</a>
+</td>
+<td>
+robwschlegel
+</td>
+<td>
+2021-01-23
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Now these results are interesting. With the exception of two gaps between adjacent MHWs in the Mid-Atlantic Bight, and one in the Scotian Shelf, the MLD during the gaps between these shallow rapid events is always deeper than seasonally expected, not shallower, as was hypothesised. A possible explanation for this is that these shallow rapid MHWs are actually due to rapidly evolving thermal gradients at the surface. This argument is supported by the fact that of these 25 event pairings, seven of them were recorded in the Mid-Atlantic Bight, and seven were recorded in the Cabot Straight.</p>
 </div>
 <div id="results" class="section level2">
@@ -5291,12 +5496,12 @@ attached base packages:
 [8] base     
 
 other attached packages:
- [1] doParallel_1.0.16 iterators_1.0.13  foreach_1.5.1     Metrics_0.1.4    
- [5] yasomi_0.3        proxy_0.4-24      e1071_1.7-4       ggraph_2.0.4     
- [9] correlation_0.5.0 tidync_0.2.4      heatwaveR_0.4.5   lubridate_1.7.9.2
-[13] data.table_1.13.6 forcats_0.5.0     stringr_1.4.0     dplyr_1.0.2      
-[17] purrr_0.3.4       readr_1.4.0       tidyr_1.1.2       tibble_3.0.4     
-[21] ggplot2_3.3.3     tidyverse_1.3.0  
+ [1] doParallel_1.0.16 iterators_1.0.13  foreach_1.5.1     FNN_1.1.3        
+ [5] Metrics_0.1.4     yasomi_0.3        proxy_0.4-24      e1071_1.7-4      
+ [9] ggraph_2.0.4      correlation_0.5.0 tidync_0.2.4      heatwaveR_0.4.5  
+[13] lubridate_1.7.9.2 data.table_1.13.6 forcats_0.5.0     stringr_1.4.0    
+[17] dplyr_1.0.2       purrr_0.3.4       readr_1.4.0       tidyr_1.1.2      
+[21] tibble_3.0.4      ggplot2_3.3.3     tidyverse_1.3.0  
 
 loaded via a namespace (and not attached):
  [1] colorspace_2.0-0   ggsignif_0.6.0     ellipsis_0.3.1     class_7.3-17      
