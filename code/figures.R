@@ -789,3 +789,16 @@ ggsave("figures/fig_S3.jpg", fig_S3_cap, height = 160, width = 180, units = "mm"
 ggsave("figures/fig_S3.png", fig_S3_cap, height = 207, width = 180, units = "mm", dpi = 300)
 ggsave("figures/fig_S3.pdf", fig_S3_cap, height = 207, width = 180, units = "mm")
 
+
+# Figure summary ----------------------------------------------------------
+# A summary figure created to host on the Woods Hole PO website to advertise the publication
+
+# Taken from the figures above but changing the panel labels
+fig_summary_1 <- cowplot::plot_grid(NWA_study_area, MHW_lolli_plot, labels = c('A)', 'B)'), label_size = 10,
+                            align = 'hv', rel_widths = c(1.2, 1), nrow = 1, axis = "l")
+fig_summary_2 <- ggpubr::ggarrange(mag_scat, mag_box, labels = c("C)", "D)"), align = "hv", widths = c(1.5, 1))
+
+# Comvined into one
+fig_summary <- ggpubr::ggarrange(fig_summary_1, fig_summary_2, ncol = 1, heights = c(1, 0.8))
+ggsave("figures/fig_summary.jpg", fig_summary, height = 170, width = 200, units = "mm", dpi = 600)
+
